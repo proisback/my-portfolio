@@ -1,21 +1,52 @@
-# Local config — contains Supabase credentials.
-# Copy config.example.js to config.js and fill in your own values.
-config.js
-
-# Claude Code workspace — local dev scripts, screenshots, local settings
-.claude/
-
-# Old portfolio versions (superseded by index.html, formerly index-v3.html)
-index-v2.html
-styles.css
-styles-v2.css
-
-# Draft copy / dev notes
-copy.md
-
-# Video files (dev recordings, not portfolio content)
-*.mp4
+# =============================================================================
+# .gitignore for my-portfolio (plain HTML/CSS/JS, no build tools)
+# =============================================================================
 
 # OS cruft
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# Dependency directories (defensive — not used today, future-proofs the repo)
+node_modules/
+
+# Environment / local secrets
+.env
+.env.local
+.env.*.local
+
+# Editor / IDE metadata
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# Claude Code local workspace (dev scripts, screenshots, local settings)
+.claude/
+
+# Log and temp files
+*.log
+*.tmp
+*.bak
+*.orig
+
+# Video files (dev recordings of mobile responsiveness tests, etc.)
+*.mp4
+
+# Superseded portfolio versions (kept locally for reference, not pushed)
+index-v2.html
+styles.css
+styles-v2.css
+
+# Draft copy / scratch notes
+copy.md
+
+# Note on config.js:
+#   config.js IS committed. It holds the Supabase Project URL and anon key,
+#   which are PUBLIC by design (Supabase expects them in client-side code;
+#   Row Level Security is what actually protects the data). config.example.js
+#   stays as a template for anyone cloning the repo and wiring up their own
+#   Supabase project.
