@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>galpal — Women-Only Friendship App | PRD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #F5EFE1;
+  --ivory: #FDFBF4;
+  --ink: #1F1A1D;
+  --ink2: #4A4140;
+  --ink3: #9A908C;
+  --marigold: #F5C94C;
+  --marigold-soft: #FFFBE8;
+  --peach: #F7C5AA;
+  --peach-soft: #FFF3EE;
+  --mint: #A8D5B5;
+  --mint-soft: #EBF7EF;
+  --border: #E8E0D0;
+  --radius: 20px;
+  --radius-sm: 12px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+body {
+  font-family: 'Sora', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.78;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- HERO ---- */
+.hero {
+  background: var(--ink);
+  color: white;
+  padding: 80px 24px 64px;
+  position: relative; overflow: hidden;
+}
+/* Pastel blobs */
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 15% 20%, rgba(247,197,170,0.2) 0%, transparent 40%),
+    radial-gradient(ellipse at 85% 70%, rgba(168,213,181,0.15) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 100%, rgba(245,201,76,0.08) 0%, transparent 35%);
+}
+.hero-inner { max-width: 820px; margin: 0 auto; position: relative; z-index: 1; }
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 100px; padding: 5px 14px;
+  margin-bottom: 28px;
+}
+.hero h1 {
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: clamp(48px, 8vw, 78px);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  margin-bottom: 14px;
+  animation: bloom 0.8s ease both;
+}
+.hero h1 em { font-style: italic; color: var(--peach); }
+.hero-tagline {
+  font-family: 'Sora', system-ui, sans-serif; font-style: italic;
+  font-size: clamp(16px, 2.5vw, 20px);
+  color: rgba(255,255,255,0.55); margin-bottom: 40px;
+  max-width: 480px;
+  animation: bloom 0.8s 0.1s ease both;
+}
+.hero-cta {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 12px; font-weight: 500;
+  letter-spacing: 0.10em; text-transform: uppercase;
+  color: var(--peach);
+  background: rgba(247, 197, 170, 0.08);
+  border: 1px solid rgba(247, 197, 170, 0.30);
+  padding: 11px 20px;
+  border-radius: 100px;
+  text-decoration: none;
+  margin-bottom: 36px;
+  transition: background 0.25s ease, border-color 0.25s ease, transform 0.15s ease;
+  animation: bloom 0.8s 0.15s ease both;
+}
+.hero-cta:hover {
+  background: rgba(247, 197, 170, 0.14);
+  border-color: rgba(247, 197, 170, 0.55);
+}
+.hero-cta:active { transform: scale(0.98); }
+.hero-cta-host { color: white; opacity: 0.85; }
+.hero-cta-arrow { color: var(--peach); font-size: 14px; line-height: 1; transform: translateY(-1px); }
+
+.hero-meta {
+  display: flex; gap: 20px; flex-wrap: wrap;
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 11px; color: rgba(255,255,255,0.35);
+  animation: bloom 0.8s 0.2s ease both;
+}
+.hero-meta strong { color: rgba(255,255,255,0.6); }
+
+/* Safety promise band */
+.promise-band {
+  display: flex; gap: 0; flex-wrap: wrap;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius);
+  overflow: hidden; margin-top: 52px;
+  animation: bloom 0.8s 0.3s ease both;
+}
+.promise-item { flex: 1; min-width: 200px; padding: 18px 22px; border-right: 1px solid rgba(255,255,255,0.06); }
+.promise-item:last-child { border-right: none; }
+.promise-icon { font-size: 18px; margin-bottom: 6px; }
+.promise-text { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.6); line-height: 1.4; }
+
+@keyframes bloom {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- NAV ---- */
+.sticky-nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(245,239,225,0.95); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner {
+  max-width: 820px; margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: center; gap: 2px;
+  overflow-x: auto; scrollbar-width: none; height: 52px;
+}
+.nav-inner::-webkit-scrollbar { display: none; }
+.nav-inner a {
+  padding: 6px 14px; border-radius: 10px;
+  font-size: 12px; font-weight: 600;
+  color: var(--ink3); text-decoration: none;
+  white-space: nowrap; transition: all 0.2s;
+}
+.nav-inner a:hover, .nav-inner a.active { background: var(--peach-soft); color: var(--ink); }
+
+/* ---- LAYOUT ---- */
+.content { max-width: 820px; margin: 0 auto; padding: 0 24px 80px; }
+section { padding: 60px 0 44px; border-bottom: 1px solid var(--border); }
+section:last-child { border-bottom: none; }
+.section-label {
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--ink3); margin-bottom: 10px;
+}
+h2 {
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: clamp(26px, 4vw, 36px); font-weight: 700;
+  letter-spacing: -0.025em; line-height: 1.15; margin-bottom: 24px;
+}
+h3 { font-size: 16px; font-weight: 700; margin: 32px 0 12px; }
+p { margin-bottom: 16px; color: var(--ink2); }
+p:last-child { margin-bottom: 0; }
+
+/* ---- CARDS ---- */
+.card {
+  background: var(--ivory); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px 24px;
+  margin: 16px 0;
+}
+.card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+.card-grid .card { margin: 0; }
+@media (max-width: 600px) { .card-grid { grid-template-columns: 1fr; } }
+
+/* Pastel card fills */
+.card.peach { background: var(--peach-soft); border-color: rgba(247,197,170,0.5); }
+.card.mint { background: var(--mint-soft); border-color: rgba(168,213,181,0.5); }
+.card.marigold { background: var(--marigold-soft); border-color: rgba(245,201,76,0.4); }
+.card.sky { background: #EEF6FF; border-color: #C7E0FF; }
+.card.lilac { background: #F5F0FF; border-color: #D9C7FF; }
+
+/* ---- CALLOUT ---- */
+.callout {
+  border-left: 3px solid var(--ink); background: var(--ivory);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 14px 18px; margin: 20px 0;
+  font-size: 14px; color: var(--ink2); line-height: 1.65;
+}
+.callout.peach { border-color: var(--peach); background: var(--peach-soft); }
+.callout.mint { border-color: var(--mint); background: var(--mint-soft); }
+.callout.marigold { border-color: var(--marigold); background: var(--marigold-soft); }
+.callout strong { color: var(--ink); }
+
+/* ---- PERSONA ---- */
+.persona {
+  background: var(--ivory); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 28px;
+  margin: 24px 0; position: relative; overflow: hidden;
+}
+.persona::before {
+  content: '';
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 4px;
+  background: linear-gradient(90deg, var(--peach), var(--mint), var(--marigold));
+}
+.persona-name { font-family: 'Sora', system-ui, sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.persona-role { font-family: 'Sora', system-ui, sans-serif; font-size: 10px; color: var(--ink3); margin-bottom: 20px; letter-spacing: 0.08em; }
+.persona-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 560px) { .persona-grid { grid-template-columns: 1fr; } }
+.persona-item label { font-family: 'Sora', system-ui, sans-serif; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink3); display: block; margin-bottom: 4px; }
+.persona-item p { font-size: 13px; color: var(--ink2); margin: 0; }
+
+/* ---- JOURNEY ---- */
+.journey-list { margin: 24px 0; }
+.journey-step {
+  display: flex; gap: 14px; padding: 14px 0; position: relative;
+  border-bottom: 1px solid var(--border);
+}
+.journey-step:last-child { border-bottom: none; }
+.j-num {
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 12px; font-weight: 500; color: var(--ink3);
+  width: 28px; flex-shrink: 0; padding-top: 2px;
+}
+.j-body h4 { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+.j-body p { font-size: 13px; color: var(--ink3); margin: 0; line-height: 1.55; }
+
+/* ---- TABLE ---- */
+.table-wrap { overflow-x: auto; margin: 20px 0; border: 1px solid var(--border); border-radius: var(--radius-sm); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; padding: 10px 14px; background: var(--cream); font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink3); border-bottom: 1px solid var(--border); white-space: nowrap; }
+td { padding: 10px 14px; border-top: 1px solid var(--border); vertical-align: top; color: var(--ink2); }
+td:first-child { font-weight: 600; color: var(--ink); }
+tr:hover td { background: var(--cream); }
+
+/* ---- BADGES ---- */
+.badge {
+  display: inline-block; padding: 2px 9px;
+  border-radius: 8px; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.02em; white-space: nowrap;
+}
+.badge.v1 { background: var(--peach-soft); color: #8C3A1A; border: 1px solid rgba(247,197,170,0.7); }
+.badge.v2 { background: var(--mint-soft); color: #1A5C34; border: 1px solid rgba(168,213,181,0.7); }
+.badge.removed { background: #FEE2E2; color: #991B1B; }
+.badge.pending { background: var(--marigold-soft); color: #7A5A0A; border: 1px solid rgba(245,201,76,0.5); }
+
+/* ---- WAVE STATES ---- */
+.wave-states { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
+.ws {
+  padding: 6px 14px; border-radius: 100px;
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 11px; font-weight: 500; border: 1px solid var(--border);
+}
+.ws.none { background: var(--cream); color: var(--ink3); }
+.ws.waved { background: var(--peach-soft); color: #8C3A1A; border-color: rgba(247,197,170,0.7); }
+.ws.incoming { background: var(--mint-soft); color: #1A5C34; border-color: rgba(168,213,181,0.7); }
+.ws.exhausted { background: #F3F4F6; color: #374151; }
+.ws.expired { background: #F3F4F6; color: var(--ink3); }
+
+/* ---- TECH TABLE ---- */
+.tech-row { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.tech-row:last-child { border-bottom: none; }
+.tech-label { font-family: 'Sora', system-ui, sans-serif; font-size: 11px; font-weight: 500; color: var(--ink3); width: 100px; flex-shrink: 0; padding-top: 2px; letter-spacing: 0.04em; }
+.tech-value { font-size: 13px; color: var(--ink2); }
+.tech-value strong { color: var(--ink); }
+
+/* ---- DEBT TABLE ---- */
+.debt-item {
+  display: flex; gap: 12px; padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.debt-item:last-child { border-bottom: none; }
+.debt-num { font-family: 'Sora', system-ui, sans-serif; font-size: 11px; color: var(--ink3); width: 24px; flex-shrink: 0; padding-top: 2px; }
+.debt-body h4 { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.debt-body p { font-size: 12px; color: var(--ink3); margin: 0; line-height: 1.6; }
+
+/* ---- NON-GOALS ---- */
+.non-goals { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.ng {
+  display: flex; align-items: center; gap: 6px;
+  background: #FEE2E2; color: #991B1B;
+  border-radius: 100px; padding: 5px 12px;
+  font-size: 12px; font-weight: 600;
+}
+.ng::before { content: '✕'; font-size: 11px; }
+
+/* ---- FOOTER ---- */
+.doc-footer { background: var(--ink); color: rgba(255,255,255,0.4); text-align: center; padding: 32px 24px; font-size: 12px; font-family: 'Sora', system-ui, sans-serif; letter-spacing: 0.06em; }
+.doc-footer strong { color: rgba(255,255,255,0.65); }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">galpal · PRD v2.0 · Bangalore</div>
+    <h1><em>gal</em>pal</h1>
+    <p class="hero-tagline">A safer friendship surface that takes women's time seriously.</p>
+    <a class="hero-cta" href="https://galpal.in/" target="_blank" rel="noopener noreferrer">
+      Visit live site
+      <span class="hero-cta-host">galpal.in</span>
+      <span class="hero-cta-arrow" aria-hidden="true">&#8599;</span>
+    </a>
+    <div class="hero-meta">
+      <span><strong>Platform:</strong> PWA · Next.js 16 · Supabase</span>
+      <span><strong>Version:</strong> 2.0 · 17 April 2026</span>
+      <span><strong>Focus:</strong> Bangalore · Women 23–40</span>
+    </div>
+    <div class="promise-band">
+      <div class="promise-item"><div class="promise-icon">🛡️</div><div class="promise-text">Women only. Real call with a real human before entry.</div></div>
+      <div class="promise-item"><div class="promise-icon">💌</div><div class="promise-text">No hearts, no swipes, no romantic mechanics. A wave with a reason.</div></div>
+      <div class="promise-item"><div class="promise-icon">🚫</div><div class="promise-text">No feed, no groups, no endless scroll. Matches and chats only.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="sticky-nav">
+  <div class="nav-inner">
+    <a href="#product">01 Product</a>
+    <a href="#journey">02 User Journey</a>
+    <a href="#features">03 Features</a>
+    <a href="#matching">04 Matching</a>
+    <a href="#tech">05 Tech Stack</a>
+    <a href="#data">06 Data Model</a>
+    <a href="#debt">07 Known Debt</a>
+  </div>
+</nav>
+
+<div class="content">
+
+<!-- SECTION 1: PRODUCT -->
+<section id="product">
+  <div class="section-label">Section 01</div>
+  <h2>Product Summary</h2>
+
+  <p>galpal is a women-only friendship PWA for Bangalore. Members finish a hand-reviewed verification call before they can see matches, then meet each other by sending a "wave" with a short reason. Mutual waves open a 1:1 chat. The product is a matches-and-chats surface — nothing more.</p>
+
+  <h3>Target Persona</h3>
+  <div class="persona">
+    <div class="persona-name">A Bangalore woman, 23–40</div>
+    <div class="persona-role">NEW TO THE CITY · OR LONG-RESIDENT WITH A FRAYING SOCIAL CIRCLE</div>
+    <div class="persona-grid">
+      <div class="persona-item">
+        <label>She is not</label>
+        <p>On the app to date. Looking for a meditation cohort, a mom-group, or a professional network.</p>
+      </div>
+      <div class="persona-item">
+        <label>She wants</label>
+        <p>One or two real friends this year. A friendship surface that takes her time seriously.</p>
+      </div>
+      <div class="persona-item">
+        <label>Her anxiety</label>
+        <p>Safety. Every new platform is an unknown risk. She's been burned by spaces that say "women-only" but don't enforce it.</p>
+      </div>
+      <div class="persona-item">
+        <label>Her value unlock</label>
+        <p>Genuine, verified safety. A human called her before she could enter. Every match is real. Every profile was reviewed.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>What This Is Not</h3>
+  <div class="non-goals">
+    <div class="ng">A dating app</div>
+    <div class="ng">A wellness app</div>
+    <div class="ng">A feed product</div>
+    <div class="ng">A voice app</div>
+    <div class="ng">A group product</div>
+    <div class="ng">An events platform</div>
+    <div class="ng">A gamified product</div>
+  </div>
+  <p style="font-size:13px; color:var(--ink3); margin-top:8px;">No hearts, no swipes, no streaks-as-shame, no infinite scroll. No Stories strip. No Circles. No group chat. No broadcast. Games and Events exist in the DB but are scheduled for removal and carry no new brand work.</p>
+</section>
+
+<!-- SECTION 2: USER JOURNEY -->
+<section id="journey">
+  <div class="section-label">Section 02</div>
+  <h2>User Journey (End-to-End)</h2>
+
+  <div class="journey-list">
+    <div class="journey-step">
+      <div class="j-num">01</div>
+      <div class="j-body"><h4>Landing Page ( / )</h4><p>Anonymous view. Wordmark nav, one-sentence hero, three-step "how it works" row, full-bleed Safety Promise band (women only · real call real human · no hearts), pull-quote, FAQ, charcoal CTA band. Primary CTA: "join galpal" → /login.</p></div>
+    </div>
+    <div class="journey-step">
+      <div class="j-num">02</div>
+      <div class="j-body"><h4>Login ( /login )</h4><p>Single Google OAuth button. On success, Supabase creates auth.users row → handle_new_user() trigger → matching row in public.users. Redirect to /auth/callback → /onboarding or /home.</p></div>
+    </div>
+    <div class="journey-step">
+      <div class="j-num">03</div>
+      <div class="j-body"><h4>Onboarding (3 Steps, stacked-deck UI)</h4><p>Step 1: name, DOB (18+), city tenure, neighborhood, home state. Step 2: work situation, looking_for (≥1), personality type. Step 3: interests (≥3), surprise fact (10–150 chars). Submission of step 3 sets onboarding_completed = true.</p></div>
+    </div>
+    <div class="journey-step">
+      <div class="j-num">04</div>
+      <div class="j-body"><h4>Unverified Home</h4><p>Until admin verifies: welcome banner + blurred 2×2 top-4 matches teaser. Cannot open a match, send a wave, or open a chat. API endpoints gate on verification.</p></div>
+    </div>
+    <div class="journey-step">
+      <div class="j-num">05</div>
+      <div class="j-body"><h4>Admin Verification Call</h4><p>Allowlisted admin opens /admin, reviews profile at /admin/[id], calls the phone number via click-to-call, clicks Accept or Reject. Reject may include internal 500-char note. User can request another call via /profile → POST /api/me/reschedule.</p></div>
+    </div>
+    <div class="journey-step">
+      <div class="j-num">06</div>
+      <div class="j-body"><h4>Celebration ( /celebration )</h4><p>One-time hand-off animation on first post-verification landing. Sets celebration_seen = true, then redirects to /home.</p></div>
+    </div>
+    <div class="journey-step">
+      <div class="j-num">07</div>
+      <div class="j-body"><h4>Verified Home</h4><p>Time-of-day greeting, contextual wave-back card (most recent incoming wave), first-week nudges (Days 1–7, Day 4 skipped if no incoming waves), horizontal scroll of top 3 matches.</p></div>
+    </div>
+    <div class="journey-step">
+      <div class="j-num">08</div>
+      <div class="j-body"><h4>Wave Flow</h4><p>Tapping match card opens ProfileOverlay. Wave button opens modal — 3 preset reasons + custom 100-char textarea. Sending inserts into waves table with expires_at = now() + 30 days. If mutual: creates connections row + fires two push notifications + MATCHED sticker.</p></div>
+    </div>
+    <div class="journey-step">
+      <div class="j-num">09</div>
+      <div class="j-body"><h4>1:1 Chat ( /chat/[connectionId] )</h4><p>Text + image bubbles only. Realtime subscription on mount, removed on unmount. Three-dot menu: Disconnect / Block / Block + Report.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3: FEATURES -->
+<section id="features">
+  <div class="section-label">Section 03</div>
+  <h2>Feature Specifications</h2>
+
+  <h3>Authentication — Google OAuth</h3>
+  <p>Single /login page. Client invokes supabase.auth.signInWithOAuth with Google provider. Middleware gates everything except /, /login, /privacy, /terms, /auth/callback. /admin/* allowed through middleware — auth handled at API layer.</p>
+
+  <h3>Verification Workflow</h3>
+  <div class="card-grid">
+    <div class="card peach">
+      <h4 style="font-size:13px;font-weight:700;margin-bottom:8px;">User-Side Signals</h4>
+      <p style="font-size:13px;margin:0;color:var(--ink2);">Unverified home banner → "our team will reach out within 24 hours." If missed call: /profile → "Request another call" → POST /api/me/reschedule. Verification card flips butter-pending → mint-verified on acceptance.</p>
+    </div>
+    <div class="card mint">
+      <h4 style="font-size:13px;font-weight:700;margin-bottom:8px;">Admin-Side Workflow</h4>
+      <p style="font-size:13px;margin:0;color:var(--ink2);">/admin lists: reschedule requests first, then unverified newest-first, then verified. Accept/Reject actions via PATCH /api/admin. Reject opens 500-char note sheet. Reset clears all verification columns.</p>
+    </div>
+  </div>
+
+  <h3>Wave Rules</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Rule</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>Expiry</td><td>30 days from created_at. Expired waves still count toward the lifetime cap.</td></tr>
+        <tr><td>Lifetime cap</td><td>Maximum 3 total waves from the same sender to the same recipient — ever. Button disabled at 3, showing "you've waved 3 times."</td></tr>
+        <tr><td>Rate limit</td><td>10 waves per hour per user via Upstash Redis. Returns 429 with Retry-After header.</td></tr>
+        <tr><td>Cannot wave</td><td>Yourself, someone you're already connected to, same recipient while a previous wave is still active.</td></tr>
+        <tr><td>Mutual detection</td><td>On every wave insert, server checks for any earlier wave from recipient to sender (active OR expired). If present: service-role creates connections, fires 2 push notifications + 2 wave_matched notifications.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Wave States Surfaced to Client</h3>
+  <div class="wave-states">
+    <div class="ws none">none</div>
+    <div class="ws waved">waved</div>
+    <div class="ws incoming">incoming</div>
+    <div class="ws exhausted">exhausted</div>
+    <div class="ws expired">expired</div>
+  </div>
+
+  <h3>1:1 Chat</h3>
+  <p>Message types: text | image | system. GET /api/messages paginates backwards from created_at via cursor, 50 messages per page. Membership checked server-side (defense in depth — RLS exists but not solely relied upon). Rate limit: 60 messages per minute.</p>
+
+  <h3>Safety Actions</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4 style="font-size:13px;font-weight:700;margin-bottom:6px;">Disconnect</h4>
+      <p style="font-size:13px;margin:0;color:var(--ink3);">Sets connections.status = 'disconnected'. Inserts "Conversation ended" system message. Soft, reversible from DB layer — no reconnect UI today.</p>
+    </div>
+    <div class="card">
+      <h4 style="font-size:13px;font-weight:700;margin-bottom:6px;">Block (symmetric, silent)</h4>
+      <p style="font-size:13px;margin:0;color:var(--ink3);">Sets connections.status = 'blocked'. Inserts blocks row. Applied via src/lib/blocks.ts to matches, user-matches, search, and profile-detail endpoints. Blocked user sees "user not found."</p>
+    </div>
+    <div class="card">
+      <h4 style="font-size:13px;font-weight:700;margin-bottom:6px;">Report</h4>
+      <p style="font-size:13px;margin:0;color:var(--ink3);">Writes to reports table. Rate-limited: 5 per day. No internal review surface yet — v3 scope confirmed.</p>
+    </div>
+    <div class="card marigold">
+      <h4 style="font-size:13px;font-weight:700;margin-bottom:6px;">Verification Gate</h4>
+      <p style="font-size:13px;margin:0;color:var(--ink2);">Unverified users cannot see match details, send waves, or open chats. Blurred match teaser is the only preview. Enforced at API layer.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4: MATCHING -->
+<section id="matching">
+  <div class="section-label">Section 04</div>
+  <h2>Matching System</h2>
+
+  <h3>Match Sources</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4 style="font-size:13px;font-weight:700;margin-bottom:4px;">Weekly Cron</h4>
+      <p style="font-size:12px;margin:0;color:var(--ink3);">POST /api/cron/weekly-matches (protected by CRON_SECRET). Inserts up to 10 rows per verified user into user_matches with source = 'weekly'. Fires push notification to each affected user.</p>
+    </div>
+    <div class="card">
+      <h4 style="font-size:13px;font-weight:700;margin-bottom:4px;">On-Demand</h4>
+      <p style="font-size:12px;margin:0;color:var(--ink3);">POST /api/matches/generate. Inserts up to 10 rows with source = 'on_demand', excluding existing matches, connections, and blocks.</p>
+    </div>
+    <div class="card">
+      <h4 style="font-size:13px;font-weight:700;margin-bottom:4px;">Live Fallback</h4>
+      <p style="font-size:12px;margin:0;color:var(--ink3);">GET /api/matches. Called only when user_matches has no rows. Never writes to DB.</p>
+    </div>
+    <div class="card">
+      <h4 style="font-size:13px;font-weight:700;margin-bottom:4px;">User-Facing</h4>
+      <p style="font-size:12px;margin:0;color:var(--ink3);">GET /api/user-matches?limit&offset. Reads user_matches, enriches with profiles, interests, wave status, common line. Filters blocks (symmetric) and existing connections.</p>
+    </div>
+  </div>
+
+  <h3>Scoring Features</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Feature</th><th>Weight</th></tr></thead>
+      <tbody>
+        <tr><td>Shared interests</td><td>+3 per shared interest</td></tr>
+        <tr><td>Shared "looking for" tags</td><td>+4 per shared tag</td></tr>
+        <tr><td>Same home state</td><td>+2</td></tr>
+        <tr><td>Neighborhood proximity (same)</td><td>+4 or +5</td></tr>
+        <tr><td>Neighborhood cluster</td><td>+2 or +3</td></tr>
+        <tr><td>Same city tenure</td><td>+1</td></tr>
+        <tr><td>Same work situation</td><td>+2</td></tr>
+        <tr><td>Personality compatibility</td><td>0–3 via lookup table</td></tr>
+        <tr><td>Recency boost (live path only)</td><td>Decays +3 → 0 over 30 days</td></tr>
+        <tr><td>Diverse pick: same home_state penalty</td><td>−5 if already picked</td></tr>
+        <tr><td>Diverse pick: same neighborhood penalty</td><td>−3 if already picked</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- SECTION 5: TECH -->
+<section id="tech">
+  <div class="section-label">Section 05</div>
+  <h2>Platform & Tech Stack</h2>
+
+  <div class="card">
+    <div class="tech-row"><div class="tech-label">Runtime</div><div class="tech-value"><strong>Next.js 16 App Router</strong> (src/app), TypeScript, PWA via custom manifest.ts + service worker</div></div>
+    <div class="tech-row"><div class="tech-label">Styling</div><div class="tech-value"><strong>Tailwind CSS v4</strong> with @theme inline tokens in globals.css. No tailwind.config.ts. No shadcn, no MUI.</div></div>
+    <div class="tech-row"><div class="tech-label">Fonts</div><div class="tech-value"><strong>Sora only</strong> — Indian Type Foundry, variable 100–800. Loaded via next/font/google under CSS variable --font-sora. Legacy Caveat/Nunito/JetBrains Mono references are stale, scheduled for removal.</div></div>
+    <div class="tech-row"><div class="tech-label">Hosting</div><div class="tech-value"><strong>Vercel.</strong> Cron jobs registered on the Vercel scheduler.</div></div>
+    <div class="tech-row"><div class="tech-label">Data</div><div class="tech-value"><strong>Supabase</strong> — Postgres + RLS + Realtime + Storage + Auth. One Realtime channel per user (notifications, waves), one per active chat (cleanup on unmount).</div></div>
+    <div class="tech-row"><div class="tech-label">Auth</div><div class="tech-value"><strong>Google OAuth</strong> via Supabase Auth. (CLAUDE.md still claims phone OTP — that claim is stale. Actual is Google OAuth.)</div></div>
+    <div class="tech-row"><div class="tech-label">Rate Limiting</div><div class="tech-value"><strong>Upstash Redis</strong> via @upstash/ratelimit. Optional — when env vars are missing, limits are disabled and a loud warning is logged.</div></div>
+    <div class="tech-row"><div class="tech-label">Push</div><div class="tech-value"><strong>VAPID + Web Push API</strong> + service worker.</div></div>
+    <div class="tech-row"><div class="tech-label">Observability</div><div class="tech-value"><strong>PostHog</strong> (analytics), <strong>Sentry</strong> (errors).</div></div>
+    <div class="tech-row"><div class="tech-label">Animation</div><div class="tech-value"><strong>Framer Motion</strong> for signature moments (sticker press, wave sweep). Default CSS transitions use shared --ease-soft curve.</div></div>
+  </div>
+
+  <h3>Brand Rules with API-Level Consequences</h3>
+  <div class="callout peach">
+    <strong>One sticker per screen maximum.</strong> Only two sticker variants ship: WAVE SENT (peach) and MATCHED (marigold). One primary CTA per visible viewport. Primary CTAs are always charcoal — never a saturated accent. Marigold is the <em>earned</em> celebration color, never a member-facing CTA fill.
+  </div>
+</section>
+
+<!-- SECTION 6: DATA MODEL -->
+<section id="data">
+  <div class="section-label">Section 06</div>
+  <h2>Core Data Model</h2>
+
+  <h3>Key Tables</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Table</th><th>Key Columns / Notes</th></tr></thead>
+      <tbody>
+        <tr><td>users</td><td>Full profile: neighborhood, city_tenure, home_state, work_situation, looking_for[], personality_type, surprise_fact, is_verified, verified_at, celebration_seen, nudges_dismissed (JSONB), reschedule_count, rejected_at, rejection_reason</td></tr>
+        <tr><td>user_interests</td><td>Many-to-many: user_id + interest tag. Replaced on each onboarding step 3 save.</td></tr>
+        <tr><td>waves</td><td>from_user, to_user, reason_type, custom_reason (nullable), expires_at (now() + 30 days). RLS: select where from_user = auth.uid() OR to_user = auth.uid()</td></tr>
+        <tr><td>connections</td><td>user_a (LEAST of sender/recipient), user_b, status (active | disconnected | blocked), connected_via ('wave' | 'event'). Deterministic ordering preserves unique index.</td></tr>
+        <tr><td>messages</td><td>connection_id, sender_id, content, type (text | image | system), image_url. Legacy enum values voice|poll still exist in DB but no new writes.</td></tr>
+        <tr><td>notifications</td><td>type: wave_received | wave_matched | wave_back_reminder | match_available | verification_approved. Realtime-published per user channel.</td></tr>
+        <tr><td>blocks</td><td>blocker_id, blocked_id. Applied symmetrically in src/lib/blocks.ts across all user-facing queries.</td></tr>
+        <tr><td>user_matches</td><td>Persisted scored matches. source: 'weekly' | 'on_demand'. Enriched with wave_status at read time.</td></tr>
+        <tr><td>waitlist</td><td>email, created_at. Written to from landing page for pre-signup users.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>RLS Policies (Representative)</h3>
+  <div class="card">
+    <p style="font-family: 'Sora', system-ui, sans-serif;font-size:12px;line-height:1.8;color:var(--ink2);">
+      users — self-read, self-update, public read of public fields<br>
+      waves — select where from_user = auth.uid() OR to_user = auth.uid()<br>
+      connections — select where user_a = auth.uid() OR user_b = auth.uid()<br>
+      messages — select if a member of the connection, insert where sender_id = auth.uid()<br>
+      blocks — select + all operations where blocker_id = auth.uid()
+    </p>
+  </div>
+  <div class="callout" style="border-color:var(--amber); background:var(--marigold-soft);">
+    <strong>RLS audit pending.</strong> No end-to-end proof yet that every cross-user query goes through either (a) an RLS policy that restricts appropriately or (b) a defense-in-depth server check. Flagged for a dedicated audit session.
+  </div>
+</section>
+
+<!-- SECTION 7: TECH DEBT -->
+<section id="debt">
+  <div class="section-label">Section 07</div>
+  <h2>Known Limitations & Tech Debt</h2>
+
+  <div class="card">
+    <div class="debt-item">
+      <div class="debt-num">1</div>
+      <div class="debt-body">
+        <h4>Streak incrementer has a short-circuit bug</h4>
+        <p>In src/app/api/messages/route.ts, once a streak reaches 1, the || current_streak > 0 branch keeps the streak alive regardless of gap. Streaks effectively never break. Do NOT surface streaks in marketing until this is fixed.</p>
+      </div>
+    </div>
+    <div class="debt-item">
+      <div class="debt-num">2</div>
+      <div class="debt-body">
+        <h4>Chat images upload to the avatars bucket</h4>
+        <p>Intentional shortcut. Move to dedicated chat-images bucket before scaling storage.</p>
+      </div>
+    </div>
+    <div class="debt-item">
+      <div class="debt-num">3</div>
+      <div class="debt-body">
+        <h4>Rate limits are optional</h4>
+        <p>When UPSTASH_REDIS_REST_URL / _TOKEN are missing, all limiters silently bypass. In production these env vars MUST be set or wave/message/report endpoints become unlimited.</p>
+      </div>
+    </div>
+    <div class="debt-item">
+      <div class="debt-num">4</div>
+      <div class="debt-body">
+        <h4>Auth claim in CLAUDE.md is stale</h4>
+        <p>Still says "Phone OTP only via Supabase Auth + Twilio." Actual: Google OAuth. Update on next edit pass.</p>
+      </div>
+    </div>
+    <div class="debt-item">
+      <div class="debt-num">5</div>
+      <div class="debt-body">
+        <h4>Legacy schema tables still exist</h4>
+        <p>circles, circle_members, stories, story_responses, weekend_plan_joins, user_prompts. No UI writes to them. Drop on a future migration after product signs off.</p>
+      </div>
+    </div>
+    <div class="debt-item">
+      <div class="debt-num">6</div>
+      <div class="debt-body">
+        <h4>Hard-coded admin emails fallback</h4>
+        <p>src/app/api/admin/route.ts and /admin/users/[id]/route.ts contain 3 hard-coded email addresses as fallback. Move to env before public launch.</p>
+      </div>
+    </div>
+    <div class="debt-item">
+      <div class="debt-num">7</div>
+      <div class="debt-body">
+        <h4>sessionStorage key queens_matches leaks old name</h4>
+        <p>Rename to galpal_matches as part of the rebrand sweep.</p>
+      </div>
+    </div>
+    <div class="debt-item">
+      <div class="debt-num">8</div>
+      <div class="debt-body">
+        <h4>Legacy brand tokens still in code</h4>
+        <p>font-display (Caveat), font-nunito, font-mono, terracotta/sage/butter raw hex colors, bg-cream. Rebrand migration is in-progress and not yet complete in code.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Open Questions</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>OQ</th><th>Question</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Events + Games removal cutover date? Keep DB tables for history or drop with UI?</td><td><span class="badge pending">Open</span></td></tr>
+        <tr><td>2</td><td>Streak rule — what breaks a streak? Proposed: "both users send at least one message on each of N consecutive local days."</td><td><span class="badge pending">Open</span></td></tr>
+        <tr><td>3</td><td>Domain confirmed as <strong>galpal.in</strong>. VAPID, Supabase redirect URLs, Google OAuth, email sender, and footer copy have been aligned to the new domain.</td><td><span class="badge v2">Resolved</span></td></tr>
+        <tr><td>4</td><td>RLS audit — who owns it and when?</td><td><span class="badge pending">Open</span></td></tr>
+        <tr><td>5</td><td>Reschedule cap — do we cap reschedule_count? Current: unlimited.</td><td><span class="badge pending">Open</span></td></tr>
+        <tr><td>6</td><td>Wordmark SVG with linked-arms ligature — ETA from design team?</td><td><span class="badge pending">Open</span></td></tr>
+        <tr><td>7</td><td>4 bespoke illustrations — Empty Friends (teacups + envelope), Home unverified (door ajar), Onboarding complete (linked hands). Blocks onboarding complete screen.</td><td><span class="badge pending">Open</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+</div>
+
+<div class="doc-footer">
+  <strong>galpal</strong> · PRD v2.0 · 17 April 2026 · Women-Only Friendship App · Bangalore
+</div>
+
+<script>
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-inner a');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const a = document.querySelector(`.nav-inner a[href="#${entry.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { threshold: 0.2, rootMargin: '-64px 0px -60% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+# Local config — contains Supabase credentials.
+# Copy config.example.js to config.js and fill in your own values.
+config.js
+
+# Claude Code workspace — local dev scripts, screenshots, local settings
+.claude/
+
+# Old portfolio versions (superseded by index-v3.html)
+index.html
+index-v2.html
+
+# Draft copy / dev notes
+copy.md
+
+# Video files (dev recordings, not portfolio content)
+*.mp4
+
+# OS cruft
+.DS_Store
+Thumbs.db

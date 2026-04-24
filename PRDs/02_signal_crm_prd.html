@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal — Intelligence Layer for Founder CRM | PRD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0C0E12;
+  --surface: #141720;
+  --surface2: #1C2030;
+  --border: #252A38;
+  --text: #E8EAF0;
+  --text2: #9AA0B4;
+  --text3: #5A6070;
+  --accent: #4F7CFF;
+  --accent-soft: rgba(79,124,255,0.12);
+  --accent-glow: rgba(79,124,255,0.25);
+  --green: #34D399;
+  --green-soft: rgba(52,211,153,0.1);
+  --red: #F87171;
+  --red-soft: rgba(248,113,113,0.1);
+  --amber: #FBBF24;
+  --amber-soft: rgba(251,191,36,0.1);
+  --radius: 14px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+body {
+  font-family: 'Sora', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.78;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- HERO ---- */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 80px 24px 64px;
+  position: relative; overflow: hidden;
+  text-align: center;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(79,124,255,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 80%, rgba(52,211,153,0.06) 0%, transparent 40%);
+}
+.hero-grid {
+  position: absolute; inset: 0; overflow: hidden; opacity: 0.08;
+  background-image: linear-gradient(var(--border) 1px, transparent 1px),
+                    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+.hero-inner { max-width: 720px; position: relative; z-index: 1; }
+.hero-eyebrow {
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 11px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--accent);
+  margin-bottom: 32px;
+  animation: rise 0.7s ease both;
+}
+.hero h1 {
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: clamp(42px, 7vw, 72px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  margin-bottom: 12px;
+  animation: rise 0.7s 0.1s ease both;
+}
+.hero h1 .dim { color: var(--text3); }
+.hero-tagline {
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: clamp(16px, 2.5vw, 20px);
+  font-style: italic;
+  color: var(--text2);
+  margin-bottom: 40px;
+  animation: rise 0.7s 0.2s ease both;
+}
+.hero-premise {
+  font-size: 15px; color: var(--text2);
+  max-width: 540px; margin: 0 auto 48px;
+  line-height: 1.72;
+  animation: rise 0.7s 0.3s ease both;
+}
+.hero-meta {
+  display: flex; gap: 24px; justify-content: center; flex-wrap: wrap;
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 11px; color: var(--text3); letter-spacing: 0.04em;
+  animation: rise 0.7s 0.4s ease both;
+}
+.hero-meta span strong { color: var(--text2); }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- NAV ---- */
+.sticky-nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(12,14,18,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner {
+  max-width: 820px; margin: 0 auto;
+  padding: 0 24px;
+  display: flex; align-items: center; gap: 2px;
+  overflow-x: auto; scrollbar-width: none; height: 52px;
+}
+.nav-inner::-webkit-scrollbar { display: none; }
+.nav-inner a {
+  padding: 6px 14px; border-radius: 8px;
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 12px; font-weight: 600;
+  color: var(--text3); text-decoration: none;
+  white-space: nowrap; transition: all 0.2s;
+  letter-spacing: 0.04em;
+}
+.nav-inner a:hover, .nav-inner a.active {
+  background: var(--accent-soft); color: var(--accent);
+}
+
+/* ---- CONTENT ---- */
+.content { max-width: 820px; margin: 0 auto; padding: 0 24px 80px; }
+section { padding: 60px 0 44px; border-bottom: 1px solid var(--border); }
+section:last-child { border-bottom: none; }
+.section-label {
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); max-width: 60px; }
+h2 {
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: clamp(24px, 3.5vw, 34px);
+  font-weight: 700; letter-spacing: -0.025em;
+  line-height: 1.15; margin-bottom: 24px;
+}
+h3 {
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 17px; font-weight: 700;
+  margin: 36px 0 12px; letter-spacing: -0.01em;
+}
+p { margin-bottom: 16px; color: var(--text2); }
+p:last-child { margin-bottom: 0; }
+
+/* ---- SURFACE CARDS ---- */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px 24px;
+  margin: 16px 0;
+}
+.card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+.card-grid .card { margin: 0; }
+@media (max-width: 600px) { .card-grid { grid-template-columns: 1fr; } }
+
+/* ---- CALLOUT ---- */
+.callout {
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin: 20px 0;
+  font-size: 14px; color: var(--text2); line-height: 1.65;
+}
+.callout.green { border-left-color: var(--green); background: var(--green-soft); }
+.callout.red { border-left-color: var(--red); background: var(--red-soft); }
+.callout.amber { border-left-color: var(--amber); background: var(--amber-soft); }
+.callout strong { color: var(--text); }
+
+/* ---- STAT ROW ---- */
+.stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin: 28px 0; }
+@media (max-width: 580px) { .stat-row { grid-template-columns: 1fr 1fr; } }
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px 18px;
+}
+.stat-n {
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 30px; font-weight: 800; line-height: 1; margin-bottom: 6px;
+}
+.stat-n.blue { color: var(--accent); }
+.stat-n.green { color: var(--green); }
+.stat-n.red { color: var(--red); }
+.stat-n.amber { color: var(--amber); }
+.stat-l { font-size: 12px; color: var(--text3); line-height: 1.45; font-family: 'Sora', system-ui, sans-serif; }
+
+/* ---- TABLE ---- */
+.table-wrap {
+  overflow-x: auto; margin: 20px 0;
+  border: 1px solid var(--border); border-radius: var(--radius);
+}
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th {
+  text-align: left; padding: 10px 14px;
+  background: var(--surface2);
+  font-family: 'Sora', system-ui, sans-serif;
+  font-weight: 500; font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--text3); border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+td { padding: 10px 14px; border-top: 1px solid var(--border); vertical-align: top; color: var(--text2); }
+td:first-child { font-weight: 600; color: var(--text); font-family: 'Sora', system-ui, sans-serif; font-size: 13px; }
+tr:hover td { background: var(--surface2); }
+
+/* ---- BADGES ---- */
+.badge {
+  display: inline-block; padding: 2px 9px;
+  border-radius: 6px; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.02em; white-space: nowrap;
+  font-family: 'Sora', system-ui, sans-serif;
+}
+.badge.v1 { background: var(--accent-soft); color: var(--accent); border: 1px solid rgba(79,124,255,0.3); }
+.badge.v2 { background: var(--amber-soft); color: var(--amber); border: 1px solid rgba(251,191,36,0.3); }
+.badge.never { background: var(--red-soft); color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
+.badge.green { background: var(--green-soft); color: var(--green); border: 1px solid rgba(52,211,153,0.3); }
+.badge.eliminated { background: var(--red-soft); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
+
+/* ---- DEAL STATE MACHINE ---- */
+.state-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin: 20px 0; }
+@media (max-width: 640px) { .state-grid { grid-template-columns: 1fr 1fr; } }
+.state-card {
+  border-radius: 10px; padding: 14px 16px;
+  border: 1px solid var(--border);
+}
+.state-dot { width: 10px; height: 10px; border-radius: 50%; margin-bottom: 8px; }
+.state-card h4 { font-family: 'Sora', system-ui, sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.state-card p { font-size: 12px; color: var(--text3); margin: 0; line-height: 1.5; }
+.state-warm { background: var(--green-soft); border-color: rgba(52,211,153,0.2); }
+.state-warm .state-dot { background: var(--green); }
+.state-warm h4 { color: var(--green); }
+.state-cooling { background: var(--amber-soft); border-color: rgba(251,191,36,0.2); }
+.state-cooling .state-dot { background: var(--amber); }
+.state-cooling h4 { color: var(--amber); }
+.state-critical { background: var(--red-soft); border-color: rgba(248,113,113,0.2); }
+.state-critical .state-dot { background: var(--red); }
+.state-critical h4 { color: var(--red); }
+.state-stalled { background: var(--surface2); }
+.state-stalled .state-dot { background: var(--text3); }
+.state-stalled h4 { color: var(--text3); }
+
+/* ---- FAILURE CASCADE ---- */
+.cascade { margin: 24px 0; }
+.cascade-step {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 16px 0; position: relative;
+}
+.cascade-step:not(:last-child)::after {
+  content: ''; position: absolute;
+  left: 17px; top: 52px; bottom: -16px;
+  width: 2px; background: var(--border);
+}
+.cs-dot {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--surface2); border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 12px; font-weight: 600; color: var(--text3);
+  flex-shrink: 0; z-index: 1;
+}
+.cs-dot.kill { background: var(--red-soft); border-color: var(--red); color: var(--red); }
+.cs-dot.ok { background: var(--green-soft); border-color: var(--green); color: var(--green); }
+.cs-body h4 { font-family: 'Sora', system-ui, sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.cs-body p { font-size: 13px; color: var(--text3); margin: 0; line-height: 1.6; }
+
+/* ---- PERSONA ---- */
+.persona {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 28px;
+  margin: 24px 0; position: relative; overflow: hidden;
+}
+.persona::before {
+  content: '';
+  position: absolute; top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: linear-gradient(180deg, var(--accent), var(--green));
+}
+.persona-name { font-family: 'Sora', system-ui, sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+.persona-role { font-family: 'Sora', system-ui, sans-serif; font-size: 11px; color: var(--text3); margin-bottom: 20px; letter-spacing: 0.06em; }
+.persona-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 560px) { .persona-grid { grid-template-columns: 1fr; } }
+.persona-item label { font-family: 'Sora', system-ui, sans-serif; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); display: block; margin-bottom: 5px; }
+.persona-item p { font-size: 13px; color: var(--text2); margin: 0; }
+
+/* ---- NON-NEG ---- */
+.rules { margin: 24px 0; }
+.rule {
+  display: flex; gap: 14px; padding: 14px 0;
+  border-bottom: 1px solid var(--border); align-items: flex-start;
+}
+.rule:last-child { border-bottom: none; }
+.rule-num {
+  font-family: 'Sora', system-ui, sans-serif; font-size: 11px;
+  color: var(--accent); width: 28px; flex-shrink: 0; padding-top: 2px; font-weight: 500;
+}
+.rule-body h4 { font-family: 'Sora', system-ui, sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.rule-body p { font-size: 13px; color: var(--text3); margin: 0; line-height: 1.55; }
+
+/* ---- FOOTER ---- */
+.doc-footer {
+  background: var(--surface); border-top: 1px solid var(--border);
+  text-align: center; padding: 32px 24px;
+  font-size: 12px; font-family: 'Sora', system-ui, sans-serif;
+  letter-spacing: 0.06em; color: var(--text3);
+}
+.doc-footer strong { color: var(--text2); }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Week 5 · Group 4 · Rethink Systems</div>
+    <h1>Signal<br><span class="dim">/ CRM</span></h1>
+    <p class="hero-tagline">Intelligence layer for founder-led B2B sales</p>
+    <p class="hero-premise">The $73.4B CRM market is built for professional salespeople. This is not a CRM. It reads your inbox and tells you who you're about to lose.</p>
+    <div class="hero-meta">
+      <span><strong>Status:</strong> v1.0 Architecture</span>
+      <span><strong>Date:</strong> 11 March 2026</span>
+      <span><strong>Research:</strong> 6 founder interviews · 80+ sources</span>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="sticky-nav">
+  <div class="nav-inner">
+    <a href="#problem">01 Problem</a>
+    <a href="#research">02 Research</a>
+    <a href="#persona">03 Persona</a>
+    <a href="#solution">04 Solution</a>
+    <a href="#architecture">05 Architecture</a>
+    <a href="#rules">06 Rules</a>
+    <a href="#roadmap">07 Roadmap</a>
+  </div>
+</nav>
+
+<div class="content">
+
+<!-- SECTION 1: PROBLEM -->
+<section id="problem">
+  <div class="section-label">Section 01</div>
+  <h2>The Problem</h2>
+
+  <p>Early-stage B2B founders who personally close every deal have no system that tells them which conversations need attention today. At approximately 40 simultaneous active relationships, manual prioritization becomes unreliable, and qualified deals decay silently — not from rejection, but from the absence of a timely follow-up signal.</p>
+
+  <div class="callout red">
+    <strong>Core finding:</strong> Deals die not from rejection but from silence. The data showing decay exists in email and messaging logs. No tool reads it and acts on it. The failure is an information architecture failure, not a motivation failure.
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="stat-n blue">₹1L+</div>
+      <div class="stat-l">Monthly recurring revenue deal lost to follow-up failure — went silent in WhatsApp for 2 months</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-n amber">40+</div>
+      <div class="stat-l">Simultaneous conversations = ~240 live data points that exceed human working memory</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-n green">4 min</div>
+      <div class="stat-l">Prevention cost. Recovery takes 2–4 weeks and usually fails.</div>
+    </div>
+  </div>
+
+  <h3>The 5-Stage Failure Cascade</h3>
+
+  <div class="cascade">
+    <div class="cascade-step">
+      <div class="cs-dot">1</div>
+      <div class="cs-body">
+        <h4>Single-Channel Initiation</h4>
+        <p>A lead arrives via LinkedIn, WhatsApp, or conference. The founder responds. No system entry is created. Risk is invisible.</p>
+      </div>
+    </div>
+    <div class="cascade-step">
+      <div class="cs-dot kill">2</div>
+      <div class="cs-body">
+        <h4>Channel Fragmentation</h4>
+        <p>Within days, the exchange migrates: LinkedIn → email → Zoom → WhatsApp. Context fragments across 4–5 apps. Context reconstruction required at every re-engagement.</p>
+      </div>
+    </div>
+    <div class="cascade-step">
+      <div class="cs-dot kill">3</div>
+      <div class="cs-body">
+        <h4>Open-Ended Commitments Disappear</h4>
+        <p>"Let me check with my team" — no deadline, no calendar trigger, no system entry. These vanish into unstructured transcript text that no one reviews. <strong>← Signal intercepts here.</strong></p>
+      </div>
+    </div>
+    <div class="cascade-step">
+      <div class="cs-dot kill">4</div>
+      <div class="cs-body">
+        <h4>Cognitive Overload Threshold Crossed</h4>
+        <p>At ~40 conversations, the founder shifts to recency-based prioritization. High-value quiet prospects get structurally deprioritized by default, not by decision. <strong>← Signal intercepts here.</strong></p>
+      </div>
+    </div>
+    <div class="cascade-step">
+      <div class="cs-dot kill">5</div>
+      <div class="cs-body">
+        <h4>Silent Decay → Reactive Panic → Loss</h4>
+        <p>Founder discovers the decaying deal by accident. Recovery attempt fails. Deal logged as "cold lead." Cause of death invisible. No learning is possible. Pattern repeats.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 2: RESEARCH -->
+<section id="research">
+  <div class="section-label">Section 02</div>
+  <h2>Research Findings</h2>
+
+  <p>Six structured founder conversations spanning different stages, GTM motions, and industries. Each session ran ~60 minutes. Every pre-research assumption was stress-tested.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <h4 style="font-family: 'Sora', system-ui, sans-serif;font-size:14px;font-weight:700;margin-bottom:6px;">The Disciplined Founder at the Ceiling</h4>
+      <p style="font-size:13px;margin:0;">4-tab Excel workbook, 2–3 hours of daily updates. His system accurately logs everything that happened. It generates no signal about what should happen next. Some deals fall through — not by decision, but because he runs out of hours.</p>
+    </div>
+    <div class="card">
+      <h4 style="font-family: 'Sora', system-ui, sans-serif;font-size:14px;font-weight:700;margin-bottom:6px;">The Scaling Founder Watching Revenue Leak</h4>
+      <p style="font-size:13px;margin:0;">Runs HubSpot, a custom internal tracking portal, and Firefly on every call. A ₹1L/month prospect had expressed genuine interest 2 months earlier — unfollowed-up. Neither HubSpot nor the portal surfaced it. He was reminded during a research conversation.</p>
+    </div>
+    <div class="card">
+      <h4 style="font-family: 'Sora', system-ui, sans-serif;font-size:14px;font-weight:700;margin-bottom:6px;">The Repeat Founder Who Learned the Hard Way</h4>
+      <p style="font-size:13px;margin:0;">Used HubSpot for 4 years with a Chief of Staff enforcing logging. Result: 50% of features used, retrospective logging, and a tool that never once told anyone who needed a follow-up today.</p>
+    </div>
+    <div class="card">
+      <h4 style="font-family: 'Sora', system-ui, sans-serif;font-size:14px;font-weight:700;margin-bottom:6px;">Key Finding</h4>
+      <p style="font-size:13px;margin:0;">The original hypothesis — "founders don't log, so there's no data" — is wrong. Every founder already captures data. The gap is intelligence on top of the data, not the data itself. The intervention point is downstream of capture.</p>
+    </div>
+  </div>
+
+  <h3>Assumptions Overturned by Research</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Assumption</th><th>Status After Research</th></tr></thead>
+      <tbody>
+        <tr><td>The core issue is adoption</td><td>Partially wrong. Adoption was achieved by one founder (4 years enforced HubSpot). Deals were still lost. Adoption is necessary but insufficient.</td></tr>
+        <tr><td>Deals are lost because data is not recorded</td><td>Wrong. Every founder already captures data. The gap is intelligence on top of the data, not the data itself.</td></tr>
+        <tr><td>The intervention point is at capture</td><td>Wrong. The intervention point is downstream of capture — at the moment when a prioritized follow-up signal is needed and none exists.</td></tr>
+        <tr><td>Pipeline visibility is the product's core value</td><td>Overturned. The repeat founder achieved complete visibility (4 years enforced HubSpot). She still lost deals. The real need is direction: which conversation, why now.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- SECTION 3: PERSONA -->
+<section id="persona">
+  <div class="section-label">Section 03</div>
+  <h2>Primary Persona</h2>
+
+  <p>This persona is a deliberate bet, not a confirmed archetype. It is built from three adjacent evidence sources. The MVP is the validation instrument.</p>
+
+  <div class="persona">
+    <div class="persona-name">The Solo Closer</div>
+    <div class="persona-role">B2B FOUNDER · 1.5–3 YRS IN · 10–30 EMPLOYEES · NO DEDICATED SALES HIRE</div>
+    <div class="persona-grid">
+      <div class="persona-item">
+        <label>Stage & Team</label>
+        <p>B2B founder, no dedicated sales hire, or one junior SDR who generates leads but does not close. The founder closes every deal personally.</p>
+      </div>
+      <div class="persona-item">
+        <label>Current System</label>
+        <p>A spreadsheet or basic CRM, maintained with decreasing discipline over time. Secondary system: the email inbox, which doubles as an unintentional CRM.</p>
+      </div>
+      <div class="persona-item">
+        <label>Where It Breaks</label>
+        <p>The system reflects the past but generates no signal about the future. At ~40 simultaneous conversations, manual prioritization becomes unreliable.</p>
+      </div>
+      <div class="persona-item">
+        <label>Morning Use Case</label>
+        <p>Three conversations that need attention today, ranked by urgency, with enough context to act immediately. No configuration required. No maintenance required.</p>
+      </div>
+      <div class="persona-item">
+        <label>Adoption Trigger</label>
+        <p>A specific, memorable loss. A deal they thought was progressing that closed with a competitor — and when they checked, their last contact was three weeks ago.</p>
+      </div>
+      <div class="persona-item">
+        <label>Abandonment Risk</label>
+        <p>If the product looks like a CRM, they will assume it requires the same discipline. The first week must produce value before they have done anything to earn it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4: SOLUTION -->
+<section id="solution">
+  <div class="section-label">Section 04</div>
+  <h2>Product Direction</h2>
+
+  <div class="callout" style="border-color: var(--accent); font-size: 17px; font-family: 'Sora', system-ui, sans-serif; font-style: italic; color: var(--text); padding: 20px 24px;">
+    "It reads my inbox and tells me who I'm about to lose."
+  </div>
+
+  <p>Signal is an active prioritization layer that converts a founder's existing email and calendar data into a directed daily action list — telling them which conversations need attention today, why they are urgent, and what context they need to re-engage effectively.</p>
+
+  <h3>Deal State Machine</h3>
+  <div class="state-grid">
+    <div class="state-card state-warm">
+      <div class="state-dot"></div>
+      <h4>Warm</h4>
+      <p>Active — reply received within decay threshold window</p>
+    </div>
+    <div class="state-card state-cooling">
+      <div class="state-dot"></div>
+      <h4>Cooling</h4>
+      <p>Decay threshold reached — no reply, no commitment on file</p>
+    </div>
+    <div class="state-card state-critical">
+      <div class="state-dot"></div>
+      <h4>Critical</h4>
+      <p>Commitment overdue — prospect made a promise and went silent</p>
+    </div>
+    <div class="state-card state-stalled">
+      <div class="state-dot"></div>
+      <h4>Stalled</h4>
+      <p>No activity 14+ days — window may be closing</p>
+    </div>
+  </div>
+
+  <h3>Daily Brief — Per Deal Card Output</h3>
+  <div class="card">
+    <div class="table-wrap" style="margin: 0;">
+      <table>
+        <thead><tr><th>Field</th><th>What It Shows</th></tr></thead>
+        <tbody>
+          <tr><td>Contact</td><td>Name + company (e.g. Meera Iyer · Acme Corp)</td></tr>
+          <tr><td>Status badge</td><td>Critical / Cooling / Warm / Stalled with color indicator</td></tr>
+          <tr><td>Last contact</td><td>"6 days ago · via WhatsApp"</td></tr>
+          <tr><td>Verbatim commitment</td><td>Exact words: "I'll check with my team" — with source channel and date. Never paraphrased. Never inferred.</td></tr>
+          <tr><td>Channel coverage bar</td><td>Shows which of the 5 channels Signal is currently monitoring for this contact</td></tr>
+          <tr><td>Action button</td><td>[Open Thread] — 1-click deep link to originating Gmail thread, WhatsApp conversation, or LinkedIn DM</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="callout amber">
+    <strong>Anti-hallucination rule (non-negotiable):</strong> The system must never paraphrase prospect language. Every alert displays the verbatim text of the detected commitment — date-stamped, channel identified, with a deep link to the originating thread. Trust is built on receipts, not summaries.
+  </div>
+</section>
+
+<!-- SECTION 5: ARCHITECTURE -->
+<section id="architecture">
+  <div class="section-label">Section 05</div>
+  <h2>Technical Architecture</h2>
+
+  <p>Architecture flow: <strong>Input Layer → Intelligence Layer → Output Layer</strong></p>
+
+  <h3>Input Layer — V1 Channels</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Channel</th><th>Setup Required</th><th>Time to Activate</th><th>Priority</th></tr></thead>
+      <tbody>
+        <tr><td>Gmail</td><td>Google OAuth consent screen</td><td>&lt;5 minutes</td><td><span class="badge v1">P0 — must connect at signup</span></td></tr>
+        <tr><td>Google Calendar</td><td>Same Google OAuth (bundled)</td><td>&lt;1 minute</td><td><span class="badge v1">P0</span></td></tr>
+        <tr><td>WhatsApp Business</td><td>BSP account (Wati/Interakt/AiSensy) + Business number</td><td>2–7 business days</td><td><span class="badge v1">P0 — onboarding begins at signup</span></td></tr>
+        <tr><td>LinkedIn DM</td><td>LinkedIn app OAuth (official API only — Section 8.2 compliance)</td><td>4–6 weeks review + 5 min consent</td><td><span class="badge v1">P0 — review initiated before launch</span></td></tr>
+        <tr><td>Zoom Transcript</td><td>Zoom app install + host recording enabled</td><td>&lt;10 minutes</td><td><span class="badge v2">P1 — optional, high value</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Intelligence Layer — Commitment Detection Logic (V1)</h3>
+  <div class="card" style="background: var(--surface2);">
+    <pre style="font-family: 'Sora', system-ui, sans-serif;font-size:12px;color:var(--text2);line-height:1.7;overflow-x:auto;white-space:pre-wrap;">IF message contains:
+  • future-tense first-person phrase
+    ("I'll", "let me", "I will", "main baat karta hoon")
+  AND temporal marker
+    ("next week", "by Friday", "a few days", "kal")
+  AND no calendar invite exists from this domain
+
+THEN Activate Commitment Timer for this contact
+
+CROSS-CHANNEL MERGE RULE:
+IF prospect silent on WhatsApp for 48h
+AND replied to Gmail today
+THEN reset all decay timers — deal is alive in a different channel</pre>
+  </div>
+
+  <h3>Decay Thresholds</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Channel</th><th>Base Decay</th><th>With Active Commitment</th><th>Rationale</th></tr></thead>
+      <tbody>
+        <tr><td>Email</td><td>4 days</td><td>2.8 days (−30%)</td><td>B2B email open rates ~30%; 4-day silence = seen-but-not-replied</td></tr>
+        <tr><td>WhatsApp</td><td>48 hours</td><td>33 hours (−30%)</td><td>98% open rate; 48-hr silence = deliberate non-reply</td></tr>
+        <tr><td>LinkedIn DM</td><td>3 days</td><td>2.1 days (−30%)</td><td>Mid-frequency channel; 3-day silence is meaningful</td></tr>
+        <tr><td>Zoom (post-call)</td><td>24 hours</td><td>—</td><td>Meeting happened; no follow-up within 24 hrs = decay begins</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Solutions Evaluated — What Was Eliminated and Why</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Solution</th><th>Score (/25)</th><th>Verdict</th><th>Key Reason</th></tr></thead>
+      <tbody>
+        <tr><td>Gmail + Calendar API (Signal V1)</td><td><span class="badge green">25/25</span></td><td><span class="badge green">Build now</span></td><td>Correct architecture, zero config, Week-1 value, legal safe</td></tr>
+        <tr><td>HubSpot + Zapier</td><td>15/25</td><td><span class="badge eliminated">Hard eliminated</span></td><td>Direct evidence of failure in our interviews. 4 years enforced logging, still produced zero proactive output.</td></tr>
+        <tr><td>Browser Extension DOM Scraping</td><td>16/25</td><td><span class="badge eliminated">Hard eliminated</span></td><td>LinkedIn ToS Section 8.2 violation. hiQ v. LinkedIn precedent — ToS breach is the operative risk. MV3 kills continuous monitoring.</td></tr>
+        <tr><td>Unofficial WhatsApp API (Baileys)</td><td>20/25*</td><td><span class="badge eliminated">Existential risk</span></td><td>Single Meta enforcement = account ban = all deal visibility gone instantly. No appeal path. India B2B deals run on WhatsApp.</td></tr>
+        <tr><td>AI Draft Reply Generator</td><td>—</td><td><span class="badge never">Permanently eliminated</span></td><td>Destroys the product's core competitive advantage. Founder-to-founder authenticity is the moat. This line never moves.</td></tr>
+        <tr><td>Daily GTD Discipline System</td><td>—</td><td><span class="badge eliminated">Structurally impossible</span></td><td>40 conversations × 6 variables = 240 data points. Exceeds human working memory regardless of discipline or intention.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- SECTION 6: RULES -->
+<section id="rules">
+  <div class="section-label">Section 06</div>
+  <h2>Non-Negotiable Product Rules</h2>
+
+  <p>These are not features to be balanced against each other. They are architectural constraints. Any feature that violates a rule does not ship.</p>
+
+  <div class="rules">
+    <div class="rule">
+      <div class="rule-num">R1</div>
+      <div class="rule-body">
+        <h4>Passive Always</h4>
+        <p>If a feature requires the founder to trigger it, it is not a Signal feature. Manual input breaks at 40+ conversations. Evidence: every interview.</p>
+      </div>
+    </div>
+    <div class="rule">
+      <div class="rule-num">R2</div>
+      <div class="rule-body">
+        <h4>Evidence Before Conclusion</h4>
+        <p>Every alert shows the verbatim quote that triggered it. No AI summaries. No paraphrasing. Receipts build trust. Week-1 trust is the product.</p>
+      </div>
+    </div>
+    <div class="rule">
+      <div class="rule-num">R3</div>
+      <div class="rule-body">
+        <h4>First Win in 48 Hours</h4>
+        <p>Signal must surface a real forgotten deal before the founder has done anything to earn it. Adoption trigger for Solo Closer is a specific memorable deal-save. Must happen Week 1.</p>
+      </div>
+    </div>
+    <div class="rule">
+      <div class="rule-num">R4</div>
+      <div class="rule-body">
+        <h4>Honest About Limits</h4>
+        <p>Channel coverage bar visible at all times. Alert language hedges on channels not connected. A trusted 70% beats a mistrusted 65%.</p>
+      </div>
+    </div>
+    <div class="rule">
+      <div class="rule-num">R5</div>
+      <div class="rule-body">
+        <h4>Never Automate the Human Part</h4>
+        <p>Signal never writes, drafts, or sends messages on any channel. It surfaces context only. Founder outreach trust premium is the competitive advantage. This boundary is permanent — not in V1, V2, or any future version.</p>
+      </div>
+    </div>
+    <div class="rule">
+      <div class="rule-num">R6</div>
+      <div class="rule-body">
+        <h4>Legal-First Architecture</h4>
+        <p>Every data source uses only official APIs with user consent. No browser extensions, no unofficial APIs. Disclosable in VC due diligence. Sustainable at Series A scale.</p>
+      </div>
+    </div>
+    <div class="rule">
+      <div class="rule-num">R7</div>
+      <div class="rule-body">
+        <h4>Channel Data Is the Moat</h4>
+        <p>Every entity and commitment record carries a channel field and raw message reference from day 1. Multi-channel coverage is what competitors cannot replicate. The data model must not be retrofitted.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 7: ROADMAP -->
+<section id="roadmap">
+  <div class="section-label">Section 07</div>
+  <h2>V1 to V2 Roadmap</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Feature</th><th>V1</th><th>V2</th><th>Reason for Deferral</th></tr></thead>
+      <tbody>
+        <tr><td>Gmail ingestion</td><td><span class="badge v1">MUST HAVE</span></td><td>—</td><td>Core architecture</td></tr>
+        <tr><td>Google Calendar ingestion</td><td><span class="badge v1">MUST HAVE</span></td><td>—</td><td>Core architecture</td></tr>
+        <tr><td>Daily Brief (ranked cards)</td><td><span class="badge v1">MUST HAVE</span></td><td>—</td><td>Primary output</td></tr>
+        <tr><td>Verbatim quote retrieval</td><td><span class="badge v1">MUST HAVE</span></td><td>—</td><td>Trust foundation (R2)</td></tr>
+        <tr><td>WhatsApp Business API</td><td><span class="badge v1">MUST HAVE</span></td><td>—</td><td>Highest-volume India B2B channel. Requires business number + BSP approval.</td></tr>
+        <tr><td>Configurable decay thresholds</td><td>—</td><td><span class="badge v2">Should Have</span></td><td>Defaults sufficient for V1; personalize after 60-day calibration</td></tr>
+        <tr><td>AI deal qualification scoring</td><td>—</td><td><span class="badge v2">V2</span></td><td>Requires 60–90 days of history per founder before meaningful signal</td></tr>
+        <tr><td>Automated outreach / AI email drafts</td><td><span class="badge never">NEVER</span></td><td><span class="badge never">NEVER</span></td><td>Destroys founder outreach trust premium. Permanently eliminated.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout green">
+    <strong>Product Vision — Moonshot:</strong> The long-term vision is an AI Sales Co-Founder — a system that doesn't assist the founder with sales but thinks alongside them in real time. It carries persistent memory of every relationship across every channel, understands deal psychology, and encodes Indian B2B sales culture. The founder doesn't manage it. It runs alongside them.
+  </div>
+</section>
+
+</div><!-- end content -->
+
+<div class="doc-footer">
+  <strong>Signal — Intelligence Layer for Founder CRM</strong> · Rethink Systems · Group 4 · v1.0 · 11 March 2026
+</div>
+
+<script>
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-inner a');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.nav-inner a[href="#${entry.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { threshold: 0.2, rootMargin: '-64px 0px -60% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

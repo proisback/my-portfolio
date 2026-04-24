@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMPathfinder — Career Navigation Platform | PRD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FEFCF8;
+  --surface: #FFFFFF;
+  --surface2: #F7F5F0;
+  --border: #EAE7DF;
+  --ink: #1A1714;
+  --ink2: #4A4540;
+  --ink3: #9A948C;
+  --accent: #7C3AED;
+  --accent-soft: #F5F0FF;
+  --accent-mid: rgba(124,58,237,0.15);
+  --amber: #D97706;
+  --amber-soft: #FFFBEB;
+  --green: #059669;
+  --green-soft: #ECFDF5;
+  --red: #DC2626;
+  --red-soft: #FEF2F2;
+  --radius: 14px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 68px; }
+body {
+  font-family: 'Sora', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.78;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- HERO ---- */
+.hero {
+  padding: 88px 24px 72px;
+  background: var(--ink);
+  color: white;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 0% 100%, rgba(124,58,237,0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 0%, rgba(217,119,6,0.12) 0%, transparent 45%);
+}
+.hero-inner { max-width: 820px; margin: 0 auto; position: relative; z-index: 1; }
+.hero-tag {
+  display: inline-block;
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px; padding: 4px 12px;
+  margin-bottom: 32px;
+}
+.hero h1 {
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: clamp(38px, 6vw, 60px);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+  animation: slideIn 0.7s ease both;
+}
+.hero h1 span { color: #A78BFA; }
+.hero-desc {
+  font-size: 17px; color: rgba(255,255,255,0.6);
+  max-width: 540px; line-height: 1.65; margin-bottom: 40px;
+  animation: slideIn 0.7s 0.1s ease both;
+}
+.hero-meta {
+  display: flex; gap: 28px; flex-wrap: wrap;
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 11px; color: rgba(255,255,255,0.35);
+  animation: slideIn 0.7s 0.2s ease both;
+}
+.hero-meta span strong { color: rgba(255,255,255,0.6); }
+.hero-stats {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 1px;
+  background: rgba(255,255,255,0.06); border-radius: var(--radius);
+  overflow: hidden; margin-top: 52px;
+  animation: slideIn 0.7s 0.3s ease both;
+}
+@media (max-width: 640px) { .hero-stats { grid-template-columns: 1fr 1fr; } }
+.hero-stat { padding: 20px 22px; background: rgba(255,255,255,0.02); }
+.hero-stat .n { font-family: 'Sora', system-ui, sans-serif; font-size: 30px; color: #A78BFA; line-height: 1; margin-bottom: 5px; }
+.hero-stat .l { font-size: 11px; color: rgba(255,255,255,0.38); line-height: 1.4; }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- NAV ---- */
+.sticky-nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(254,252,248,0.95); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner {
+  max-width: 820px; margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: center; gap: 2px;
+  overflow-x: auto; scrollbar-width: none; height: 52px;
+}
+.nav-inner::-webkit-scrollbar { display: none; }
+.nav-inner a {
+  padding: 6px 14px; border-radius: 8px;
+  font-size: 12px; font-weight: 600; font-family: 'Sora', system-ui, sans-serif;
+  color: var(--ink3); text-decoration: none;
+  white-space: nowrap; transition: all 0.2s;
+}
+.nav-inner a:hover, .nav-inner a.active { background: var(--accent-soft); color: var(--accent); }
+
+/* ---- LAYOUT ---- */
+.content { max-width: 820px; margin: 0 auto; padding: 0 24px 80px; }
+section { padding: 60px 0 44px; border-bottom: 1px solid var(--border); }
+section:last-child { border-bottom: none; }
+.section-label {
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 10px;
+}
+h2 {
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: clamp(24px, 4vw, 34px); font-weight: 700;
+  letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 24px;
+}
+h3 { font-size: 17px; font-weight: 700; margin: 36px 0 12px; letter-spacing: -0.01em; }
+p { margin-bottom: 16px; color: var(--ink2); }
+p:last-child { margin-bottom: 0; }
+
+/* ---- CARDS ---- */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 16px 0; }
+.card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+.card-grid .card { margin: 0; }
+@media (max-width: 600px) { .card-grid { grid-template-columns: 1fr; } }
+
+/* ---- CALLOUT ---- */
+.callout {
+  border-left: 3px solid var(--accent); background: var(--accent-soft);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin: 20px 0;
+  font-size: 14px; color: var(--ink2); line-height: 1.65;
+}
+.callout.green { border-color: var(--green); background: var(--green-soft); }
+.callout.amber { border-color: var(--amber); background: var(--amber-soft); }
+.callout.red { border-color: var(--red); background: var(--red-soft); }
+.callout strong { color: var(--ink); }
+
+/* ---- STATS ---- */
+.stat-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin: 28px 0; }
+@media (max-width: 640px) { .stat-row { grid-template-columns: 1fr 1fr; } }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; }
+.stat-n { font-family: 'Sora', system-ui, sans-serif; font-size: 28px; line-height: 1; margin-bottom: 5px; }
+.stat-n.purple { color: var(--accent); }
+.stat-n.red { color: var(--red); }
+.stat-n.amber { color: var(--amber); }
+.stat-n.green { color: var(--green); }
+.stat-l { font-size: 12px; color: var(--ink3); line-height: 1.45; }
+
+/* ---- TABLE ---- */
+.table-wrap { overflow-x: auto; margin: 20px 0; border: 1px solid var(--border); border-radius: var(--radius); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; padding: 10px 14px; background: var(--surface2); font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink3); border-bottom: 1px solid var(--border); white-space: nowrap; }
+td { padding: 10px 14px; border-top: 1px solid var(--border); vertical-align: top; color: var(--ink2); }
+td:first-child { font-weight: 600; color: var(--ink); }
+tr:hover td { background: var(--surface2); }
+
+/* ---- BADGES ---- */
+.badge { display: inline-block; padding: 2px 9px; border-radius: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.02em; white-space: nowrap; }
+.badge.must { background: #FEE2E2; color: #991B1B; }
+.badge.should { background: #D1FAE5; color: #065F46; }
+.badge.could { background: #EDE9FE; color: #5B21B6; }
+.badge.wont { background: #F3F4F6; color: #374151; }
+.badge.purple { background: var(--accent-soft); color: var(--accent); }
+.badge.green { background: var(--green-soft); color: var(--green); }
+.badge.amber { background: var(--amber-soft); color: var(--amber); }
+
+/* ---- DIMENSION GRID ---- */
+.dim-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 20px 0; }
+@media (max-width: 640px) { .dim-grid { grid-template-columns: 1fr 1fr; } }
+.dim-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+.dim-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.dim-card p { font-size: 12px; color: var(--ink3); margin: 0; line-height: 1.5; }
+
+/* ---- ARCHETYPE CARDS ---- */
+.arch-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 20px 0; }
+@media (max-width: 600px) { .arch-grid { grid-template-columns: 1fr; } }
+.arch-card { border-radius: var(--radius); padding: 20px; border: 1px solid var(--border); }
+.arch-card.consumer { background: linear-gradient(135deg, #EDE9FE, #F5F0FF); }
+.arch-card.b2b { background: linear-gradient(135deg, #FFFBEB, #FEF3C7); }
+.arch-card.tech { background: linear-gradient(135deg, #ECFDF5, #D1FAE5); }
+.arch-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.arch-card p { font-size: 12px; margin: 0; line-height: 1.6; }
+.arch-card.consumer h4 { color: var(--accent); }
+.arch-card.b2b h4 { color: var(--amber); }
+.arch-card.tech h4 { color: var(--green); }
+
+/* ---- PHASE CARDS ---- */
+.phase { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
+.phase-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 22px; position: relative; overflow: hidden; }
+.phase-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; }
+.phase-card.p1::before { background: var(--accent); }
+.phase-card.p2::before { background: var(--amber); }
+.phase-card.p3::before { background: var(--green); }
+.phase-label { font-family: 'Sora', system-ui, sans-serif; font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink3); margin-bottom: 6px; }
+.phase-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.phase-card p { font-size: 13px; color: var(--ink3); margin: 0; line-height: 1.6; }
+
+/* ---- SCORE BAND ---- */
+.score-band { display: flex; gap: 0; border-radius: 8px; overflow: hidden; height: 32px; margin: 16px 0; }
+.score-band .band { display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: white; }
+
+/* ---- FOOTER ---- */
+.doc-footer { background: var(--ink); color: rgba(255,255,255,0.4); text-align: center; padding: 32px 24px; font-size: 12px; font-family: 'Sora', system-ui, sans-serif; letter-spacing: 0.06em; }
+.doc-footer strong { color: rgba(255,255,255,0.65); }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Week 6 · Group 4 · Rethink Systems</div>
+    <h1>PMPathfinder<br><span>Diagnostic for Aspiring PMs</span></h1>
+    <p class="hero-desc">A career navigation platform that answers the one question every aspiring PM asks but can never reliably answer: <em>Am I ready?</em></p>
+    <div class="hero-meta">
+      <span><strong>Research:</strong> 38-person survey + 6 interviews</span>
+      <span><strong>Status:</strong> MVP Live at pmpathfinder-psi.vercel.app</span>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="n">84%</div><div class="l">receive no or vague feedback on PM skills</div></div>
+      <div class="hero-stat"><div class="n">1/38</div><div class="l">gets specific, actionable feedback regularly</div></div>
+      <div class="hero-stat"><div class="n">63%</div><div class="l">"somewhat confident" — stuck in preparation limbo</div></div>
+      <div class="hero-stat"><div class="n">₹1L+</div><div class="l">spent on courses with no readiness signal</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="sticky-nav">
+  <div class="nav-inner">
+    <a href="#discovery">01 Discovery</a>
+    <a href="#problem">02 Problem</a>
+    <a href="#solution">03 Solution</a>
+    <a href="#features">04 Features</a>
+    <a href="#architecture">05 Architecture</a>
+    <a href="#roadmap">06 Roadmap</a>
+  </div>
+</nav>
+
+<div class="content">
+
+<!-- SECTION 1: DISCOVERY -->
+<section id="discovery">
+  <div class="section-label">Section 01</div>
+  <h2>Discovery: Who is the user? What did we learn?</h2>
+
+  <p>When we started talking to aspiring Product Managers in India, we expected to hear about resume gaps and interview nerves. What we found was something quieter and more damaging: an entire population of smart, experienced professionals preparing in the dark — spending months and lakhs on courses, books, and bootcamps, with almost no way to know whether any of it was working.</p>
+
+  <p>Our survey of 38 aspiring and transitioning PMs revealed a population that was overwhelmingly experienced — consultants with 7+ years at strategy firms, software engineers who had shipped products at scale, designers who had led UX for millions of users. These were not people who lacked competence. They lacked signal.</p>
+
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-n red">84%</div><div class="stat-l">receive no or vague feedback</div></div>
+    <div class="stat-card"><div class="stat-n red">21/38</div><div class="stat-l">get zero feedback at all</div></div>
+    <div class="stat-card"><div class="stat-n purple">1 in 38</div><div class="stat-l">gets specific, useful feedback</div></div>
+    <div class="stat-card"><div class="stat-n amber">63%</div><div class="stat-l">"somewhat confident" — stuck in limbo</div></div>
+  </div>
+
+  <h3>Three Personas Who Emerged</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4 style="font-size:14px;font-weight:700;margin-bottom:6px;color:var(--accent)">Domain Expert</h4>
+      <p style="font-size:13px;margin:0;">Designer or marketer, 4–7 years of experience. Could talk about user research fluently but froze when asked to prioritize a product roadmap.</p>
+    </div>
+    <div class="card">
+      <h4 style="font-size:14px;font-weight:700;margin-bottom:6px;color:var(--amber)">Tech Switcher</h4>
+      <p style="font-size:13px;margin:0;">Software engineer who understood systems deeply. Could design an architecture but couldn't frame a product problem cleanly.</p>
+    </div>
+    <div class="card">
+      <h4 style="font-size:14px;font-weight:700;margin-bottom:6px;color:var(--green)">MBA/Strategy Transitioner</h4>
+      <p style="font-size:13px;margin:0;">From consulting or business analysis. Thought in frameworks but lacked the instinctive product sense that interviewers probe for.</p>
+    </div>
+    <div class="card">
+      <h4 style="font-size:14px;font-weight:700;margin-bottom:6px;">All three shared one problem</h4>
+      <p style="font-size:13px;margin:0;">They could not accurately assess where they stood. The feedback loop was effectively broken across all personas, backgrounds, and preparation budgets.</p>
+    </div>
+  </div>
+
+  <h3>The Broken Journey</h3>
+  <p>The current preparation path: free content binge → paid bootcamp (₹25,000–1,00,000) → preparation limbo (solo practice, no feedback) → application wave → the black hole (ghosted, vague rejection, zero actionable feedback). The cycle repeats. Same inputs, same result, no learning.</p>
+
+  <div class="callout red">
+    <strong>Key finding:</strong> 28 of 38 respondents had applied to PM roles. Of these, exactly 1 received specific, actionable feedback. At top companies, a failed interview triggers a 12-month cooldown. The cost of applying too early is permanent.
+  </div>
+</section>
+
+<!-- SECTION 2: PROBLEM -->
+<section id="problem">
+  <div class="section-label">Section 02</div>
+  <h2>Problem Prioritization</h2>
+
+  <p>We identified five major pain points from the research and evaluated each on four dimensions: impact on outcome, frequency, severity, and business viability.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Pain Point</th><th>Impact</th><th>Frequency</th><th>Severity</th><th>Viability</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>No personalized feedback</strong></td>
+          <td>Very High</td>
+          <td>84% affected</td>
+          <td>Acute — compounds over time</td>
+          <td>AI-feasible at MVP</td>
+        </tr>
+        <tr>
+          <td>Archetype clarity gap</td>
+          <td>High</td>
+          <td>50% lack clarity</td>
+          <td>Months of wasted preparation</td>
+          <td>Quiz-based diagnostic</td>
+        </tr>
+        <tr>
+          <td>Information overload</td>
+          <td>Moderate</td>
+          <td>29% named as top pain</td>
+          <td>Resolves once committed to path</td>
+          <td>Low defensibility</td>
+        </tr>
+        <tr>
+          <td>Can't assess JD readiness</td>
+          <td>High</td>
+          <td>96% get no signal</td>
+          <td>Burns application opportunities</td>
+          <td>JD parsing feasible</td>
+        </tr>
+        <tr>
+          <td>No structured practice</td>
+          <td>Moderate</td>
+          <td>60% practice solo</td>
+          <td>Low practice quality</td>
+          <td>Content-intensive</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <strong>MVP Focus:</strong> The intersection of the top two problems — personalized, dimension-level feedback on PM interview skills, tailored to the user's archetype. The feedback gap scored highest on every dimension and is the natural wedge into a broader platform.
+  </div>
+
+  <p>What was explicitly deprioritized: community (low defensibility), mentorship marketplace (supply-constrained), resume optimizer (downstream of the core problem), and another course (market saturated). What was missing was not more content but a way to measure whether the content was working.</p>
+</section>
+
+<!-- SECTION 3: SOLUTION -->
+<section id="solution">
+  <div class="section-label">Section 03</div>
+  <h2>Proposed Solution</h2>
+
+  <p>PMPathfinder is an answer to one question: <em>Am I ready?</em> The product works in three stages: figure out who you are, give you honest practice with specific feedback, then tell you — with evidence — whether you're ready for a particular role.</p>
+
+  <h3>Stage 1: Diagnostic & Archetype Assignment</h3>
+  <p>A ten-minute, 12-question scenario quiz. Each question presents a realistic PM situation. Each response carries hidden weights for three PM archetypes. After 12 questions, the system calculates a percentage match and assigns a primary archetype — the starting point for all personalized content downstream.</p>
+
+  <div class="arch-grid">
+    <div class="arch-card consumer">
+      <h4>Consumer PM</h4>
+      <p>Emphasizes user behavior, retention loops, growth mechanics, behavioral segmentation, and engagement metrics.</p>
+    </div>
+    <div class="arch-card b2b">
+      <h4>B2B PM</h4>
+      <p>Focuses on enterprise revenue, multi-stakeholder management, buyer/user splits, and go-to-market strategy.</p>
+    </div>
+    <div class="arch-card tech">
+      <h4>Technical PM</h4>
+      <p>Gravitates toward system design, architecture tradeoffs, engineering communication, and data infrastructure.</p>
+    </div>
+  </div>
+
+  <h3>Stage 2: Adaptive AI-Scored Practice — 6 PM Dimensions</h3>
+  <div class="dim-grid">
+    <div class="dim-card">
+      <h4>Problem Framing</h4>
+      <p>Can you define what you're solving before jumping to solutions?</p>
+    </div>
+    <div class="dim-card">
+      <h4>User Empathy</h4>
+      <p>Do you understand users by behavior, not demographics?</p>
+    </div>
+    <div class="dim-card">
+      <h4>Structured Thinking</h4>
+      <p>Is your answer logically organized, not a brain dump?</p>
+    </div>
+    <div class="dim-card">
+      <h4>Prioritization</h4>
+      <p>Can you make hard tradeoffs and name what you're giving up?</p>
+    </div>
+    <div class="dim-card">
+      <h4>Metrics Reasoning</h4>
+      <p>Can you define meaningful success metrics, not vanity metrics?</p>
+    </div>
+    <div class="dim-card">
+      <h4>Communication</h4>
+      <p>Is your answer clear, concise, and compelling to a senior interviewer?</p>
+    </div>
+  </div>
+
+  <h3>Scoring Calibration</h3>
+  <div class="score-band">
+    <div class="band" style="flex:3; background: #DC2626;">1–3 · Needs work</div>
+    <div class="band" style="flex:3; background: #D97706;">4–6 · Developing</div>
+    <div class="band" style="flex:4; background: #059669;">7–10 · Strong</div>
+  </div>
+  <p>Scoring was deliberately calibrated to resist inflation. 5 means "on track but not there yet." 7 means "genuinely strong." 9–10 means "would impress a senior PM interviewer." The rubric is encoded into the AI's system prompt — scoring is consistent whether you practice at 2am or 2pm. The AI evaluator is effectively a senior PM interviewer who never gets tired and always references the same rubric.</p>
+
+  <h3>Stage 3: Readiness Assessment</h3>
+  <p>Once a user has completed at least three practice sessions, they can paste any real job description and get a gap analysis. The system parses the JD, determines archetype, seniority level, and specific skills required, then maps them to the six PM dimensions calibrated by seniority. An APM role might need a 5 in metrics reasoning; a Senior PM role at a fintech might need an 8.</p>
+
+  <div class="card-grid">
+    <div class="card" style="border-color:var(--green); background:var(--green-soft);">
+      <h4 style="font-size:14px;font-weight:700;margin-bottom:4px;color:var(--green)">✓ Ready</h4>
+      <p style="font-size:12px;margin:0;color:var(--ink3)">All dimensions at or above the required level for this specific role.</p>
+    </div>
+    <div class="card" style="border-color:var(--amber); background:var(--amber-soft);">
+      <h4 style="font-size:14px;font-weight:700;margin-bottom:4px;color:var(--amber)">⚠ Almost</h4>
+      <p style="font-size:12px;margin:0;color:var(--ink3)">1–2 dimensions below required level. Specific improvement path provided.</p>
+    </div>
+    <div class="card">
+      <h4 style="font-size:14px;font-weight:700;margin-bottom:4px;color:var(--accent)">Ready with Caveats</h4>
+      <p style="font-size:12px;margin:0;color:var(--ink3)">PM skills pass but JD requires hard skills the platform can't test.</p>
+    </div>
+    <div class="card" style="border-color:var(--red); background:var(--red-soft);">
+      <h4 style="font-size:14px;font-weight:700;margin-bottom:4px;color:var(--red)">✗ Not Yet</h4>
+      <p style="font-size:12px;margin:0;color:var(--ink3)">3+ dimensions below. Clear path provided on what to fix and estimated time.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4: FEATURES -->
+<section id="features">
+  <div class="section-label">Section 04</div>
+  <h2>Feature Prioritization (MoSCoW)</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Priority</th><th>Feature</th><th>Rationale</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge must">MUST</span></td><td>User onboarding with background collection</td><td>Feeds archetype assignment and scoring calibration</td></tr>
+        <tr><td><span class="badge must">MUST</span></td><td>Archetype diagnostic quiz (12 scenarios)</td><td>Core personalization engine; everything downstream depends on it</td></tr>
+        <tr><td><span class="badge must">MUST</span></td><td>14-module learning system with prerequisite chains</td><td>5 foundational + 3 per archetype (Consumer, B2B, Technical)</td></tr>
+        <tr><td><span class="badge must">MUST</span></td><td>Adaptive question selection engine</td><td>Targets weakest 2 dimensions; filters mastered questions (7+ score)</td></tr>
+        <tr><td><span class="badge must">MUST</span></td><td>AI-powered scoring with per-dimension feedback</td><td>The core value proposition — calibrated, specific, honest</td></tr>
+        <tr><td><span class="badge must">MUST</span></td><td>Dashboard with dimension scores + progress tracking</td><td>Visualizes readiness trajectory over time</td></tr>
+        <tr><td><span class="badge must">MUST</span></td><td>JD readiness check</td><td>Connects abstract scores to real application decisions</td></tr>
+        <tr><td><span class="badge should">SHOULD</span></td><td>Voice input for practice answers</td><td>Tests communication clarity at 1.5x weight (live interview simulation)</td></tr>
+        <tr><td><span class="badge should">SHOULD</span></td><td>Weighted recency scoring model</td><td>Recent improvement matters more than old scores</td></tr>
+        <tr><td><span class="badge could">COULD</span></td><td>Freemium paywall (3 free AI scores, then ₹499/mo)</td><td>Pricing designed but not yet implemented</td></tr>
+        <tr><td><span class="badge could">COULD</span></td><td>Peer practice matching</td><td>Deferred — coordination friction too high for MVP</td></tr>
+        <tr><td><span class="badge wont">WON'T</span></td><td>Course marketplace, mentor matching, resume builder, community forum</td><td>Supply-constrained, low defensibility, or distracts from core</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- SECTION 5: ARCHITECTURE -->
+<section id="architecture">
+  <div class="section-label">Section 05</div>
+  <h2>Architecture & Data Model</h2>
+
+  <h3>Question Selection Engine</h3>
+  <p>A five-slot constraint system fills each practice session in deliberate order. Relevance scoring uses an inverse-gap formula: relevance = sum of (10 − user score) for each dimension tested. A question testing Problem Framing (user score: 3) and Metrics Reasoning (score: 8) gets a relevance score of 9. Same question for a user scoring 8 on both gets only 4. The engine naturally gravitates toward weaknesses without any manual configuration.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Slot</th><th>Type</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>Slot 1</td><td>MCQ warm-up</td><td>Calibration — reduces anxiety, consistent baseline</td></tr>
+        <tr><td>Slot 2</td><td>Highest-relevance open-ended</td><td>Targets the weakest dimension first</td></tr>
+        <tr><td>Slot 3</td><td>Second-weakest dimension question</td><td>Maintains focus on the true gaps</td></tr>
+        <tr><td>Slot 4</td><td>Mid-relevance question</td><td>Pacing — five consecutive hard questions is demoralizing</td></tr>
+        <tr><td>Slot 5</td><td>Stretch question</td><td>Hardest remaining; reveals the growth edge</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Data Model — Four Tables</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4 style="font-size:13px;font-weight:700;margin-bottom:4px;font-family: 'Sora', system-ui, sans-serif;">profiles</h4>
+      <p style="font-size:12px;margin:0;color:var(--ink3);">User identity, archetype assignment, onboarding data, experience background</p>
+    </div>
+    <div class="card">
+      <h4 style="font-size:13px;font-weight:700;margin-bottom:4px;font-family: 'Sora', system-ui, sans-serif;">practice_sessions</h4>
+      <p style="font-size:12px;margin:0;color:var(--ink3);">Every scored answer with per-dimension scores, feedback text, and timestamp</p>
+    </div>
+    <div class="card">
+      <h4 style="font-size:13px;font-weight:700;margin-bottom:4px;font-family: 'Sora', system-ui, sans-serif;">module_progress</h4>
+      <p style="font-size:12px;margin:0;color:var(--ink3);">Section-level read tracking, completion status, prerequisite enforcement</p>
+    </div>
+    <div class="card">
+      <h4 style="font-size:13px;font-weight:700;margin-bottom:4px;font-family: 'Sora', system-ui, sans-serif;">readiness_checks</h4>
+      <p style="font-size:12px;margin:0;color:var(--ink3);">JD text, parsed requirements, gap analysis, recommendation (Ready/Almost/Not Yet)</p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Core design principle:</strong> Every design decision was made with one principle: be honest. The scoring doesn't inflate. The readiness check doesn't sugarcoat. The feedback tells you what was wrong and how to fix it. In a market saturated with courses that promise transformation and deliver content, the most valuable thing PMPathfinder offers is the truth about where you stand.
+  </div>
+</section>
+
+<!-- SECTION 6: ROADMAP -->
+<section id="roadmap">
+  <div class="section-label">Section 06</div>
+  <h2>Build Roadmap</h2>
+
+  <div class="phase">
+    <div class="phase-card p1">
+      <div class="phase-label">Phase 1 — MVP (4–6 days)</div>
+      <h4>Diagnostic to Readiness, with AI Scoring</h4>
+      <p>Full user journey from onboarding through archetype quiz, adaptive practice sessions, AI-scored feedback, and JD readiness check. Deployed on Vercel. Live at pmpathfinder-psi.vercel.app.</p>
+    </div>
+    <div class="phase-card p2">
+      <div class="phase-label">Phase 2 — Iteration (4 weeks post-launch)</div>
+      <h4>Paywall, Expanded Question Banks, Notifications</h4>
+      <p>Freemium model (3 free AI scores, then ₹499/month), expanded archetype-specific question banks, email-based progress nudges, mobile optimization.</p>
+    </div>
+    <div class="phase-card p3">
+      <div class="phase-label">Phase 3 — Scale</div>
+      <h4>Peer Practice, Mentors, B2B Partnerships</h4>
+      <p>Peer practice matching, mentor marketplace integration, company-specific preparation paths (Swiggy APM, Razorpay PM, Meesho PM), and B2B partnerships with PM bootcamps.</p>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="doc-footer">
+  <strong>PMPathfinder — PM Readiness Assessment Platform</strong> · Rethink Systems · Group 4 · Week 6 · 2026
+</div>
+
+<script>
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-inner a');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const a = document.querySelector(`.nav-inner a[href="#${entry.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { threshold: 0.2, rootMargin: '-68px 0px -60% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

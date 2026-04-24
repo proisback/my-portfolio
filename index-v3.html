@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#F5EFE1">
+  <title>Prateek Mehta | Product & AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles-v3.css">
+  <script src="script.js" defer></script>
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+
+  <!-- Email-gate first-paint rules: hide portfolio until gate is passed.
+       The inline <script> below reads localStorage and adds .gate-skip to
+       <html> before the body paints, so returning visitors never see the gate. -->
+  <style id="gate-boot-style">
+    html:not(.gate-skip):not(.gate-done) .nav,
+    html:not(.gate-skip):not(.gate-done) main,
+    html:not(.gate-skip):not(.gate-done) .footer { display: none !important; }
+    html.gate-skip #email-gate { display: none !important; }
+  </style>
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem('portfolio_gate_passed') === '1') {
+          document.documentElement.classList.add('gate-skip');
+        }
+      } catch (e) { /* storage blocked — show gate, that's fine */ }
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- ===== Email Gate (shown to first-time visitors only) ===== -->
+  <div class="email-gate" id="email-gate" role="dialog" aria-modal="true" aria-labelledby="gate-name">
+    <span class="gate-doodle gate-doodle--1" aria-hidden="true">✦</span>
+    <span class="gate-doodle gate-doodle--2" aria-hidden="true">✶</span>
+    <span class="gate-doodle gate-doodle--3" aria-hidden="true">✦</span>
+    <span class="gate-doodle gate-doodle--4" aria-hidden="true">✶</span>
+    <div class="gate-card">
+      <span class="gate-eyebrow">Welcome</span>
+      <div class="polaroid gate-polaroid">
+        <div class="washi"></div>
+        <div class="polaroid-art">
+          <img
+            src="images/gate-avatar.png"
+            alt="Hand-drawn illustration of Prateek Mehta waving next to a small marigold AI robot sidekick, also waving."
+            class="polaroid-img"
+            width="400" height="400"
+            loading="eager"
+            decoding="async"
+          />
+        </div>
+        <p class="polaroid-caption">the PM &amp; his AI sidekick.</p>
+        <div class="washi washi--corner"></div>
+      </div>
+      <h1 class="gate-name" id="gate-name">Prateek Mehta</h1>
+      <p class="gate-tagline">Built with soul. Powered by intelligence.</p>
+      <form class="gate-form" id="gate-form" novalidate>
+        <label for="gate-email" class="visually-hidden" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Email address</label>
+        <input
+          type="email"
+          id="gate-email"
+          name="email"
+          class="gate-input"
+          placeholder="Enter your email address"
+          autocomplete="email"
+          required
+          aria-describedby="gate-error"
+          aria-invalid="false"
+        >
+        <p class="gate-error" id="gate-error" role="alert" hidden></p>
+        <button type="submit" class="gate-btn" id="gate-submit">View My Portfolio</button>
+        <p class="gate-note">Your email is safe. No spam, ever.</p>
+      </form>
+
+      <div class="gate-success" id="gate-success" aria-hidden="true">
+        <div class="gate-success-check" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <p class="gate-success-text">Welcome!</p>
+        <p class="gate-success-sub">Opening the portfolio&hellip;</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Navigation ===== -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="#hero" class="nav-logo" aria-label="pm — Prateek Mehta / Product Manager">
+        <span class="nav-logo-mark">pm</span>
+        <span class="nav-logo-expand" aria-hidden="true">Prateek Mehta &middot; Product Manager</span>
+      </a>
+      <div class="nav-links" id="nav-links">
+        <a href="#projects">Builds</a>
+        <a href="#case-studies">Case Studies</a>
+        <a href="#timeline">Timeline</a>
+        <a href="#philosophy">Philosophy</a>
+        <a href="#story">About</a>
+      </div>
+      <a href="#contact" class="nav-cta">Get in Touch</a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- ===== Hero ===== -->
+    <section class="hero" id="hero">
+      <span class="hero-doodle hero-doodle--1" aria-hidden="true">✦</span>
+      <span class="hero-doodle hero-doodle--2" aria-hidden="true">✶</span>
+      <span class="hero-doodle hero-doodle--3" aria-hidden="true">✦</span>
+      <div class="hero-inner">
+        <div class="text-col">
+          <p class="greeting">AI-Native Product Manager &middot; Mumbai</p>
+          <h1 class="name">Prateek Mehta</h1>
+          <p class="intro">
+            I ship <span class="ink-highlight">AI-first products</span>. 6 shipped in 2026, including a women-only friendship app I'm co-founding. Eight years before that, I led process transformation in financial services across 20+ countries.
+          </p>
+          <p class="availability">
+            <span class="availability-dot" aria-hidden="true"></span>
+            Co-founding galpal &middot; open to PM roles
+          </p>
+          <div class="btn-group">
+            <a href="#contact" class="btn btn-primary">Get in Touch</a>
+            <a href="Prateek-Mehta-Product-Resume.pdf" target="_blank" rel="noopener noreferrer" class="btn btn-outline">View Resume</a>
+            <a href="https://www.linkedin.com/in/prateek-mehta-xlri/" target="_blank" rel="noopener noreferrer" class="btn-icon-circle btn-icon-circle--hero" aria-label="LinkedIn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="photo-col">
+          <div class="polaroid polaroid--illustration">
+            <div class="washi"></div>
+            <div class="polaroid-art">
+              <img
+                src="images/hero-comic.png"
+                alt="Four-panel comic of Prateek's career: testing and finding bugs, untangling systems as a BA, discovering AI, shipping AI-first products with an AI sidekick."
+                class="polaroid-img"
+                width="400" height="400"
+                loading="eager"
+                fetchpriority="high"
+                decoding="async"
+              />
+            </div>
+            <p class="polaroid-caption">messy systems, clean shipping.</p>
+            <div class="washi washi--corner"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Stats Bar ===== -->
+    <section class="stats-bar">
+      <div class="stats-inner">
+        <div class="stat">
+          <span class="stat-value">8+</span>
+          <span class="stat-label">Years in Business Operations</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">20+</span>
+          <span class="stat-label">Countries Impacted</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">~30%</span>
+          <span class="stat-label">Efficiency Gains Delivered</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">6</span>
+          <span class="stat-label">AI Products Shipped in 2026</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== AI Builds / Side Projects ===== -->
+    <section class="section section--ivory" id="projects">
+      <div class="section-inner">
+        <p class="section-label">What I Build</p>
+        <h2 class="section-title">AI Builds &amp; Side Projects</h2>
+
+        <!-- Project 6 -->
+        <div class="card expandable-card">
+          <div class="card-header" role="button" tabindex="0" aria-expanded="false">
+            <div class="card-meta">
+              <span class="card-badge card-badge--live">Live Product</span>
+              <span class="card-year">Apr 2026 &middot; Group Project</span>
+            </div>
+            <h3 class="card-name">galpals: Women-Only Friendship App for Bangalore</h3>
+            <p class="card-summary">A hand-verified PWA matching Bangalore-based women for genuine friendship. No feeds, no dating mechanics, no engagement traps. Built with Next.js, Supabase, and a brand system designed to take women's time seriously.</p>
+            <div class="card-tags">
+              <span class="card-tag">Safety-First Design</span>
+              <span class="card-tag">Scope Discipline</span>
+              <span class="card-tag">Systems Thinking</span>
+            </div>
+            <div class="card-link-row">
+              <a href="https://galpal.in/" target="_blank" rel="noopener noreferrer" class="card-link">Visit live site &#8599;</a>
+              <a href="PRDs/05_galpals_prd.html" target="_blank" rel="noopener noreferrer" class="card-link">Read the PRD &#8599;</a>
+            </div>
+            <span class="card-toggle-text">Read more</span>
+          </div>
+          <div class="card-body">
+            <div class="card-body-inner">
+              <div class="card-section">
+                <h4>The Problem</h4>
+                <p>Women relocating to a new city, or long-resident with a fraying social circle, have no good tool for finding real friends. Dating apps are the wrong context. Professional networks are the wrong intent. Interest-based communities solve for the group, not the individual. The gap is a surface that takes safety seriously, respects time, and gets out of the way once a connection is made.</p>
+              </div>
+              <div class="card-section">
+                <h4>The Product</h4>
+                <p>galpals is a matches-and-chats surface only. No feed, no groups, no stories, no games. Every new member completes a human-led video or phone verification call before seeing matches. Once inside, they see a small scored set of nearby women each week with a reason they would click.</p>
+                <p>Communication is intentionally low-friction and low-commitment: a wave with a preset reason or 100 characters of context. Mutual waves open a 1:1 chat. Max 3 lifetime waves to the same person. 30-day expiry. Nothing in the product tries to manufacture engagement.</p>
+              </div>
+              <div class="card-section">
+                <h4>Technical Scope</h4>
+                <p>Next.js 16 App Router, Supabase (Postgres, RLS, Realtime, Auth), Tailwind CSS v4, Framer Motion, VAPID push notifications, PWA with service worker. Matching algorithm scores on shared interests, looking-for overlap, neighborhood proximity, home state, city tenure, work situation, and personality compatibility. Weekly cron via Vercel scheduler.</p>
+              </div>
+              <div class="card-section">
+                <h4>Design Principles</h4>
+                <p>Second person always. 14-word sentence cap. No emoji in system copy. No em-dashes. Celebration language only for earned moments. Banned words include: journey, tribe, vibes, community, seamless, authentic, curated. Every decision traces back to one belief: the product should make it easier to find one real friend, not harder to leave the app.</p>
+              </div>
+              <div class="card-section">
+                <h4>What This Demonstrates</h4>
+                <p>End-to-end product thinking across brand, data model, API design, and UX. Scope discipline in a domain where feature creep is the norm. Safety-first design with real operational consequences: verification is manual and human-led by design. And the ability to hold a product vision steady against the pull of engagement mechanics that would undermine it.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 5 -->
+        <div class="card expandable-card">
+          <div class="card-header" role="button" tabindex="0" aria-expanded="false">
+            <div class="card-meta">
+              <span class="card-badge card-badge--live">Live Product</span>
+              <span class="card-year">Apr 2026 &middot; Individual Sprint</span>
+            </div>
+            <h3 class="card-name">Plan Karo Chalo: Group Trip Coordination Tool</h3>
+            <p class="card-summary">A link-based trip coordination tool that collapses weeks of WhatsApp chaos into minutes of structured decision-making. Built solo in 8 days after 132+ primary research data points.</p>
+            <div class="card-tags">
+              <span class="card-tag">Primary Research</span>
+              <span class="card-tag">Problem Framing</span>
+              <span class="card-tag">Zero-to-One Shipping</span>
+            </div>
+            <div class="card-link-row">
+              <a href="https://plankarochalo.vercel.app" target="_blank" rel="noopener noreferrer" class="card-link">Visit live site &#8599;</a>
+              <a href="PRDs/04_plankarochalo_prd.html" target="_blank" rel="noopener noreferrer" class="card-link">Read the PRD &#8599;</a>
+            </div>
+            <span class="card-toggle-text">Read more</span>
+          </div>
+          <div class="card-body">
+            <div class="card-body-inner">
+              <div class="card-section">
+                <h4>The Problem</h4>
+                <p>35% of planned group trips never happen. Not because people stop wanting to travel, because the coordination breaks down. Dates never get aligned. Destination debates go circular. One person absorbs all the cognitive load. The gap is not in booking tools. MakeMyTrip and Booking.com handle that. The gap is in the chaotic stretch between "let's go somewhere" and "everything's booked," a stretch that runs entirely through WhatsApp, Google Sheets, and one exhausted organizer.</p>
+              </div>
+              <div class="card-section">
+                <h4>Discovery</h4>
+                <p>132+ research data points: 27 interviews across structured conversations, qualitative retrospectives, and cross-group sessions, plus 105 survey responses. The finding that overturned the starting assumption: itinerary building is not the core pain. The trip dies much earlier. Date alignment was the #1 friction point for 80%+ of respondents. 35% of trips that never happened died specifically because dates could not be aligned.</p>
+              </div>
+              <div class="card-section">
+                <h4>The Solution</h4>
+                <p>A link-based coordination tool that guides groups through the pre-booking sequence of dates, budget, destination, and commitment, via a shared dashboard. No app download for members. The organizer creates a trip in 10 seconds, shares a link, and the tool handles the rest.</p>
+                <p>Key mechanics: tap-to-select calendar with auto-overlap calculation, anonymous budget range slider with group sweet spot, destination voting with shake-to-decide tiebreak, hold-to-confirm commitment checkpoint, and a nudge library with 6 tone variants and dynamic member counts. Every feature traces back to a specific failure mode from the research.</p>
+              </div>
+              <div class="card-section">
+                <h4>Live Metrics (from production)</h4>
+                <p>91.7% member activation rate. 85.2% 48-hour response rate. 1.5 days average time to lock dates against a 5-day target. 54.1% return visit rate against a 30% target.</p>
+              </div>
+              <div class="card-section">
+                <h4>What This Demonstrates</h4>
+                <p>Primary research that changed the product direction before a line of code was written. Problem framing that eliminated four feature categories (expense splitting, booking integration, in-app chat, AI recommendations) on research grounds rather than scope grounds. And a clear architectural boundary: Plan Karo Chalo owns the coordination layer. Everything else belongs elsewhere.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="card expandable-card">
+          <div class="card-header" role="button" tabindex="0" aria-expanded="false">
+            <div class="card-meta">
+              <span class="card-badge card-badge--live">Live Prototype</span>
+              <span class="card-year">Mar 2026 &middot; Group Project</span>
+            </div>
+            <h3 class="card-name">Signal: Intelligence Layer for Founder CRM</h3>
+            <p class="card-summary">A passive prioritization layer that reads a founder's existing communication channels, extracts open commitments, detects deal momentum decay, and surfaces a ranked daily action list. No manual logging.</p>
+            <div class="card-tags">
+              <span class="card-tag">Research-Led Reframing</span>
+              <span class="card-tag">Assumption Testing</span>
+              <span class="card-tag">Architectural Thinking</span>
+            </div>
+            <div class="card-link-row">
+              <a href="https://signalaicrm.lovable.app" target="_blank" rel="noopener noreferrer" class="card-link">Visit live prototype &#8599;</a>
+              <a href="PRDs/02_signal_crm_prd.html" target="_blank" rel="noopener noreferrer" class="card-link">Read the PRD &#8599;</a>
+            </div>
+            <span class="card-toggle-text">Read more</span>
+          </div>
+          <div class="card-body">
+            <div class="card-body-inner">
+              <div class="card-section">
+                <h4>The Problem</h4>
+                <p>The $73.4B CRM market is built for professional salespeople. It systematically underserves early-stage B2B founders for whom sales is one of many simultaneous responsibilities. Through six in-depth founder interviews, we discovered that the core failure is not that founders lack data. No system reads that data and tells the founder what to do next. Deals die not from rejection, but from silence.</p>
+              </div>
+              <div class="card-section">
+                <h4>My Contribution</h4>
+                <p>I co-authored the full problem-space and solution-space PRD. The research phase included six structured 60-minute founder interviews plus secondary analysis of 80+ sources on CRM adoption failure.</p>
+                <p>The most significant finding, and the one that reshaped the entire product direction, was that pipeline visibility is not the answer. One founder achieved complete visibility through four years of enforced HubSpot use and still lost deals. The real need is active prioritization: which conversation, why now, what context.</p>
+              </div>
+              <div class="card-section">
+                <h4>The Solution</h4>
+                <p>Signal reads a founder's existing email, calendar, WhatsApp Business, LinkedIn, and Zoom data in the background. It extracts open commitments, detects deal momentum decay, and surfaces a ranked daily action list. The founder sentence: "It reads my inbox and tells me who I'm about to lose."</p>
+                <p>The architecture includes a 4-state deal state machine, rule-based commitment extraction with zero AI hallucination risk, cross-channel decay calculation, and a daily brief delivering 3–5 ranked deal cards with verbatim evidence.</p>
+              </div>
+              <div class="card-section">
+                <h4>What This Demonstrates</h4>
+                <p>Research-led problem framing that overturned the team's own starting assumptions. Solution evaluation that hard-eliminates options on legal and architectural grounds. And a product philosophy that draws a permanent line: Signal surfaces context; the founder writes every message.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="more-builds" id="more-builds" hidden>
+        <!-- Project 4 -->
+        <div class="card expandable-card">
+          <div class="card-header" role="button" tabindex="0" aria-expanded="false">
+            <div class="card-meta">
+              <span class="card-badge card-badge--live">Live Product</span>
+              <span class="card-year">Mar 2026</span>
+            </div>
+            <h3 class="card-name">PMPathfinder: Career Navigation for Aspiring PMs</h3>
+            <p class="card-summary">A three-stage career navigation platform for aspiring PMs: archetype diagnostic, adaptive AI-scored practice across 6 PM dimensions, and gap analysis against any real job description. Answers the one question every aspiring PM asks &mdash; <em>am I ready?</em></p>
+            <div class="card-tags">
+              <span class="card-tag">AI-Scored Practice</span>
+              <span class="card-tag">Adaptive Engine</span>
+              <span class="card-tag">Honest Scoring</span>
+            </div>
+            <div class="card-link-row">
+              <a href="https://pmpathfinder-psi.vercel.app/" target="_blank" rel="noopener noreferrer" class="card-link">Visit live site &#8599;</a>
+              <a href="https://pm-readiness-survey.vercel.app" target="_blank" rel="noopener noreferrer" class="card-link">Research survey &#8599;</a>
+              <a href="PRDs/03_pmpathfinder_prd.html" target="_blank" rel="noopener noreferrer" class="card-link">Read the PRD &#8599;</a>
+            </div>
+            <span class="card-toggle-text">Read more</span>
+          </div>
+          <div class="card-body">
+            <div class="card-body-inner">
+              <div class="card-section">
+                <h4>The Problem</h4>
+                <p>PM preparation has no readiness signal. Unlike engineering (LeetCode) or consulting (case math), aspiring PMs can complete every course on the internet and still have no idea whether they would pass a real interview. 84% of aspiring PMs receive no or vague feedback. Only 1 in 38 gets specific, actionable feedback regularly. The cost of applying too early is permanent &mdash; top companies trigger a 12-month cooldown on failed interviews.</p>
+              </div>
+              <div class="card-section">
+                <h4>Discovery</h4>
+                <p>A 38-person survey and 6 interviews revealed not people who lacked competence, but people who lacked signal. Consultants with 7+ years, engineers who had shipped at scale, designers who had led UX for millions of users &mdash; all stuck in preparation limbo, spending lakhs on courses with no way to measure progress. Three personas emerged: Domain Expert, Tech Switcher, MBA/Strategy Transitioner. All three shared one problem: they could not accurately assess where they stood.</p>
+              </div>
+              <div class="card-section">
+                <h4>What I Built</h4>
+                <p>A three-stage platform. <strong>Stage 1</strong>: a 10-minute, 12-question scenario quiz assigns you a PM archetype &mdash; Consumer, B2B, or Technical. <strong>Stage 2</strong>: adaptive AI-scored practice across six PM dimensions (Problem Framing, User Empathy, Structured Thinking, Prioritization, Metrics Reasoning, Communication). A five-slot question engine (MCQ warm-up &rarr; weakest dimension &rarr; second-weakest &rarr; mid &rarr; stretch) targets your gaps without manual configuration. <strong>Stage 3</strong>: paste any real job description and get a gap analysis &mdash; Ready / Almost / Not Yet &mdash; with a specific improvement path and estimated time.</p>
+              </div>
+              <div class="card-section">
+                <h4>What This Demonstrates</h4>
+                <p>Product discovery rigor &mdash; 38-person survey &rarr; three personas &rarr; MoSCoW prioritization &rarr; seven Must-haves shipped. AI treated as a calibrated feature, not a wrapper: the AI evaluator references the same rubric at 2am and 2pm, and scoring is deliberately tuned to resist inflation (5 = on track, 7 = genuinely strong, 9&ndash;10 = would impress a senior PM interviewer). In a market saturated with courses that promise transformation and deliver content, PMPathfinder's offer is narrower and harder: the truth about where you stand.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 3 -->
+        <div class="card expandable-card">
+          <div class="card-header" role="button" tabindex="0" aria-expanded="false">
+            <div class="card-meta">
+              <span class="card-badge card-badge--live">Live Product</span>
+              <span class="card-year">Mar 2026</span>
+            </div>
+            <h3 class="card-name">Bhojan: Weekly Meal Planner for Indian Families</h3>
+            <p class="card-summary">A suggestion-first meal planner for vegetarian Indian families. Auto-generates weekly plans with 75+ meals, festival calendar, grocery lists, and WhatsApp sharing. Built in 4 days with zero prior coding experience.</p>
+            <div class="card-tags">
+              <span class="card-tag">User Research Pivot</span>
+              <span class="card-tag">Scope Discipline</span>
+              <span class="card-tag">Shipping as Non-Engineer</span>
+            </div>
+            <div class="card-link-row">
+              <a href="https://bhojan-beta.vercel.app" target="_blank" rel="noopener noreferrer" class="card-link">Visit live site &#8599;</a>
+            </div>
+            <span class="card-toggle-text">Read more</span>
+          </div>
+          <div class="card-body">
+            <div class="card-body-inner">
+              <div class="card-section">
+                <h4>The Problem</h4>
+                <p>In a joint family of six, the question "aaj kya banayein?" consumed significant mental energy every single day. This was not a five-minute question. It was a cascading decision involving ingredient availability, yesterday's meals, dietary restrictions, baby food needs, cooking time, seasonal ingredients, and the festival calendar. That is 1,095 meal decisions annually.</p>
+              </div>
+              <div class="card-section">
+                <h4>The Pivotal Insight</h4>
+                <p>The first prototype was a traditional weekly planner, a blank 7x3 grid. During a user interview, one piece of feedback changed everything: "I don't want to think about what to make next week. Just tell me what to make, and I'll say yes or no." This shifted the entire interaction model from planner-first to suggestion-first. The app was recreating the problem it claimed to solve.</p>
+              </div>
+              <div class="card-section">
+                <h4>What I Built</h4>
+                <p>A fully functional web app with 75+ pre-loaded vegetarian Indian meals, auto-suggest engine with seasonal, effort, and preference filters, family profiles, festival and fasting calendar, smart grocery list with WhatsApp sharing, health analytics, Google Auth, Supabase backend with row-level security, and PWA support. Total infrastructure cost: $0.</p>
+              </div>
+              <div class="card-section">
+                <h4>Honest Assessment</h4>
+                <p>The suggestion engine is a smart randomizer with filters, not machine learning. 75 meals is enough for 2–3 weeks before repetition becomes noticeable. These limitations are documented because transparency about what is not built is as important as showcasing what works.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 1 -->
+        <div class="card expandable-card">
+          <div class="card-header" role="button" tabindex="0" aria-expanded="false">
+            <div class="card-meta">
+              <span class="card-badge card-badge--live">Live Prototype</span>
+              <span class="card-year">Feb 2026 &middot; Group Project</span>
+            </div>
+            <h3 class="card-name">StoreOps Peak-Hour Decision Support</h3>
+            <p class="card-subtitle">Blinkit</p>
+            <p class="card-summary">Real-time module surfacing live picker status and one-tap interventions during peak hours. Designed to be comprehensible by a stressed store manager in under five seconds.</p>
+            <div class="card-tags">
+              <span class="card-tag">Problem Discovery</span>
+              <span class="card-tag">Solution Evaluation</span>
+              <span class="card-tag">Guardrail Design</span>
+            </div>
+            <div class="card-link-row">
+              <a href="https://blinkit-alert-buddy.lovable.app" target="_blank" rel="noopener noreferrer" class="card-link">Visit live prototype &#8599;</a>
+              <a href="PRDs/01_storeops_prd.html" target="_blank" rel="noopener noreferrer" class="card-link">Read the PRD &#8599;</a>
+            </div>
+            <span class="card-toggle-text">Read more</span>
+          </div>
+          <div class="card-body">
+            <div class="card-body-inner">
+              <div class="card-section">
+                <h4>The Problem</h4>
+                <p>Blinkit's highest-volume dark stores were losing an estimated &#8377;3.16 crore in annual contribution margin per store because Store Managers had zero real-time visibility into picker activity during the 6–10 PM peak window, which drives up to 50% of daily demand. The data existed centrally, but the people with authority to act on the floor could not access it. This was not a data problem. It was a data-routing problem.</p>
+              </div>
+              <div class="card-section">
+                <h4>My Contribution</h4>
+                <p>I co-authored the full PRD as part of a 4-person PM squad. The discovery phase drew on 392 AmbitionBox reviews, 11 Reddit first-person accounts, ground journalism, and a primary interview with a dark store manager. We identified the core paradox: the franchise owner outside the store sees real-time picker metrics; the employed Store Manager on the floor sees nothing.</p>
+                <p>I contributed to persona development, solution evaluation across three options evaluated by temporal intervention point, and the feature specification using MoSCoW prioritization.</p>
+              </div>
+              <div class="card-section">
+                <h4>The Solution</h4>
+                <p>A real-time StoreOps module extension surfacing live picker status, automated floor alerts, and one-tap interventions during peak hours. No new hardware. No new data. It routes existing Kafka and Newland scanner event data to the SM's device.</p>
+                <p>Three design principles governed every decision: action-oriented design (alerts must be actionable, not informational), stress-proof clarity (zero training at peak), and zero context switching (extend StoreOps, do not build a separate app).</p>
+              </div>
+              <div class="card-section">
+                <h4>What This Demonstrates</h4>
+                <p>Problem framing rooted in primary and secondary research, not assumptions. Solution evaluation based on temporal intervention logic, asking not which is easiest to build but which intervenes at the moment a decision can still change the outcome. Guardrail design that anticipates iatrogenic risk. And a North Star metric tied directly to business impact.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+
+        <button class="more-builds-toggle" id="more-builds-toggle" aria-expanded="false" aria-controls="more-builds">
+          <span class="more-builds-toggle-text">Show 3 more builds</span>
+          <span class="more-builds-toggle-icon" aria-hidden="true">+</span>
+        </button>
+
+      </div>
+    </section>
+
+    <!-- ===== Case Studies ===== -->
+    <section class="section section--cream" id="case-studies">
+      <div class="section-inner">
+        <p class="section-label">Professional Work</p>
+        <h2 class="section-title">Case Studies</h2>
+
+        <!-- Case Study 1 -->
+        <div class="card expandable-card">
+          <div class="card-header" role="button" tabindex="0" aria-expanded="false">
+            <div class="card-meta">
+              <span class="card-badge">Marsh McLennan</span>
+              <span class="card-year">2025</span>
+            </div>
+            <h3 class="card-name">Redesigning Year-End Premium Adjustment Across 5 EU Countries</h3>
+            <p class="card-summary">Mapped AS-IS workflows across five EU countries, found the common backbone, and built a harmonization framework that balanced standardization with the local variation that actually mattered.</p>
+            <div class="card-metrics">
+              <div class="card-metric">
+                <span class="card-metric-value">~30%</span>
+                <span class="card-metric-label">efficiency improvement</span>
+              </div>
+            </div>
+            <span class="card-toggle-text">Read case study</span>
+          </div>
+          <div class="card-body">
+            <div class="card-body-inner">
+              <div class="card-section">
+                <h4>The Problem</h4>
+                <p>The Year-End Premium Adjustment process ran differently across five EU countries. Each market had its own workarounds and pain points, no shared workflow, and high-volume time-sensitive adjustments that left little room for inefficiency or error.</p>
+              </div>
+              <div class="card-section">
+                <h4>Discovery</h4>
+                <p>I mapped the AS-IS workflows across all five countries to understand where the variations existed and why. Some were driven by local regulation. Others were legacy habits no one had questioned. I spoke with operations teams in each market to separate what was actually slowing them down from what leadership assumed the problem was.</p>
+              </div>
+              <div class="card-section">
+                <h4>Approach</h4>
+                <p>Rather than forcing one workflow onto every country, I identified the common process backbone and isolated the variations that were genuinely necessary. Standardization where it created efficiency. Flexibility where regulation required it. Then I aligned stakeholders across five countries with different priorities, different leadership styles, and different appetite for change.</p>
+              </div>
+              <div class="card-section">
+                <h4>Outcome</h4>
+                <p>Roughly 30% efficiency improvement across the five markets. Beyond the number, the bigger win was a repeatable framework for how the EU team approaches process harmonization, a model they can apply to future workflows.</p>
+              </div>
+              <div class="card-section">
+                <h4>What I Learned</h4>
+                <p>Standardization is not about making everything identical. It is about finding the right level of consistency. The hardest part was not the process design. It was getting five country leads to agree on what good looks like. That is a stakeholder alignment problem, not a workflow problem.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Case Study 2 -->
+        <div class="card expandable-card">
+          <div class="card-header" role="button" tabindex="0" aria-expanded="false">
+            <div class="card-meta">
+              <span class="card-badge">Standard Chartered GBS</span>
+              <span class="card-year">2023–2025</span>
+            </div>
+            <h3 class="card-name">Automating Client Communication Workflows in Global Banking</h3>
+            <p class="card-summary">Led discovery, requirements definition, and automation deployment across CDD, Servicing and Transactions operations in the top 5 global markets.</p>
+            <div class="card-metrics">
+              <div class="card-metric">
+                <span class="card-metric-value">30 HC</span>
+                <span class="card-metric-label">manual work reduced</span>
+              </div>
+            </div>
+            <span class="card-toggle-text">Read case study</span>
+          </div>
+          <div class="card-body">
+            <div class="card-body-inner">
+              <div class="card-section">
+                <h4>The Problem</h4>
+                <p>Client communication workflows across global banking operations were heavily manual. Teams spent significant time on repetitive low-value tasks that created bottlenecks, delayed turnaround, and introduced accuracy risks. The organization needed to reduce headcount dependency without compromising service quality.</p>
+              </div>
+              <div class="card-section">
+                <h4>Discovery</h4>
+                <p>I mapped existing workflows, quantified time spent per task, and identified which steps were rule-based versus judgment-based. I worked closely with operations teams across CDD, Servicing and Transactions to understand not just what they did but why they did it that way.</p>
+              </div>
+              <div class="card-section">
+                <h4>Approach</h4>
+                <p>I defined the automation requirements, wrote user stories, and partnered with technology teams to validate feasibility across the top 5 global markets. The key decision was sequencing: which markets to pilot first based on volume, complexity, and team readiness. I also standardized the underlying workflows before automating, because automating a broken process gives you faster broken output.</p>
+              </div>
+              <div class="card-section">
+                <h4>Outcome</h4>
+                <p>Reduced manual work by 30 headcount equivalents. Improved turnaround time and accuracy. Standardized workflows across CDD and S&amp;T, reducing operational inconsistencies that had been causing downstream issues for years.</p>
+              </div>
+              <div class="card-section">
+                <h4>What I Learned</h4>
+                <p>You cannot automate your way out of a process problem. The real value was the standardization that happened before the automation. The humans in the loop matter too. If the ops team does not trust the automation, they build shadow processes around it. Change management is as important as the technical solution.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Case Study 3 -->
+        <div class="card expandable-card">
+          <div class="card-header" role="button" tabindex="0" aria-expanded="false">
+            <div class="card-meta">
+              <span class="card-badge">TCS / ICICI Prudential</span>
+              <span class="card-year">2017–2022</span>
+            </div>
+            <h3 class="card-name">Digitizing the Insurance Purchase Journey</h3>
+            <p class="card-summary">Over five years, delivered 100+ enhancements, digitized the end-to-end purchase journey, and introduced automation testing. All three tracks ran simultaneously.</p>
+            <div class="card-metrics">
+              <div class="card-metric">
+                <span class="card-metric-value">30%</span>
+                <span class="card-metric-label">cost savings</span>
+              </div>
+              <div class="card-metric">
+                <span class="card-metric-value">10%</span>
+                <span class="card-metric-label">CSAT improvement</span>
+              </div>
+              <div class="card-metric">
+                <span class="card-metric-value">50%</span>
+                <span class="card-metric-label">testing effort cut</span>
+              </div>
+            </div>
+            <span class="card-toggle-text">Read case study</span>
+          </div>
+          <div class="card-body">
+            <div class="card-body-inner">
+              <div class="card-section">
+                <h4>The Problem</h4>
+                <p>The New Business insurance purchase journey was document-heavy, manual, and full of friction. Customers dropped off during onboarding, internal teams spent excessive time on manual processing, and slow testing cycles held back improvements.</p>
+              </div>
+              <div class="card-section">
+                <h4>Discovery</h4>
+                <p>Over five years on this account, I built a deep understanding of the end-to-end journey, from first customer interaction to policy issuance. I analyzed where customers dropped off, where internal teams spent disproportionate effort, and where the process failed silently through rework cycles and duplicated steps.</p>
+              </div>
+              <div class="card-section">
+                <h4>Approach</h4>
+                <p>Three parallel tracks. First, I prioritized and delivered 100+ enhancements by analyzing requirements against value and effort, because not everything requested was worth building. Second, I led the digitization of the purchase journey, replacing manual document-heavy steps with digital workflows. Third, I introduced an automation testing framework to speed up release cycles, because faster testing means faster iteration.</p>
+              </div>
+              <div class="card-section">
+                <h4>Outcome</h4>
+                <p>Up to 30% cost savings from digitization. 10% improvement in customer satisfaction from redesigned user flows. 50% reduction in manual testing effort, saving 1,200 hours a year, which directly improved release quality and delivery speed.</p>
+              </div>
+              <div class="card-section">
+                <h4>What I Learned</h4>
+                <p>The best improvements often come from removing steps, not adding features. The customer did not need a better form. They needed fewer forms. And the testing framework taught me that investing in infrastructure, the boring unglamorous work, compounds over time in ways that feature work often does not.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===== Timeline ===== -->
+    <section class="section section--ivory" id="timeline">
+      <div class="section-inner">
+        <p class="section-label">Journey</p>
+        <h2 class="section-title">Work &amp; Education</h2>
+        <div class="timeline">
+
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <span class="timeline-badge timeline-badge--work">Work</span>
+              <span class="timeline-date">Apr 2026 – Present</span>
+              <h3 class="timeline-role">Co-Founder, Product &amp; Ops</h3>
+              <p class="timeline-org">Gal Pal &middot; Remote &middot; Bengaluru</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-marker timeline-marker--edu"></div>
+            <div class="timeline-content">
+              <span class="timeline-badge timeline-badge--edu">Education</span>
+              <span class="timeline-date">Feb 2026 – Apr 2026</span>
+              <h3 class="timeline-role">Member – AI-first Mastering Product Management 2.0, Cohort 7</h3>
+              <p class="timeline-org">Rethink Systems</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <span class="timeline-badge timeline-badge--work">Work</span>
+              <span class="timeline-date">Mar 2025 – Dec 2025</span>
+              <h3 class="timeline-role">Senior Manager, Business Analysis</h3>
+              <p class="timeline-org">Marsh McLennan India Pvt Ltd &middot; Mumbai</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <span class="timeline-badge timeline-badge--work">Work</span>
+              <span class="timeline-date">2023 – 2025</span>
+              <h3 class="timeline-role">Manager, Process Standardization</h3>
+              <p class="timeline-org">Standard Chartered GBS &middot; Chennai</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-marker timeline-marker--edu"></div>
+            <div class="timeline-content">
+              <span class="timeline-badge timeline-badge--edu">Education</span>
+              <span class="timeline-date">2022 – 2023</span>
+              <h3 class="timeline-role">MBA — PGDM (General Management)</h3>
+              <p class="timeline-org">XLRI Jamshedpur</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <span class="timeline-badge timeline-badge--work">Work</span>
+              <span class="timeline-date">2017 – 2022</span>
+              <h3 class="timeline-role">IT Business Analyst</h3>
+              <p class="timeline-org">Tata Consultancy Services &middot; Mumbai</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-marker timeline-marker--edu"></div>
+            <div class="timeline-content">
+              <span class="timeline-badge timeline-badge--edu">Education</span>
+              <span class="timeline-date">2012 – 2016</span>
+              <h3 class="timeline-role">BE (Information Technology)</h3>
+              <p class="timeline-org">Mumbai University / Ramrao Adik Institute of Technology</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Philosophy ===== -->
+    <section class="section section--cream" id="philosophy">
+      <div class="section-inner">
+        <p class="section-label">Perspective</p>
+        <h2 class="section-title">How I Think About Product</h2>
+        <p class="philosophy-lead">The best products are built by people who have sat close enough to the mess to know what simple actually takes.</p>
+        <img
+          src="images/philosophy-illustration.png"
+          alt="Prateek sitting cross-legged examining a dense tangle of processes, flowcharts, and arrows with a lantern-holding AI sidekick — clean marigold threads being pulled out to the right."
+          class="philosophy-illustration"
+          width="1536" height="1024"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="principles">
+          <div class="principle">
+            <h3>Structure before speed.</h3>
+            <p>Most teams rush to solutions before the problem is clear. I start by framing the problem in a way that business, tech, and users can all align on. If you cannot explain the problem in one sentence, you are not ready to build.</p>
+          </div>
+          <div class="principle">
+            <h3>Standardize before you automate.</h3>
+            <p>Automating a broken process gives you faster broken output. Fix the process first. Then scale it with technology. I have seen this mistake made at every company I have worked in, and I have made it myself.</p>
+          </div>
+          <div class="principle">
+            <h3>Removal is underrated.</h3>
+            <p>The most impactful changes I have delivered were not about adding features. They were about eliminating steps, reducing friction, and simplifying decisions. The customer did not need a better form. They needed fewer forms.</p>
+          </div>
+          <div class="principle">
+            <h3>AI is a lever, not a feature.</h3>
+            <p>I do not believe in adding AI to products. I believe in understanding user problems deeply and then asking whether AI is the right way to solve them. Sometimes it is. Sometimes a better form field is the answer.</p>
+          </div>
+          <div class="principle">
+            <h3>Ship, learn, adjust.</h3>
+            <p>Perfectionism kills products. I would rather ship something 80% right and learn from real usage than spend months polishing something nobody validated. The metrics from Plan Karo Chalo came from production, not a spreadsheet.</p>
+          </div>
+          <div class="principle">
+            <h3>Show, don't pitch.</h3>
+            <p>A working prototype beats a deck in ten seconds. With AI, I can build enough to test an idea in an afternoon. I bring working demos into discovery conversations instead of asking people to imagine what I mean.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Testimonials ===== -->
+    <section class="section section--ivory" id="testimonials">
+      <div class="section-inner">
+        <p class="section-label">Social Proof</p>
+        <h2 class="section-title">What people say about working with me</h2>
+        <div class="testimonials">
+          <blockquote class="testimonial">
+            <p>From the very beginning, he stood out for his exceptional ability to understand complex operations and break them down into clear, workable components. He consistently ensured that every feature we explored addressed a real and specific challenge, which made the direction of the project both meaningful and well-aligned with user expectations.</p>
+            <footer>
+              <cite class="testimonial-name">Ewa Leszczyna</cite>
+              <span class="testimonial-role">Broker / Client Executive, Marsh McLennan</span>
+            </footer>
+          </blockquote>
+          <blockquote class="testimonial">
+            <p>I had the pleasure of managing Prateek during his tenure on Citi projects as a Business Analyst, and highly recommend him for his professionalism and strong work ethic. His positive attitude stands out and makes him a delight to work with.</p>
+            <footer>
+              <cite class="testimonial-name">Aruna Rajagopalan</cite>
+              <span class="testimonial-role">Vice President, Citi</span>
+            </footer>
+          </blockquote>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Why I'm Doing This (merged from Story + Looking For) ===== -->
+    <section class="section section--cream" id="story">
+      <div class="section-inner">
+        <p class="section-label">Why I'm Doing This</p>
+        <h2 class="section-title">The thread that connects everything</h2>
+        <div class="story-content">
+          <p>I started at TCS as a tester &mdash; the person whose job is to think like a user and find the cracks. That instinct stayed with me. Five years on the ICICI Prudential and Citibank Singapore accounts as a BA taught me that the most impactful changes come from removing complexity, not adding features. I cared less about the system and more about the person using it.</p>
+          <p>An MBA from XLRI sharpened the thinking. Then operations roles at Standard Chartered and Marsh McLennan, where I kept finding the same pattern: capable people spending days on tasks that AI could handle in minutes. Not because anyone chose that. Because nobody had built the alternative yet. So I quit my job to learn what was actually possible. My kid was one and a half years old at the time.</p>
+          <p>I'm looking for a PM role where I can own problems end-to-end and ship them. The strongest fit is a team building AI-native products, or one rethinking how their users work because of AI. I bring the discovery discipline that makes shipping the right thing possible &mdash; and the habit of actually shipping.</p>
+          <p class="looking-for-cta">If that sounds like your team, let's talk.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Contact ===== -->
+    <section class="section section--dark" id="contact">
+      <div class="section-inner section-inner--centered">
+        <p class="section-label section-label--light">Get in Touch</p>
+        <h2 class="section-title section-title--light">Let's connect</h2>
+        <div class="contact-grid">
+          <div class="contact-grid-left">
+            <img
+              src="images/contact-illustration.png"
+              alt="Prateek and his AI sidekick sitting on a park bench, waving at the reader with two coffee mugs between them."
+              class="contact-illustration"
+              width="1254" height="1254"
+              loading="lazy"
+              decoding="async"
+            />
+            <p class="contact-availability">
+              <span class="availability-dot" aria-hidden="true"></span>
+              Co-founding galpal &middot; open to PM roles &middot; Mumbai, remote
+            </p>
+          </div>
+          <div class="contact-links">
+          <a href="https://calendly.com/iamprateekbm/get-in-touch-with-prateek" target="_blank" rel="noopener noreferrer" class="contact-item contact-item--primary">
+            <span class="contact-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            </span>
+            <span class="contact-text">Book a 30-min intro</span>
+          </a>
+          <a href="mailto:iamprateekbm@gmail.com?subject=Reaching%20out%20from%20your%20portfolio" class="contact-item">
+            <span class="contact-icon">@</span>
+            <span class="contact-text">iamprateekbm@gmail.com</span>
+          </a>
+          <a href="https://www.linkedin.com/in/prateek-mehta-xlri/" target="_blank" rel="noopener noreferrer" class="contact-item">
+            <span class="contact-icon">in</span>
+            <span class="contact-text">linkedin.com/in/prateek-mehta-xlri</span>
+          </a>
+          <span class="contact-item contact-item--static">
+            <span class="contact-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </span>
+            <span class="contact-text">Mumbai, India</span>
+          </span>
+        </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <p class="footer-quote">Stop fixing systems. <span class="ink-highlight">Start building them.</span></p>
+      <div class="footer-links">
+        <a href="mailto:iamprateekbm@gmail.com" class="footer-link" aria-label="Email">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/in/prateek-mehta-xlri/" target="_blank" rel="noopener noreferrer" class="footer-link" aria-label="LinkedIn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        </a>
+      </div>
+      <p class="footer-credit">Made with care &amp; curiosity</p>
+    </div>
+  </footer>
+
+  <!-- ===== Email Gate Controller =====
+       Validates email, attempts Supabase save (fails open), unlocks portfolio,
+       and persists a localStorage flag so returning visitors skip the gate. -->
+  <script>
+    (function () {
+      // --- Supabase config ---------------------------------------------------
+      // Credentials live in config.js (loaded in <head>). If that file is
+      // missing or still has placeholder values, the gate runs in local-only
+      // mode: validation happens, portfolio still unlocks, no DB write. This
+      // is intentional — per the spec, Supabase must never block a visitor.
+      var cfg = window.__GATE_CONFIG__ || {};
+      var SUPABASE_URL      = cfg.SUPABASE_URL      || 'YOUR_SUPABASE_PROJECT_URL_HERE';
+      var SUPABASE_ANON_KEY = cfg.SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY_HERE';
+      var SUPABASE_TABLE    = cfg.SUPABASE_TABLE    || 'subscribers';
+      var STORAGE_KEY       = 'portfolio_gate_passed';
+      var SAVE_TIMEOUT_MS   = 3500;
+
+      // --- DOM ---------------------------------------------------------------
+      var gate    = document.getElementById('email-gate');
+      var form    = document.getElementById('gate-form');
+      var input   = document.getElementById('gate-email');
+      var errorEl = document.getElementById('gate-error');
+      var submit  = document.getElementById('gate-submit');
+      var success = document.getElementById('gate-success');
+
+      if (!gate || !form || !input || !submit) return;
+
+      // Already passed? Just make sure the portfolio is visible. The inline
+      // head script will have added .gate-skip before first paint.
+      try {
+        if (localStorage.getItem(STORAGE_KEY) === '1') {
+          document.documentElement.classList.add('gate-skip');
+          return;
+        }
+      } catch (e) { /* ignore */ }
+
+      // --- Helpers -----------------------------------------------------------
+      // RFC-5322-lite: local@domain.tld, no spaces, at least one dot in domain.
+      var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      function isValidEmail(value) {
+        return typeof value === 'string' && EMAIL_RE.test(value.trim());
+      }
+
+      function showError(msg) {
+        errorEl.textContent = msg;
+        errorEl.hidden = false;
+        input.classList.add('is-error');
+        input.setAttribute('aria-invalid', 'true');
+      }
+
+      function clearError() {
+        errorEl.textContent = '';
+        errorEl.hidden = true;
+        input.classList.remove('is-error');
+        input.setAttribute('aria-invalid', 'false');
+      }
+
+      function isPlaceholderConfig() {
+        return SUPABASE_URL.indexOf('YOUR_') === 0 || SUPABASE_ANON_KEY.indexOf('YOUR_') === 0;
+      }
+
+      // Placeholder & throwaway domains we reject outright.
+      var BLOCKED_DOMAINS = {
+        'test.com':1,'test.test':1,'example.com':1,'example.org':1,'example.net':1,
+        'mailinator.com':1,'tempmail.com':1,'temp-mail.org':1,'10minutemail.com':1,
+        'guerrillamail.com':1,'trashmail.com':1,'yopmail.com':1,'throwaway.email':1,
+        'sharklasers.com':1,'maildrop.cc':1,'getnada.com':1,'dispostable.com':1,
+        'fakeinbox.com':1
+      };
+
+      // Common typos → correct domain. One-step fix, not fuzzy matching.
+      var TYPO_FIX = {
+        'gmial.com':'gmail.com','gmai.com':'gmail.com','gnail.com':'gmail.com',
+        'gmaill.com':'gmail.com','gmali.com':'gmail.com','gmail.con':'gmail.com',
+        'gmal.com':'gmail.com','gmeil.com':'gmail.com','gmail.co':'gmail.com',
+        'yahho.com':'yahoo.com','yaoo.com':'yahoo.com','yahoo.con':'yahoo.com',
+        'yaho.com':'yahoo.com','yahoo.co':'yahoo.com',
+        'hotmial.com':'hotmail.com','hotmal.com':'hotmail.com','hotmai.com':'hotmail.com',
+        'hotmil.com':'hotmail.com','hotmail.con':'hotmail.com','hotmail.co':'hotmail.com',
+        'outlok.com':'outlook.com','outlook.con':'outlook.com','outloook.com':'outlook.com',
+        'iclod.com':'icloud.com','iclould.com':'icloud.com','icoud.com':'icloud.com',
+        'icloud.con':'icloud.com',
+        'protomail.com':'protonmail.com','protonmai.com':'protonmail.com',
+        'liv.com':'live.com','live.con':'live.com'
+      };
+
+      function domainOf(email) {
+        var at = email.lastIndexOf('@');
+        return at >= 0 ? email.slice(at + 1).toLowerCase() : '';
+      }
+
+      function localOf(email) {
+        var at = email.lastIndexOf('@');
+        return at >= 0 ? email.slice(0, at) : email;
+      }
+
+      function suggestTypoFix(email) {
+        var fixed = TYPO_FIX[domainOf(email)];
+        return fixed ? (localOf(email) + '@' + fixed) : null;
+      }
+
+      // Inline clickable suggestion that auto-fills the input on click.
+      // Built via DOM nodes (not innerHTML) so user input can't inject HTML.
+      function showTypoSuggestion(corrected) {
+        errorEl.textContent = 'Did you mean ';
+        var link = document.createElement('a');
+        link.href = '#';
+        link.className = 'gate-typo-link';
+        link.textContent = corrected;
+        errorEl.appendChild(link);
+        errorEl.appendChild(document.createTextNode('?'));
+        errorEl.hidden = false;
+        input.classList.add('is-error');
+        input.setAttribute('aria-invalid', 'true');
+        link.addEventListener('click', function (e) {
+          e.preventDefault();
+          input.value = corrected;
+          clearError();
+          input.focus();
+        });
+      }
+
+      // Save email to Supabase. Never throws; resolves with either
+      // { ok: true } or { ok: false, reason } — neither blocks the visitor.
+      function saveEmail(email) {
+        if (isPlaceholderConfig()) {
+          return Promise.resolve({ ok: false, reason: 'no-config' });
+        }
+        if (!window.supabase || !window.supabase.createClient) {
+          return Promise.resolve({ ok: false, reason: 'sdk-missing' });
+        }
+
+        var client;
+        try {
+          client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (e) {
+          return Promise.resolve({ ok: false, reason: 'client-init' });
+        }
+
+        var insertPromise = client
+          .from(SUPABASE_TABLE)
+          .insert({ email: email })
+          .then(function (res) {
+            if (res && res.error) {
+              // Duplicate-key (23505) — treat as success per spec.
+              var code = res.error.code || '';
+              if (code === '23505' || /duplicate|unique/i.test(res.error.message || '')) {
+                return { ok: true, duplicate: true };
+              }
+              return { ok: false, reason: 'db-error', error: res.error };
+            }
+            return { ok: true };
+          })
+          .catch(function (err) {
+            return { ok: false, reason: 'network', error: err };
+          });
+
+        var timeoutPromise = new Promise(function (resolve) {
+          setTimeout(function () { resolve({ ok: false, reason: 'timeout' }); }, SAVE_TIMEOUT_MS);
+        });
+
+        return Promise.race([insertPromise, timeoutPromise]);
+      }
+
+      function markPassed() {
+        try { localStorage.setItem(STORAGE_KEY, '1'); } catch (e) { /* ignore */ }
+      }
+
+      function unlockPortfolio() {
+        // Show welcome state briefly, then fade the gate out and reveal page.
+        success.classList.add('is-visible');
+        success.setAttribute('aria-hidden', 'false');
+
+        setTimeout(function () {
+          document.documentElement.classList.add('gate-done');
+          gate.classList.add('is-closing');
+          // After fade completes, remove gate from the tree entirely.
+          setTimeout(function () {
+            if (gate && gate.parentNode) gate.parentNode.removeChild(gate);
+            // Fire a custom event in case other scripts want to hook in.
+            document.dispatchEvent(new CustomEvent('portfolio:unlocked'));
+          }, 560);
+        }, 650);
+      }
+
+      // --- Event wiring ------------------------------------------------------
+      input.addEventListener('input', function () {
+        if (!errorEl.hidden) clearError();
+      });
+
+      // Tracks the last email we warned the user about, so if they deliberately
+      // resubmit the same typo we respect their choice and let them through.
+      var lastWarnedEmail = '';
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var email = (input.value || '').trim();
+
+        if (!isValidEmail(email)) {
+          showError('Please enter a valid email address.');
+          input.focus();
+          return;
+        }
+
+        if (BLOCKED_DOMAINS[domainOf(email)]) {
+          showError('That looks like a placeholder domain — a real email, please?');
+          input.focus();
+          return;
+        }
+
+        var suggestion = suggestTypoFix(email);
+        if (suggestion && email !== lastWarnedEmail) {
+          lastWarnedEmail = email;
+          showTypoSuggestion(suggestion);
+          input.focus();
+          return;
+        }
+
+        clearError();
+        submit.disabled = true;
+        submit.textContent = 'Opening…';
+
+        saveEmail(email).then(function (result) {
+          // Per spec: success, duplicate, OR any error → let them through.
+          // We only log for the owner's debugging; no visitor-facing difference.
+          if (!result.ok && window.console && console.debug) {
+            console.debug('[gate] email not stored:', result.reason || 'unknown');
+          }
+          markPassed();
+          unlockPortfolio();
+        });
+      });
+    })();
+  </script>
+
+</body>
+</html>

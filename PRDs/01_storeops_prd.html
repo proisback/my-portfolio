@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StoreOps — Peak-Hour Decision Support | PRD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0D0D0D;
+  --ink2: #3D3D3D;
+  --ink3: #7A7A7A;
+  --canvas: #FAFAF7;
+  --surface: #FFFFFF;
+  --border: #E8E6E0;
+  --accent: #E63946;
+  --accent-soft: #FDECEA;
+  --green: #2D6A4F;
+  --green-soft: #E8F5EE;
+  --amber: #D97706;
+  --amber-soft: #FEF3C7;
+  --blue: #1D4ED8;
+  --blue-soft: #EFF6FF;
+  --tag-must: #FEE2E2;
+  --tag-must-text: #991B1B;
+  --tag-should: #D1FAE5;
+  --tag-should-text: #065F46;
+  --tag-could: #E0E7FF;
+  --tag-could-text: #3730A3;
+  --tag-wont: #F3F4F6;
+  --tag-wont-text: #374151;
+  --radius: 12px;
+  --shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+body {
+  font-family: 'Sora', system-ui, sans-serif;
+  background: var(--canvas);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- HERO ---- */
+.hero {
+  background: var(--ink);
+  color: white;
+  padding: 80px 24px 64px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 80% 0%, rgba(230,57,70,0.2) 0%, transparent 55%),
+              radial-gradient(ellipse at 10% 100%, rgba(29,78,216,0.12) 0%, transparent 50%);
+  pointer-events: none;
+}
+.hero-inner { max-width: 820px; margin: 0 auto; position: relative; z-index: 1; }
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 100px; padding: 5px 14px;
+  margin-bottom: 28px;
+  animation: fadeUp 0.6s ease both;
+}
+.hero-tag .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.hero h1 {
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: clamp(36px, 6vw, 58px);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+.hero h1 em { font-style: italic; color: rgba(255,255,255,0.55); }
+.hero-sub {
+  font-size: 17px; color: rgba(255,255,255,0.65);
+  max-width: 560px; line-height: 1.6;
+  animation: fadeUp 0.6s 0.2s ease both;
+  margin-bottom: 32px;
+}
+.hero-meta {
+  display: flex; gap: 20px; flex-wrap: wrap;
+  font-size: 12px; color: rgba(255,255,255,0.4);
+  font-family: 'Sora', system-ui, sans-serif;
+  animation: fadeUp 0.6s 0.3s ease both;
+}
+.hero-meta span { display: flex; align-items: center; gap: 6px; }
+.hero-meta strong { color: rgba(255,255,255,0.7); }
+.hero-stat-row {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-top: 48px;
+  animation: fadeUp 0.6s 0.4s ease both;
+}
+.hero-stat {
+  padding: 20px 24px;
+  background: rgba(255,255,255,0.03);
+}
+.hero-stat .n {
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 32px; color: var(--accent);
+  line-height: 1; margin-bottom: 4px;
+}
+.hero-stat .l { font-size: 12px; color: rgba(255,255,255,0.45); }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- NAV ---- */
+.sticky-nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(250,250,247,0.94);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner {
+  max-width: 820px; margin: 0 auto;
+  padding: 0 24px;
+  display: flex; align-items: center; gap: 4px;
+  overflow-x: auto; scrollbar-width: none;
+  height: 52px;
+}
+.nav-inner::-webkit-scrollbar { display: none; }
+.nav-inner a {
+  padding: 6px 14px; border-radius: 8px;
+  font-size: 12px; font-weight: 600;
+  color: var(--ink3); text-decoration: none;
+  white-space: nowrap; transition: all 0.2s;
+  letter-spacing: 0.02em;
+}
+.nav-inner a:hover, .nav-inner a.active {
+  background: var(--accent-soft); color: var(--accent);
+}
+
+/* ---- LAYOUT ---- */
+.content { max-width: 820px; margin: 0 auto; padding: 0 24px 80px; }
+section { padding: 56px 0 40px; border-bottom: 1px solid var(--border); }
+section:last-child { border-bottom: none; }
+.section-label {
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-label::before {
+  content: ''; display: block; width: 20px; height: 1px; background: var(--accent);
+}
+h2 {
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: clamp(24px, 4vw, 34px);
+  font-weight: 400; letter-spacing: -0.02em;
+  line-height: 1.2; margin-bottom: 24px; color: var(--ink);
+}
+h3 {
+  font-size: 17px; font-weight: 700;
+  margin: 32px 0 12px; color: var(--ink);
+  letter-spacing: -0.01em;
+}
+p { margin-bottom: 16px; color: var(--ink2); }
+p:last-child { margin-bottom: 0; }
+
+/* ---- CARDS ---- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  box-shadow: var(--shadow);
+  margin: 16px 0;
+}
+.card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+.card-grid .card { margin: 0; }
+@media (max-width: 600px) { .card-grid { grid-template-columns: 1fr; } }
+
+/* ---- CALLOUT ---- */
+.callout {
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin: 20px 0;
+  font-size: 14px; color: var(--ink2); line-height: 1.65;
+}
+.callout.green { border-color: var(--green); background: var(--green-soft); }
+.callout.amber { border-color: var(--amber); background: var(--amber-soft); }
+.callout.blue { border-color: var(--blue); background: var(--blue-soft); }
+.callout strong { color: var(--ink); }
+
+/* ---- STAT ROW ---- */
+.stat-row {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 28px 0;
+}
+@media (max-width: 640px) { .stat-row { grid-template-columns: 1fr 1fr; } }
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px 18px;
+  box-shadow: var(--shadow);
+}
+.stat-n {
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 28px; line-height: 1; margin-bottom: 4px;
+}
+.stat-n.red { color: var(--accent); }
+.stat-n.green { color: var(--green); }
+.stat-n.amber { color: var(--amber); }
+.stat-n.blue { color: var(--blue); }
+.stat-l { font-size: 12px; color: var(--ink3); line-height: 1.4; }
+
+/* ---- TABLE ---- */
+.table-wrap {
+  overflow-x: auto; margin: 20px 0;
+  border: 1px solid var(--border); border-radius: var(--radius);
+}
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th {
+  text-align: left; padding: 10px 14px;
+  background: #F6F6F3;
+  font-weight: 700; font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--ink3); border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+td { padding: 10px 14px; border-top: 1px solid var(--border); vertical-align: top; }
+td:first-child { font-weight: 600; color: var(--ink); }
+tr:hover td { background: #FAFAF7; }
+
+/* ---- BADGES ---- */
+.badge {
+  display: inline-block; padding: 2px 9px;
+  border-radius: 6px; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.02em; white-space: nowrap;
+}
+.badge.must { background: var(--tag-must); color: var(--tag-must-text); }
+.badge.should { background: var(--tag-should); color: var(--tag-should-text); }
+.badge.could { background: var(--tag-could); color: var(--tag-could-text); }
+.badge.wont { background: var(--tag-wont); color: var(--tag-wont-text); }
+.badge.red { background: var(--accent-soft); color: var(--accent); }
+.badge.green { background: var(--green-soft); color: var(--green); }
+.badge.amber { background: var(--amber-soft); color: var(--amber); }
+.badge.blue { background: var(--blue-soft); color: var(--blue); }
+
+/* ---- PERSON CARD ---- */
+.persona {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px;
+  box-shadow: var(--shadow); margin: 24px 0;
+  position: relative; overflow: hidden;
+}
+.persona::before {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 4px; height: 100%; background: var(--accent);
+}
+.persona-name {
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 22px; margin-bottom: 4px;
+}
+.persona-role { font-size: 12px; color: var(--ink3); margin-bottom: 16px; font-family: 'Sora', system-ui, sans-serif; }
+.persona-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 560px) { .persona-grid { grid-template-columns: 1fr; } }
+.persona-item label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink3); display: block; margin-bottom: 4px; }
+.persona-item p { font-size: 13px; color: var(--ink2); margin: 0; }
+
+/* ---- SOLUTION COMPARE ---- */
+.sol-compare {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 24px 0;
+}
+@media (max-width: 640px) { .sol-compare { grid-template-columns: 1fr; } }
+.sol-card {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 18px 20px; background: var(--surface);
+  position: relative;
+}
+.sol-card.chosen { border-color: var(--green); background: var(--green-soft); }
+.sol-card.rejected { opacity: 0.6; }
+.sol-tag { font-size: 11px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink3); }
+.sol-card.chosen .sol-tag { color: var(--green); }
+.sol-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+.sol-card p { font-size: 12px; color: var(--ink3); margin: 0; line-height: 1.55; }
+.sol-badge-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+
+/* ---- FLOW ---- */
+.flow {
+  display: flex; align-items: center; gap: 0;
+  flex-wrap: wrap; margin: 20px 0;
+}
+.flow-step {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 16px;
+  font-size: 13px; font-weight: 600; color: var(--ink);
+}
+.flow-arrow { color: var(--ink3); padding: 0 8px; font-size: 18px; }
+
+/* ---- TIMELINE ---- */
+.timeline { margin: 24px 0; }
+.tl-row {
+  display: flex; gap: 16px; align-items: flex-start;
+  padding: 16px 0; border-bottom: 1px solid var(--border);
+}
+.tl-row:last-child { border-bottom: none; }
+.tl-dot {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--surface); border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Sora', system-ui, sans-serif; font-size: 11px; font-weight: 600;
+  flex-shrink: 0; color: var(--ink3);
+}
+.tl-body h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.tl-body p { font-size: 13px; color: var(--ink3); margin: 0; line-height: 1.55; }
+.tl-meta { display: flex; gap: 8px; margin-top: 6px; }
+
+/* ---- RISK TABLE special ---- */
+.risk-high { color: var(--accent); font-weight: 600; }
+.risk-med { color: var(--amber); font-weight: 600; }
+.risk-low { color: var(--green); font-weight: 600; }
+
+/* ---- FOOTER ---- */
+.doc-footer {
+  background: var(--ink); color: rgba(255,255,255,0.5);
+  text-align: center; padding: 32px 24px;
+  font-size: 12px; font-family: 'Sora', system-ui, sans-serif;
+  letter-spacing: 0.06em;
+}
+.doc-footer strong { color: rgba(255,255,255,0.7); }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag"><span class="dot"></span>Week 3 · Group 4 · Rethink Systems</div>
+    <h1>StoreOps<br><em>Peak-Hour Decision Support</em></h1>
+    <p class="hero-sub">A real-time floor visibility dashboard for Blinkit Store Managers — getting the right information to the right person at the moment it can still change the outcome.</p>
+    <div class="hero-meta">
+      <span><strong>Product:</strong> StoreOps Extension</span>
+      <span><strong>Status:</strong> MVP Spec v1.0</span>
+      <span><strong>Date:</strong> 28 Feb 2026</span>
+      <span><strong>Context:</strong> Blinkit Dark Stores</span>
+    </div>
+    <div class="hero-stat-row">
+      <div class="hero-stat">
+        <div class="n">₹3.16Cr</div>
+        <div class="l">Annual margin loss per high-volume store</div>
+      </div>
+      <div class="hero-stat">
+        <div class="n">210</div>
+        <div class="l">High-volume COCO stores affected</div>
+      </div>
+      <div class="hero-stat">
+        <div class="n">₹14</div>
+        <div class="l">CM1 improvement targeted per order</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STICKY NAV -->
+<nav class="sticky-nav">
+  <div class="nav-inner">
+    <a href="#problem">01 Problem</a>
+    <a href="#persona">02 Persona</a>
+    <a href="#solution">03 Solution</a>
+    <a href="#features">04 Features</a>
+    <a href="#metrics">05 Metrics</a>
+    <a href="#risks">06 Risks</a>
+    <a href="#timeline">07 Timeline</a>
+  </div>
+</nav>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- SECTION 1: PROBLEM -->
+<section id="problem">
+  <div class="section-label">Section 01</div>
+  <h2>The Problem Space</h2>
+
+  <p>Blinkit operates 526+ dark stores across India, delivering essentials in under 10 minutes. Profitability hinges on contribution margin per order — the difference between order value and fulfillment costs. The 6–10 PM peak window drives up to 50% of daily demand. And it's where everything breaks.</p>
+
+  <div class="callout">
+    <strong>The core paradox:</strong> The franchise owner sitting outside the store can see real-time picker efficiencies, live staff allocation, GMV, and SLA performance via the Partners app. The employed Store Manager on the floor — who is the only person who can actually fix things — cannot see any of this via StoreOps. The data exists. It does not reach the right person.
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="stat-n red">40–66%</div>
+      <div class="stat-l">Pick-pack time increase during peak hours</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-n red">~20%</div>
+      <div class="stat-l">SLA breach rate at peak vs 10% target</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-n amber">400</div>
+      <div class="stat-l">Orders processed vs 600 capacity during peak</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-n green">₹663.6Cr</div>
+      <div class="stat-l">Annual margin impact across 210 stores</div>
+    </div>
+  </div>
+
+  <h3>Narrowed Problem Statement</h3>
+  <div class="callout" style="border-color: var(--ink); background: #F6F6F3; font-size: 15px; color: var(--ink); line-height: 1.7;">
+    Blinkit Store Managers at high-volume COCO stores have no real-time picker visibility during peak hours. Unable to diagnose floor failures, they resort to removing slowest pickers — cutting staffing by 20–30% and worsening throughput. This drives SLA breaches from 10% to 20% and costs ₹3.16 crore per store annually.
+  </div>
+
+  <h3>Evidence Base</h3>
+  <p>Research drawn from 392 AmbitionBox reviews, 11 Reddit first-person accounts, an ex-SM open letter, ground journalism from The Print, CNN, BOOM, and Al Jazeera, and a primary interview with dark store manager Rudra. The pattern is consistent across all sources.</p>
+
+  <div class="card" style="background: #F6F6F3;">
+    <p style="font-style: italic; font-family: 'Sora', system-ui, sans-serif; font-size: 17px; color: var(--ink); line-height: 1.6; margin-bottom: 8px;">"Workload is high with minimum support tools. Have to play the role of a 1 man army on a daily basis."</p>
+    <p style="font-size: 12px; color: var(--ink3); margin: 0;">— Retail Store Manager, 3★, AmbitionBox (Blinkit)</p>
+  </div>
+</section>
+
+<!-- SECTION 2: PERSONA -->
+<section id="persona">
+  <div class="section-label">Section 02</div>
+  <h2>Primary Persona</h2>
+
+  <p>Discovery research surfaced three candidate personas — the Picker, the Rider, and the Store Manager. The Store Manager was selected through a systematic elimination process grounded in one question: <em>who has both the authority to act and the information gap a product can close?</em></p>
+
+  <div class="persona">
+    <div class="persona-name">Deepak Babu</div>
+    <div class="persona-role">STORE MANAGER · COCO BLINKIT DARK STORE · MUMBAI</div>
+    <div class="persona-grid">
+      <div class="persona-item">
+        <label>Who they are</label>
+        <p>29-year-old, direct Blinkit employee, ₹18,000–22,000/month. Manages 10–16 pickers across two shifts and tracks 15+ KPIs daily. He is the floor's only decision-maker.</p>
+      </div>
+      <div class="persona-item">
+        <label>Primary Goal (JTBD)</label>
+        <p>When the 6–10 PM peak begins and order volume surges, I want to see exactly what is breaking on my floor in real time so I can intervene with precision and protect SLA.</p>
+      </div>
+      <div class="persona-item">
+        <label>The ONE Pain Point</label>
+        <p>Deepak can only see aggregate PPI rising. He cannot see which picker is stuck, why they are stuck, or where on the floor the failure is originating.</p>
+      </div>
+      <div class="persona-item">
+        <label>Current Behavior</label>
+        <p>Walks the floor shouting "jaldi karo." Logs out the three slowest pickers to improve aggregate PPI, unknowingly removing capacity the store needed.</p>
+      </div>
+      <div class="persona-item">
+        <label>Trigger Moment</label>
+        <p>6:07 PM — aggregate PPI crosses 19 seconds (target: 13 seconds). The only thing his screen shows is that the number is wrong. The intervention clock has started.</p>
+      </div>
+      <div class="persona-item">
+        <label>Success State</label>
+        <p>Deepak opens StoreOps at 6 PM, identifies Ravi is stuck on a misplaced item, taps Reassign, watches Ravi's card turn green. Peak ends at 91% SLA.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3: SOLUTION -->
+<section id="solution">
+  <div class="section-label">Section 03</div>
+  <h2>Solution Exploration</h2>
+
+  <p>Three solutions were considered. The differences are not stylistic — they are <em>temporal</em>. Each intervenes at a different moment in the failure chain.</p>
+
+  <div class="sol-compare">
+    <div class="sol-card rejected">
+      <div class="sol-tag">❌ Rejected</div>
+      <h4>Post-Peak Analytics Report</h4>
+      <p>Daily summary emailed after 10 PM. Buildable in 2-4 weeks using existing Trino/dbt batch analytics.</p>
+      <div class="sol-badge-row">
+        <span class="badge amber">Low effort</span>
+        <span class="badge red">Wrong timing</span>
+      </div>
+    </div>
+    <div class="sol-card rejected">
+      <div class="sol-tag">❌ Phase 2</div>
+      <h4>Predictive Pre-Peak Staffing</h4>
+      <p>ML-powered staffing recommendation sent 90 minutes before peak. Requires forecasting models not yet built.</p>
+      <div class="sol-badge-row">
+        <span class="badge red">12–18 weeks</span>
+        <span class="badge amber">Speculative</span>
+      </div>
+    </div>
+    <div class="sol-card chosen">
+      <div class="sol-tag">✓ Chosen — MVP</div>
+      <h4>Real-Time In-Peak Decision Support</h4>
+      <p>StoreOps module surfacing live picker status, congestion alerts, and one-tap interventions during the 6–10 PM window. Routes existing Kafka and Newland scanner data.</p>
+      <div class="sol-badge-row">
+        <span class="badge green">6–10 weeks</span>
+        <span class="badge green">No new hardware</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>Design Principles</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4 style="font-size:14px; font-weight:700; margin-bottom:6px;">Action-Oriented</h4>
+      <p style="font-size:13px; color:var(--ink3); margin:0;">Primary alerts must be actionable. Secondary KPIs shown only after all urgent alerts are cleared. No ambient charts during peak.</p>
+    </div>
+    <div class="card">
+      <h4 style="font-size:14px; font-weight:700; margin-bottom:6px;">Stress-Proof Clarity</h4>
+      <p style="font-size:13px; color:var(--ink3); margin:0;">Zero training at peak. Comprehensible by a stressed SM in under 5 seconds. Traffic-light status (green/yellow/red) replaces numbers.</p>
+    </div>
+    <div class="card">
+      <h4 style="font-size:14px; font-weight:700; margin-bottom:6px;">Zero Context Switching</h4>
+      <p style="font-size:13px; color:var(--ink3); margin:0;">Extend StoreOps, do not build a separate app. No re-authentication, no new APK sideload. SM stays in one tool.</p>
+    </div>
+    <div class="card">
+      <h4 style="font-size:14px; font-weight:700; margin-bottom:6px;">One-Thumb Operation</h4>
+      <p style="font-size:13px; color:var(--ink3); margin:0;">390px mobile-first. Oversized touch targets (min 44px). Maximum 3 action buttons per alert card.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4: FEATURES -->
+<section id="features">
+  <div class="section-label">Section 04</div>
+  <h2>Feature Requirements</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Priority</th>
+          <th>Flow</th>
+          <th>User Story</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge must">MUST HAVE</span></td>
+          <td>Flow 1: Picker Stuck Diagnosis</td>
+          <td>As a Store Manager, I need to see which specific picker is stuck, where they are, and why — with real-time alerts and live timers — so I can intervene within 2 minutes instead of guessing based on aggregate PPI.</td>
+        </tr>
+        <tr>
+          <td><span class="badge must">MUST HAVE</span></td>
+          <td>Flow 2: Inventory Location Failures</td>
+          <td>As a Store Manager, I need to be alerted when 2+ pickers fail to find the same item within 15 minutes — so I can confirm it's misplaced, update its location, and protect involved pickers' PPI scores.</td>
+        </tr>
+        <tr>
+          <td><span class="badge must">MUST HAVE</span></td>
+          <td>Flow 3: Picker-Side Reporting</td>
+          <td>As a Store Manager, I need my pickers to be able to self-report issues so I receive accurate diagnostic data instead of guessing why they're stuck.</td>
+        </tr>
+        <tr>
+          <td><span class="badge should">SHOULD HAVE</span></td>
+          <td>Flow 4: Rider-Picker Coordination</td>
+          <td>As a Store Manager, I need to see when 3+ orders are sitting packed while 2+ riders are idle in the wrong zones — with drag-and-drop reassignment to reduce dispatch delays from 3–5 min to under 2 min.</td>
+        </tr>
+        <tr>
+          <td><span class="badge could">COULD HAVE</span></td>
+          <td>Flow 5: Performance Dashboard</td>
+          <td>As a Store Manager, I need a real-time "On Track" dashboard showing 5 key KPIs with color-coded health indicators and peak surge alerts.</td>
+        </tr>
+        <tr>
+          <td><span class="badge wont">WON'T HAVE</span></td>
+          <td>Flow 6: Floor Congestion Heatmap</td>
+          <td>Requires computer vision infrastructure not yet available at stores. Moved to Phase 2 moonshot.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Non-Functional Requirements</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Category</th><th>Requirement</th></tr></thead>
+      <tbody>
+        <tr><td>Performance</td><td>Alert generation &lt;60s from trigger (P95). Dashboard refresh: 45–60s polling. Action response &lt;500ms. Latency &gt;2 min closes the intervention window.</td></tr>
+        <tr><td>Reliability</td><td>99.5% uptime during shift hours (6 AM–11 PM). SMS backup for critical alerts. Dashboard auto-recovery on crash.</td></tr>
+        <tr><td>Platform</td><td>Mobile-first (390px), Android 9+, iOS 14+, web-based (no app install). Picker: existing HDMI handheld device. Requires 4G/WiFi.</td></tr>
+        <tr><td>Scalability</td><td>Support 500+ stores, 5,000+ active pickers simultaneously. Alert consolidation when 3+ pickers report same item.</td></tr>
+        <tr><td>Security</td><td>Picker device data encrypted in transit. SM actions logged with timestamp and SM ID. Role-based access: SM-only dashboard visibility.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Critical Dependencies</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Dependency</th><th>Team</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Picker Report Event Stream</td><td>Data Engineering / Device</td><td><span class="badge red">CRITICAL — Blocks MVP</span></td></tr>
+        <tr><td>WMS Real-Time Picker Status API</td><td>WMS / Backend</td><td><span class="badge red">CRITICAL — Blocks MVP</span></td></tr>
+        <tr><td>Inventory Location Update API</td><td>WMS / Inventory</td><td><span class="badge red">CRITICAL — Not started</span></td></tr>
+        <tr><td>Data Access Policy for SMs</td><td>Legal / Operations</td><td><span class="badge red">Hard blocker — unresolved</span></td></tr>
+        <tr><td>Picker Device Report UI</td><td>HDMI Device / Frontend</td><td><span class="badge red">Not started</span></td></tr>
+        <tr><td>Refund Processing API</td><td>Payments</td><td><span class="badge green">Available</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- SECTION 5: METRICS -->
+<section id="metrics">
+  <div class="section-label">Section 05</div>
+  <h2>Success Metrics & Measurement Plan</h2>
+
+  <div class="callout blue">
+    <strong>North Star Metric:</strong> Peak-hour picking throughput (orders per hour, 6–10 PM). Baseline: ~100 orders/hr. Target: 150 orders/hr within 8 weeks of full rollout. Peak Throughput is the leading indicator; CM1 is the lagging financial outcome.
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Metric</th><th>How Measured</th><th>Baseline</th><th>8-Week Target</th><th>Priority</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Peak Throughput</td>
+          <td>Orders processed/hr during 6–10 PM</td>
+          <td>~100/hr</td>
+          <td>150/hr</td>
+          <td><span class="badge red">P0</span></td>
+        </tr>
+        <tr>
+          <td>Peak SLA Breach Rate</td>
+          <td>% orders &gt;11 min during 6–10 PM</td>
+          <td>~20%</td>
+          <td>≤12%</td>
+          <td><span class="badge red">P0</span></td>
+        </tr>
+        <tr>
+          <td>SM Peak Mode Adoption</td>
+          <td>% target SMs opening Peak Mode ≥3 nights/week</td>
+          <td>0%</td>
+          <td>≥80% by Wk 4</td>
+          <td><span class="badge red">P0</span></td>
+        </tr>
+        <tr>
+          <td>Alerts-to-Action Rate</td>
+          <td>% alerts where SM acts vs dismisses</td>
+          <td>0% baseline</td>
+          <td>≥60% action</td>
+          <td><span class="badge amber">P1</span></td>
+        </tr>
+        <tr>
+          <td>CM1 per Order (Peak)</td>
+          <td>Contribution margin per order, 6–10 PM</td>
+          <td>₹204</td>
+          <td>₹218</td>
+          <td><span class="badge amber">P1</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Guardrail Metrics</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Guardrail</th><th>Breach Threshold</th><th>Why It Matters</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Picker Log-Out Events</td>
+          <td><span class="badge red">&gt;3 per peak</span></td>
+          <td>If log-outs don't decrease, the tool has not changed SM behavior. Requires immediate usability review.</td>
+        </tr>
+        <tr>
+          <td>Picker Complaint Rate</td>
+          <td><span class="badge red">Any increase above baseline</span></td>
+          <td>Real-time individual picker visibility could be weaponized for punitive log-outs. Monitored via HR records.</td>
+        </tr>
+        <tr>
+          <td>False Alert Dismiss Rate</td>
+          <td><span class="badge amber">&gt;40% dismissal</span></td>
+          <td>"Boy who cried wolf" failure mode. Erodes SM trust and renders the system useless. Requires threshold recalibration.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- SECTION 6: RISKS -->
+<section id="risks">
+  <div class="section-label">Section 06</div>
+  <h2>Risks, Assumptions & Open Questions</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Risk</th><th>Impact</th><th>Prob.</th><th>Mitigation</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>SM uses picker-level visibility to unfairly target workers</td>
+          <td><span class="risk-high">HIGH</span></td>
+          <td><span class="risk-med">MED</span></td>
+          <td>Alert cards show behavior context only — never a ranking or score. Log-out actions require a reason tag. Audit trail for every SM action.</td>
+        </tr>
+        <tr>
+          <td>Event stream latency exceeds 30 sec under production load</td>
+          <td><span class="risk-high">HIGH</span></td>
+          <td><span class="risk-med">MED</span></td>
+          <td>Load test is a hard gate before beta. If P95 &gt;15 sec, pivot to 30-sec batch refresh with explicit latency label visible to SM.</td>
+        </tr>
+        <tr>
+          <td>StoreOps sideload friction blocks installation</td>
+          <td><span class="risk-high">HIGH</span></td>
+          <td><span class="risk-low">LOW</span></td>
+          <td>Coordinate with StoreOps mobile team to ship as in-app update, not separate APK.</td>
+        </tr>
+        <tr>
+          <td>False alert rate too high — SM begins ignoring alerts</td>
+          <td><span class="risk-high">HIGH</span></td>
+          <td><span class="risk-low">LOW</span></td>
+          <td>Track dismiss rate in beta. If &gt;40%, thresholds are too sensitive. Build dismiss-reason tagging to accelerate threshold calibration.</td>
+        </tr>
+        <tr>
+          <td>Legal approval delayed — individual picker visibility policy unclear</td>
+          <td><span class="risk-med">MED</span></td>
+          <td><span class="risk-med">MED</span></td>
+          <td>Build aggregate-only view (zone/aisle alerts, no individual picker names) as the default from Day 1, with individual visibility behind a feature flag.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Key Assumptions</h3>
+  <div class="card-grid">
+    <div class="card">
+      <p style="font-size:13px; margin:0;"><strong>Tool adoption without formal training</strong> — validate by shadowing 3 SMs on first two beta nights. Fail threshold: adoption &lt;50% in 5 days.</p>
+    </div>
+    <div class="card">
+      <p style="font-size:13px; margin:0;"><strong>Kafka event stream latency ≤5 sec P95</strong> — Data Engineering's load test is the gate before beta, not before design.</p>
+    </div>
+    <div class="card">
+      <p style="font-size:13px; margin:0;"><strong>SMs will stop logging out pickers</strong> when given better diagnostic data — the guardrail metric monitors this directly.</p>
+    </div>
+    <div class="card">
+      <p style="font-size:13px; margin:0;"><strong>Individual picker visibility does not create new labour-relations risks</strong> — Legal and HR review is a pre-launch requirement.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 7: TIMELINE -->
+<section id="timeline">
+  <div class="section-label">Section 07</div>
+  <h2>Timeline & Milestones</h2>
+
+  <div class="timeline">
+    <div class="tl-row">
+      <div class="tl-dot">M1</div>
+      <div class="tl-body">
+        <h4>PRD Sign-Off</h4>
+        <p>All stakeholders approved. OQ-1 (data policy) and OQ-2 (event schema) resolved.</p>
+        <div class="tl-meta"><span class="badge blue">Week 1</span><span class="badge amber">Owner: PM</span></div>
+      </div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-dot">M2</div>
+      <div class="tl-body">
+        <h4>Infra Validation</h4>
+        <p>Data Eng confirms event schema, load test passed (P95 ≤15 sec). Go/no-go on real-time vs 30-sec batch.</p>
+        <div class="tl-meta"><span class="badge blue">Week 2</span><span class="badge amber">Owner: Data Eng Lead</span></div>
+      </div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-dot">M3</div>
+      <div class="tl-body">
+        <h4>Design Complete</h4>
+        <p>Figma prototype complete. Usability test with 3 SMs: ≥80% identify stuck picker and take action within 30 sec without instruction.</p>
+        <div class="tl-meta"><span class="badge blue">Week 3</span><span class="badge amber">Owner: Design Lead</span></div>
+      </div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-dot">M5</div>
+      <div class="tl-body">
+        <h4>Alpha Build</h4>
+        <p>Happy path functional on staging. Picker grid, stuck alert, one-tap reassignment working end-to-end.</p>
+        <div class="tl-meta"><span class="badge blue">Week 6</span><span class="badge amber">Owner: Eng Lead</span></div>
+      </div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-dot">M6</div>
+      <div class="tl-body">
+        <h4>Beta Launch — 5 Stores</h4>
+        <p>5 high-volume COCO stores live. SMs receive 5-min orientation. PM shadows 2 stores during first peak window.</p>
+        <div class="tl-meta"><span class="badge blue">Week 7</span><span class="badge amber">Owner: PM</span></div>
+      </div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-dot">M8</div>
+      <div class="tl-body">
+        <h4>Full Rollout</h4>
+        <p>All ~210 high-volume COCO stores live. North star tracking started across the network.</p>
+        <div class="tl-meta"><span class="badge blue">Week 12</span><span class="badge green">Target</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- end content -->
+
+<div class="doc-footer">
+  <strong>StoreOps Peak-Hour Decision Support</strong> · Rethink Systems · Group 4 · v1.0 MVP · 28 Feb 2026
+</div>
+
+<script>
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-inner a');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.nav-inner a[href="#${entry.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { threshold: 0.2, rootMargin: '-72px 0px -60% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
