@@ -23,18 +23,20 @@ A personal portfolio website. Built with plain HTML, CSS, and vanilla JavaScript
 
 ## File structure
 
-* index.html, index-v2.html, index-v3.html -- three design iterations. v3 is the current/active version.
-* styles.css, styles-v2.css, styles-v3.css -- corresponding stylesheets
-* script.js -- shared vanilla JS (nav toggle, reveal animations, expandable cards)
-* photo.jpg -- profile photo (used by the email gate; large, may need a compressed variant for mobile)
-* images/ -- hero comic, philosophy illustration, contact illustration (v3 hero uses hero-comic.png, not photo.jpg)
+* index.html -- the main portfolio page (served by GitHub Pages). Previously named index-v3.html locally.
+* styles-v3.css -- stylesheet for the portfolio
+* script.js -- vanilla JS (nav toggle, reveal animations, expandable cards)
+* config.js -- Supabase credentials for the email gate (gitignored; template in config.example.js)
+* images/ -- hero comic, philosophy illustration, contact illustration, gate avatar
 
-## Email gate (index-v3.html)
+Old v1 and v2 portfolio files (index-v2.html, styles.css, styles-v2.css) are gitignored but kept locally for reference.
+
+## Email gate (index.html)
 
 First-time visitors see a full-screen overlay with a circular photo, tagline, and email input before the portfolio. Returning visitors skip it.
 
 * **SDK**: Supabase JS client loaded from `https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2` (deferred).
-* **Config**: constants at the top of the inline gate script at the bottom of `index-v3.html` — `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_TABLE` (defaults to `subscribers`). Table needs a text column called `email`. **Placeholders are in place** (`YOUR_SUPABASE_PROJECT_URL_HERE` / `YOUR_SUPABASE_ANON_KEY_HERE`) — replace them before deploy. Until replaced, the gate runs in local-only mode: validation still runs, the portfolio still unlocks, but no row is written. This is intentional and safe.
+* **Config**: credentials live in `config.js` (gitignored). The inline gate script in `index.html` reads them via `window.__GATE_CONFIG__`. Table needs a text column called `email`, RLS enabled, an INSERT policy for the `anon` role, and the table must be exposed via Project Settings → Data API → Exposed tables. If `config.js` is missing or has placeholders, the gate runs in local-only mode — validation still runs and the portfolio unlocks, but nothing is written. This is intentional and safe.
 * **Anti-flash**: an inline `<style>` + pre-paint `<script>` in `<head>` checks `localStorage.portfolio_gate_passed` and adds `.gate-skip` to `<html>` before first paint, so returning visitors never see the gate flicker.
 * **State classes on `<html>`**: none (gate visible, portfolio hidden) → `.gate-skip` (returning visitor) or `.gate-done` (just unlocked). Both hide the gate and show nav/main/footer.
 * **Fails open by design**: if Supabase is unreachable, the SDK fails to load, credentials are placeholders, or the insert errors out (including duplicate-email unique-constraint violations with Postgres code 23505), the visitor is still let through. The gate must never block the portfolio.

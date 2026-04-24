@@ -5,9 +5,10 @@ config.js
 # Claude Code workspace — local dev scripts, screenshots, local settings
 .claude/
 
-# Old portfolio versions (superseded by index-v3.html)
-index.html
+# Old portfolio versions (superseded by index.html, formerly index-v3.html)
 index-v2.html
+styles.css
+styles-v2.css
 
 # Draft copy / dev notes
 copy.md
