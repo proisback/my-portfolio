@@ -197,6 +197,44 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  // ===== 4.5. Mailto click — copy email + toast =====
+  // mailto: links silently fail on machines without a default mail client
+  // (many Chromebooks / Windows machines where Gmail-web is the primary).
+  // We still let mailto fire for people who DO have a client configured,
+  // but we also copy the address to clipboard and show a toast so a click
+  // is never a dead end.
+  var toastEl = document.getElementById('toast');
+  var toastTextEl = toastEl ? toastEl.querySelector('.toast-text') : null;
+  var toastTimer;
+
+  function showToast(msg) {
+    if (!toastEl || !toastTextEl) return;
+    toastTextEl.textContent = msg;
+    toastEl.classList.add('is-visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      toastEl.classList.remove('is-visible');
+    }, 2400);
+  }
+
+  document.querySelectorAll('a[href^="mailto:"]').forEach(function (link) {
+    link.addEventListener('click', function () {
+      var href = link.getAttribute('href') || '';
+      var email = href.replace(/^mailto:/i, '').split('?')[0];
+      if (!email) return;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(email).then(function () {
+          showToast('Email copied — ' + email);
+        }).catch(function () {
+          showToast(email);
+        });
+      } else {
+        showToast(email);
+      }
+      // Don't preventDefault — mailto: still opens a client if one exists.
+    });
+  });
+
   // ===== 5. Active nav link on scroll =====
 
   var sections = document.querySelectorAll('section[id]');

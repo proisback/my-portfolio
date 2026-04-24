@@ -1489,6 +1489,48 @@ a, button, [role="button"] {
   .stat-label { font-size: 10px; letter-spacing: 0.14em; }
 }
 
+/* ==========================================================================
+   Toast — shown on mailto clicks (copies email, confirms copy)
+   ========================================================================== */
+.toast {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--charcoal);
+  color: var(--ivory);
+  padding: 12px 20px;
+  border-radius: var(--r-pill);
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 12px 32px rgba(31,26,29,0.28);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 260ms var(--ease-std), transform 260ms var(--ease-std);
+  max-width: calc(100vw - 32px);
+}
+.toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.toast-icon {
+  display: inline-flex;
+  color: var(--marigold);
+  flex-shrink: 0;
+}
+.toast-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width: 480px) {
+  .toast { font-size: 13px; padding: 11px 16px; bottom: 20px; }
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
