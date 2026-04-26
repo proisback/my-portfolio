@@ -236,45 +236,26 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // ===== 4.6. Comic Story Reader =====
-  // 9-page origin comic, collapsed by default. iBooks-style interactive page
-  // turn: the front image slot tracks the user's finger during a drag,
-  // sliding + tilting slightly while the next page (loaded onto the back
-  // slot) is revealed underneath. Releasing past ~30% of the track width
-  // commits the turn; releasing earlier springs the page back to rest.
-  // Buttons / dots / keyboard drive the same final commit animation.
+  // 9-page origin comic, collapsed by default. Simple, mobile-safe version:
+  // single image element swaps src on page change with a brief opacity fade.
+  // Touch swipes (one-finger horizontal, >50px) trigger page changes.
   (function () {
     var toggle    = document.getElementById('comic-toggle');
     var reader    = document.getElementById('comic-reader');
     var track     = document.getElementById('comic-pages-track');
-    var slotA     = document.getElementById('comic-page-a');
-    var slotB     = document.getElementById('comic-page-b');
+    var pageImg   = document.getElementById('comic-page');
     var prevBtn   = document.getElementById('comic-prev');
     var nextBtn   = document.getElementById('comic-next');
     var counter   = document.getElementById('comic-counter');
     var endBlk    = document.getElementById('comic-end');
     var skipLink  = document.getElementById('comic-skip');
     var dots      = document.querySelectorAll('.comic-dot');
-    if (!toggle || !reader || !track || !slotA || !slotB) return;
+    if (!toggle || !reader || !track || !pageImg) return;
 
-    var TOTAL          = 9;
-    var COMMIT_MS      = 380;          // matches CSS transition on .comic-page
-    var SNAPBACK_MS    = 320;
-    var COMMIT_FRAC    = 0.30;         // drag past 30% of track width to commit
-    var MAX_DRAG_TILT  = 22;           // max degrees of rotateY tilt during drag
-    var current        = 1;
-    var slots          = [slotA, slotB];
-    var frontIdx       = 0;            // which slot is currently the front (visible)
-    var isAnimating    = false;
-    var preloaded      = {};
-    var prefersReducedMotion =
-      window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    // Mark the initial front/back roles via class.
-    slotA.classList.add('is-front');
-    slotB.classList.add('is-back');
-
-    function front() { return slots[frontIdx]; }
-    function back()  { return slots[1 - frontIdx]; }
+    var TOTAL = 9;
+    var SWIPE_MIN_PX = 50;
+    var current = 1;
+    var preloaded = {};
 
     // Per-page alt text — describes what's visible in each page (good for
     // screen readers and SEO crawlers).
@@ -298,135 +279,22 @@ document.addEventListener('DOMContentLoaded', function () {
       preloaded[page] = true;
     }
 
-    function loadInto(img, page) {
+    function render(page) {
+      if (page < 1 || page > TOTAL || page === current) return;
+      current = page;
+
       var newSrc = 'images/comic-story/' + page + '.png';
-      img.alt = ALT_TEXTS[page] || ('Comic page ' + page + ' of ' + TOTAL);
-      if (img.getAttribute('src') !== newSrc) {
-        img.classList.add('is-loading');
-        img.src = newSrc;
-        if (img.complete && img.naturalWidth > 0) {
-          img.classList.remove('is-loading');
-        }
-      }
-    }
-
-    // Compute the off-screen "committed" transform for a given direction.
-    // direction: +1 forward (front slides off to the left, lifts/tilts up),
-    //            -1 backward (front slides off to the right).
-    function offTransform(direction) {
-      if (direction === 1) return 'translateX(-105%) rotateY(-' + MAX_DRAG_TILT + 'deg)';
-      return 'translateX(105%) rotateY(' + MAX_DRAG_TILT + 'deg)';
-    }
-
-    // Mid-drag transform — translateX tracks finger directly; rotateY scales
-    // with how far you've dragged (capped at MAX_DRAG_TILT).
-    function dragTransform(dx, trackWidth, direction) {
-      var clampedDx = direction === 1 ? Math.min(0, dx) : Math.max(0, dx);
-      var tilt = Math.max(-MAX_DRAG_TILT,
-                 Math.min(MAX_DRAG_TILT,
-                          (-clampedDx / trackWidth) * MAX_DRAG_TILT * 2));
-      return 'translateX(' + clampedDx + 'px) rotateY(' + tilt + 'deg)';
-    }
-
-    // Stage the back slot with the incoming page (used by both buttons and
-    // the start of a drag).
-    function stageBack(newPage) {
-      var b = back();
-      loadInto(b, newPage);
-      b.removeAttribute('aria-hidden');
-    }
-
-    // Clear the back slot (after a snap-back or after the role-swap).
-    function clearBack() {
-      var b = back();
-      b.removeAttribute('src');
-      b.alt = '';
-      b.setAttribute('aria-hidden', 'true');
-    }
-
-    // Swap which slot is "front" / "back" — used after a successful commit.
-    function swapRoles() {
-      var oldFront = slots[frontIdx];
-      var newFront = slots[1 - frontIdx];
-      oldFront.classList.remove('is-front'); oldFront.classList.add('is-back');
-      newFront.classList.remove('is-back');  newFront.classList.add('is-front');
-      frontIdx = 1 - frontIdx;
-    }
-
-    // commitTurn: animate the front page off in `direction` and complete the
-    // role-swap. Used by buttons, keyboard, dot jumps, and end-of-drag-past-
-    // threshold. Drag-end already has the front mid-flight, so this just
-    // continues the animation to the off-state.
-    function commitTurn(newPage, direction) {
-      if (newPage < 1 || newPage > TOTAL || newPage === current || isAnimating) return;
-      if (!direction) direction = newPage > current ? 1 : -1;
-
-      if (prefersReducedMotion) {
-        loadInto(front(), newPage);
-        current = newPage;
-        updateChrome(newPage);
-        preload(newPage - 1);
-        preload(newPage + 1);
-        return;
+      pageImg.alt = ALT_TEXTS[page] || ('Comic page ' + page + ' of ' + TOTAL);
+      pageImg.classList.add('is-loading');
+      pageImg.src = newSrc;
+      // If already cached, image is `complete` synchronously — clear the fade.
+      if (pageImg.complete && pageImg.naturalWidth > 0) {
+        pageImg.classList.remove('is-loading');
       }
 
-      isAnimating = true;
-      stageBack(newPage);
-      var f = front();
-
-      // Re-enable transition (drag handlers may have disabled it).
-      f.classList.remove('no-transition');
-      // Force reflow so the transition kicks in cleanly from current position.
-      void f.offsetWidth;
-      f.style.transform = offTransform(direction);
-
-      setTimeout(function () {
-        // Role swap. The slot that just slid off becomes the new "back",
-        // ready to receive future incoming pages. The slot that was back
-        // (now showing the new page in its final position) becomes "front".
-        var oldFront = front();
-        swapRoles();
-        var nowBack = oldFront; // the slot that slid off
-
-        // Silently reset the slot that slid off: snap to no-transform, clear.
-        nowBack.classList.add('no-transition');
-        nowBack.style.transform = '';
-        nowBack.removeAttribute('src');
-        nowBack.alt = '';
-        nowBack.setAttribute('aria-hidden', 'true');
-
-        // The new front already shows the right image (from stageBack); just
-        // ensure it has no transform applied.
-        var newFront = front();
-        newFront.classList.add('no-transition');
-        newFront.style.transform = '';
-        newFront.removeAttribute('aria-hidden');
-
-        void newFront.offsetWidth;
-        nowBack.classList.remove('no-transition');
-        newFront.classList.remove('no-transition');
-
-        current = newPage;
-        isAnimating = false;
-        updateChrome(newPage);
-        preload(newPage - 1);
-        preload(newPage + 1);
-      }, COMMIT_MS);
-    }
-
-    // snapBack: animate the front page back to its rest position and clear
-    // the staged back. Used when user releases mid-drag without crossing
-    // the commit threshold.
-    function snapBack() {
-      isAnimating = true;
-      var f = front();
-      f.classList.remove('no-transition');
-      void f.offsetWidth;
-      f.style.transform = '';
-      setTimeout(function () {
-        clearBack();
-        isAnimating = false;
-      }, SNAPBACK_MS);
+      updateChrome(page);
+      preload(page - 1);
+      preload(page + 1);
     }
 
     // Update everything that's not the comic image itself: counter, dots,
@@ -453,18 +321,15 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
-    // Loading-state cleanup for both image slots.
-    slots.forEach(function (img) {
-      img.addEventListener('load',  function () { img.classList.remove('is-loading'); });
-      img.addEventListener('error', function () { img.classList.remove('is-loading'); });
-    });
+    // Loading-state cleanup.
+    pageImg.addEventListener('load',  function () { pageImg.classList.remove('is-loading'); });
+    pageImg.addEventListener('error', function () { pageImg.classList.remove('is-loading'); });
 
-    prevBtn.addEventListener('click', function () { commitTurn(current - 1, -1); });
-    nextBtn.addEventListener('click', function () { commitTurn(current + 1,  1); });
+    prevBtn.addEventListener('click', function () { render(current - 1); });
+    nextBtn.addEventListener('click', function () { render(current + 1); });
     dots.forEach(function (dot) {
       dot.addEventListener('click', function () {
-        var p = parseInt(dot.getAttribute('data-page'), 10);
-        commitTurn(p, p > current ? 1 : -1);
+        render(parseInt(dot.getAttribute('data-page'), 10));
       });
     });
 
@@ -487,98 +352,31 @@ document.addEventListener('DOMContentLoaded', function () {
     // Keyboard navigation when focus is inside the reader.
     reader.addEventListener('keydown', function (e) {
       if (e.key === 'ArrowLeft' && !prevBtn.disabled) {
-        commitTurn(current - 1, -1); e.preventDefault();
+        render(current - 1); e.preventDefault();
       } else if (e.key === 'ArrowRight' && !nextBtn.disabled) {
-        commitTurn(current + 1, 1); e.preventDefault();
+        render(current + 1); e.preventDefault();
       }
     });
 
-    // ===== Touch drag — iBooks-style interactive page turn =====
-    // touchstart: capture origin; nothing visible changes until first move.
-    // touchmove (first horizontal motion): determine direction, stage the
-    //   incoming page on the back slot, disable transitions on front so it
-    //   tracks the finger 1:1.
-    // touchmove (subsequent): update front transform = translateX(dx) +
-    //   slight rotateY proportional to drag fraction.
-    // touchend: if |dx|/trackWidth > COMMIT_FRAC → commitTurn().
-    //           else → snapBack() (page springs to rest, back slot cleared).
-    var drag = {
-      active: false,
-      direction: 0,        // 0 = unknown, ±1 set on first horizontal move
-      startX: 0, startY: 0,
-      trackWidth: 0,
-      lastDx: 0
-    };
-
+    // Simple swipe — one-finger horizontal swipe on the track turns the page.
+    // No drag-tracking, no preventDefault — the browser handles all native
+    // scroll/zoom behavior, which keeps mobile reliable.
+    var touchStartX = 0, touchStartY = 0, touchActive = false;
     track.addEventListener('touchstart', function (e) {
-      if (isAnimating || e.touches.length !== 1) { drag.active = false; return; }
-      drag.active = true;
-      drag.direction = 0;
-      drag.startX = e.touches[0].clientX;
-      drag.startY = e.touches[0].clientY;
-      drag.trackWidth = track.offsetWidth || 1;
-      drag.lastDx = 0;
+      if (e.touches.length !== 1) { touchActive = false; return; }
+      touchActive = true;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
     }, { passive: true });
-
-    track.addEventListener('touchmove', function (e) {
-      if (!drag.active || e.touches.length !== 1) return;
-      var dx = e.touches[0].clientX - drag.startX;
-      var dy = e.touches[0].clientY - drag.startY;
-
-      // Decide direction on first non-trivial movement.
-      if (drag.direction === 0) {
-        // Vertical-dominant motion → bail, let the page scroll.
-        if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 8) {
-          drag.active = false;
-          return;
-        }
-        if (Math.abs(dx) < 6) return; // wait for clearer intent
-        drag.direction = dx < 0 ? 1 : -1;
-        // At edges, no page to reveal — bail.
-        var nextPage = current + drag.direction;
-        if (nextPage < 1 || nextPage > TOTAL) {
-          drag.active = false;
-          return;
-        }
-        stageBack(nextPage);
-        // Pivot from the spine on the appropriate side.
-        front().style.transformOrigin = drag.direction === 1 ? 'left center' : 'right center';
-        front().classList.add('no-transition');
-      }
-
-      drag.lastDx = dx;
-      front().style.transform = dragTransform(dx, drag.trackWidth, drag.direction);
-
-      // Once we're horizontally dragging, suppress page scroll.
-      if (e.cancelable) e.preventDefault();
-    }, { passive: false });
-
     track.addEventListener('touchend', function (e) {
-      if (!drag.active) return;
-      drag.active = false;
-      if (drag.direction === 0) return;
-
-      var dx = (e.changedTouches[0] ? e.changedTouches[0].clientX : drag.startX) - drag.startX;
-      var fraction = Math.abs(dx) / drag.trackWidth;
-
-      // Pull the front out of "drag mode" so the next transform animates.
-      front().classList.remove('no-transition');
-
-      if (fraction > COMMIT_FRAC) {
-        commitTurn(current + drag.direction, drag.direction);
-      } else {
-        snapBack();
-      }
-      drag.direction = 0;
-    });
-
-    track.addEventListener('touchcancel', function () {
-      if (!drag.active) return;
-      drag.active = false;
-      front().classList.remove('no-transition');
-      if (drag.direction !== 0) snapBack();
-      drag.direction = 0;
-    });
+      if (!touchActive || e.changedTouches.length !== 1) return;
+      touchActive = false;
+      var dx = e.changedTouches[0].clientX - touchStartX;
+      var dy = e.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(dx) < SWIPE_MIN_PX || Math.abs(dx) < Math.abs(dy)) return;
+      if (dx < 0 && current < TOTAL) render(current + 1);
+      else if (dx > 0 && current > 1) render(current - 1);
+    }, { passive: true });
   })();
 
   // ===== 5. Active nav link on scroll =====

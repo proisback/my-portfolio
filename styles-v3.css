@@ -1119,24 +1119,17 @@ a, button, [role="button"] {
   overflow: hidden;
 }
 
-/* The page-turn track — drag-controlled page turn (iBooks-style). The
-   "front" image slot is on top (z-index 2) and tracks the user's finger
-   during a drag, sliding + tilting slightly. The "back" slot sits
-   underneath and shows the incoming page. Releasing past a threshold
-   commits the turn; otherwise the front springs back. perspective gives
-   the rotateY tilt some depth. aspect-ratio 5/4 matches the native comic
-   page dimensions (1402×1122). */
+/* The page-turn track — single image with opacity-fade swap. Aspect ratio
+   is locked via padding-bottom (80% = 4:5, matching the native comic page
+   dimensions 1402×1122) — this works on every mobile browser without
+   relying on CSS aspect-ratio. */
 .comic-pages-track {
   position: relative;
   width: 100%;
-  aspect-ratio: 5 / 4;
+  padding-bottom: 80%;
   overflow: hidden;
   border-radius: 12px;
   background: var(--ivory);
-  perspective: 1800px;
-  perspective-origin: center center;
-  /* Vertical scroll + pinch-zoom pass through; horizontal swipes are JS. */
-  touch-action: pan-y pinch-zoom;
 }
 
 .comic-page {
@@ -1148,22 +1141,9 @@ a, button, [role="button"] {
   display: block;
   user-select: none;
   -webkit-user-drag: none;
-  transform-origin: left center;
-  transition: transform 380ms cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 240ms var(--ease-std);
-  will-change: transform;
+  transition: opacity 280ms var(--ease-std);
 }
-.comic-page.is-loading { opacity: 0.4; }
-/* Used by JS to skip transitions during instant role-swap or drag tracking. */
-.comic-page.no-transition { transition: none; }
-/* Front slot sits on top of back. Set via .is-front so we can flip roles in JS. */
-.comic-page.is-front { z-index: 2; }
-.comic-page.is-back  { z-index: 1; }
-
-/* Reduced-motion users get an instant page swap, no animation. */
-@media (prefers-reduced-motion: reduce) {
-  .comic-page { transition: none; }
-}
+.comic-page.is-loading { opacity: 0.3; }
 
 .comic-controls {
   display: flex;
@@ -1633,7 +1613,9 @@ a, button, [role="button"] {
     gap: 48px;
     text-align: left;
   }
-  .photo-col { justify-content: flex-start; }
+  /* Center the polaroid when the hero stacks vertically — left-align looked
+     orphaned on its own row. */
+  .photo-col { justify-content: center; }
   .polaroid { max-width: 320px; }
   .stats-inner { grid-template-columns: repeat(2, 1fr); gap: 28px; row-gap: 32px; }
   /* Once stats wrap to 2 rows, the separator on the leftmost cell of row 2
@@ -1644,8 +1626,16 @@ a, button, [role="button"] {
 
 @media (max-width: 720px) {
   .nav-inner { padding: 0 20px; gap: 12px; }
-  /* On mobile the nav collapses to a hamburger — keep the logo simple */
-  .nav-logo-expand { display: none; }
+  /* On mobile the nav collapses to a hamburger — keep the logo simple.
+     Belt-and-suspenders: explicitly clear the ::before content too, since
+     iOS Safari has been known to leak pseudo-elements of display:none
+     parents through backdrop-filter surfaces. */
+  .nav-logo-expand { display: none !important; }
+  .nav-logo-expand::before { content: none !important; }
+  /* Slightly more opaque nav background on mobile so any thin lines or
+     decorative marks behind don't bleed through the blurred backdrop. */
+  .nav { background: rgba(245, 239, 225, 0.92); }
+  .nav--scrolled { background: rgba(245, 239, 225, 0.97); }
   .nav-links {
     position: fixed;
     top: var(--nav-h);
