@@ -1043,6 +1043,226 @@ a, button, [role="button"] {
 }
 
 /* ==========================================================================
+   Comic Story — collapsible 9-page origin comic reader
+   ========================================================================== */
+.comic-subtitle {
+  margin: -8px auto 28px;
+  max-width: 560px;
+  font-size: 16px;
+  font-style: italic;
+  color: var(--ink-secondary);
+}
+
+.comic-toggle { margin-top: 8px; }
+
+.comic-reader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  margin-top: 40px;
+  width: 100%;
+}
+.comic-reader[hidden] { display: none; }
+
+.comic-dots {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+}
+.comic-dot {
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(31, 26, 29, 0.18);
+  background: var(--ivory);
+  color: var(--ink-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s var(--ease-spring), background 0.2s, color 0.2s, border-color 0.2s;
+  font-variant-numeric: tabular-nums;
+  padding: 0;
+  line-height: 1;
+}
+.comic-dot:hover {
+  background: var(--warm);
+  border-color: rgba(31, 26, 29, 0.30);
+  transform: translateY(-1px);
+}
+.comic-dot:focus-visible { outline: 2px solid var(--marigold); outline-offset: 3px; }
+.comic-dot.is-active {
+  background: var(--charcoal);
+  color: var(--ivory);
+  border-color: var(--charcoal);
+}
+
+/* Comic stage — clean ivory card. The page-turn track inside is the
+   visual anchor; we keep the surround quiet so the comic content reads. */
+.comic-stage {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  background: var(--ivory);
+  border-radius: var(--r-card);
+  padding: 16px;
+  box-shadow:
+    0 18px 40px rgba(31,26,29,0.10),
+    0 3px 8px rgba(31,26,29,0.06);
+  overflow: hidden;
+}
+
+/* The page-turn track — drag-controlled page turn (iBooks-style). The
+   "front" image slot is on top (z-index 2) and tracks the user's finger
+   during a drag, sliding + tilting slightly. The "back" slot sits
+   underneath and shows the incoming page. Releasing past a threshold
+   commits the turn; otherwise the front springs back. perspective gives
+   the rotateY tilt some depth. aspect-ratio 5/4 matches the native comic
+   page dimensions (1402×1122). */
+.comic-pages-track {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 5 / 4;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--ivory);
+  perspective: 1800px;
+  perspective-origin: center center;
+  /* Vertical scroll + pinch-zoom pass through; horizontal swipes are JS. */
+  touch-action: pan-y pinch-zoom;
+}
+
+.comic-page {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  transform-origin: left center;
+  transition: transform 380ms cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 240ms var(--ease-std);
+  will-change: transform;
+}
+.comic-page.is-loading { opacity: 0.4; }
+/* Used by JS to skip transitions during instant role-swap or drag tracking. */
+.comic-page.no-transition { transition: none; }
+/* Front slot sits on top of back. Set via .is-front so we can flip roles in JS. */
+.comic-page.is-front { z-index: 2; }
+.comic-page.is-back  { z-index: 1; }
+
+/* Reduced-motion users get an instant page swap, no animation. */
+@media (prefers-reduced-motion: reduce) {
+  .comic-page { transition: none; }
+}
+
+.comic-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.comic-nav {
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--charcoal);
+  background: var(--ivory);
+  border: 1.5px solid rgba(31, 26, 29, 0.18);
+  padding: 11px 22px;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  min-height: 44px;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s var(--ease-spring);
+}
+.comic-nav:hover:not(:disabled) {
+  background: var(--warm);
+  border-color: rgba(31, 26, 29, 0.30);
+  transform: translateY(-1px);
+}
+.comic-nav:focus-visible { outline: 2px solid var(--marigold); outline-offset: 3px; }
+.comic-nav:disabled { opacity: 0.38; cursor: not-allowed; }
+
+.comic-counter {
+  font-size: 13px;
+  font-style: italic;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  text-transform: lowercase;
+  min-width: 96px;
+  text-align: center;
+}
+
+/* Subtle "skip the story" exit affordance, always available once the reader
+   is open. Hides on page 9 so it doesn't compete with the closing CTA. */
+.comic-skip {
+  display: inline-block;
+  margin-top: -8px;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--ink-disabled);
+  text-decoration: underline;
+  text-decoration-color: rgba(31, 26, 29, 0.18);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  transition: color 0.2s var(--ease-std), text-decoration-color 0.2s var(--ease-std);
+}
+.comic-skip:hover {
+  color: var(--ink-secondary);
+  text-decoration-color: var(--marigold);
+}
+.comic-skip:focus-visible { outline: 2px solid var(--marigold); outline-offset: 3px; }
+.comic-skip[hidden] { display: none; }
+
+.comic-end {
+  margin-top: 8px;
+  padding: 28px 28px 24px;
+  background: var(--marigold-soft);
+  border-radius: var(--r-card);
+  max-width: 640px;
+  text-align: center;
+  animation: comic-end-in 360ms var(--ease-std) both;
+}
+.comic-end[hidden] { display: none; }
+.comic-end-text {
+  font-size: 16px;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--charcoal);
+  margin: 0 0 18px;
+  line-height: 1.55;
+}
+@keyframes comic-end-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+  /* Bump dots and nav buttons to 40px+ tap targets (44px is the iOS/Material
+     accessibility minimum). 9 × 40 = ~360px → wraps to 2 rows on 320–360px
+     viewports, which is fine. */
+  .comic-dot { width: 40px; height: 40px; font-size: 13px; gap: 6px; }
+  .comic-dots { gap: 8px; }
+  .comic-controls { gap: 12px; }
+  .comic-nav { padding: 12px 18px; font-size: 13px; min-height: 44px; }
+  .comic-counter { font-size: 12px; min-width: 80px; }
+  .comic-stage { padding: 10px; }
+  .comic-end { padding: 22px 20px 20px; }
+}
+
+/* ==========================================================================
    Philosophy — principle cards (washi-tape detailing)
    ========================================================================== */
 .philosophy-lead {

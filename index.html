@@ -179,6 +179,67 @@
       </div>
     </section>
 
+    <!-- ===== The Story (origin comic) ===== -->
+    <section class="section section--cream" id="comic-story">
+      <div class="section-inner section-inner--centered">
+        <p class="section-label">Origin</p>
+        <h2 class="section-title">Before the products. The real story.</h2>
+        <p class="comic-subtitle">Nine pages. The honest version of how this started.</p>
+
+        <button class="more-builds-toggle comic-toggle" id="comic-toggle"
+                aria-expanded="false" aria-controls="comic-reader">
+          <span class="comic-toggle-text">Read the story</span>
+          <span class="more-builds-toggle-icon" aria-hidden="true">+</span>
+        </button>
+
+        <div class="comic-reader" id="comic-reader" hidden>
+          <div class="comic-dots" role="tablist" aria-label="Comic pages">
+            <button class="comic-dot is-active" data-page="1" aria-label="Go to page 1" aria-current="page">1</button>
+            <button class="comic-dot" data-page="2" aria-label="Go to page 2">2</button>
+            <button class="comic-dot" data-page="3" aria-label="Go to page 3">3</button>
+            <button class="comic-dot" data-page="4" aria-label="Go to page 4">4</button>
+            <button class="comic-dot" data-page="5" aria-label="Go to page 5">5</button>
+            <button class="comic-dot" data-page="6" aria-label="Go to page 6">6</button>
+            <button class="comic-dot" data-page="7" aria-label="Go to page 7">7</button>
+            <button class="comic-dot" data-page="8" aria-label="Go to page 8">8</button>
+            <button class="comic-dot" data-page="9" aria-label="Go to page 9">9</button>
+          </div>
+
+          <div class="comic-stage">
+            <div class="comic-pages-track" id="comic-pages-track">
+              <!-- Two stacked image slots. Whichever is "front" sits on top
+                   and is the page the user sees + drags. The "back" sits
+                   underneath, gets the incoming page loaded into it the
+                   moment a drag direction is detected, and is revealed as
+                   the front slides off. Roles swap on each commit. -->
+              <img class="comic-page" id="comic-page-a"
+                   src="images/comic-story/1.png"
+                   alt="Comic page 1 of 9: The City of Friction — Prateek walks through a city of broken systems where users struggle with endless form fields, forgotten passwords, 60-minute support queues, and managers drowning in five open spreadsheets."
+                   loading="lazy"
+                   decoding="async" />
+              <img class="comic-page" id="comic-page-b"
+                   alt=""
+                   aria-hidden="true"
+                   decoding="async" />
+            </div>
+          </div>
+
+          <div class="comic-controls">
+            <button class="comic-nav" id="comic-prev" type="button" aria-label="Previous page" disabled>&larr; Prev Page</button>
+            <span class="comic-counter" id="comic-counter" aria-live="polite">Page 1 of 9</span>
+            <button class="comic-nav" id="comic-next" type="button" aria-label="Next page">Next Page &rarr;</button>
+          </div>
+
+          <a href="#projects" class="comic-skip" id="comic-skip">Skip to the builds &rarr;</a>
+
+          <div class="comic-end" id="comic-end" hidden>
+            <p class="comic-end-text">That&rsquo;s the context. Everything else in this portfolio is what came after.</p>
+            <a href="#projects" class="btn btn-primary comic-end-cta">See the builds &rarr;</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ===== AI Builds / Side Projects ===== -->
     <section class="section section--ivory" id="projects">
       <div class="section-inner">
