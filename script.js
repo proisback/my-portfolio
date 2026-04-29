@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (moreBuildsToggle && moreBuildsRegion) {
     var labelEl = moreBuildsToggle.querySelector('.more-builds-toggle-text');
-    var openLabel = 'Hide additional builds';
+    var openLabel = 'Hide additional case studies';
     var closedLabel = labelEl.textContent;
 
     moreBuildsToggle.addEventListener('click', function () {
@@ -194,6 +194,31 @@ document.addEventListener('DOMContentLoaded', function () {
     if (contactInner) {
       mark(contactInner.querySelector('.section-label'), 'reveal-left');
       mark(contactInner.querySelector('.section-title'), 'reveal', 1);
+    }
+
+    // Timeline items: slide-left reveal with stagger
+    document.querySelectorAll('.timeline-item').forEach(function (el, i) {
+      mark(el, 'reveal-left', Math.min(i + 1, 5));
+    });
+
+    // Timeline progress fill — marigold line that grows down the timeline as
+    // each item enters the viewport. Reuses IntersectionObserver pattern.
+    var timelineEl = document.querySelector('.timeline');
+    var timelineProgress = timelineEl && timelineEl.querySelector('.timeline-progress');
+    var timelineItems = timelineEl ? timelineEl.querySelectorAll('.timeline-item') : [];
+    if (timelineEl && timelineProgress && timelineItems.length > 0) {
+      var revealedCount = 0;
+      var total = timelineItems.length;
+      var timelineProgressObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            revealedCount++;
+            timelineProgress.style.setProperty('--progress', (revealedCount / total).toFixed(3));
+            timelineProgressObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.4, rootMargin: '0px 0px -40px 0px' });
+      timelineItems.forEach(function (item) { timelineProgressObserver.observe(item); });
     }
   }
 

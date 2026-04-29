@@ -200,6 +200,29 @@ a, button, [role="button"] {
   transform: translateX(-50%);
 }
 
+.nav-notify {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  padding: 10px 4px;
+  margin-right: 16px;
+  letter-spacing: 0.005em;
+  transition: color 180ms var(--ease-std);
+}
+.nav-notify:hover {
+  color: var(--charcoal);
+}
+.nav-notify-icon {
+  color: var(--marigold);
+  transition: transform 220ms var(--ease-spring);
+}
+.nav-notify:hover .nav-notify-icon {
+  transform: rotate(-12deg) translateY(-1px);
+}
+
 .nav-cta {
   display: inline-flex;
   align-items: center;
@@ -675,6 +698,39 @@ a, button, [role="button"] {
     transparent 4px 8px
   );
 }
+
+/* Marigold "fill" line that grows down the timeline as items reveal on scroll */
+.timeline-progress {
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 9px;
+  width: 2px;
+  background: var(--marigold);
+  transform-origin: top center;
+  transform: scaleY(var(--progress, 0));
+  transition: transform 0.9s var(--ease-std);
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 2px;
+}
+
+/* Pulsing "now" halo on the current entry's marker */
+.timeline-item--current .timeline-marker {
+  animation: timeline-pulse 2.4s ease-in-out infinite;
+}
+@keyframes timeline-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 4px var(--cream),
+      0 0 0 4px rgba(245, 158, 11, 0);
+  }
+  50% {
+    box-shadow:
+      0 0 0 4px var(--cream),
+      0 0 0 10px rgba(245, 158, 11, 0.22);
+  }
+}
 .timeline-item {
   position: relative;
   padding-bottom: 36px;
@@ -706,6 +762,14 @@ a, button, [role="button"] {
 .timeline-content:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-paper-hover);
+}
+
+/* Highlight the AI/PM chapter (Rethink + Gal Pal) — visually groups
+   the last two entries as the current career chapter. Marigold left
+   accent matches the progress line and pulse, signalling "this is now". */
+.timeline-item--current-chapter .timeline-content {
+  border-left: 3px solid var(--marigold);
+  padding-left: 23px;
 }
 .timeline-badge {
   display: inline-block;
@@ -839,6 +903,17 @@ a, button, [role="button"] {
   letter-spacing: 0.02em;
   margin-bottom: 14px;
 }
+.card-tagline {
+  font-size: 16px;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--ink);
+  line-height: 1.5;
+  letter-spacing: -0.005em;
+  margin: 6px 0 14px;
+  max-width: 640px;
+}
+
 .card-summary {
   font-size: 15px;
   line-height: 1.65;
@@ -991,6 +1066,46 @@ a, button, [role="button"] {
 }
 .card-section p:last-child { margin-bottom: 0; }
 
+/* Bulleted list inside a card section — marigold dot bullets, mirrors
+   the body-paragraph type scale so list items read alongside the prose. */
+.card-list {
+  list-style: none;
+  margin: 4px 0 12px;
+  padding: 0;
+}
+.card-list li {
+  position: relative;
+  padding-left: 22px;
+  margin-bottom: 12px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--ink-secondary);
+}
+.card-list li:last-child { margin-bottom: 0; }
+.card-list li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 10px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--marigold);
+}
+.card-list li strong { color: var(--ink); }
+
+/* Subtle "why" note attached to a card item — italic, smaller, softer color.
+   Reusable inside list items or paragraphs to add the PM rationale behind a
+   decision without competing visually with the main body text. */
+.card-note {
+  display: block;
+  margin-top: 6px;
+  font-size: 13.5px;
+  font-style: italic;
+  line-height: 1.55;
+  color: var(--ink-disabled);
+}
+
 /* ==========================================================================
    "More builds" expandable section in Projects
    ========================================================================== */
@@ -1045,6 +1160,30 @@ a, button, [role="button"] {
 /* ==========================================================================
    Comic Story — collapsible 9-page origin comic reader
    ========================================================================== */
+.origin-pullout {
+  margin: 8px auto 14px;
+  max-width: 660px;
+  font-size: clamp(17px, 2vw, 21px);
+  font-style: italic;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.55;
+  letter-spacing: -0.005em;
+  position: relative;
+  padding-top: 22px;
+}
+.origin-pullout::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 2px;
+  background: var(--marigold);
+  border-radius: 2px;
+}
+
 .comic-subtitle {
   margin: -8px auto 28px;
   max-width: 560px;
@@ -1267,8 +1406,10 @@ a, button, [role="button"] {
 
 .principles {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 24px;
+  max-width: 880px;
+  margin: 0 auto;
 }
 .principle {
   background: var(--ivory);
@@ -1380,6 +1521,24 @@ a, button, [role="button"] {
   font-size: 12.5px;
   color: var(--ink-secondary);
   letter-spacing: 0.005em;
+}
+
+/* Project-context eyebrow above each testimonial quote — names what the
+   praise is actually about, so the abstract language inside the quote
+   becomes concrete. */
+.testimonial-context {
+  display: inline-block;
+  font-size: 12px;
+  font-style: italic;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  letter-spacing: 0.005em;
+  line-height: 1.45;
+  margin: 0 0 18px;
+  padding-left: 12px;
+  border-left: 2px solid var(--marigold);
+  position: relative;
+  z-index: 1;
 }
 
 /* ==========================================================================
@@ -1661,6 +1820,7 @@ a, button, [role="button"] {
   .nav-links a.is-active::after { display: none; }
   .nav-toggle { display: flex; }
   .nav-cta { display: none; }
+  .nav-notify { display: none; }
 
   .hero { padding: calc(var(--nav-h) + 48px) 20px 64px; }
   .name { font-size: clamp(40px, 13vw, 64px); }
@@ -1682,6 +1842,7 @@ a, button, [role="button"] {
   .timeline { padding-left: 28px; }
   .timeline-marker { left: -28px; width: 16px; height: 16px; }
   .timeline-content { padding: 18px 20px; }
+  .timeline-item--current-chapter .timeline-content { padding-left: 17px; }
   .timeline-role { font-size: 17px; }
 
   .card-header { padding: 24px 22px; }
@@ -1754,161 +1915,74 @@ a, button, [role="button"] {
     scroll-behavior: auto !important;
   }
   .reveal, .reveal-left, .reveal-scale { opacity: 1; transform: none; }
+  .timeline-progress { transform: scaleY(1); transition: none; }
+  .timeline-item--current .timeline-marker { animation: none; }
 }
 
 /* ==========================================================================
-   Email Gate — first-impression overlay
-   Hides nav/main/footer until the visitor submits an email (or has before).
-   Toggled by classes on <html>: default = gate visible; .gate-skip /
-   .gate-done = gate hidden & portfolio visible.
+   Notify Me — optional email signup section (#notify, between #story and #contact)
+   Reuses the Supabase 'subscribers' table the old gate wrote to. Never blocks
+   the page; failures are logged to the console for the owner's debugging.
    ========================================================================== */
 
-.email-gate {
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  display: flex;
+.notify-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 64px;
   align-items: center;
-  justify-content: center;
-  padding: 48px 24px;
-  background: var(--cream);
-  overflow-y: auto;
-  animation: gate-in 520ms var(--ease-std) both;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
-.email-gate::before,
-.email-gate::after {
-  content: '';
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(60px);
-  opacity: 0.55;
-  pointer-events: none;
-  z-index: 0;
-}
-.email-gate::before {
-  width: 420px; height: 420px;
-  background: radial-gradient(circle, var(--marigold-soft), transparent 70%);
-  top: -120px; right: -120px;
-}
-.email-gate::after {
-  width: 380px; height: 380px;
-  background: radial-gradient(circle, var(--peach-soft), transparent 70%);
-  bottom: -140px; left: -120px;
-}
-
-.gate-doodle {
-  position: absolute;
-  color: var(--marigold);
-  font-size: 22px;
-  opacity: 0.55;
-  pointer-events: none;
-  z-index: 1;
-  animation: gate-twinkle 3.6s ease-in-out infinite;
-}
-.gate-doodle--1 { top: 12%; left: 14%; font-size: 28px; animation-delay: 0s; }
-.gate-doodle--2 { top: 22%; right: 18%; font-size: 18px; animation-delay: 1.2s; }
-.gate-doodle--3 { bottom: 18%; left: 22%; font-size: 24px; animation-delay: 2.1s; }
-.gate-doodle--4 { bottom: 26%; right: 14%; font-size: 20px; animation-delay: 0.6s; }
-
-@keyframes gate-twinkle {
-  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.35; }
-  50%      { transform: translateY(-6px) rotate(12deg); opacity: 0.75; }
-}
-
-.gate-card {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  max-width: 460px;
-  background: var(--ivory);
-  border-radius: var(--r-modal);
-  padding: 44px 40px 36px;
-  box-shadow: var(--shadow-float);
-  text-align: center;
-  animation: gate-card-in 680ms var(--ease-spring) both;
-}
-
-.gate-eyebrow {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+.notify-body {
+  font-size: 17px;
+  line-height: 1.65;
   color: var(--ink-secondary);
-  padding: 6px 14px;
-  border: 1px solid var(--rule);
-  border-radius: var(--r-pill);
-  margin-bottom: 24px;
+  margin: 16px 0 28px;
+  max-width: 480px;
 }
 
-/* Polaroid inside the gate — reuses hero's .polaroid system, just sized down. */
-.gate-polaroid {
-  max-width: 240px;
-  margin: 8px auto 32px;
-  padding: 14px 14px 42px;
+.notify-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 480px;
 }
-.gate-polaroid .polaroid-caption {
-  font-size: 13px;
-  bottom: 12px;
-}
-.gate-polaroid .washi {
-  width: 92px; height: 22px;
-  top: -8px;
-}
-.gate-polaroid .washi--corner {
-  width: 58px; height: 16px;
-  bottom: 28px; right: -10px;
+.notify-form[hidden],
+.notify-already[hidden] { display: none; }
+
+.notify-input-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
 }
 
-.gate-name {
-  font-size: clamp(28px, 5vw, 34px);
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
-  color: var(--ink);
-  margin-bottom: 12px;
-}
-
-.gate-tagline {
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 1.5;
-  color: var(--ink-secondary);
-  margin-bottom: 28px;
-  max-width: 360px;
-  margin-left: auto;
-  margin-right: auto;
-  letter-spacing: 0.005em;
-}
-
-.gate-form { display: flex; flex-direction: column; gap: 12px; }
-
-.gate-input {
-  width: 100%;
+.notify-input {
+  flex: 1;
+  min-width: 0;
   font-family: var(--font);
   font-size: 15px;
   color: var(--ink);
   background: var(--white);
   border: 1.5px solid var(--border);
   border-radius: var(--r-btn);
-  padding: 14px 20px;
+  padding: 14px 18px;
   outline: none;
   transition: border-color 160ms var(--ease-std), box-shadow 160ms var(--ease-std);
   -webkit-appearance: none;
   appearance: none;
 }
-.gate-input::placeholder { color: var(--ink-disabled); }
-.gate-input:focus {
+.notify-input::placeholder { color: var(--ink-disabled); }
+.notify-input:focus {
   border-color: var(--charcoal);
   box-shadow: 0 0 0 4px rgba(31,26,29,0.06);
 }
-.gate-input.is-error {
+.notify-input.is-error {
   border-color: #C1554B;
   box-shadow: 0 0 0 4px rgba(193,85,75,0.10);
 }
 
-.gate-btn {
+.notify-btn {
   font-family: var(--font);
   font-size: 15px;
   font-weight: 600;
@@ -1921,15 +1995,16 @@ a, button, [role="button"] {
   box-shadow: var(--shadow-cta);
   transition: transform 180ms var(--ease-spring), box-shadow 180ms var(--ease-std), background 180ms var(--ease-std);
   min-height: 48px;
+  white-space: nowrap;
 }
-.gate-btn:hover:not(:disabled) {
+.notify-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 12px 28px rgba(31,26,29,0.22);
 }
-.gate-btn:active:not(:disabled) { transform: translateY(0); }
-.gate-btn:disabled { opacity: 0.78; cursor: wait; }
+.notify-btn:active:not(:disabled) { transform: translateY(0); }
+.notify-btn:disabled { opacity: 0.78; cursor: wait; }
 
-.gate-error {
+.notify-error {
   min-height: 20px;
   font-size: 13px;
   color: #C1554B;
@@ -1937,8 +2012,9 @@ a, button, [role="button"] {
   padding: 0 4px;
   margin-top: -2px;
 }
-.gate-error[hidden] { display: none; }
-.gate-typo-link {
+.notify-error[hidden] { display: none; }
+
+.notify-typo-link {
   color: var(--ink);
   font-weight: 600;
   text-decoration: underline;
@@ -1947,80 +2023,85 @@ a, button, [role="button"] {
   text-underline-offset: 2px;
   cursor: pointer;
 }
-.gate-typo-link:hover { text-decoration-color: var(--charcoal); }
+.notify-typo-link:hover { text-decoration-color: var(--charcoal); }
 
-.gate-note {
-  margin-top: 14px;
+.notify-note {
+  margin-top: 4px;
   font-size: 12px;
   color: var(--ink-disabled);
   letter-spacing: 0.02em;
 }
 
-.gate-success {
-  position: absolute;
-  inset: 0;
+.notify-success {
   display: none;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  background: var(--ivory);
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 20px;
+  background: var(--white);
+  border: 1.5px solid var(--marigold-soft);
   border-radius: var(--r-modal);
-  z-index: 3;
-  animation: gate-success-in 420ms var(--ease-std) both;
+  max-width: 480px;
+  animation: notify-success-in 380ms var(--ease-std) both;
 }
-.gate-success.is-visible { display: flex; }
-.gate-success-check {
-  width: 56px;
-  height: 56px;
+.notify-success.is-visible { display: flex; }
+
+.notify-success-check {
+  flex: none;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: var(--marigold);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--charcoal);
-  margin-bottom: 16px;
 }
-.gate-success-text {
-  font-size: 20px;
+
+.notify-success-text {
+  font-size: 16px;
   font-weight: 600;
   color: var(--ink);
+  margin: 2px 0 4px;
 }
-.gate-success-sub {
+.notify-success-sub {
   font-size: 13px;
   color: var(--ink-secondary);
-  margin-top: 6px;
+  line-height: 1.5;
 }
 
-/* Fade transition from gate to portfolio */
-.email-gate.is-closing {
-  animation: gate-out 520ms var(--ease-std) both;
-  pointer-events: none;
+.notify-already {
+  max-width: 480px;
+  padding: 16px 20px;
+  background: var(--white);
+  border: 1.5px solid var(--rule);
+  border-radius: var(--r-modal);
+}
+.notify-already-text {
+  font-size: 15px;
+  color: var(--ink-secondary);
+  line-height: 1.5;
+  margin: 0;
 }
 
-@keyframes gate-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-@keyframes gate-out {
-  from { opacity: 1; }
-  to   { opacity: 0; visibility: hidden; }
-}
-@keyframes gate-card-in {
-  from { opacity: 0; transform: translateY(16px) scale(0.98); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-@keyframes gate-success-in {
-  from { opacity: 0; transform: scale(0.96); }
-  to   { opacity: 1; transform: scale(1); }
+.notify-polaroid {
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* Mobile */
-@media (max-width: 480px) {
-  .email-gate { padding: 24px 16px; }
-  .gate-card  { padding: 32px 24px 28px; }
-  .gate-polaroid { max-width: 200px; margin-bottom: 26px; padding: 12px 12px 36px; }
-  .gate-polaroid .polaroid-caption { font-size: 12px; bottom: 10px; }
-  .gate-name  { font-size: 26px; }
-  .gate-tagline { font-size: 14px; }
-  .gate-doodle { display: none; }
+@keyframes notify-success-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile — stack vertically, polaroid above form */
+@media (max-width: 720px) {
+  .notify-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .notify-col-art { order: -1; }
+  .notify-polaroid { max-width: 240px; }
+  .notify-input-row { flex-direction: column; }
+  .notify-btn { width: 100%; }
 }

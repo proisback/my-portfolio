@@ -1,5 +1,5 @@
 // ============================================================================
-// Email Gate — Supabase credentials
+// Notify-Me Signup — Supabase credentials
 // ============================================================================
 //
 //   ╭────────────────────────────────────────────────────────────────────╮
@@ -26,12 +26,12 @@
 //      UPDATE, or DELETE from anon, or the list becomes publicly readable.
 //   3. Table exposed via Project Settings → Data API → Exposed tables.
 //
-// If either value is left as a placeholder (`YOUR_...`), the gate will still
-// validate the email and let the visitor through — it just skips the database
-// write. By design, the gate never blocks the portfolio.
+// If either value is left as a placeholder (`YOUR_...`), the signup form
+// still validates the email and shows the success state — it just skips the
+// database write. The signup is optional; failures never block the page.
 // ============================================================================
 
-window.__GATE_CONFIG__ = {
+window.__NEWSLETTER_CONFIG__ = {
   // Public — Supabase Project URL
   SUPABASE_URL:      'https://rcqlnxytcibbsxgcsoid.supabase.co',
 

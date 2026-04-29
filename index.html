@@ -12,80 +12,8 @@
   <script src="script.js" defer></script>
   <script src="config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-
-  <!-- Email-gate first-paint rules: hide portfolio until gate is passed.
-       The inline <script> below reads localStorage and adds .gate-skip to
-       <html> before the body paints, so returning visitors never see the gate. -->
-  <style id="gate-boot-style">
-    html:not(.gate-skip):not(.gate-done) .nav,
-    html:not(.gate-skip):not(.gate-done) main,
-    html:not(.gate-skip):not(.gate-done) .footer { display: none !important; }
-    html.gate-skip #email-gate { display: none !important; }
-  </style>
-  <script>
-    (function () {
-      try {
-        if (localStorage.getItem('portfolio_gate_passed') === '1') {
-          document.documentElement.classList.add('gate-skip');
-        }
-      } catch (e) { /* storage blocked — show gate, that's fine */ }
-    })();
-  </script>
 </head>
 <body>
-
-  <!-- ===== Email Gate (shown to first-time visitors only) ===== -->
-  <div class="email-gate" id="email-gate" role="dialog" aria-modal="true" aria-labelledby="gate-name">
-    <span class="gate-doodle gate-doodle--1" aria-hidden="true">✦</span>
-    <span class="gate-doodle gate-doodle--2" aria-hidden="true">✶</span>
-    <span class="gate-doodle gate-doodle--3" aria-hidden="true">✦</span>
-    <span class="gate-doodle gate-doodle--4" aria-hidden="true">✶</span>
-    <div class="gate-card">
-      <span class="gate-eyebrow">Welcome</span>
-      <div class="polaroid gate-polaroid">
-        <div class="washi"></div>
-        <div class="polaroid-art">
-          <img
-            src="images/gate-avatar.png"
-            alt="Hand-drawn illustration of Prateek Mehta waving next to a small marigold AI robot sidekick, also waving."
-            class="polaroid-img"
-            width="400" height="400"
-            loading="eager"
-            decoding="async"
-          />
-        </div>
-        <p class="polaroid-caption">the PM &amp; his AI sidekick.</p>
-        <div class="washi washi--corner"></div>
-      </div>
-      <h1 class="gate-name" id="gate-name">Prateek Mehta</h1>
-      <p class="gate-tagline">Built with soul. Powered by intelligence.</p>
-      <form class="gate-form" id="gate-form" novalidate>
-        <label for="gate-email" class="visually-hidden" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Email address</label>
-        <input
-          type="email"
-          id="gate-email"
-          name="email"
-          class="gate-input"
-          placeholder="Enter your email address"
-          autocomplete="email"
-          required
-          aria-describedby="gate-error"
-          aria-invalid="false"
-        >
-        <p class="gate-error" id="gate-error" role="alert" hidden></p>
-        <button type="submit" class="gate-btn" id="gate-submit">View My Portfolio</button>
-        <p class="gate-note">Your email is safe. No spam, ever.</p>
-      </form>
-
-      <div class="gate-success" id="gate-success" aria-hidden="true">
-        <div class="gate-success-check" aria-hidden="true">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-        <p class="gate-success-text">Welcome!</p>
-        <p class="gate-success-sub">Opening the portfolio&hellip;</p>
-      </div>
-    </div>
-  </div>
 
   <!-- ===== Navigation ===== -->
   <nav class="nav" id="nav">
@@ -95,12 +23,16 @@
         <span class="nav-logo-expand" aria-hidden="true">Prateek Mehta &middot; Product Manager</span>
       </a>
       <div class="nav-links" id="nav-links">
-        <a href="#projects">Builds</a>
-        <a href="#case-studies">Case Studies</a>
+        <a href="#projects">Product Work</a>
+        <a href="#case-studies">Earlier Work</a>
         <a href="#timeline">Timeline</a>
         <a href="#philosophy">Philosophy</a>
         <a href="#story">About</a>
       </div>
+      <a href="#notify" class="nav-notify">
+        <svg class="nav-notify-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Notify me
+      </a>
       <a href="#contact" class="nav-cta">Get in Touch</a>
       <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
         <span></span>
@@ -122,11 +54,11 @@
           <p class="greeting">AI-Native Product Manager &middot; Mumbai</p>
           <h1 class="name">Prateek Mehta</h1>
           <p class="intro">
-            I ship <span class="ink-highlight">AI-first products</span>. 6 shipped in 2026, including a women-only friendship app I'm co-founding. Eight years before that, I led process transformation in financial services across 20+ countries.
+            <span class="ink-highlight">Product Manager who builds with AI</span>. Eight years of solving operations problems across financial services taught me how to frame problems clearly, align teams, and ship. Now I bring that discipline to building AI-native products and I've built six in 2026 to prove it.
           </p>
           <p class="availability">
             <span class="availability-dot" aria-hidden="true"></span>
-            Co-founding galpal &middot; open to PM roles
+            Open to PM roles &middot; Mumbai
           </p>
           <div class="btn-group">
             <a href="#contact" class="btn btn-primary">Get in Touch</a>
@@ -162,19 +94,19 @@
       <div class="stats-inner">
         <div class="stat">
           <span class="stat-value">8+</span>
-          <span class="stat-label">Years in Business Operations</span>
+          <span class="stat-label">Years in Business Analysis &amp; Operations</span>
         </div>
         <div class="stat">
-          <span class="stat-value">20+</span>
-          <span class="stat-label">Countries Impacted</span>
+          <span class="stat-value">180+</span>
+          <span class="stat-label">User Research Data Points</span>
         </div>
         <div class="stat">
-          <span class="stat-value">~30%</span>
-          <span class="stat-label">Efficiency Gains Delivered</span>
+          <span class="stat-value">30%</span>
+          <span class="stat-label">Avg Efficiency Gain Delivered</span>
         </div>
         <div class="stat">
           <span class="stat-value">6</span>
-          <span class="stat-label">AI Products Shipped in 2026</span>
+          <span class="stat-label">AI Products Built in 2026</span>
         </div>
       </div>
     </section>
@@ -184,7 +116,8 @@
       <div class="section-inner section-inner--centered">
         <p class="section-label">Origin</p>
         <h2 class="section-title">Before the products. The real story.</h2>
-        <p class="comic-subtitle">Nine pages. The honest version of how this started.</p>
+        <p class="origin-pullout">Eight years untangling enterprise systems. The moment AI changed what was possible. The call I made when my kid was one and a half.</p>
+        <p class="comic-subtitle">Nine pages on why I left, what I saw, and what I'm building now.</p>
 
         <button class="more-builds-toggle comic-toggle" id="comic-toggle"
                 aria-expanded="false" aria-controls="comic-reader">
@@ -221,21 +154,21 @@
             <button class="comic-nav" id="comic-next" type="button" aria-label="Next page">Next Page &rarr;</button>
           </div>
 
-          <a href="#projects" class="comic-skip" id="comic-skip">Skip to the builds &rarr;</a>
+          <a href="#projects" class="comic-skip" id="comic-skip">Skip to the work &rarr;</a>
 
           <div class="comic-end" id="comic-end" hidden>
             <p class="comic-end-text">That&rsquo;s the context. Everything else in this portfolio is what came after.</p>
-            <a href="#projects" class="btn btn-primary comic-end-cta">See the builds &rarr;</a>
+            <a href="#projects" class="btn btn-primary comic-end-cta">See the work &rarr;</a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ===== AI Builds / Side Projects ===== -->
+    <!-- ===== Product Case Studies ===== -->
     <section class="section section--ivory" id="projects">
       <div class="section-inner">
-        <p class="section-label">What I Build</p>
-        <h2 class="section-title">AI Builds &amp; Side Projects</h2>
+        <p class="section-label">What I'm Building</p>
+        <h2 class="section-title">Product Case Studies</h2>
 
         <!-- Project 6 -->
         <div class="card expandable-card">
@@ -243,9 +176,10 @@
             <div class="card-meta">
               <span class="card-badge card-badge--founder">Co-founding</span>
               <span class="card-badge card-badge--live">Live Product</span>
-              <span class="card-year">Apr 2026</span>
+              <span class="card-year">Apr 2026 &middot; Buildathon &middot; Team of 6</span>
             </div>
             <h3 class="card-name">galpals: Women-Only Friendship App for Bangalore</h3>
+            <p class="card-tagline">Led discovery, PRD, and design on a 6-person Buildathon team &mdash; blank page to Product Hunt launch in 4 days.</p>
             <p class="card-summary">A hand-verified PWA matching Bangalore-based women for genuine friendship. No feeds, no dating mechanics, no engagement traps. Built with Next.js, Supabase, and a brand system designed to take women's time seriously.</p>
             <div class="card-tags">
               <span class="card-tag">Safety-First Design</span>
@@ -265,21 +199,27 @@
                 <p>Women relocating to a new city, or long-resident with a fraying social circle, have no good tool for finding real friends. Dating apps are the wrong context. Professional networks are the wrong intent. Interest-based communities solve for the group, not the individual. The gap is a surface that takes safety seriously, respects time, and gets out of the way once a connection is made.</p>
               </div>
               <div class="card-section">
+                <h4>My Contribution</h4>
+                <p>I led discovery and authored the full PRD &mdash; framing the problem space, deciding what features made the cut and what didn't, and writing the spec the team built against. I designed every page (visual design and UX flows) and ran end-to-end QA, raising bugs against the build. One teammate owned development; the rest of the 6-person Buildathon team pitched in on testing and strategy.</p>
+              </div>
+              <div class="card-section">
                 <h4>The Product</h4>
                 <p>galpals is a matches-and-chats surface only. No feed, no groups, no stories, no games. Every new member completes a human-led video or phone verification call before seeing matches. Once inside, they see a small scored set of nearby women each week with a reason they would click.</p>
                 <p>Communication is intentionally low-friction and low-commitment: a wave with a preset reason or 100 characters of context. Mutual waves open a 1:1 chat. Max 3 lifetime waves to the same person. 30-day expiry. Nothing in the product tries to manufacture engagement.</p>
               </div>
               <div class="card-section">
-                <h4>Technical Scope</h4>
-                <p>Next.js 16 App Router, Supabase (Postgres, RLS, Realtime, Auth), Tailwind CSS v4, Framer Motion, VAPID push notifications, PWA with service worker. Matching algorithm scores on shared interests, looking-for overlap, neighborhood proximity, home state, city tenure, work situation, and personality compatibility. Weekly cron via Vercel scheduler.</p>
+                <h4>Key Decisions</h4>
+                <p><strong>Manual verification, by design.</strong> Every member completes a human-led video or phone call before seeing matches. Automating it would be faster, but it kills the safety-first promise that makes the product different from dating apps and generic communities.</p>
+                <p><strong>PWA over native.</strong> Lower friction to try, faster to iterate, no app-store gatekeeping. Right call for a 4-day Buildathon shipping window, still the right call as we iterate.</p>
+                <p><strong>Matching scored on what predicts friendship, not popularity.</strong> Shared interests, looking-for overlap, neighborhood proximity, home state, city tenure, work situation, personality compatibility. Not "people you may know" &mdash; people you'd actually click with.</p>
               </div>
               <div class="card-section">
-                <h4>Design Principles</h4>
-                <p>Second person always. 14-word sentence cap. No emoji in system copy. No em-dashes. Celebration language only for earned moments. Banned words include: journey, tribe, vibes, community, seamless, authentic, curated. Every decision traces back to one belief: the product should make it easier to find one real friend, not harder to leave the app.</p>
+                <h4>Brand Voice</h4>
+                <p>The product should make it easier to find one real friend, not harder to leave the app. Every brand decision traces back to that one belief. Second person always. 14-word sentence cap. No emoji in system copy. Banned words: journey, tribe, vibes, community, seamless, authentic, curated.</p>
               </div>
               <div class="card-section">
                 <h4>What This Demonstrates</h4>
-                <p>End-to-end product thinking across brand, data model, API design, and UX. Scope discipline in a domain where feature creep is the norm. Safety-first design with real operational consequences: verification is manual and human-led by design. And the ability to hold a product vision steady against the pull of engagement mechanics that would undermine it.</p>
+                <p>End-to-end PM ownership in a 4-day shipping sprint: discovery, PRD authoring, scope discipline, full-page design, and QA. Safety-first design with real operational consequences: verification is manual and human-led by design. And the ability to hold a product vision steady against the pull of engagement mechanics that would undermine it.</p>
               </div>
             </div>
           </div>
@@ -293,6 +233,7 @@
               <span class="card-year">Apr 2026 &middot; Individual Sprint</span>
             </div>
             <h3 class="card-name">Plan Karo Chalo: Group Trip Coordination Tool</h3>
+            <p class="card-tagline">132 research data points, solo build in 8 days, 91.7% live activation rate.</p>
             <p class="card-summary">A link-based trip coordination tool that collapses weeks of WhatsApp chaos into minutes of structured decision-making. Built solo in 8 days after 132+ primary research data points.</p>
             <div class="card-tags">
               <span class="card-tag">Primary Research</span>
@@ -337,9 +278,10 @@
           <div class="card-header" role="button" tabindex="0" aria-expanded="false">
             <div class="card-meta">
               <span class="card-badge card-badge--live">Live Product</span>
-              <span class="card-year">Mar 2026</span>
+              <span class="card-year">Mar 2026 &middot; Individual Sprint</span>
             </div>
             <h3 class="card-name">PMPathfinder: Career Navigation for Aspiring PMs</h3>
+            <p class="card-tagline">44-person research turned into a 3-stage AI-scored assessment that benchmarks PM readiness against any real job description.</p>
             <p class="card-summary">A three-stage career navigation platform for aspiring PMs: archetype diagnostic, adaptive AI-scored practice across 6 PM dimensions, and gap analysis against any real job description. Answers the one question every aspiring PM asks &mdash; <em>am I ready?</em></p>
             <div class="card-tags">
               <span class="card-tag">AI-Scored Practice</span>
@@ -365,7 +307,12 @@
               </div>
               <div class="card-section">
                 <h4>What I Built</h4>
-                <p>A three-stage platform. <strong>Stage 1</strong>: a 10-minute, 12-question scenario quiz assigns you a PM archetype &mdash; Consumer, B2B, or Technical. <strong>Stage 2</strong>: adaptive AI-scored practice across six PM dimensions (Problem Framing, User Empathy, Structured Thinking, Prioritization, Metrics Reasoning, Communication). A five-slot question engine (MCQ warm-up &rarr; weakest dimension &rarr; second-weakest &rarr; mid &rarr; stretch) targets your gaps without manual configuration. <strong>Stage 3</strong>: paste any real job description and get a gap analysis &mdash; Ready / Almost / Not Yet &mdash; with a specific improvement path and estimated time.</p>
+                <p>A three-stage platform:</p>
+                <ul class="card-list">
+                  <li><strong>Stage 1 &mdash; Archetype quiz.</strong> A 10-minute, 12-question scenario quiz assigns a PM archetype: Consumer, B2B, or Technical.<small class="card-note">Why these three? Research surfaced them as the top PM archetypes by job-market presence &mdash; narrower categories would have starved the matching engine; broader ones would have diluted the signal.</small></li>
+                  <li><strong>Stage 2 &mdash; Adaptive AI-scored practice</strong> across six PM dimensions: Problem Framing, User Empathy, Structured Thinking, Prioritization, Metrics Reasoning, Communication. A five-slot engine (MCQ warm-up &rarr; weakest &rarr; second-weakest &rarr; mid &rarr; stretch) targets your gaps automatically.</li>
+                  <li><strong>Stage 3 &mdash; Real-job gap analysis.</strong> Paste any job description and get a Ready / Almost / Not Yet readout, with a specific improvement path and estimated time.<small class="card-note">Why three buckets and not a numeric score? A 7.3 vs a 6.8 doesn't tell you what to do. Ready means apply now. Almost names the specific gap. Not Yet says where to focus first. The buckets force a clear next action.</small></li>
+                </ul>
               </div>
               <div class="card-section">
                 <h4>What This Demonstrates</h4>
@@ -381,9 +328,10 @@
           <div class="card-header" role="button" tabindex="0" aria-expanded="false">
             <div class="card-meta">
               <span class="card-badge card-badge--live">Live Product</span>
-              <span class="card-year">Mar 2026</span>
+              <span class="card-year">Mar 2026 &middot; Individual Sprint</span>
             </div>
             <h3 class="card-name">Bhojan: Weekly Meal Planner for Indian Families</h3>
+            <p class="card-tagline">One user interview pivoted the entire product direction. Shipped a working app in 4 days with no prior coding background.</p>
             <p class="card-summary">A suggestion-first meal planner for vegetarian Indian families. Auto-generates weekly plans with 75+ meals, festival calendar, grocery lists, and WhatsApp sharing. Built in 4 days with zero prior coding experience.</p>
             <div class="card-tags">
               <span class="card-tag">User Research Pivot</span>
@@ -425,6 +373,7 @@
               <span class="card-year">Mar 2026 &middot; Group Project</span>
             </div>
             <h3 class="card-name">Signal: Intelligence Layer for Founder CRM</h3>
+            <p class="card-tagline">Six founder interviews surfaced the insight that broke the team's starting hypothesis and reshaped the entire product.</p>
             <p class="card-summary">A passive prioritization layer that reads a founder's existing communication channels, extracts open commitments, detects deal momentum decay, and surfaces a ranked daily action list. No manual logging.</p>
             <div class="card-tags">
               <span class="card-tag">Research-Led Reframing</span>
@@ -470,6 +419,7 @@
             </div>
             <h3 class="card-name">StoreOps Peak-Hour Decision Support</h3>
             <p class="card-subtitle">Blinkit</p>
+            <p class="card-tagline">392 reviews and ground research surfaced &#8377;3.16 Cr/store annual margin loss &mdash; and the one-tap intervention to fix it.</p>
             <p class="card-summary">Real-time module surfacing live picker status and one-tap interventions during peak hours. Designed to be comprehensible by a stressed store manager in under five seconds.</p>
             <div class="card-tags">
               <span class="card-tag">Problem Discovery</span>
@@ -508,7 +458,7 @@
         </div>
 
         <button class="more-builds-toggle" id="more-builds-toggle" aria-expanded="false" aria-controls="more-builds">
-          <span class="more-builds-toggle-text">Show 3 more builds</span>
+          <span class="more-builds-toggle-text">Show 3 more case studies</span>
           <span class="more-builds-toggle-icon" aria-hidden="true">+</span>
         </button>
 
@@ -518,8 +468,8 @@
     <!-- ===== Case Studies ===== -->
     <section class="section section--cream" id="case-studies">
       <div class="section-inner">
-        <p class="section-label">Professional Work</p>
-        <h2 class="section-title">Case Studies</h2>
+        <p class="section-label">Earlier Work</p>
+        <h2 class="section-title">Operations &amp; Transformation</h2>
 
         <!-- Case Study 1 -->
         <div class="card expandable-card">
@@ -667,14 +617,25 @@
         <p class="section-label">Journey</p>
         <h2 class="section-title">Work &amp; Education</h2>
         <div class="timeline">
+          <div class="timeline-progress" aria-hidden="true"></div>
+
+          <div class="timeline-item">
+            <div class="timeline-marker timeline-marker--edu"></div>
+            <div class="timeline-content">
+              <span class="timeline-badge timeline-badge--edu">Education</span>
+              <span class="timeline-date">Aug 2012 – May 2016</span>
+              <h3 class="timeline-role">BE (Information Technology)</h3>
+              <p class="timeline-org">Mumbai University / Ramrao Adik Institute of Technology</p>
+            </div>
+          </div>
 
           <div class="timeline-item">
             <div class="timeline-marker"></div>
             <div class="timeline-content">
               <span class="timeline-badge timeline-badge--work">Work</span>
-              <span class="timeline-date">Apr 2026 – Present</span>
-              <h3 class="timeline-role">Co-Founder, Product &amp; Ops</h3>
-              <p class="timeline-org">Gal Pal &middot; Remote &middot; Bengaluru</p>
+              <span class="timeline-date">Mar 2017 – Jun 2022</span>
+              <h3 class="timeline-role">IT Business Analyst</h3>
+              <p class="timeline-org">Tata Consultancy Services &middot; Mumbai</p>
             </div>
           </div>
 
@@ -682,9 +643,19 @@
             <div class="timeline-marker timeline-marker--edu"></div>
             <div class="timeline-content">
               <span class="timeline-badge timeline-badge--edu">Education</span>
-              <span class="timeline-date">Feb 2026 – Apr 2026</span>
-              <h3 class="timeline-role">Member – AI-first Mastering Product Management 2.0, Cohort 7</h3>
-              <p class="timeline-org">Rethink Systems</p>
+              <span class="timeline-date">Jun 2022 – May 2023</span>
+              <h3 class="timeline-role">MBA — PGDM (General Management)</h3>
+              <p class="timeline-org">XLRI Jamshedpur</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <span class="timeline-badge timeline-badge--work">Work</span>
+              <span class="timeline-date">Jun 2023 – Mar 2025</span>
+              <h3 class="timeline-role">Manager, Process Standardization</h3>
+              <p class="timeline-org">Standard Chartered GBS &middot; Chennai</p>
             </div>
           </div>
 
@@ -698,43 +669,23 @@
             </div>
           </div>
 
-          <div class="timeline-item">
-            <div class="timeline-marker"></div>
-            <div class="timeline-content">
-              <span class="timeline-badge timeline-badge--work">Work</span>
-              <span class="timeline-date">2023 – 2025</span>
-              <h3 class="timeline-role">Manager, Process Standardization</h3>
-              <p class="timeline-org">Standard Chartered GBS &middot; Chennai</p>
-            </div>
-          </div>
-
-          <div class="timeline-item">
+          <div class="timeline-item timeline-item--current-chapter">
             <div class="timeline-marker timeline-marker--edu"></div>
             <div class="timeline-content">
               <span class="timeline-badge timeline-badge--edu">Education</span>
-              <span class="timeline-date">2022 – 2023</span>
-              <h3 class="timeline-role">MBA — PGDM (General Management)</h3>
-              <p class="timeline-org">XLRI Jamshedpur</p>
+              <span class="timeline-date">Feb 2026 – Apr 2026</span>
+              <h3 class="timeline-role">Member – AI-first Mastering Product Management 2.0, Cohort 7</h3>
+              <p class="timeline-org">Rethink Systems</p>
             </div>
           </div>
 
-          <div class="timeline-item">
+          <div class="timeline-item timeline-item--current timeline-item--current-chapter">
             <div class="timeline-marker"></div>
             <div class="timeline-content">
               <span class="timeline-badge timeline-badge--work">Work</span>
-              <span class="timeline-date">2017 – 2022</span>
-              <h3 class="timeline-role">IT Business Analyst</h3>
-              <p class="timeline-org">Tata Consultancy Services &middot; Mumbai</p>
-            </div>
-          </div>
-
-          <div class="timeline-item">
-            <div class="timeline-marker timeline-marker--edu"></div>
-            <div class="timeline-content">
-              <span class="timeline-badge timeline-badge--edu">Education</span>
-              <span class="timeline-date">2012 – 2016</span>
-              <h3 class="timeline-role">BE (Information Technology)</h3>
-              <p class="timeline-org">Mumbai University / Ramrao Adik Institute of Technology</p>
+              <span class="timeline-date">Apr 2026 – Present</span>
+              <h3 class="timeline-role">Co-Founder, Product &amp; Ops</h3>
+              <p class="timeline-org">Gal Pal &middot; Remote &middot; Mumbai</p>
             </div>
           </div>
 
@@ -759,11 +710,7 @@
         <div class="principles">
           <div class="principle">
             <h3>Structure before speed.</h3>
-            <p>Most teams rush to solutions before the problem is clear. I start by framing the problem in a way that business, tech, and users can all align on. If you cannot explain the problem in one sentence, you are not ready to build.</p>
-          </div>
-          <div class="principle">
-            <h3>Standardize before you automate.</h3>
-            <p>Automating a broken process gives you faster broken output. Fix the process first. Then scale it with technology. I have seen this mistake made at every company I have worked in, and I have made it myself.</p>
+            <p>Most teams rush to solutions before the problem is clear. I frame problems so business, tech, and users can align on them. If you cannot explain the problem in one sentence, you are not ready to build.</p>
           </div>
           <div class="principle">
             <h3>Removal is underrated.</h3>
@@ -771,11 +718,7 @@
           </div>
           <div class="principle">
             <h3>AI is a lever, not a feature.</h3>
-            <p>I do not believe in adding AI to products. I believe in understanding user problems deeply and then asking whether AI is the right way to solve them. Sometimes it is. Sometimes a better form field is the answer.</p>
-          </div>
-          <div class="principle">
-            <h3>Ship, learn, adjust.</h3>
-            <p>Perfectionism kills products. I would rather ship something 80% right and learn from real usage than spend months polishing something nobody validated. The metrics from Plan Karo Chalo came from production, not a spreadsheet.</p>
+            <p>I don't believe in adding AI to products. I believe in understanding user problems deeply, then asking whether AI is the right solution. Sometimes it is. Sometimes a better form field is the answer.</p>
           </div>
           <div class="principle">
             <h3>Show, don't pitch.</h3>
@@ -792,6 +735,15 @@
         <h2 class="section-title">What people say about working with me</h2>
         <div class="testimonials">
           <blockquote class="testimonial">
+            <p class="testimonial-context">On the AI-first MPM Cohort 7 at Rethink Systems</p>
+            <p>Prateek was someone who just got things done &mdash; no waiting around for permission or a perfect plan. When we were still figuring out what to even try, he'd already started building. He was one of the first in our cohort to dive into tools like Claude and Lovable, and he brought the same energy to leading discussions as he did to implementation. On top of that, he kept everything documented in a way that actually helped the rest of us stay aligned. Rare to find someone who's both a starter and a structurer.</p>
+            <footer>
+              <cite class="testimonial-name">K Ravi Kiran</cite>
+              <span class="testimonial-role">PM, Broadcom</span>
+            </footer>
+          </blockquote>
+          <blockquote class="testimonial">
+            <p class="testimonial-context">On the Year-End Premium Adjustment harmonization across 5 EU countries</p>
             <p>From the very beginning, he stood out for his exceptional ability to understand complex operations and break them down into clear, workable components. He consistently ensured that every feature we explored addressed a real and specific challenge, which made the direction of the project both meaningful and well-aligned with user expectations.</p>
             <footer>
               <cite class="testimonial-name">Ewa Leszczyna</cite>
@@ -799,6 +751,7 @@
             </footer>
           </blockquote>
           <blockquote class="testimonial">
+            <p class="testimonial-context">On the Citibank Singapore account during TCS tenure</p>
             <p>I had the pleasure of managing Prateek during his tenure on Citi projects as a Business Analyst, and highly recommend him for his professionalism and strong work ethic. His positive attitude stands out and makes him a delight to work with.</p>
             <footer>
               <cite class="testimonial-name">Aruna Rajagopalan</cite>
@@ -815,10 +768,73 @@
         <p class="section-label">Why I'm Doing This</p>
         <h2 class="section-title">The thread that connects everything</h2>
         <div class="story-content">
-          <p>I started at TCS as a tester &mdash; the person whose job is to think like a user and find the cracks. That instinct stayed with me. Five years on the ICICI Prudential and Citibank Singapore accounts as a BA taught me that the most impactful changes come from removing complexity, not adding features. I cared less about the system and more about the person using it.</p>
-          <p>An MBA from XLRI sharpened the thinking. Then operations roles at Standard Chartered and Marsh McLennan, where I kept finding the same pattern: capable people spending days on tasks that AI could handle in minutes. Not because anyone chose that. Because nobody had built the alternative yet. So I quit my job to learn what was actually possible. My kid was one and a half years old at the time.</p>
-          <p>I'm looking for a PM role where I can own problems end-to-end and ship them. The strongest fit is a team building AI-native products, or one rethinking how their users work because of AI. I bring the discovery discipline that makes shipping the right thing possible &mdash; and the habit of actually shipping.</p>
+          <p>I started at TCS as a tester &mdash; thinking like a user, finding the cracks. That instinct stayed. Five years as a BA on the ICICI Prudential and Citibank Singapore accounts taught me the most impactful changes come from removing complexity, not adding features. I cared more about the person than the system.</p>
+          <p>An MBA at XLRI sharpened the thinking. Then ops roles at Standard Chartered and Marsh McLennan kept showing me the same pattern: capable people spending days on tasks AI could handle in minutes. Not because anyone chose that. Because nobody had built the alternative yet. So I quit my job to learn what was actually possible. My kid was one and a half years old at the time.</p>
+          <p>I'm looking for a PM role where I own problems end-to-end and ship them. Best fit: a team building AI-native products, or one rethinking how their users work because of AI. I bring discovery discipline &mdash; and the habit of actually shipping.</p>
           <p class="looking-for-cta">If that sounds like your team, let's talk.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Notify Me (optional email signup) ===== -->
+    <section class="section section--ivory" id="notify">
+      <div class="section-inner">
+        <div class="notify-grid">
+          <div class="notify-col-text">
+            <p class="section-label">Stay in the Loop</p>
+            <h2 class="section-title">Get a heads-up when I ship something new</h2>
+            <p class="notify-body">I send a short note when I ship a new product, finish a case study, or write something worth reading. No fixed cadence &mdash; usually once every few weeks at most.</p>
+
+            <form class="notify-form" id="notify-form" novalidate>
+              <label for="notify-email" class="visually-hidden" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Email address</label>
+              <div class="notify-input-row">
+                <input
+                  type="email"
+                  id="notify-email"
+                  name="email"
+                  class="notify-input"
+                  placeholder="your@email.com"
+                  autocomplete="email"
+                  required
+                  aria-describedby="notify-error"
+                  aria-invalid="false"
+                >
+                <button type="submit" class="notify-btn" id="notify-submit">Notify me</button>
+              </div>
+              <p class="notify-error" id="notify-error" role="alert" hidden></p>
+              <p class="notify-note">Your email stays with me. No spam, ever.</p>
+            </form>
+
+            <div class="notify-success" id="notify-success" aria-hidden="true">
+              <div class="notify-success-check" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <p class="notify-success-text">You're on the list.</p>
+              <p class="notify-success-sub">I'll be in touch when there's something worth sharing.</p>
+            </div>
+
+            <div class="notify-already" id="notify-already" hidden>
+              <p class="notify-already-text">You're already on the list. Thanks for being early.</p>
+            </div>
+          </div>
+
+          <div class="notify-col-art">
+            <div class="polaroid polaroid--illustration notify-polaroid">
+              <div class="washi"></div>
+              <div class="polaroid-art">
+                <img
+                  src="images/gate-avatar.png"
+                  alt="Hand-drawn illustration of Prateek waving next to a small marigold AI sidekick robot, also waving."
+                  class="polaroid-img"
+                  width="400" height="400"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <p class="polaroid-caption">the AI sidekick &amp; I will say hi.</p>
+              <div class="washi washi--corner"></div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -840,7 +856,7 @@
             />
             <p class="contact-availability">
               <span class="availability-dot" aria-hidden="true"></span>
-              Co-founding galpal &middot; open to PM roles &middot; Mumbai, remote
+              Open to PM roles &middot; Mumbai, open to remote
             </p>
           </div>
           <div class="contact-links">
@@ -882,7 +898,7 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
         </a>
       </div>
-      <p class="footer-credit">Made with care &amp; curiosity</p>
+      <p class="footer-credit">Built with soul, powered by intelligence.</p>
     </div>
   </footer>
 
@@ -894,44 +910,39 @@
     <span class="toast-text"></span>
   </div>
 
-  <!-- ===== Email Gate Controller =====
-       Validates email, attempts Supabase save (fails open), unlocks portfolio,
-       and persists a localStorage flag so returning visitors skip the gate. -->
+  <!-- ===== Notify-Me Controller =====
+       Validates email, attempts Supabase save (fails open), shows inline
+       success card. Persists a localStorage flag so returning subscribers
+       see a thank-you state instead of the form. The signup is optional —
+       Supabase failures never block the visitor (the form just acts as if
+       the save succeeded; reasons are logged to the console for debugging). -->
   <script>
     (function () {
-      // --- Supabase config ---------------------------------------------------
-      // Credentials live in config.js (loaded in <head>). If that file is
-      // missing or still has placeholder values, the gate runs in local-only
-      // mode: validation happens, portfolio still unlocks, no DB write. This
-      // is intentional — per the spec, Supabase must never block a visitor.
-      var cfg = window.__GATE_CONFIG__ || {};
+      var cfg = window.__NEWSLETTER_CONFIG__ || {};
       var SUPABASE_URL      = cfg.SUPABASE_URL      || 'YOUR_SUPABASE_PROJECT_URL_HERE';
       var SUPABASE_ANON_KEY = cfg.SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY_HERE';
       var SUPABASE_TABLE    = cfg.SUPABASE_TABLE    || 'subscribers';
-      var STORAGE_KEY       = 'portfolio_gate_passed';
+      var STORAGE_KEY       = 'portfolio_notify_subscribed';
       var SAVE_TIMEOUT_MS   = 3500;
 
-      // --- DOM ---------------------------------------------------------------
-      var gate    = document.getElementById('email-gate');
-      var form    = document.getElementById('gate-form');
-      var input   = document.getElementById('gate-email');
-      var errorEl = document.getElementById('gate-error');
-      var submit  = document.getElementById('gate-submit');
-      var success = document.getElementById('gate-success');
+      var form      = document.getElementById('notify-form');
+      var input     = document.getElementById('notify-email');
+      var errorEl   = document.getElementById('notify-error');
+      var submit    = document.getElementById('notify-submit');
+      var success   = document.getElementById('notify-success');
+      var alreadyEl = document.getElementById('notify-already');
 
-      if (!gate || !form || !input || !submit) return;
+      if (!form || !input || !submit) return;
 
-      // Already passed? Just make sure the portfolio is visible. The inline
-      // head script will have added .gate-skip before first paint.
+      // Returning subscriber? Hide the form, show the thank-you state.
       try {
         if (localStorage.getItem(STORAGE_KEY) === '1') {
-          document.documentElement.classList.add('gate-skip');
+          form.hidden = true;
+          if (alreadyEl) alreadyEl.hidden = false;
           return;
         }
-      } catch (e) { /* ignore */ }
+      } catch (e) { /* storage blocked — show form, that's fine */ }
 
-      // --- Helpers -----------------------------------------------------------
-      // RFC-5322-lite: local@domain.tld, no spaces, at least one dot in domain.
       var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
       function isValidEmail(value) {
@@ -956,7 +967,6 @@
         return SUPABASE_URL.indexOf('YOUR_') === 0 || SUPABASE_ANON_KEY.indexOf('YOUR_') === 0;
       }
 
-      // Placeholder & throwaway domains we reject outright.
       var BLOCKED_DOMAINS = {
         'test.com':1,'test.test':1,'example.com':1,'example.org':1,'example.net':1,
         'mailinator.com':1,'tempmail.com':1,'temp-mail.org':1,'10minutemail.com':1,
@@ -965,7 +975,6 @@
         'fakeinbox.com':1
       };
 
-      // Common typos → correct domain. One-step fix, not fuzzy matching.
       var TYPO_FIX = {
         'gmial.com':'gmail.com','gmai.com':'gmail.com','gnail.com':'gmail.com',
         'gmaill.com':'gmail.com','gmali.com':'gmail.com','gmail.con':'gmail.com',
@@ -996,13 +1005,13 @@
         return fixed ? (localOf(email) + '@' + fixed) : null;
       }
 
-      // Inline clickable suggestion that auto-fills the input on click.
-      // Built via DOM nodes (not innerHTML) so user input can't inject HTML.
+      // Inline clickable typo correction. Built via DOM nodes (not innerHTML)
+      // so a malicious local part can't inject markup.
       function showTypoSuggestion(corrected) {
         errorEl.textContent = 'Did you mean ';
         var link = document.createElement('a');
         link.href = '#';
-        link.className = 'gate-typo-link';
+        link.className = 'notify-typo-link';
         link.textContent = corrected;
         errorEl.appendChild(link);
         errorEl.appendChild(document.createTextNode('?'));
@@ -1018,7 +1027,7 @@
       }
 
       // Save email to Supabase. Never throws; resolves with either
-      // { ok: true } or { ok: false, reason } — neither blocks the visitor.
+      // { ok: true } or { ok: false, reason } — neither blocks the UI.
       function saveEmail(email) {
         if (isPlaceholderConfig()) {
           return Promise.resolve({ ok: false, reason: 'no-config' });
@@ -1039,7 +1048,6 @@
           .insert({ email: email })
           .then(function (res) {
             if (res && res.error) {
-              // Duplicate-key (23505) — treat as success per spec.
               var code = res.error.code || '';
               if (code === '23505' || /duplicate|unique/i.test(res.error.message || '')) {
                 return { ok: true, duplicate: true };
@@ -1059,34 +1067,24 @@
         return Promise.race([insertPromise, timeoutPromise]);
       }
 
-      function markPassed() {
+      function markSubscribed() {
         try { localStorage.setItem(STORAGE_KEY, '1'); } catch (e) { /* ignore */ }
       }
 
-      function unlockPortfolio() {
-        // Show welcome state briefly, then fade the gate out and reveal page.
-        success.classList.add('is-visible');
-        success.setAttribute('aria-hidden', 'false');
-
-        setTimeout(function () {
-          document.documentElement.classList.add('gate-done');
-          gate.classList.add('is-closing');
-          // After fade completes, remove gate from the tree entirely.
-          setTimeout(function () {
-            if (gate && gate.parentNode) gate.parentNode.removeChild(gate);
-            // Fire a custom event in case other scripts want to hook in.
-            document.dispatchEvent(new CustomEvent('portfolio:unlocked'));
-          }, 560);
-        }, 650);
+      function showSuccess() {
+        form.hidden = true;
+        if (success) {
+          success.classList.add('is-visible');
+          success.setAttribute('aria-hidden', 'false');
+        }
       }
 
-      // --- Event wiring ------------------------------------------------------
       input.addEventListener('input', function () {
         if (!errorEl.hidden) clearError();
       });
 
-      // Tracks the last email we warned the user about, so if they deliberately
-      // resubmit the same typo we respect their choice and let them through.
+      // Tracks the last email we warned the user about, so a deliberate
+      // resubmit of the same typo respects their choice.
       var lastWarnedEmail = '';
 
       form.addEventListener('submit', function (e) {
@@ -1115,16 +1113,14 @@
 
         clearError();
         submit.disabled = true;
-        submit.textContent = 'Opening…';
+        submit.textContent = 'Adding you…';
 
         saveEmail(email).then(function (result) {
-          // Per spec: success, duplicate, OR any error → let them through.
-          // We only log for the owner's debugging; no visitor-facing difference.
           if (!result.ok && window.console && console.debug) {
-            console.debug('[gate] email not stored:', result.reason || 'unknown');
+            console.debug('[notify] email not stored:', result.reason || 'unknown');
           }
-          markPassed();
-          unlockPortfolio();
+          markSubscribed();
+          showSuccess();
         });
       });
     })();

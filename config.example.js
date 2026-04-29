@@ -1,9 +1,9 @@
 // ============================================================================
-// Email Gate — Supabase credentials (example / template)
+// Notify-Me Signup — Supabase credentials (example / template)
 // ============================================================================
 // 1. Copy this file to `config.js` in the same directory.
 // 2. Paste your Supabase Project URL and anon key below.
-// 3. Save. The gate will pick them up on next page load.
+// 3. Save. The signup form will pick them up on next page load.
 //
 // Where to find them:
 //   Supabase dashboard → your project → Project Settings → API
@@ -16,11 +16,12 @@
 //   - The `anon` role has an INSERT policy (and nothing else) for that table
 //   - The table is exposed via Project Settings → Data API → Exposed tables
 //
-// If either value is left as a placeholder, the gate will validate the email,
-// let the visitor through, and skip the database write. Nothing will break.
+// If either value is left as a placeholder, the signup form still validates
+// the email and shows the success state, but skips the database write.
+// Nothing will break.
 // ============================================================================
 
-window.__GATE_CONFIG__ = {
+window.__NEWSLETTER_CONFIG__ = {
   SUPABASE_URL:      'YOUR_SUPABASE_PROJECT_URL_HERE',
   SUPABASE_ANON_KEY: 'YOUR_SUPABASE_ANON_KEY_HERE',
   SUPABASE_TABLE:    'subscribers',
