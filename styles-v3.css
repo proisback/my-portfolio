@@ -807,6 +807,76 @@ a, button, [role="button"] {
   color: var(--ink-secondary);
   margin-bottom: 10px;
 }
+.timeline-accolade {
+  display: inline-block;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--charcoal);
+  text-decoration: none;
+  border-bottom: 1.5px solid var(--marigold);
+  padding-bottom: 1px;
+  margin: -4px 0 12px;
+  transition: opacity 0.2s var(--ease-std);
+}
+.timeline-accolade:hover { opacity: 0.7; }
+
+/* Collapsible "Key outcomes" on work entries — uses native <details>. */
+.timeline-details {
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+.timeline-details > summary {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--charcoal);
+  user-select: none;
+  list-style: none;
+  padding: 4px 0;
+}
+.timeline-details > summary::-webkit-details-marker { display: none; }
+.timeline-details > summary::before {
+  content: "+";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  line-height: 12px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--marigold);
+  border: 1.5px solid var(--marigold);
+  border-radius: 50%;
+}
+.timeline-details[open] > summary::before { content: "\2212"; }
+.timeline-details > summary:hover { opacity: 0.75; }
+.timeline-details-list {
+  list-style: none;
+  margin: 8px 0 2px;
+  padding: 0;
+}
+.timeline-details-list li {
+  position: relative;
+  padding: 3px 0 3px 14px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-secondary);
+}
+.timeline-details-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 11px;
+  width: 6px;
+  height: 2px;
+  background: var(--marigold);
+  border-radius: 1px;
+}
 .timeline-desc {
   font-size: 14.5px;
   line-height: 1.65;
