@@ -113,6 +113,8 @@ Reference for visual rules: spec Section 2 "Visual System".
 **Files:**
 - Create: `case-studies/case-study.css`
 
+**Token-sync prerequisite:** Before writing the token block below, `grep -n "marigold\|cream\|charcoal" styles-v3.css` and copy the hex values verbatim. If the portfolio's token hex changes in future, the case-study tokens must be re-synced manually (no shared variables). This is acknowledged tradeoff of the deliberate brand divergence.
+
 - [ ] **Step 1: Create file with header comment + token block**
 
 ```css
