@@ -34,3 +34,37 @@
   --space-7: 48px;
   --space-8: 64px;
 }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { background: var(--cream); }
+body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--charcoal);
+  background: var(--cream);
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding: var(--space-7) var(--space-4);
+}
+
+h1, h2, h3, h4, .eyebrow, .small-meta {
+  font-family: var(--font-display);
+  letter-spacing: -0.005em;
+  line-height: 1.25;
+  color: var(--charcoal);
+}
+
+h1 { font-size: 28px; font-weight: 700; }
+h2 { font-size: 19px; font-weight: 700; }
+h3 { font-size: 16px; font-weight: 600; }
+.eyebrow { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-secondary); }
+.small-meta { font-size: 13px; font-weight: 500; color: var(--ink-tertiary); }
+
+a { color: var(--charcoal); text-decoration: none; border-bottom: 1px solid var(--marigold); }
+a:hover { opacity: 0.7; }
