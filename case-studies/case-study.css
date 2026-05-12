@@ -1,0 +1,36 @@
+/* ============================================================================
+   PM Portfolio Case Study — Shared Stylesheet
+   Spec: docs/superpowers/specs/2026-05-12-pm-portfolio-case-study-system-design.md (v1.2)
+   Visual principle: calmly confident editorial infrastructure.
+   Brand divergence: Inter+Charter typography (vs portfolio Sora), color tokens synced.
+   ============================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap');
+/* Charter is a system font on macOS/iOS; Georgia is the consistent web fallback. No web font needed for body. */
+
+:root {
+  --cream: #F5EFE1;
+  --cream-soft: #F5EEDC;
+  --charcoal: #1F1A1D;
+  --ink-secondary: #5A4F53;
+  --ink-tertiary: #8B8086;
+  --marigold: #F5C94C;
+  --marigold-soft: #FFF0B3;
+  --border-hair: #E8DCC0;
+  --white: #FFFFFF;
+
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Charter', 'Georgia', 'Source Serif Pro', 'Spectral', serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Consolas, monospace;
+
+  --page-width: 720px;
+  --reflection-width: 580px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+}
