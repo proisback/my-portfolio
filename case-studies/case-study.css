@@ -392,14 +392,14 @@ a:hover { opacity: 0.7; }
 .outcome-stat {
   text-align: left;
   padding: var(--space-3) 0;
-  border-top: 1px solid var(--marigold);
+  border-top: 3px solid var(--marigold);
 }
 .outcome-stat .num {
   display: block;
   font-family: var(--font-display);
   font-size: 34px;
   font-weight: 800;
-  color: var(--marigold);
+  color: var(--charcoal);
   line-height: 1;
   margin-bottom: var(--space-2);
 }
@@ -555,4 +555,5 @@ a:hover { opacity: 0.7; }
   .outcome-stat .num { font-size: 28px; }
   .tldr-scan { grid-template-columns: 68px 1fr; }
   .decision-row .label { width: 70px; }
+  .decision-row .value { max-width: calc(100% - 80px); }
 }
