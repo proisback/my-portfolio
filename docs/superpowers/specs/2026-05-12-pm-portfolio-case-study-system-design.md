@@ -220,9 +220,20 @@ Stop and validate before continuing. 4 layers:
 
 ### Template Freeze Point
 
-After Case Study #2 ships, **`case-study.css` is git-tagged `template-v1-frozen`**. Any subsequent change to that file (or to the section structure defined in Section 1) requires a written one-paragraph **"Freeze Override"** entry appended to a companion file `docs/superpowers/specs/FREEZE-OVERRIDES.md`, referencing the specific validation-loop result (with verbatim quote from a reader) that necessitated the change.
+After Case Study #2 ships, **`case-study.css` is git-tagged `template-v1-frozen`**. Any subsequent change to that file (or to the section structure defined in Section 1) requires a written one-paragraph **"Freeze Override"** entry appended to a companion file `docs/superpowers/specs/FREEZE-OVERRIDES.md`, naming a concrete rationale that falls into one of two categories:
 
-Without a documented override entry, no aesthetic or structural edit to the template is permitted. The git tag + paper trail are the teeth — they make the rule self-enforcing rather than relying on author discipline. The bar to clear is **"a real reader said something that means the template is broken"**, not "I want this to feel slightly more polished."
+- **(a) Validated reader feedback** — a reader's reaction (quote where available, paraphrase where not) that points to a template-level failure
+- **(b) Structural / readability defect discovered during implementation** — e.g., mobile spacing collapse, table overflow at narrow widths, typography contrast failure, visual rhythm break, accessibility regression
+
+The bar to clear is **"no aesthetic tweaking without a concrete rationale"** — not "every change requires external testimony." A defect surfaced during build counts; a "this feels nicer" impulse does not. Without a documented override entry, no edit to the template is permitted. The git tag + paper trail are the teeth — they make the rule self-enforcing rather than relying on author discipline.
+
+### Kill Criteria
+
+Not every case study deserves full template treatment. Forcing symmetry across 6 case studies dilutes flagship quality when 1-2 entries lack honest depth.
+
+**Kill rule:** If after **two revisions** a case study still cannot produce honest content for Key Decisions, Reflection, OR Evidence of Realness (per the minimum bar), **downgrade it to a lightweight project page** — TL;DR Snapshot + Solution Architecture + a one-line note in the Decision Appendix explaining the downgrade ("This project is presented as a lightweight summary because [decision attribution / reflection depth / evidence] did not meet the case-study minimum bar."). Do not pad missing sections with generic content to maintain symmetry across the 6.
+
+**Likely downgrade candidates if depth doesn't hold:** Signal and StoreOps (cohort/group projects with shared decision attribution, limited solo ownership, and "surfaced opportunity" framing rather than delivered impact). Apply honestly. **Better outcome: 4 strong case studies + 2 lightweight pages than 6 forced ones.**
 
 ### Per-case time budget
 
@@ -345,7 +356,12 @@ Out of scope for v1. LinkedIn / X threads are downstream of Substack, not of por
 
 5. **Reflection authenticity** — the 3-rule Reflection format demands intellectually expensive answers. Prateek must avoid performative humility ("I learned communication") and write specific mistakes ("I over-optimized automation before validating users wanted autonomy"). Risk: defaulting to generic on weak case studies. Mitigation: if a case study can't produce honest Reflection content, that's a signal to compress the case study, not fake the section.
 
-6. **Voice consistency across 6 case studies authored 2-3 weeks apart.** Tone naturally drifts between Plan Karo Chalo (pilot, week 1) and galpal (flagship, week 2-3) — the spec mandates editorial tone, AI Contribution Disclosure, and 3-rule Reflection but doesn't anchor voice. Mitigation: alongside Case Study #1, author a `docs/superpowers/specs/VOICE.md` style sheet — 5-7 bullets capturing tone rules (e.g., *no AI tool worship · restraint over hype · specific verbs only · no startup adjectives · plain-text dates · uses "I" not "we" when solo · names tradeoffs explicitly*). Treat it as a freeze artifact like the CSS. Review Case Studies #2-6 against VOICE.md before publish.
+6. **Voice consistency across 6 case studies authored 2-3 weeks apart.** Tone naturally drifts between Plan Karo Chalo (pilot, week 1) and galpal (flagship, week 2-3) — the spec mandates editorial tone, AI Contribution Disclosure, and 3-rule Reflection but doesn't anchor voice. Mitigation: **after Case Study #1's first draft and before Bhojan begins** (timing matters: enough writing done to discover the voice, not enough to harden bad habits), author a `docs/superpowers/specs/VOICE.md` style sheet with two parallel sections:
+
+   - **Positive constraints** — 5-7 bullets capturing tone rules (e.g., *no AI tool worship · restraint over hype · specific verbs only · plain-text dates · uses "I" not "we" when solo · names tradeoffs explicitly · numbers carry context*).
+   - **What this portfolio refuses to sound like** — 5-7 negative constraints (e.g., *no startup hype language · no visionary claims · no "leveraging AI to revolutionize" · no fake vulnerability · no inflated ownership wording · no "10x" phrasing · no motivational tone · no framework theater*).
+
+   Treat as a freeze artifact like the CSS. Review Case Studies #2-6 against VOICE.md before publish. **Negative constraints often catch drift better than positive ones** — the "refuses to sound like" list is the sharper filter.
 
 ---
 
@@ -356,7 +372,7 @@ The system succeeds if, after publishing all 6 case studies:
 1. **A non-PM recruiter** scrolling a single case study for 15 seconds can correctly identify the project, the role, and whether the work feels real.
 2. **A PM-experienced reader** spontaneously notes the decision rigor or reflection depth without prompting.
 3. **At least one hiring-manager-level reader** says they'd take a screen call after reading 1-2 case studies cold.
-4. **At least one inbound contact attributable to the portfolio link** by month 3 — cold application response citing a case study, LinkedIn DM referencing a Decision Block, Substack subscriber → call, or hiring manager mentioning the portfolio in a screening call. Channel-agnostic; what matters is that the work generated reach beyond cold applications.
+4. **At least one *high-quality* inbound contact attributable to the portfolio link** by month 3 — from a PM lead, founder, hiring manager, or experienced operator (NOT a generic recruiter blast or LinkedIn auto-DM). Channel-agnostic: cold application response citing a case study, LinkedIn DM referencing a specific Decision Block, Substack subscriber → call, hiring manager mentioning the portfolio in a screening call, or warm intro from someone who read the work. **Signal quality > volume**: one thoughtful inbound from a target persona is worth more than 20 generic recruiter impressions. Track *who* is reaching out, not just *how many*.
 5. **Prateek's confidence** in linking the portfolio in cold applications is materially higher than with the current PRDs. (Subjective but real.)
 
 These are leading indicators of the harder outcome — **conversion to PM interviews** — which the system is built to optimize.
