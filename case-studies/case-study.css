@@ -473,3 +473,86 @@ a:hover { opacity: 0.7; }
   margin-bottom: var(--space-2);
 }
 .reflection-block p { font-family: var(--font-body); }
+
+/* ============================================================================
+   BATCH C: Task 1.10 — Decision Appendix + Related Thinking + Footer + Mobile
+   ============================================================================ */
+.decision-appendix { margin-top: var(--space-7); }
+.decision-appendix summary {
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--marigold);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--marigold);
+  list-style: none;
+}
+.decision-appendix summary::-webkit-details-marker { display: none; }
+.decision-appendix summary::before { content: "+ "; }
+.decision-appendix[open] summary::before { content: "\2212 "; }
+.appendix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-display);
+  font-size: 12.5px;
+  margin-top: var(--space-3);
+}
+.appendix-table thead th {
+  text-align: left;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-secondary);
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border-hair);
+}
+.appendix-table tbody td {
+  padding: 8px;
+  vertical-align: top;
+  border-bottom: 1px dashed var(--border-hair);
+  line-height: 1.5;
+}
+.ai-badge {
+  display: inline-block;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 1px 5px;
+  border: 1px solid var(--marigold);
+  border-radius: 2px;
+  color: var(--marigold);
+}
+
+.related-thinking {
+  margin: var(--space-6) 0 var(--space-5);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-hair);
+}
+.related-thinking .eyebrow { color: var(--ink-secondary); margin-bottom: var(--space-2); }
+.related-thinking ul { list-style: none; padding: 0; }
+.related-thinking li { padding: 4px 0; font-size: 14px; }
+.related-thinking li::before { content: "\2192 "; color: var(--marigold); }
+
+.case-footer {
+  margin-top: var(--space-7);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-hair);
+  font-family: var(--font-display);
+  font-size: 12px;
+  color: var(--ink-tertiary);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+@media (max-width: 720px) {
+  .page { padding: var(--space-4) var(--space-3); }
+  h1, .tldr-title { font-size: 22px; }
+  .outcome-stat .num { font-size: 28px; }
+  .tldr-scan { grid-template-columns: 68px 1fr; }
+  .decision-row .label { width: 70px; }
+}
