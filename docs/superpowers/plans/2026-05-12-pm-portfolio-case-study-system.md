@@ -16,6 +16,12 @@
 - "Run" commands assume Git Bash on Windows with the project at `c:\Users\prate\my-portfolio`.
 - Browser open via `start "" "file:///C:/Users/prate/my-portfolio/<path>"` on Windows.
 
+**Deliberate brand divergence (called out per spec Section 2):**
+The case-study system uses **Inter (display) + Charter (body) + IBM Plex Mono (code)** instead of the portfolio's Sora typeface. This is intentional — the spec explicitly chose editorial typography for case studies (analytical clarity, Stripe-docs-style reading) over Sora's warmer brand-identity tone. Color tokens (`--cream`, `--charcoal`, `--marigold`) are redefined in `case-study.css` to match `styles-v3.css` values *exactly* so the cream/marigold visual identity carries across; only the typography forks. If a future revision wants to harmonize back, file a Freeze Override.
+
+**Total time budget reality check:**
+Spec budgets ~45 hours for portfolio v1. This plan's task list sums to ~44–69 hours depending on Kill Criteria triggers and validation iterations. **If the budget bites, cut in this order**: (1) compress galpal to 6h instead of 12h by limiting Second-Order Effects to 2 bullets, (2) downgrade Signal AND StoreOps to lightweight pages per Kill Criteria, (3) skip Phase 11.1 cross-linking and batch later. Don't cut Phase 3 validation, Phase 4 VOICE.md, or Phase 6 Template Freeze — those are the discipline mechanisms.
+
 ---
 
 ## File Structure (locked)
@@ -74,16 +80,25 @@ mkdir -p images/case-studies/{plan-karo-chalo,bhojan,galpal,pmpathfinder,signal,
 ls -la case-studies/ images/case-studies/
 ```
 
-Expected: `case-studies/` exists; `images/case-studies/` contains 6 subdirectories.
+Expected: `case-studies/` exists; `images/case-studies/` contains 6 subdirectories. Empty directories don't commit on their own — commit will land with the first real file in Task 1.1.
 
-- [ ] **Step 3: Commit empty structure**
+### Task 0.2: Recruit validation readers (BEFORE Phase 3 starts)
 
-```bash
-git add case-studies/ images/case-studies/
-git commit -m "Scaffold case-studies/ directory structure"
-```
+The validation loop in Phase 3 depends on humans who must already have agreed to read. Don't wait until Phase 3 to ask — start the recruit-and-confirm process in parallel with Phase 1 so they're available the moment Phase 2 ships.
 
-Note: empty directories don't commit unless you add a `.gitkeep`. Skip the commit if empty; commit after first file lands.
+- [ ] **Step 1: Identify candidate readers**
+
+- 2-3 non-PM friends (cold-recruiter test, N≥2)
+- 1-2 PM-experienced friends or mentors (PM-friend test)
+- Optional: 1 senior PM / hiring manager from network (grunt test)
+
+- [ ] **Step 2: Send a pre-warn message to each**
+
+Template message: "I'm shipping a new case study on my portfolio in [X] days. When it's live, can I send you the link for 5 min of feedback? You'll get one specific question — won't take long."
+
+- [ ] **Step 3: Confirm availability of N≥2 cold readers + ≥1 PM friend**
+
+If fewer than that confirm within 5 days, surface to the user — the 7-day validation time-box can't start without readers.
 
 ---
 
@@ -147,6 +162,8 @@ git commit -m "case-study.css: design tokens + skeleton"
 ```
 
 ### Task 1.2: Font imports + reset + typography baseline
+
+**Deliberate divergence from portfolio:** This file uses Inter + Charter (NOT the portfolio's Sora). See plan header "Deliberate brand divergence" — spec Section 2 calls for editorial typography on case studies for analytical clarity.
 
 - [ ] **Step 1: Append to case-study.css**
 
@@ -800,6 +817,10 @@ Expected: ≥95 on accessibility (basic semantic HTML + sufficient contrast).
 
 - [ ] **Step 2: If issues, fix contrast ratios and re-test before committing**
 
+### CSS verification note (applies to Tasks 1.3–1.9)
+
+Each task above says "verify in test HTML" but only Task 1.2 creates the test file. Either build up a single persistent `case-studies/_template-preview.html` across Tasks 1.2–1.10 — appending one component-test fragment per task and re-opening the browser — OR rely on Task 1.10 Step 2's comprehensive sweep to catch component-level rendering issues. Junior should pick the persistent-preview approach if uncomfortable with delayed verification.
+
 ---
 
 ## Phase 2: Plan Karo Chalo Pilot (Case Study #1)
@@ -811,7 +832,7 @@ Material sources:
 - `index.html` lines 235-280 — project card content
 - Live product at https://plankarochalo.vercel.app
 
-### Task 2.1: Material extraction
+### Task 2.1: Material extraction (split into 3 sub-tasks — total ~60-90 min)
 
 - [ ] **Step 1: Read existing PRD end-to-end**
 
@@ -819,29 +840,44 @@ Material sources:
 start "" "file:///C:/Users/prate/my-portfolio/PRDs/04_plankarochalo_prd.html"
 ```
 
-- [ ] **Step 2: Create a working notes file**
+- [ ] **Step 2: Add `_*.md` to .gitignore for working notes**
 
-Create `case-studies/_pkc-notes.md` (gitignored after) — extract per section of the new template:
-- Operating constraints (solo, 8 days, no eng support)
+```bash
+echo "case-studies/_*.md" >> .gitignore
+```
+
+- [ ] **Step 3: Create `_pkc-notes.md` — Part A (Constraints, Problem, Decisions) — ~20 min**
+
+Extract:
+- Operating constraints (solo, 8 days, no eng support, cohort-tested)
 - Problem (one sentence)
 - Why this was hard (3-5 tensions)
 - 3-5 key decisions with options/chose/why/rejected
-- What was refused (anti-features)
-- Discovery insights → changes (table format)
-- Workflow stack (task / workflow / why it mattered)
-- Speed of iteration stats (idea→prototype, etc.)
+- What was refused (anti-features, 2-4 bullets)
+
+- [ ] **Step 4: Add to `_pkc-notes.md` — Part B (Discovery + Execution) — ~20 min**
+
+Extract:
+- Discovery insights → changes (table format, 3-5 rows)
+- Before/After thinking (table format, 2-4 rows)
+- Workflow stack (task / workflow / why it mattered, 4-6 rows)
+- Speed of iteration stats (idea→prototype, prototype→test, total iterations)
 - What stayed manual (and why)
-- AI Contribution Disclosure draft
-- Outcomes (91.7%, 85.2%, 132 surveys + 24 interviews)
-- Available Field Notes evidence (analytics, quotes, screenshots)
-- Reflection: 1 mistake / 1 changed belief / 1 future improvement
-- Decision Appendix entries (5 rows)
+- AI Contribution Disclosure draft (one paragraph)
 
-- [ ] **Step 3: Don't commit working notes; just keep them for reference during authoring**
+- [ ] **Step 5: Add to `_pkc-notes.md` — Part C (Outcomes, Field Notes, Reflection, Appendix) — ~20 min**
 
-```bash
-echo "case-studies/_*.md" >> .gitignore  # if not already gitignored
-```
+Extract:
+- Outcomes (91.7%, 85.2%, 132 surveys + 24 interviews) with context per number
+- Available Field Notes evidence (inventory: production analytics, quotes, screenshots, changelog) — count to verify ≥2 artifacts exist
+- Reflection: 1 specific mistake / 1 changed belief / 1 future improvement
+- Decision Appendix entries (5 rows with columns including AI-assisted Y/N)
+
+- [ ] **Step 6: Verify completeness — every section of the case-study template has source material in notes**
+
+If any section comes up empty, surface to user before proceeding. Don't author from thin material.
+
+**Date stamp note:** Every case study's footer line `Version 1.0 · Updated <date>` should use the *actual publish date* per file, not the placeholder from the template. When copying the template skeleton, immediately update this date to today before committing.
 
 ### Task 2.2: Scaffold `plan-karo-chalo.html` with all 10 sections
 
@@ -1176,7 +1212,7 @@ git commit -am "PKC: Decision Appendix"
 
 ### Task 2.13: Update `index.html` project card link
 
-**Files:** Modify `index.html` (the Plan Karo Chalo project card around line 235-247).
+**Files:** Modify `index.html` (the Plan Karo Chalo project card around line 235-247) and `styles-v3.css` (add 2 CSS rules).
 
 - [ ] **Step 1: Find the existing "Read the PRD" link in PKC card**
 
@@ -1184,7 +1220,15 @@ git commit -am "PKC: Decision Appendix"
 grep -n "plankarochalo_prd" index.html
 ```
 
-- [ ] **Step 2: Add a new primary CTA above the PRD link**
+- [ ] **Step 2: Find the existing `.card-link` styling**
+
+```bash
+grep -n "card-link" styles-v3.css
+```
+
+Read the existing rule so the new `--primary` / `--secondary` modifiers extend the existing styling rather than conflict.
+
+- [ ] **Step 3: Add a new primary CTA above the PRD link**
 
 Change link row to:
 ```html
@@ -1192,19 +1236,31 @@ Change link row to:
 <a href="PRDs/04_plankarochalo_prd.html" target="_blank" rel="noopener noreferrer" class="card-link card-link--secondary">Original PRD ↗</a>
 ```
 
-- [ ] **Step 3: Add CSS in styles-v3.css for the visual demotion of the secondary link**
+- [ ] **Step 4: Add 2 CSS rules in styles-v3.css just below the existing `.card-link` block**
 
 ```css
+.card-link--primary { font-weight: 700; }
 .card-link--secondary { font-size: 12px; opacity: 0.65; }
 ```
 
-- [ ] **Step 4: Verify portfolio still renders correctly; both links work**
+The primary inherits `.card-link` styling but adds weight; the secondary demotes via size + opacity. Both inherit color, hover state, etc. from the base `.card-link` rule.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Add noindex meta to PKC case study until validation passes (minor reviewer suggestion)**
+
+In `case-studies/plan-karo-chalo.html` `<head>`, add (temporarily):
+```html
+<meta name="robots" content="noindex,nofollow">
+```
+
+This prevents search-engine indexing of the v1 draft. Remove after Phase 3 validation passes.
+
+- [ ] **Step 6: Verify portfolio still renders correctly; both links work; PKC opens new case study by default**
+
+- [ ] **Step 7: Commit**
 
 ```bash
-git add index.html styles-v3.css
-git commit -m "Portfolio: PKC card now links to new case study; original PRD demoted to secondary"
+git add index.html styles-v3.css case-studies/plan-karo-chalo.html
+git commit -m "Portfolio: PKC card now links to new case study; original PRD demoted; noindex on case study v1"
 ```
 
 ### Task 2.14: Deploy Plan Karo Chalo to GitHub Pages
@@ -1266,15 +1322,37 @@ Per spec:
 
 - [ ] **Step 1: Check which criteria are met after feedback gathered**
 
-- [ ] **Step 2: If 2/3 met, exit validation loop**
+- [ ] **Step 2: If 2/3 met, exit validation loop. Remove the `noindex` meta tag from `case-studies/plan-karo-chalo.html`, commit, push.**
 
-- [ ] **Step 3: If <2/3 met, refactor case study OR template based on feedback. Re-publish, re-validate.**
+```bash
+git commit -am "PKC: validation passed, remove noindex meta"
+git push origin main
+```
 
-### Task 3.5: Time-box enforcement
+- [ ] **Step 3: If <2/3 met after first read pass — diagnose the gap**
 
-- [ ] **Step 1: If 7 days pass without securing the PM-friend read, exit on criteria 1 + 2 alone. Note the missing read in PKC case-study footer or VOICE.md.**
+Distinguish two failure modes:
+- **Content failure** — readers don't understand the project / role / decisions. Fix in PKC content (re-write specific sections).
+- **Template failure** — readers found the layout confusing, hierarchy wrong, hard to scan. Fix in `case-study.css` (and document as Freeze Override IF the template-v1-frozen tag has been placed — but we're pre-freeze, so no override needed).
 
-- [ ] **Step 2: Move on to Phase 4 (VOICE.md). Do not stall.**
+- [ ] **Step 4: Re-author the affected section(s), re-deploy, re-share with original readers asking specifically "did this fix it?"**
+
+- [ ] **Step 5: Re-evaluate exit criteria**
+
+### Task 3.5: Time-box enforcement and escalation
+
+- [ ] **Step 1: If 7 days pass without securing the PM-friend read, exit on criteria 1 + 2 alone. Note the missing read in PKC case-study footer.**
+
+- [ ] **Step 2: If 7 days pass AND criteria 1+2 not met after 2 revision passes, surface to user**
+
+This means the case study is fundamentally not landing. Options to discuss:
+- More dramatic template revision (high-cost)
+- Switch pilot to a different case study (e.g., galpal) and start over
+- Accept current state and proceed to Phase 4 with explicit limitation noted in VOICE.md
+
+Don't stall silently. Surface, discuss, decide.
+
+- [ ] **Step 3: Move on to Phase 4 (VOICE.md). Do not stall.**
 
 ---
 
@@ -1354,21 +1432,57 @@ The pivot ("one user interview pivoted the entire model") is Bhojan's strongest 
 
 ### Task 5.2: Scaffold + fill `case-studies/bhojan.html`
 
-Mirror Task 2.2 through 2.12, but compressed. Specifically:
+**Per-section authoring follows the same granularity as Tasks 2.2 through 2.12. Don't compress — Bhojan has no PRD, so each section requires authoring from scratch. Steps below name the corresponding PKC tasks; apply the same step-by-step approach.**
 
-- [ ] **Step 1: Copy `plan-karo-chalo.html` as starting skeleton, rename, swap content**
+- [ ] **Step 1: Copy template skeleton**
 
 ```bash
 cp case-studies/plan-karo-chalo.html case-studies/bhojan.html
 ```
 
-- [ ] **Step 2: Replace TL;DR, Problem, Decisions, etc. with Bhojan content using PKC as structural template**
+- [ ] **Step 2: Update `<head>` (title, meta description) and back-nav**
 
-- [ ] **Step 3: Apply VOICE.md checklist before saving**
+- [ ] **Step 3: Fill TL;DR Snapshot (mirror Task 2.3)**
 
-- [ ] **Step 4: Open in browser; visual sanity check**
+Constraint tags: `solo build` · `4 days` · `no prior coding background` · `single pivot`. Problem line: ~1,095 daily meal decisions for a 6-person joint family. Decision: pivot from blank-grid planner to suggestion-first model. Build: suggestion-first PWA with festival calendar + WhatsApp share. Result: live product, 75+ meals, $0 infra. Learned: a single user interview can outweigh a survey if it invalidates the core model.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 4: Fill Problem & Stakes + Why This Was Hard (mirror Task 2.4)**
+
+- [ ] **Step 5: Fill Key Decisions + What I Refused to Build (mirror Task 2.5)**
+
+The strongest Decision Block is the pivot moment (blank-grid → suggestion-first). Include `simplification-callout` for the "remove the planning step" decision.
+
+- [ ] **Step 6: Conditional check — does Bhojan have rich Discovery material? (mirror Task 2.6 if yes, else compress to 1 Insight→Change table + 1 Before/After row)**
+
+Per spec Section 1, Discovery is conditional. For Bhojan, the pivot interview IS the discovery — likely worth a full section with the interview quote as the hero.
+
+- [ ] **Step 7: Fill Execution System (mirror Task 2.7)**
+
+Tools: Cursor (PWA scaffold), Supabase (RLS + auth), AI-assisted recipe DB population. AI Contribution Disclosure: "AI assisted PWA scaffold and recipe-database population. Pivot decision, product model, and family-domain logic were human-led."
+
+- [ ] **Step 8: Fill Solution Architecture (mirror Task 2.8)**
+
+Screenshots from live product into `images/case-studies/bhojan/`. Annotate the suggestion screen and the festival-calendar view as the differentiators.
+
+- [ ] **Step 9: Fill Outcomes (mirror Task 2.9)**
+
+Honest bar — Bhojan has no production analytics yet. Outcomes section may be lighter than PKC; that's OK. Lead with "the model pivot" as the outcome itself, not user metrics.
+
+- [ ] **Step 10: Apply Field Notes minimum bar (mirror Task 2.10)**
+
+If <2 artifacts available (likely), omit Field Notes with rationale in Decision Appendix per spec. Don't pad.
+
+- [ ] **Step 11: Fill Reflection 3-rule format (mirror Task 2.11)**
+
+- [ ] **Step 12: Fill Decision Appendix (mirror Task 2.12)**
+
+- [ ] **Step 13: Apply VOICE.md checklist before saving**
+
+Walk through every "refuses to sound like" bullet. Re-read once aloud.
+
+- [ ] **Step 14: Open in browser at desktop + mobile widths; visual sanity check**
+
+- [ ] **Step 15: Commit**
 
 ```bash
 git add case-studies/bhojan.html images/case-studies/bhojan/
@@ -1448,31 +1562,42 @@ Special considerations:
 
 ### Task 7.2: Scaffold + fill `case-studies/galpal.html`
 
-- [ ] **Step 1: Copy template, swap content**
+**Mirror per-section authoring from Tasks 2.2–2.12. Add Second-Order Effects section after Reflection. Budget 8-12h, not 4-6h — founder-tone calibration is the bulk.**
+
+- [ ] **Step 1: Copy template skeleton**
 
 ```bash
 cp case-studies/plan-karo-chalo.html case-studies/galpal.html
 ```
 
-- [ ] **Step 2: Fill all 10 sections + Second-Order Effects after Reflection**
+- [ ] **Step 2: Update `<head>` + back-nav**
+
+- [ ] **Step 3: Fill TL;DR — place `Current as of <Month YYYY>` as an additional constraint tag** in the `.tldr-constraints` row alongside operating constraints (e.g., `solo build`, `4-day buildathon`, `Bangalore beta`, `Current as of May 2026`). This is the placement specified in spec Risk #1.
+
+- [ ] **Steps 4–12: Per-section authoring (mirror Tasks 2.4–2.12)**
+
+For each section, apply the same step-by-step granularity used for PKC. Don't compress.
+
+- [ ] **Step 13: Add Second-Order Effects section AFTER Reflection (flagship-only, per spec Section 1)**
 
 ```html
-<!-- Optional: Second-Order Effects (flagship-only) -->
 <section class="section">
   <div class="section-header"><div class="section-eyebrow">Second-Order Effects</div></div>
-  <p>...unintended consequences, downstream learning, behavior changes, operational surprises...</p>
+  <p>2-4 short paragraphs OR a short Insight→Effect table. Cover: unintended consequences of the human-verification model, downstream behavior changes from no-feed/no-engagement-trap design, operational surprises discovered post-launch.</p>
 </section>
 ```
 
-- [ ] **Step 3: Be patient with founder-tone — re-read 2-3x against VOICE.md "refuses to sound like"**
+- [ ] **Step 14: Apply VOICE.md checklist — extra reads against "refuses to sound like"**
 
-- [ ] **Step 4: Place "Current as of <date>" in TL;DR constraint row**
+Founder-tone risk is highest here. Re-read 3x. Strip every word that sounds like founder-Twitter copy.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 15: Open in browser; visual sanity check**
+
+- [ ] **Step 16: Commit**
 
 ```bash
 git add case-studies/galpal.html images/case-studies/galpal/
-git commit -m "galpal case study v1.0 (flagship)"
+git commit -m "galpal case study v1.0 (flagship + Second-Order Effects)"
 ```
 
 ### Task 7.3: Update galpal project card on index.html
@@ -1487,17 +1612,21 @@ Source: `PRDs/03_pmpathfinder_prd.html`, project card lines 281-302.
 
 ### Task 8.1: Scaffold + fill `case-studies/pmpathfinder.html`
 
-- [ ] **Step 1: Mirror Task 5.2 structure**
+**Mirror per-section authoring from Tasks 2.3–2.12 (Bhojan-style granularity). PMPathfinder has an existing PRD and a research base (44-person survey) — material is rich. Budget 4-6 hours.**
+
+- [ ] **Step 1: Copy template**
 
 ```bash
 cp case-studies/plan-karo-chalo.html case-studies/pmpathfinder.html
 ```
 
-- [ ] **Step 2: Fill content emphasizing AI orchestration (adaptive AI-scored practice across 6 PM dimensions)**
+- [ ] **Steps 2-13: Fill each section per the PKC step-by-step pattern (Tasks 2.3 through 2.12)**
 
-- [ ] **Step 3: Apply VOICE.md checklist**
+For Execution System, lean into the AI orchestration angle — adaptive AI-scored practice across 6 PM dimensions is the strongest signal. Workflow table should show: question generation (AI), scoring rubric (human-led), question selection (adaptive engine). AI Contribution Disclosure must be specific about which parts are AI-orchestrated vs human-judged.
 
-- [ ] **Step 4: Commit + update index.html + push**
+- [ ] **Step 14: Apply VOICE.md checklist**
+
+- [ ] **Step 15: Commit + update index.html (mirror Task 2.13) + push**
 
 ```bash
 git commit -am "PMPathfinder case study v1.0; portfolio card updated"
@@ -1514,24 +1643,32 @@ Per spec: Signal is a likely Kill Criteria candidate (cohort/group, shared decis
 
 Source: `PRDs/02_signal_crm_prd.html`, project card lines 372-401.
 
-- [ ] **Step 1: Attempt full template authoring**
+- [ ] **Step 1: Apply objective Kill Criteria trigger UP FRONT (before authoring) — read the existing PRD and try to answer each question honestly:**
+
+- Key Decisions: **Can you name ≥3 decisions where you (solo) considered ≥2 options and rejected one with a specific reason?** If the answer is "the team did X" rather than "I chose X over Y" — likely downgrade candidate.
+- Reflection: **Can you name a specific personal mistake / belief shift / future improvement that isn't generic?** "I learned communication is important" = downgrade trigger.
+- Evidence: **Are there ≥2 distinct production artifacts you personally can point to (analytics, user message, GitHub commit you authored, working prototype URL with measurable engagement)?**
+
+If 2 of 3 fail honestly, **skip to Task 9.2 downgrade path directly**. Don't waste 4 hours authoring sections that will get cut.
+
+- [ ] **Step 2: If trigger passes, attempt full template authoring (mirror Tasks 2.3–2.12)**
 
 ```bash
 cp case-studies/plan-karo-chalo.html case-studies/signal.html
 ```
 
-Fill all 10 sections.
+### Task 9.2: Honest Kill Criteria recheck after first-pass authoring (if full template attempted)
 
-### Task 9.2: Honest Kill Criteria check
+- [ ] **Step 1: Re-read against the objective trigger from Task 9.1 Step 1**
 
-- [ ] **Step 1: Can the case study produce honest content for Key Decisions, Reflection, AND Evidence of Realness (≥2 artifacts)?**
+If after first pass any of the three trigger questions is honestly weak — proceed to downgrade.
 
-- [ ] **Step 2: If after 2 revisions any of those three sections is weak or padded, downgrade**
+- [ ] **Step 2: If after a second revision pass it's still weak — downgrade immediately. Don't try a third pass.**
 
 Downgrade format (per spec):
 - Keep: TL;DR Snapshot + Solution Architecture
 - Add to Decision Appendix: a one-line rationale ("This project is presented as a lightweight summary because decision attribution was shared across a 4-person cohort group, limiting solo PM-decision claims.")
-- Remove the rest
+- Remove Sections 2, 3, 4, 5, 7, 8, 9 from the HTML
 
 ### Task 9.3: Commit, whichever path
 
@@ -1546,7 +1683,16 @@ git push origin main
 
 Same pattern as Phase 9. Source: `PRDs/01_storeops_prd.html`.
 
-Apply the same Kill Criteria honest check. Likely the same downgrade if depth doesn't hold.
+- [ ] **Step 1: Apply objective Kill Criteria trigger up front (mirror Task 9.1 Step 1)**
+
+For StoreOps the trigger is sharper: this is a "surfaced opportunity" case study (you analyzed Blinkit's gap, you didn't deliver the fix). Specifically check:
+- Can you name decisions about *case-study framing* you owned solo? (E.g., what to surface, what to recommend.)
+- Can you point to ≥2 artifacts of the analytical work (your research deck, your prototype design, your decision rationale doc)?
+- Can your Reflection name a specific framing mistake you'd correct?
+
+If 2 of 3 fail, downgrade directly.
+
+- [ ] **Step 2: Author full or downgrade per Kill Criteria**
 
 ```bash
 cp case-studies/plan-karo-chalo.html case-studies/storeops.html
