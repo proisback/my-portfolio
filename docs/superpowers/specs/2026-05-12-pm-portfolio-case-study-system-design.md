@@ -93,8 +93,8 @@ index.html                  # Project cards updated: primary CTA → case study,
 | 5 | Execution System | Mandatory (workflow table, Speed of Iteration, What Stayed Manual, AI Contribution Disclosure) |
 | 6 | Solution Architecture | Mandatory |
 | 7 | Outcomes | Mandatory |
-| 8 | Evidence of Realness ("Field Notes") | Mandatory (items inside are optional) |
-| 9 | Reflection | Mandatory (3-rule format) |
+| 8 | Evidence of Realness ("Field Notes") | Mandatory **if ≥2 artifacts exist**; otherwise omit-with-rationale-line in Decision Appendix |
+| 9 | Reflection | Mandatory (3-rule format, all required). If a case study cannot honestly produce 3-rule Reflection content, that signals the case study itself should be compressed — never weaken or fake the section. |
 | 10 | Decision Appendix | Mandatory (collapsible) |
 | — | Second-Order Effects | *Flagship-only* — galpal + Plan Karo Chalo |
 
@@ -114,7 +114,7 @@ index.html                  # Project cards updated: primary CTA → case study,
 
 **7. Outcomes.** Metrics dominate visually; screenshots subordinate. Each metric paired with one-line context. Behavior + numbers + honest failures.
 
-**8. Evidence of Realness ("Field Notes").** Forensic treatment: timestamps, cropped analytics, monospace changelog blocks, raw user quotes with attribution + date. Lower polish = higher trust. Loom link + GitHub link optional.
+**8. Evidence of Realness ("Field Notes").** Forensic treatment: timestamps, cropped analytics, monospace changelog blocks, raw user quotes with attribution + date. Lower polish = higher trust. Loom link + GitHub link optional. **Minimum bar to include the section: ≥2 distinct artifacts.** If fewer than 2 exist (common for cohort/group projects with shared instrumentation), omit the section entirely and add a one-line rationale to the Decision Appendix: e.g., *"Field Notes omitted — production analytics not available for cohort projects with shared instrumentation."* Empty Field Notes section is worse than no section.
 
 **9. Reflection.** 3-rule format, all required:
 - *What I'd redesign* — specific strategic mistake
@@ -206,19 +206,23 @@ Each section subtly shifts reading mode:
 Stop and validate before continuing. 4 layers:
 
 1. **Self-eyeball test** — read end-to-end on mobile + desktop. Editorial Reading Rhythm: does each section feel different?
-2. **15-second Cold Recruiter Scroll Test** — non-PM reader, 15s scroll, must answer: what was this project, does the work feel real, does this person seem senior/junior/student/founder?
+2. **15-second Cold Recruiter Scroll Test** — **N ≥ 2 non-PM readers**, 15s scroll each, must independently answer: what was this project, does the work feel real, does this person seem senior/junior/student/founder?
 3. **5-second & 1-minute PM-friend tests** — what does this person do; would you screen-call them?
 4. **Hiring-manager grunt test** (optional) — 5-min feedback from senior PM/HM if available.
 
-### Exit criteria (must satisfy 2 of 3)
+### Exit criteria (must satisfy 2 of 3) — time-boxed
 
 - PM-experienced reader says they'd interview/screen-call you
-- Recruiter-style reader summarizes your role accurately after a skim
+- ≥2 recruiter-style readers each summarize your role accurately after a skim
 - **Someone *spontaneously* names decision quality / reflection depth / clarity** without being prompted
+
+**Time-box:** 7 days to secure ≥1 PM-friend read AND ≥2 cold-recruiter reads. If a PM-friend read cannot be obtained within 7 days, criteria 1 (self-eyeball) and 2 (cold-recruiter, N≥2) alone are sufficient — note the missing PM-friend read in the Case Study #1 versioning footer as an explicit acknowledgment. The validation loop **must not stall indefinitely waiting for a senior reader**.
 
 ### Template Freeze Point
 
-After Case Study #2 ships, **only structural bugs trigger framework changes**. No aesthetic micro-optimization unless it materially improves comprehension. This rule exists to prevent infinite refinement.
+After Case Study #2 ships, **`case-study.css` is git-tagged `template-v1-frozen`**. Any subsequent change to that file (or to the section structure defined in Section 1) requires a written one-paragraph **"Freeze Override"** entry appended to a companion file `docs/superpowers/specs/FREEZE-OVERRIDES.md`, referencing the specific validation-loop result (with verbatim quote from a reader) that necessitated the change.
+
+Without a documented override entry, no aesthetic or structural edit to the template is permitted. The git tag + paper trail are the teeth — they make the rule self-enforcing rather than relying on author discipline. The bar to clear is **"a real reader said something that means the template is broken"**, not "I want this to feel slightly more polished."
 
 ### Per-case time budget
 
@@ -229,10 +233,16 @@ After Case Study #2 ships, **only structural bugs trigger framework changes**. N
 | Visual assets | 1-2 |
 | Polish + portfolio cross-link | 0.5 |
 | **Per case (avg)** | **4-7 hours** |
+| Validation pass (Case Study #1 only) | **+3-5 hours** (cold-recruiter + PM-friend reads, 7-day time-box) |
+| **Case Study #1 total** | **7-12 hours** |
 
 galpal sits high at **8-12 hours** due to founder-tone calibration. Cohort cases (Signal, StoreOps) sit low at 3-4 hours.
 
-**Total project budget:** ~45 hours, spread across 2-3 weeks of evening/weekend work.
+**Total project budget — Portfolio v1:** ~45 hours, spread across 2-3 weeks of evening/weekend work.
+
+**Substack Phase 2 (separate, post-portfolio-v1):** Account setup, voice calibration, first 3 essay drafts = ~15-25 hours. Begins only after portfolio Case Study #3 ships. Captured here so the workstream is not hidden scope.
+
+**Combined budget (portfolio + Substack):** ~60-70 hours total across 4-6 weeks.
 
 ---
 
@@ -255,6 +265,8 @@ Every case study ends with an optional `RELATED THINKING` block.
 - Optional per case — empty is fine until cross-references exist
 - **Every cross-link must introduce new context** — adjacent insight, related tension, downstream implication, or contrasting lesson. Never a duplicate idea or recursive self-link.
 - Visually: small-caps `RELATED THINKING` eyebrow, no card chrome, arrow-prefixed list, secondary text color.
+
+**Maintenance discipline:** `RELATED THINKING` footers are updated in **monthly batches**, not in real-time after each Substack publish. Once a month, review which case studies have accumulated new cross-references (Substack pieces, LinkedIn threads, other case studies) and update those footers in one pass. This prevents the bidirectional-update obligation from becoming a perpetual maintenance burden disguised as "just one link." Skipping a month is fine; the footer remains optional and additive.
 
 ### C. Versioning
 
@@ -323,7 +335,7 @@ Out of scope for v1. LinkedIn / X threads are downstream of Substack, not of por
 
 ## Open Questions & Risks
 
-1. **galpal narrative drift risk** — galpal is an actively-iterating product. Case study captures point-in-time; live product evolves. Mitigation: clear "as of <date>" notation on galpal case study. Re-version (1.x) when material updates accumulate.
+1. **galpal narrative drift risk** — galpal is an actively-iterating product. Case study captures point-in-time; live product evolves. Mitigation: place a `Current as of <date>` line in the TL;DR card metadata row (alongside operating-constraints tags), and re-version (1.x bump) when material updates accumulate. The `Updated <date>` line at the very bottom of the page reflects the *publish* date; the TL;DR-row line reflects the *as-of-product-state* date — they can diverge.
 
 2. **Substack as new content channel** — Prateek does not currently publish on Substack. Setting up the account, voice, and cadence is itself a workstream. Mitigation: don't start Substack until portfolio Case Study #1 + validation are done. Substack is downstream.
 
@@ -332,6 +344,8 @@ Out of scope for v1. LinkedIn / X threads are downstream of Substack, not of por
 4. **Visual asset creation** — mockups, diagrams, flow charts. None of the existing PRDs have these consistently. Net-new work. Mitigation: use what exists; expand iteratively after initial publish. Not a v1 blocker.
 
 5. **Reflection authenticity** — the 3-rule Reflection format demands intellectually expensive answers. Prateek must avoid performative humility ("I learned communication") and write specific mistakes ("I over-optimized automation before validating users wanted autonomy"). Risk: defaulting to generic on weak case studies. Mitigation: if a case study can't produce honest Reflection content, that's a signal to compress the case study, not fake the section.
+
+6. **Voice consistency across 6 case studies authored 2-3 weeks apart.** Tone naturally drifts between Plan Karo Chalo (pilot, week 1) and galpal (flagship, week 2-3) — the spec mandates editorial tone, AI Contribution Disclosure, and 3-rule Reflection but doesn't anchor voice. Mitigation: alongside Case Study #1, author a `docs/superpowers/specs/VOICE.md` style sheet — 5-7 bullets capturing tone rules (e.g., *no AI tool worship · restraint over hype · specific verbs only · no startup adjectives · plain-text dates · uses "I" not "we" when solo · names tradeoffs explicitly*). Treat it as a freeze artifact like the CSS. Review Case Studies #2-6 against VOICE.md before publish.
 
 ---
 
@@ -342,7 +356,7 @@ The system succeeds if, after publishing all 6 case studies:
 1. **A non-PM recruiter** scrolling a single case study for 15 seconds can correctly identify the project, the role, and whether the work feels real.
 2. **A PM-experienced reader** spontaneously notes the decision rigor or reflection depth without prompting.
 3. **At least one hiring-manager-level reader** says they'd take a screen call after reading 1-2 case studies cold.
-4. **Substack publishing** generates at least 1 inbound contact (recruiter, founder, peer PM) by month 2 after publishing the first 3 essays.
+4. **At least one inbound contact attributable to the portfolio link** by month 3 — cold application response citing a case study, LinkedIn DM referencing a Decision Block, Substack subscriber → call, or hiring manager mentioning the portfolio in a screening call. Channel-agnostic; what matters is that the work generated reach beyond cold applications.
 5. **Prateek's confidence** in linking the portfolio in cold applications is materially higher than with the current PRDs. (Subjective but real.)
 
 These are leading indicators of the harder outcome — **conversion to PM interviews** — which the system is built to optimize.
