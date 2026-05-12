@@ -44,6 +44,10 @@ styles-v2.css
 # Draft copy / scratch notes
 copy.md
 
+# Local backup of original PNG assets pre-WebP conversion (kept until
+# visuals confirmed in production, then can be deleted locally).
+images/_originals_backup/
+
 # Note on config.js:
 #   config.js IS committed. It holds the Supabase Project URL and anon key,
 #   which are PUBLIC by design (Supabase expects them in client-side code;

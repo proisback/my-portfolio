@@ -300,7 +300,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function preload(page) {
       if (page < 1 || page > TOTAL || preloaded[page]) return;
       var img = new Image();
-      img.src = 'images/comic-story/' + page + '.png';
+      img.src = 'images/comic-story/' + page + '.webp';
       preloaded[page] = true;
     }
 
@@ -308,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (page < 1 || page > TOTAL || page === current) return;
       current = page;
 
-      var newSrc = 'images/comic-story/' + page + '.png';
+      var newSrc = 'images/comic-story/' + page + '.webp';
       pageImg.alt = ALT_TEXTS[page] || ('Comic page ' + page + ' of ' + TOTAL);
       pageImg.classList.add('is-loading');
       pageImg.src = newSrc;
