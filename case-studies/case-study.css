@@ -253,3 +253,47 @@ a:hover { opacity: 0.7; }
   color: var(--ink-tertiary);
   font-weight: 700;
 }
+
+/* ============================================================================
+   BATCH B: Task 1.7 — Discovery Tables + Pivot Moments
+   ============================================================================ */
+.discovery-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-3) 0;
+  font-size: 14px;
+  font-family: var(--font-display);
+}
+.discovery-table thead th {
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-secondary);
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-hair);
+}
+.discovery-table tbody td {
+  padding: 10px 12px;
+  vertical-align: top;
+  border-bottom: 1px dashed var(--border-hair);
+  color: var(--charcoal);
+  line-height: 1.5;
+}
+.discovery-table tbody tr:last-child td { border-bottom: none; }
+
+.pivot-moments { margin-top: var(--space-4); }
+.pivot-moment {
+  padding: var(--space-3) 0;
+  border-bottom: 1px dashed var(--border-hair);
+}
+.pivot-moment-when {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--marigold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
