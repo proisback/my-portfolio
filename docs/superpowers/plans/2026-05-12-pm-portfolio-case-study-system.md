@@ -24,6 +24,30 @@ Spec budgets ~45 hours for portfolio v1. This plan's task list sums to ~44–69 
 
 ---
 
+## Flagship Energy Budget
+
+Not every case study deserves equal narrative gravity. Treating all 6 with identical effort will *weaken* the strongest work — disproportionate energy is the point. Per-tier ceilings below; treat them as hard caps, not aspirational targets.
+
+| Project | Tier | Time ceiling | Revision passes | Visual polish | Reflection depth |
+|---|---|---|---|---|---|
+| galpal | **Flagship** | 12 h | 3 | High — 3-5 mockups, diagrams, Second-Order Effects | Full 3-rule, expanded |
+| Plan Karo Chalo | **Flagship** | 12 h (incl. validation) | 3 | High — full mockup set + analytics screenshot | Full 3-rule, expanded |
+| Bhojan | **High** | 7 h | 2 | Standard — 1-2 mockups, optional diagram | Full 3-rule |
+| PMPathfinder | **Medium** | 5 h | 1 | Minimum — screenshots only | 3-rule, tight |
+| Signal | **Low** | 4 h (full) / 1 h (downgrade) | 1 | Minimum or none | 3-rule (full) / omitted with rationale (downgrade) |
+| StoreOps | **Low** | 4 h (full) / 1 h (downgrade) | 1 | Minimum or none | 3-rule (full) / omitted with rationale (downgrade) |
+
+**Hard rules:**
+
+1. **Do not parallelize flagship work.** galpal and Plan Karo Chalo each get focused, single-threaded attention. No dispatching parallel subagents for these. Bhojan onward can be parallelized if executing aggressively.
+2. **If a tier's time ceiling is hit, stop authoring and either commit-as-is or downgrade.** Don't blow past it. The ceiling exists to enforce asymmetric energy allocation.
+3. **Revision pass = one cycle of (re-read against VOICE.md + edit + re-render).** If a flagship hits its 3 passes and isn't great, surface to user before pass 4. If a Low-tier hits its 1 pass and isn't great, downgrade per Kill Criteria.
+4. **Visual polish ceiling for Low-tier = "screenshot of live product, no annotations."** Don't author flow diagrams or system maps for Signal/StoreOps. The energy goes to flagships.
+
+This tiering is the single most important discipline mechanism for preventing portfolio-wide flattening to the weakest case study's depth.
+
+---
+
 ## File Structure (locked)
 
 ```
