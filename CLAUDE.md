@@ -31,7 +31,10 @@ A personal portfolio website for Prateek Mehta. Built with plain HTML, CSS, and 
 * **`images/`** — `hero-comic.png` (career comic), `philosophy-illustration.png` (cross-legged with AI sidekick), `contact-illustration.png` (park bench wave), `gate-avatar.png` (Prateek + marigold AI sidekick — used by the notify-me section).
 * **`products/`** — screenshots for the project cards (`galpal.jpg`, `plan-karo-chalo.jpg`).
 * **`PRDs/`** — rendered HTML PRDs for five shipped projects, linked from project cards.
-* **`Prateek-Mehta-Product-Resume.pdf`, `Resume.pdf`** — linked from the hero "View Resume" button.
+* **`resume/`** — source HTML + CSS for two new resume versions (`resume-ai-pm.html`, `resume-general-pm.html`, shared `resume.css`). Rendered to PDF via Chrome headless print-to-PDF.
+* **`Prateek-Mehta-AI-PM-Resume.pdf`** — AI-PM-positioned version, linked from the hero "View Resume" button. Generated from `resume/resume-ai-pm.html`.
+* **`Prateek-Mehta-PM-Resume.pdf`** — General PM version. Generated from `resume/resume-general-pm.html`.
+* **`Prateek-Mehta-Product-Resume.pdf`, `Resume.pdf`** — older Canva-exported resumes, kept for archival reference.
 * **`CLAUDE.md`** — this file.
 * **`brand-guide.md`, `updated_copy.md`, `resume-enrichment.md`, `brand-visualizer-galpal.html`** — working notes and references.
 

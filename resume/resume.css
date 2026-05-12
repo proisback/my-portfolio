@@ -1,0 +1,257 @@
+/* ============================================================================
+   Resume Stylesheet — shared by both AI-PM and General PM versions.
+   Optimized for ATS-extractable single-column layout, A4 print, 2 pages.
+   ============================================================================ */
+
+@page {
+  size: A4;
+  margin: 12mm 13mm 11mm 13mm;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: 10.5pt;
+  line-height: 1.42;
+  color: #1F1A1D;
+  background: #fff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body { padding: 0; }
+
+/* On-screen container mimics A4 width for accurate preview before print. */
+.page {
+  max-width: 182mm;          /* A4 width minus 14mm margins each side */
+  margin: 0 auto;
+  padding: 14mm 0;
+}
+
+@media print {
+  .page { max-width: none; margin: 0; padding: 0; }
+}
+
+/* ----- Header --------------------------------------------------------------- */
+
+.r-header { margin-bottom: 10pt; }
+
+.r-name {
+  font-size: 22pt;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #1F1A1D;
+  line-height: 1.0;
+  margin-bottom: 3pt;
+}
+
+.r-tagline {
+  font-size: 10.5pt;
+  font-weight: 600;
+  color: #5A4A1D;
+  margin-bottom: 5pt;
+  letter-spacing: 0.01em;
+}
+
+.r-contact {
+  font-size: 9.5pt;
+  color: #555154;
+  line-height: 1.5;
+}
+
+.r-contact a {
+  color: #555154;
+  text-decoration: none;
+  border-bottom: 0.5pt solid #C9A332;
+}
+
+.r-contact .dot { color: #C9A332; margin: 0 5pt; font-weight: 700; }
+
+/* ----- Summary -------------------------------------------------------------- */
+
+.r-summary {
+  font-size: 10pt;
+  line-height: 1.45;
+  color: #2A2326;
+  padding: 5pt 0 7pt;
+  border-bottom: 0.5pt solid #E8DCC0;
+  margin-bottom: 8pt;
+}
+
+.r-summary strong { color: #1F1A1D; font-weight: 700; }
+
+/* ----- Section header ------------------------------------------------------- */
+
+.r-section { margin-bottom: 9pt; }
+
+.r-section h2 {
+  font-size: 9.5pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #1F1A1D;
+  padding-bottom: 2pt;
+  border-bottom: 1pt solid #C9A332;
+  margin-bottom: 5pt;
+}
+
+/* ----- Entry (work, project, education) ------------------------------------ */
+
+.entry { margin-bottom: 6pt; page-break-inside: avoid; }
+.entry:last-child { margin-bottom: 0; }
+
+.entry-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10pt;
+  margin-bottom: 1pt;
+}
+
+.entry-title {
+  font-size: 10.5pt;
+  font-weight: 700;
+  color: #1F1A1D;
+  line-height: 1.3;
+}
+
+.entry-title .org { font-weight: 600; color: #2A2326; }
+.entry-title .sep { color: #B6A88A; font-weight: 500; margin: 0 4pt; }
+
+.entry-meta {
+  font-size: 9pt;
+  font-weight: 500;
+  color: #6B6064;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.entry-sub {
+  font-size: 9.5pt;
+  font-style: italic;
+  color: #6B6064;
+  margin-bottom: 3pt;
+}
+
+/* ----- Bullets -------------------------------------------------------------- */
+
+ul.bullets {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 2pt;
+}
+
+ul.bullets li {
+  position: relative;
+  padding-left: 11pt;
+  margin-bottom: 0.5pt;
+  font-size: 10pt;
+  line-height: 1.4;
+  color: #2A2326;
+}
+
+ul.bullets li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 7pt;
+  width: 4pt;
+  height: 1.2pt;
+  background: #C9A332;
+  border-radius: 0.6pt;
+}
+
+ul.bullets li strong { color: #1F1A1D; font-weight: 700; }
+
+/* ----- Project entry (compact, no bullets) ---------------------------------- */
+
+.project { margin-bottom: 5pt; page-break-inside: avoid; }
+.project:last-child { margin-bottom: 0; }
+
+.project-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10pt;
+  margin-bottom: 1pt;
+}
+
+.project-title {
+  font-size: 10.5pt;
+  font-weight: 700;
+  color: #1F1A1D;
+}
+
+.project-title .role { font-weight: 500; color: #5A4F53; }
+
+.project-meta {
+  font-size: 9pt;
+  color: #6B6064;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.project-meta a {
+  color: #6B6064;
+  text-decoration: none;
+  border-bottom: 0.5pt solid #C9A332;
+}
+
+.project-summary {
+  font-size: 10pt;
+  line-height: 1.42;
+  color: #2A2326;
+}
+
+.project-summary strong { color: #1F1A1D; font-weight: 700; }
+
+/* ----- Award line ----------------------------------------------------------- */
+
+.award {
+  font-size: 10pt;
+  line-height: 1.5;
+  color: #2A2326;
+  margin-bottom: 2pt;
+}
+
+.award strong { color: #1F1A1D; font-weight: 700; }
+
+/* ----- Two-column lists (cert, edu, skills) -------------------------------- */
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2pt 16pt;
+}
+
+.two-col .item {
+  font-size: 10pt;
+  line-height: 1.45;
+  color: #2A2326;
+}
+
+.two-col .item strong { color: #1F1A1D; font-weight: 700; }
+
+/* ----- Skills group --------------------------------------------------------- */
+
+.skill-group {
+  font-size: 10pt;
+  line-height: 1.5;
+  color: #2A2326;
+  margin-bottom: 3pt;
+}
+
+.skill-group .label {
+  font-weight: 700;
+  color: #1F1A1D;
+}
+
+/* ----- Print fine-tuning ---------------------------------------------------- */
+
+@media print {
+  body { font-size: 10pt; }
+  a { color: inherit; }
+  .entry, .project { page-break-inside: avoid; }
+  .r-section h2 { page-break-after: avoid; }
+}
