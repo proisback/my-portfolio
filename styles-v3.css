@@ -1262,8 +1262,6 @@ a, button, [role="button"] {
   color: var(--ink-secondary);
 }
 
-.comic-toggle { margin-top: 8px; }
-
 .comic-reader {
   display: flex;
   flex-direction: column;

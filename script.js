@@ -265,7 +265,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // single image element swaps src on page change with a brief opacity fade.
   // Touch swipes (one-finger horizontal, >50px) trigger page changes.
   (function () {
-    var toggle    = document.getElementById('comic-toggle');
     var reader    = document.getElementById('comic-reader');
     var track     = document.getElementById('comic-pages-track');
     var pageImg   = document.getElementById('comic-page');
@@ -275,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var endBlk    = document.getElementById('comic-end');
     var skipLink  = document.getElementById('comic-skip');
     var dots      = document.querySelectorAll('.comic-dot');
-    if (!toggle || !reader || !track || !pageImg) return;
+    if (!reader || !track || !pageImg) return;
 
     var TOTAL = 9;
     var SWIPE_MIN_PX = 50;
@@ -358,21 +357,10 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
 
-    toggle.addEventListener('click', function () {
-      var isOpen = toggle.getAttribute('aria-expanded') === 'true';
-      var label = toggle.querySelector('.comic-toggle-text');
-      if (isOpen) {
-        reader.setAttribute('hidden', '');
-        toggle.setAttribute('aria-expanded', 'false');
-        if (label) label.textContent = 'Read the story';
-      } else {
-        reader.removeAttribute('hidden');
-        toggle.setAttribute('aria-expanded', 'true');
-        if (label) label.textContent = 'Hide the story';
-        updateChrome(current);
-        preload(current + 1);
-      }
-    });
+    // Reader is shown by default (no toggle). Initialize chrome on load and
+    // preload the next page so the first "Next" is instant.
+    updateChrome(current);
+    preload(current + 1);
 
     // Keyboard navigation when focus is inside the reader.
     reader.addEventListener('keydown', function (e) {
