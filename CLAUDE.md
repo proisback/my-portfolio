@@ -31,11 +31,12 @@ A personal portfolio website for Prateek Mehta. Built with plain HTML, CSS, and 
 * **`images/`** — `hero-comic.png` (career comic), `philosophy-illustration.png` (cross-legged with AI sidekick), `contact-illustration.png` (park bench wave), `gate-avatar.png` (Prateek + marigold AI sidekick — used by the notify-me section).
 * **`products/`** — screenshots for the project cards (`galpal.jpg`, `plan-karo-chalo.jpg`).
 * **`PRDs/`** — rendered HTML PRDs for five shipped projects, linked from project cards.
-* **`resume/`** — source HTML + CSS for two new resume versions (`resume-ai-pm.html`, `resume-general-pm.html`, shared `resume.css`). Rendered to PDF via Chrome headless print-to-PDF.
-* **`Prateek-Mehta-AI-PM-Resume.pdf`** — AI-PM-positioned version, linked from the hero "View Resume" button. Generated from `resume/resume-ai-pm.html`.
+* **`resume/`** — source HTML + CSS for the resume versions. `resume-ai-pm.html` uses the premium **Editorial Gold** theme (`resume-premium.css` — Fraunces serif name/headers, antique-gold accent, ATS-safe); `resume-general-pm.html` uses the older shared `resume.css`. Rendered to PDF via Chrome headless print-to-PDF (use `--virtual-time-budget=20000` so Google Fonts load before printing).
+* **`Prateek-Mehta-AI-PM-Resume.pdf`** — AI-PM-positioned version (Editorial Gold), linked from the hero "View Resume" button. Generated from `resume/resume-ai-pm.html`. Contact links (email, LinkedIn, portfolio) are clickable annotations that Chrome preserves from the `<a href>` tags.
 * **`Prateek-Mehta-PM-Resume.pdf`** — General PM version. Generated from `resume/resume-general-pm.html`.
 * **`Prateek-Mehta-Product-Resume.pdf`, `Resume.pdf`** — older Canva-exported resumes, kept for archival reference.
 * **`CLAUDE.md`** — this file.
+* **`.github/workflows/pages.yml`, `.nojekyll`** — GitHub Actions Pages deploy workflow and the static-site marker (see Deployment below).
 * **`brand-guide.md`, `updated_copy.md`, `resume-enrichment.md`, `brand-visualizer-galpal.html`** — working notes and references.
 
 Old v1/v2 portfolio files (`index-v2.html`, `styles.css`, `styles-v2.css`, `copy.md`) are gitignored but kept locally for reference.
@@ -71,7 +72,11 @@ A small, optional email-capture section (`#notify`) sits between `#story` ("Why 
 
 ## Deployment
 
-Deployed via **GitHub Pages** from the `main` branch, root directory. Live at `https://proisback.github.io/my-portfolio/`. Enable under repo Settings → Pages → Source: Deploy from a branch → `main` / `/ (root)`.
+Deployed to **GitHub Pages** via a **GitHub Actions workflow** ([.github/workflows/pages.yml](.github/workflows/pages.yml)), which publishes the repo root as a static site on every push to `main`. Live at `https://proisback.github.io/my-portfolio/`. Pages source is set to **GitHub Actions** (repo Settings → Pages → Source: GitHub Actions; equivalently `build_type=workflow` via the API). A root [.nojekyll](.nojekyll) file keeps the site static (no Jekyll processing).
+
+Deploy check after a push: `gh run list --workflow=pages.yml` shows the run; the live site updates when it completes (~1–2 min). PDFs and other assets are served with `Cache-Control: max-age=600`, so hard-refresh (Ctrl+Shift+R) to bust local cache after a redeploy.
+
+We moved off the legacy "Deploy from a branch" (Jekyll) builder on 2026-07-02 after it failed and then hung during a GitHub Pages incident; the Actions path is the reliable, modern default. To revert: set `build_type=legacy` and remove the workflow.
 
 No Vercel, Netlify, or other platform needed — the site is fully static and GitHub Pages is free for public repos.
 
