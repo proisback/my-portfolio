@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Shopify &amp; Ecommerce Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FBFAF6; --ink:#1C231F; --ink-soft:#5F6A62; --paper:#FFFFFF; --line:#E8E6DD;
+
+    --store:#0891B2;  --store-tint:#E2F5FA;  --store-dark:#0A6479;
+    --prod:#EA580C;   --prod-tint:#FCEBE0;   --prod-dark:#B23D06;
+    --money:#16A34A;  --money-tint:#E2F6E9;  --money-dark:#0E7635;
+    --growth:#9333EA; --growth-tint:#F2E7FD; --growth-dark:#6D22B0;
+    --ops:#E11D48;    --ops-tint:#FCE4EA;    --ops-dark:#A80F32;
+
+    --accent:#0F9D58;
+    --soft-shadow: 0 1px 2px rgba(28,35,31,.05), 0 12px 28px -16px rgba(28,35,31,.26);
+    --lift-shadow: 0 2px 5px rgba(28,35,31,.07), 0 22px 46px -20px rgba(28,35,31,.34);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 4% 2%, rgba(15,157,88,0.08) 0, transparent 32%),
+      radial-gradient(circle at 98% 6%, rgba(234,88,12,0.07) 0, transparent 34%),
+      radial-gradient(circle at 50% 100%, rgba(147,51,234,0.05) 0, transparent 40%),
+      linear-gradient(var(--bg), var(--bg));
+    color:var(--ink); font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh; padding-bottom:60px; -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:radial-gradient(rgba(28,35,31,0.045) 1px, transparent 1px);
+    background-size:22px 22px; opacity:.5;
+  }
+  header,.tabbar,main,footer{position:relative; z-index:1;}
+  h1,h2,h3,.display{font-family:'Bricolage Grotesque','Bricolage Grotesque Fallback',sans-serif; font-weight:600; letter-spacing:-0.015em;}
+  .mono{font-family:'JetBrains Mono',monospace; font-variant-numeric:tabular-nums;}
+  button{font-family:inherit;}
+
+  header{max-width:1080px; margin:0 auto; padding:34px 24px 12px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap;}
+  .brand{display:flex; align-items:center; gap:14px;}
+  .brand .mark{flex-shrink:0; transition:transform .3s ease;}
+  .brand:hover .mark{transform:translateY(-2px) rotate(-4deg);}
+  .brand-text h1{font-size:28px; margin:0;}
+  .brand-text p{margin:4px 0 0; color:var(--ink-soft); font-size:13.5px; max-width:52ch; line-height:1.5;}
+  .disclaimer{display:inline-flex; align-items:center; gap:7px; margin-top:10px; font-size:11.5px; color:var(--prod-dark); background:var(--prod-tint); border:1px solid rgba(234,88,12,.28); border-radius:999px; padding:5px 11px; font-weight:600;}
+
+  .tabbar{max-width:1080px; margin:22px auto 0; padding:0 24px; display:flex; gap:8px; flex-wrap:wrap;}
+  .tab{font-family:'Bricolage Grotesque',sans-serif; font-weight:600; font-size:14px; padding:11px 18px; border-radius:12px; border:1.5px solid var(--line); background:var(--paper); color:var(--ink-soft); cursor:pointer; display:flex; align-items:center; gap:7px; transition:all .15s ease; box-shadow:var(--soft-shadow);}
+  .tab:hover{color:var(--ink); transform:translateY(-1px);}
+  .tab.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+
+  main{max-width:1080px; margin:18px auto 0; padding:26px 24px 30px; background:var(--paper); border:1.5px solid var(--line); border-radius:22px; min-height:420px; box-shadow:var(--soft-shadow);}
+
+  .lib-controls{display:flex; align-items:center; margin-bottom:10px;}
+  .lib-controls.pill-row{gap:8px; overflow-x:auto; flex-wrap:nowrap; padding-bottom:6px; scrollbar-width:thin;}
+  .search-wrap{position:relative; flex:1 1 260px;}
+  .search-wrap input{width:100%; padding:13px 16px 13px 44px; border-radius:12px; border:1.5px solid var(--line); font-size:15px; font-family:inherit; background:var(--bg); color:var(--ink);}
+  .search-wrap input:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(15,157,88,.15);}
+  .search-wrap svg{position:absolute; left:15px; top:50%; transform:translateY(-50%);}
+
+  .pill{display:flex; align-items:center; gap:7px; flex-shrink:0; border:1.5px solid var(--line); border-radius:999px; padding:8px 14px; font-size:12.5px; font-weight:600; cursor:pointer; background:var(--paper); color:var(--ink); font-family:'Bricolage Grotesque',sans-serif; white-space:nowrap; transition:all .13s ease;}
+  .pill:hover{transform:translateY(-1px); border-color:var(--ink-soft);}
+  .pill .count{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:11px; opacity:.55;}
+  .pill[data-active="true"]{color:#fff; border-color:transparent;}
+  .pill[data-active="true"] .count{opacity:.9;}
+  .pill[data-cat="store"][data-active="true"]{background:var(--store);}
+  .pill[data-cat="prod"][data-active="true"]{background:var(--prod);}
+  .pill[data-cat="money"][data-active="true"]{background:var(--money);}
+  .pill[data-cat="growth"][data-active="true"]{background:var(--growth);}
+  .pill[data-cat="ops"][data-active="true"]{background:var(--ops);}
+
+  .result-count{font-size:12.5px; color:var(--ink-soft); margin:12px 0 14px; font-weight:600;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(252px,1fr)); gap:16px; padding-bottom:6px;}
+  .card{border-radius:16px; border:1.5px solid var(--line); padding:18px; display:flex; flex-direction:column; gap:10px; background:var(--paper); box-shadow:var(--soft-shadow); cursor:pointer; min-height:172px; transition:transform .14s ease, box-shadow .14s ease, border-color .14s ease; border-top:3px solid var(--line);}
+  .card:hover{transform:translateY(-3px); box-shadow:var(--lift-shadow);}
+  .card:focus-visible{outline:3px solid var(--accent); outline-offset:2px;}
+  .card[data-cat="store"]{border-top-color:var(--store);}
+  .card[data-cat="prod"]{border-top-color:var(--prod);}
+  .card[data-cat="money"]{border-top-color:var(--money);}
+  .card[data-cat="growth"]{border-top-color:var(--growth);}
+  .card[data-cat="ops"]{border-top-color:var(--ops);}
+
+  .cat-tag{font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; padding:4px 9px; border-radius:6px; display:inline-flex; align-items:center; gap:5px; align-self:flex-start;}
+  .cat-tag[data-cat="store"]{color:var(--store-dark); background:var(--store-tint);}
+  .cat-tag[data-cat="prod"]{color:var(--prod-dark); background:var(--prod-tint);}
+  .cat-tag[data-cat="money"]{color:var(--money-dark); background:var(--money-tint);}
+  .cat-tag[data-cat="growth"]{color:var(--growth-dark); background:var(--growth-tint);}
+  .cat-tag[data-cat="ops"]{color:var(--ops-dark); background:var(--ops-tint);}
+
+  .card h3{font-size:17.5px; margin:0; line-height:1.28;}
+  .card .hook{font-size:13px; color:var(--ink-soft); line-height:1.48; margin:0; flex-grow:1;}
+  .explore-row{display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; font-family:'Bricolage Grotesque',sans-serif; color:var(--ink-soft); margin-top:auto;}
+  .explore-row svg{transition:transform .15s ease;}
+  .card:hover .explore-row svg{transform:translateX(3px);}
+  .card:hover .explore-row{color:var(--ink);}
+  .empty-state{grid-column:1/-1; text-align:center; padding:50px 20px; color:var(--ink-soft);}
+
+  .modal-overlay{position:fixed; inset:0; background:rgba(28,35,31,0.5); backdrop-filter:blur(3px); display:flex; align-items:flex-start; justify-content:center; padding:5vh 20px; z-index:100; overflow-y:auto; animation:fadeIn .15s ease;}
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  .modal{background:var(--paper); border:1.5px solid var(--line); border-radius:20px; max-width:620px; width:100%; padding:28px 30px 26px; box-shadow:0 30px 60px -20px rgba(28,35,31,.5); animation:popIn .2s cubic-bezier(.3,.5,.3,1.2);}
+  @keyframes popIn{from{transform:translateY(12px) scale(.98); opacity:0;}to{transform:none; opacity:1;}}
+  .modal-top{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:8px;}
+  .modal-close{background:var(--bg); border:1.5px solid var(--line); border-radius:10px; width:36px; height:36px; font-size:15px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--ink-soft);}
+  .modal-close:hover{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .modal h2{font-size:25px; margin:6px 0 5px; line-height:1.2;}
+  .modal .modal-hook{font-size:14.5px; color:var(--ink-soft); font-style:italic; margin:0 0 20px;}
+  .section-label{display:flex; align-items:center; gap:7px; font-family:'Bricolage Grotesque',sans-serif; font-weight:600; font-size:12.5px; text-transform:uppercase; letter-spacing:.04em; margin:20px 0 9px; color:var(--ink-soft);}
+  .modal p.body-text{font-size:15px; line-height:1.65; margin:0; color:var(--ink);}
+  .example-list{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px;}
+  .example-list li{font-size:13.8px; line-height:1.55; padding:12px 14px 12px 34px; border-radius:10px; background:var(--bg); border:1px solid var(--line); position:relative;}
+  .example-list li::before{content:"🛒"; position:absolute; left:11px; top:11px; font-size:12px;}
+  .watch-box{background:var(--prod-tint); border:1px solid rgba(234,88,12,.3); border-radius:10px; padding:12px 14px; font-size:13.5px; line-height:1.55;}
+  .watch-box strong{color:var(--prod-dark);}
+
+  .scenario-wrap{padding-bottom:20px;}
+  .progress-row{display:flex; align-items:center; gap:14px; margin-bottom:22px;}
+  .progress-track{flex:1; height:9px; background:var(--line); border-radius:6px; overflow:hidden;}
+  .progress-fill{height:100%; background:var(--accent); transition:width .35s ease; border-radius:6px;}
+  .score-chip{font-family:'JetBrains Mono',monospace; font-weight:600; font-size:12.5px; border:1.5px solid var(--line); border-radius:8px; padding:6px 11px; white-space:nowrap;}
+  .scenario-card{border:1.5px solid var(--line); border-radius:18px; padding:26px; background:linear-gradient(180deg,#fff,#FCFBF7); box-shadow:var(--soft-shadow);}
+  .scenario-eyebrow{font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px;}
+  .scenario-text{font-size:18px; line-height:1.5; margin:0 0 22px; font-weight:500;}
+  .options{display:grid; gap:10px;}
+  .option-btn{text-align:left; padding:14px 16px; border-radius:12px; border:1.5px solid var(--line); background:var(--paper); font-family:'Inter',sans-serif; font-weight:600; font-size:14.5px; cursor:pointer; transition:all .12s ease; color:var(--ink);}
+  .option-btn:hover:not([disabled]){border-color:var(--ink-soft); transform:translateX(3px);}
+  .option-btn[disabled]{cursor:default;}
+  .option-btn.incorrect{background:#FDE7EA; border-color:#E11D48; color:#A80F32;}
+  .option-btn.reveal-correct{background:var(--money-tint); border-color:var(--money); color:var(--money-dark);}
+  .feedback-box{margin-top:18px; padding:15px 18px; border-radius:12px; border:1.5px dashed var(--line); font-size:13.8px; line-height:1.55; background:var(--bg);}
+  .feedback-box strong{font-family:'Bricolage Grotesque',sans-serif;}
+  .next-btn{margin-top:18px; font-family:'Bricolage Grotesque',sans-serif; font-weight:600; font-size:14.5px; background:var(--ink); color:#fff; border:1.5px solid var(--ink); border-radius:12px; padding:12px 22px; cursor:pointer;}
+  .next-btn:hover{opacity:.9;}
+  .results{text-align:center; padding:24px 10px 10px;}
+  .results h2{font-size:25px; margin-bottom:4px;}
+  .big-score{font-family:'Bricolage Grotesque',sans-serif; font-size:54px; margin:10px 0; color:var(--accent); font-variant-numeric:tabular-nums;}
+  .breakdown{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin:22px 0; text-align:left;}
+  .bd-item{border:1.5px solid var(--line); border-radius:12px; padding:12px 14px;}
+  .bd-item .lbl{font-size:11.5px; color:var(--ink-soft); font-weight:600;}
+  .bd-item .n{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:16px; margin-top:2px;}
+  .restart-btn{font-family:'Bricolage Grotesque',sans-serif; font-weight:600; background:var(--accent); color:#fff; border:none; border-radius:12px; padding:13px 26px; cursor:pointer; font-size:15px; box-shadow:var(--soft-shadow);}
+  .restart-btn:hover{opacity:.92;}
+  .missed-list{text-align:left; margin-top:20px;}
+  .missed-list h3{font-size:16px;}
+  .missed-item{border-left:3px solid var(--prod); background:var(--prod-tint); border-radius:8px; padding:11px 14px; margin-bottom:8px; font-size:13px; line-height:1.5;}
+
+  /* funnel */
+  .funnel-intro{font-size:14.5px; color:var(--ink-soft); line-height:1.6; margin:0 0 6px; max-width:68ch;}
+  .funnel-eq{font-family:'JetBrains Mono',monospace; font-size:12.5px; background:var(--money-tint); color:var(--money-dark); border:1px solid rgba(22,163,74,.3); border-radius:8px; padding:8px 12px; display:inline-block; margin:12px 0 4px; font-weight:600;}
+  .funnel-controls{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:18px; margin:22px 0 26px; padding:20px; background:var(--bg); border:1.5px solid var(--line); border-radius:16px;}
+  .funnel-field{display:flex; flex-direction:column; gap:7px;}
+  .funnel-field label{font-size:11.5px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; font-family:'Bricolage Grotesque',sans-serif;}
+  .funnel-field .val{font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:700; color:var(--ink);}
+  input[type=range]{width:100%; accent-color:var(--accent); height:6px;}
+
+  .funnel-viz{display:flex; flex-direction:column; gap:8px; margin-bottom:22px;}
+  .funnel-stage{position:relative; margin:0 auto; border-radius:10px; color:#fff; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px; transition:width .4s ease; min-width:150px; box-shadow:var(--soft-shadow);}
+  .funnel-stage .st-name{font-family:'Bricolage Grotesque',sans-serif; font-weight:600; font-size:14px;}
+  .funnel-stage .st-count{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px;}
+  .drop{text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ops-dark); font-weight:600;}
+  .funnel-out{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-top:6px;}
+  .out-card{border:1.5px solid var(--line); border-radius:14px; padding:16px; text-align:center;}
+  .out-card.hero{border-color:var(--money); background:var(--money-tint);}
+  .out-card .lbl{font-size:11.5px; color:var(--ink-soft); font-weight:600; text-transform:uppercase; letter-spacing:.04em;}
+  .out-card .big{font-family:'Bricolage Grotesque',sans-serif; font-size:28px; font-weight:700; margin-top:4px; font-variant-numeric:tabular-nums;}
+  .out-card.hero .big{color:var(--money-dark);}
+  .funnel-note{margin-top:20px; font-size:12px; color:var(--ink-soft); font-style:italic; line-height:1.55;}
+
+  footer{text-align:center; color:var(--ink-soft); font-size:12px; margin-top:30px; padding:0 24px;}
+
+  @media (max-width:600px){
+    .brand-text h1{font-size:22px;}
+    .modal{padding:22px 20px 20px;}
+    main{padding:22px 16px 26px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <svg class="mark" width="50" height="50" viewBox="0 0 50 50" fill="none">
+      <path d="M14 16h22l-2.5 21a3 3 0 0 1-3 2.6H19.5a3 3 0 0 1-3-2.6L14 16z" fill="#0F9D58" stroke="#1C231F" stroke-width="2.4" stroke-linejoin="round"/>
+      <path d="M19 18v-3a6 6 0 0 1 12 0v3" stroke="#1C231F" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <path d="M22 27l3 3 6-6" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
+    <div class="brand-text">
+      <h1>The Shopify &amp; Ecommerce Field Guide</h1>
+      <p>How a Shopify store actually works, what it really costs to sell online, and the levers that turn traffic into profit — for anyone starting or running an ecommerce store.</p>
+      <span class="disclaimer">⚠️ AI-generated primer — verify Shopify specifics (plans, fees) against current docs</span>
+    </div>
+  </div>
+</header>
+
+<div class="tabbar">
+  <div class="tab active" data-view="library">📚 Concept Library</div>
+  <div class="tab" data-view="scenarios">🎯 Scenario Practice</div>
+  <div class="tab" data-view="funnel">🔻 Conversion Funnel</div>
+</div>
+
+<main id="main"></main>
+
+<footer>An interactive primer built with the field-guide-builder skill. Concepts are an AI-generated starting point — cross-check Shopify plan tiers, fees, and app names against current official docs before relying on them.</footer>
+
+<div id="modalRoot"></div>
+
+<script>
+const CATS = {
+  store:  { label:"Storefront & Merchandising", icon:"🛍️" },
+  prod:   { label:"Products, Inventory & Fulfillment", icon:"📦" },
+  money:  { label:"Payments, Pricing & Economics", icon:"💳" },
+  growth: { label:"Marketing, Traffic & Conversion", icon:"📣" },
+  ops:    { label:"Apps, Plans & Operations", icon:"⚙️" },
+};
+
+const ENTRIES = [
+  {cat:"store", name:"Themes & Liquid", hook:"The storefront is a theme; Liquid is its language.",
+   def:"A Shopify storefront's look is controlled by a theme — a bundle of templates, sections, and settings — rendered through Liquid, Shopify's templating language that injects store data (products, prices, cart) into HTML. With Online Store 2.0, most layout is editable through the drag-and-drop theme editor via 'sections' and 'blocks', so you rarely need to touch code for everyday changes.",
+   example:["Swapping the hero banner, reordering sections, or changing fonts in the theme editor needs no code at all.","A developer edits a Liquid file to show a custom 'ships in 24h' badge pulled from a product metafield."],
+   watch:"Heavy theme customization creates upgrade debt — when you fork a theme's code, you don't get the theme author's future updates automatically, so weigh 'custom now' against 'maintainable later'."},
+
+  {cat:"store", name:"The Product Detail Page (PDP)", hook:"The single page where browsing becomes buying.",
+   def:"The PDP is where a shopper decides to add to cart, so it carries more conversion weight than any other page. It has to answer every purchase question fast: clear images, price, variant selection, shipping/returns, social proof, and an obvious add-to-cart button. Small PDP improvements compound because so much traffic funnels through it.",
+   example:["Adding a size guide and real customer photos to a PDP often lifts conversion more than a homepage redesign.","Showing 'In stock — ships today' next to the buy button removes a hesitation that quietly kills carts."],
+   watch:"Don't bury the price or the add-to-cart below distracting content — the shopper who has to hunt for how to buy is a shopper you're taxing on your best-intent page."},
+
+  {cat:"store", name:"Collections", hook:"How you group products into shoppable aisles.",
+   def:"A collection is a curated group of products — 'New Arrivals', 'Under $50', 'Summer' — that becomes a browsable page and a navigation destination. Collections can be manual (you pick items) or automated (rules like tag or price auto-populate them). Good collections are how shoppers who don't know exactly what they want still find something to buy.",
+   example:["An automated 'Sale' collection includes every product whose compare-at price is higher than its price, updating itself.","A manual 'Staff Picks' collection is hand-curated for a seasonal campaign."],
+   watch:"Automated-collection rules quietly break as your catalog grows or tagging drifts — a product that loses a tag silently vanishes from its aisle, so audit collection membership periodically."},
+
+  {cat:"store", name:"Mobile-First Storefront", hook:"Most of your shoppers are on a phone.",
+   def:"The majority of ecommerce traffic — often the majority of orders too — comes from mobile, so the phone layout is the real design target, not an afterthought. Thumb-reachable buttons, fast-loading images, and a checkout that works one-handed matter more than how the store looks on a big desktop monitor.",
+   example:["A sticky 'Add to cart' bar that stays visible as a mobile shopper scrolls the PDP protects conversion.","Compressing hero images so a product page loads in under 3 seconds on 4G directly reduces bounce."],
+   watch:"Designing on desktop and 'checking mobile later' inverts reality — you'll ship a store tuned for the minority of your traffic and wonder why mobile conversion lags."},
+
+  {cat:"store", name:"Shop Pay & Accelerated Checkout", hook:"One-tap checkout for returning shoppers.",
+   def:"Shop Pay is Shopify's accelerated checkout: it securely stores a shopper's details so they can buy in a tap without re-entering shipping and card info. Because it removes checkout friction — the single leakiest step of the funnel — Shopify reports it converts meaningfully better than a standard guest checkout, and it works across every Shop-Pay-enabled store.",
+   example:["A returning customer who saved details on any Shop Pay store checks out on yours in one tap, no typing.","Enabling accelerated checkout buttons (Shop Pay, Apple Pay, Google Pay) above the fold on the cart lifts completed orders."],
+   watch:"Accelerated checkout helps most at the very end of the funnel — it won't fix a store that loses people earlier at product discovery or shipping-cost shock, so don't treat it as a growth strategy on its own."},
+
+  {cat:"prod", name:"SKUs & Variants", hook:"One product, many buyable versions.",
+   def:"A product in Shopify can have variants — combinations of options like size and color — and each sellable variant carries its own SKU (stock-keeping unit), price, and inventory count. Modeling variants correctly is foundational: it drives inventory, reporting, and what the shopper can actually select on the PDP.",
+   example:["A t-shirt product with 4 sizes × 3 colors is 12 variants, each with its own SKU and stock level.","A SKU like 'TEE-BLK-M' encodes product, color, and size so your ops team and 3PL can pick the right item."],
+   watch:"Shopify caps variants per product (historically 100, expanded on newer catalogs), so very high-variant catalogs may need a different data model or app — check the current limit before designing a huge option matrix."},
+
+  {cat:"prod", name:"Inventory Management", hook:"Selling what you don't have is a fast way to lose trust.",
+   def:"Inventory tracking keeps each variant's on-hand count accurate so you don't oversell. Shopify can decrement stock as orders come in, hide or flag out-of-stock items, and sync counts across sales channels. As you add channels (web, POS, marketplaces), a single source of truth for stock becomes essential.",
+   example:["A variant set to 'continue selling when out of stock' allows backorders; turning that off prevents overselling a scarce item.","Multi-location inventory routes an order to the warehouse nearest the customer to cut shipping time."],
+   watch:"Overselling happens at the seams between channels — if your POS, website, and a marketplace app don't reconcile stock in near-real-time, you'll sell the last unit twice and eat a cancellation."},
+
+  {cat:"prod", name:"Dropshipping", hook:"Sell first, let a supplier ship it.",
+   def:"In dropshipping, you list products you don't hold; when an order comes in, a third-party supplier ships it directly to the customer. It slashes upfront inventory risk and is popular for testing products, but margins are thin, shipping times can be long, and you don't control quality or fulfillment.",
+   example:["A store lists a gadget via a supplier-connection app; each sale auto-forwards the order to the supplier to ship.","A creator tests demand for a design on print-on-demand products before committing to bulk inventory."],
+   watch:"Because you don't control the supply chain, your brand eats every slow shipment and quality miss — dropshipping trades inventory risk for reputation risk, and reviews punish the latter hard."},
+
+  {cat:"prod", name:"3PL & Fulfillment", hook:"Who picks, packs, and ships your orders.",
+   def:"Fulfillment is the physical work of getting an order to the customer. Once volume grows past what you can pack yourself, a third-party logistics provider (3PL) stores your inventory and ships orders for you, integrated with Shopify so orders flow automatically and tracking flows back. It buys speed and scale at the cost of per-order fees and less hands-on control.",
+   example:["A 3PL with regional warehouses ships most orders in 2 days, improving the post-purchase experience.","Shopify integrates with fulfillment partners and apps so paid orders route to the warehouse without manual export."],
+   watch:"Fulfillment economics are per-order and often opaque (pick fees, pack fees, storage, surcharges) — model them into your unit economics, because 'free' self-fulfillment hides your own labor cost until you try to scale."},
+
+  {cat:"prod", name:"Shipping Strategy", hook:"Shipping cost is a conversion lever, not just an expense.",
+   def:"How you present shipping — free over a threshold, flat rate, real-time carrier rates, or paid — directly shapes conversion and average order value. Unexpected shipping cost at checkout is the single most cited reason for cart abandonment, so shipping is a merchandising and pricing decision, not only a logistics one.",
+   example:["A 'free shipping over $50' threshold nudges a shopper with $42 in cart to add one more item.","Baking shipping cost into product price and advertising 'free shipping' can convert better even at the same total price."],
+   watch:"'Free shipping' is never free — you're either absorbing margin or pricing it in, so decide deliberately which, and check that the threshold sits just above your natural average order value to actually move it."},
+
+  {cat:"prod", name:"Returns & Reverse Logistics", hook:"The sale isn't final until the return window closes.",
+   def:"Returns are a structural part of ecommerce, especially in apparel. A smooth, clearly-communicated returns process builds the trust that makes people buy in the first place, but returns also carry real cost — reverse shipping, restocking, write-offs. Managing return rate is managing profitability, not just customer service.",
+   example:["A self-serve returns portal that prints a label instantly reduces support load and increases repeat purchase.","Better size guides and PDP detail lower the apparel return rate, which flows straight to margin."],
+   watch:"A generous returns policy can lift conversion and still wreck unit economics if return rates run high — track net revenue after returns, because gross sales flatter a business that quietly ships half its clothes back."},
+
+  {cat:"money", name:"Shopify Payments & Transaction Fees", hook:"Two different fees are eating your sale.",
+   def:"Shopify Payments is the built-in card processor (powered by Stripe underneath). It charges a payment-processing rate per transaction (roughly 2.9% + a fixed cent amount online on entry plans, lower on higher plans). Separately, if you use a third-party gateway instead of Shopify Payments, Shopify adds its own extra transaction fee — so using the native processor avoids a second bite.",
+   example:["On an entry plan, a $50 card order might cost ~$1.75 in processing via Shopify Payments.","Choosing an external gateway on a lower plan adds an extra Shopify transaction fee (e.g. ~2%) on top of that gateway's own rate."],
+   watch:"Exact rates and plan tiers change and vary by country — treat any specific percentage as approximate and confirm against current Shopify pricing before you model margins on it."},
+
+  {cat:"money", name:"COGS & Gross Margin", hook:"What the product costs you vs. what's left.",
+   def:"Cost of goods sold (COGS) is what each unit costs you to acquire or make; gross margin is the percentage of the selling price left after COGS. It's the first and most important profitability number — everything else (ads, fees, shipping, overhead) has to be paid out of gross margin, so a thin gross margin caps how much you can spend to grow.",
+   example:["A product sold for $40 that costs you $16 has a 60% gross margin — $24 to cover everything else.","A dropshipped item at 20% gross margin leaves almost nothing for ads once fees and shipping are paid."],
+   watch:"Gross margin is not profit — founders who celebrate a 'good margin' before subtracting processing fees, shipping, returns, and ad spend are looking at a number that hasn't met reality yet."},
+
+  {cat:"money", name:"Contribution Margin", hook:"What one more order actually adds to the bank.",
+   def:"Contribution margin is what's left from a single order after all the variable costs of that order — COGS, payment fees, shipping, packaging, and often the ad cost to acquire it. It's the true 'profit per order' that has to cover fixed costs (rent, salaries, the Shopify subscription) and then owner profit. It's the number that tells you if selling more actually helps.",
+   example:["A $60 order minus $24 COGS, $2 fees, $6 shipping, and $15 ad cost leaves $13 contribution margin.","If contribution margin per order is negative, growing faster loses money faster — a classic scaling trap."],
+   watch:"Many stores discover their contribution margin is negative once ad costs are included — revenue growth then hides the bleeding, which is why 'we're growing' and 'we're profitable' are entirely different claims."},
+
+  {cat:"money", name:"Average Order Value (AOV)", hook:"How much a shopper spends per checkout.",
+   def:"AOV is total revenue divided by number of orders. Raising AOV is one of the three core levers of ecommerce revenue and is often the cheapest to move, because it works on traffic you already have — through bundles, upsells, cross-sells, volume discounts, and free-shipping thresholds.",
+   example:["A 'frequently bought together' bundle on the PDP nudges AOV up without any new traffic.","A free-shipping-over-$75 threshold pulls a $60 cart up toward $75."],
+   watch:"Chasing AOV with heavy discounts can raise the number while lowering margin per order — a rising AOV funded by 'spend $100 save $20' isn't the win it looks like unless the margin math still works."},
+
+  {cat:"money", name:"Discounting & Promotions", hook:"The fastest lever, and the most dangerous.",
+   def:"Discounts (codes, automatic discounts, sales) reliably lift short-term conversion, which is why they're the default growth reflex. But every discount comes straight out of margin, and frequent promotions train customers to wait for the next sale, eroding full-price demand and brand perception over time.",
+   example:["A first-order 10% code in exchange for an email capture builds a marketing list while converting a hesitant shopper.","A well-timed flash sale clears slow-moving seasonal inventory before it becomes dead stock."],
+   watch:"Perpetual discounting resets the reference price in the customer's mind — once shoppers believe the 'real' price is the sale price, full price feels like a rip-off and you've permanently taxed your own margin."},
+
+  {cat:"growth", name:"Conversion Rate & CRO", hook:"The percent of visitors who actually buy.",
+   def:"Conversion rate is orders divided by sessions — for most ecommerce stores it sits in the low single digits (roughly 1–3%). Conversion Rate Optimization (CRO) is the systematic work of raising it through better PDPs, faster load times, clearer shipping info, trust signals, and smoother checkout. Because it multiplies against all your traffic, small CRO wins are high-leverage.",
+   example:["Adding trust badges, reviews, and a clearer returns policy lifts sitewide conversion a few tenths of a percent — worth a lot at scale.","Fixing a slow-loading checkout step recovers orders that were silently timing out."],
+   watch:"Test changes rather than assuming — 'best practices' don't always win on your store, and a redesign shipped on faith can quietly lower conversion while everyone congratulates the new look."},
+
+  {cat:"growth", name:"The Ecommerce Growth Equation", hook:"Revenue = Traffic × Conversion Rate × AOV.",
+   def:"Nearly all ecommerce revenue reduces to three levers: how many people visit (traffic), what share of them buy (conversion rate), and how much each spends (AOV). Every growth tactic maps to one of these three. Knowing which lever is weakest — and cheapest to move — is how you decide where to spend effort instead of chasing tactics randomly.",
+   example:["10,000 sessions × 2% conversion × $50 AOV = $10,000/month; lifting conversion to 2.5% adds $2,500 with the same traffic.","A store drowning in traffic but converting at 0.8% should fix conversion before buying more ads."],
+   watch:"Founders reflexively reach for the traffic lever (buy more ads) because it's the most visible — but it's often the most expensive, while a conversion or AOV fix compounds on traffic you're already paying for."},
+
+  {cat:"growth", name:"CAC, LTV & Payback", hook:"What a customer costs vs. what they're worth.",
+   def:"Customer acquisition cost (CAC) is what you spend on marketing to get one new customer; lifetime value (LTV) is the total margin that customer generates over time. A healthy business earns back CAC quickly (payback period) and has LTV comfortably above CAC. In ecommerce, repeat purchases are usually what make the math work — the first order often barely breaks even.",
+   example:["If ads cost $20 to acquire a customer whose first order yields $13 margin, you only profit if they buy again.","A brand with strong repeat rate can afford a higher CAC because LTV stretches over many orders."],
+   watch:"Judging a store on first-order profitability alone will make you underinvest in acquisition for a repeat-heavy business — and overinvest for a one-and-done category; the repeat rate decides which trap you're in."},
+
+  {cat:"growth", name:"Abandoned Cart Recovery", hook:"Most carts never make it to 'thank you'.",
+   def:"The majority of shoppers who add to cart don't complete checkout — cart abandonment routinely runs around 70%. Recovery flows (automated emails or SMS reminding them, sometimes with an incentive) win back a meaningful slice of that lost revenue cheaply, because these are warm shoppers who already signaled intent.",
+   example:["An automated email 1 hour after abandonment with the cart contents and a one-click return link recovers a chunk of orders.","An SMS reminder with a small time-limited incentive nudges a hesitating shopper over the line."],
+   watch:"Recovery flows treat the symptom — high abandonment usually points to a fixable cause upstream (shipping-cost shock, forced account creation, a slow checkout), so diagnose the leak before over-relying on win-back messages."},
+
+  {cat:"growth", name:"Email & SMS Retention", hook:"The channel you own beats the ones you rent.",
+   def:"Email and SMS marketing reach customers you already have, without paying a platform per impression — so they typically drive the highest-ROI revenue in ecommerce. Beyond broadcasts, automated flows (welcome, post-purchase, win-back, replenishment) run in the background and compound as your list grows.",
+   example:["A welcome flow converts new subscribers with a first-order incentive and brand story.","A replenishment reminder for a consumable (coffee, supplements) times an email to when the customer is likely running low."],
+   watch:"Owned channels only compound if you're actually capturing contacts and respecting them — buying traffic that never converts to an email or SMS opt-in means renting your whole audience forever from ad platforms."},
+
+  {cat:"growth", name:"SEO for Ecommerce", hook:"Free traffic that compounds, slowly.",
+   def:"Search engine optimization earns organic traffic to product and collection pages by matching what shoppers search. Unlike ads, it doesn't cost per click, and it compounds over time — but it's slow to build and rewards clean site structure, unique product descriptions, fast pages, and content that answers buying questions.",
+   example:["A collection page optimized for 'organic cotton baby onesies' pulls in high-intent shoppers month after month for free.","A buying-guide blog post ranks for research queries and funnels readers to relevant products."],
+   watch:"SEO is a slow-compounding asset, not a launch tactic — counting on organic traffic to carry month one is how new stores stall; pair it with paid acquisition until it matures."},
+
+  {cat:"growth", name:"Paid Ads & ROAS", hook:"Buy traffic, measure the return.",
+   def:"Paid acquisition (Meta, Google, TikTok, etc.) buys traffic fast, measured by ROAS — return on ad spend, revenue divided by ad cost. It's the quickest way to scale, but rising ad costs and privacy-driven attribution changes have made it harder, and ROAS on revenue can flatter a business whose margins can't actually support the spend.",
+   example:["A campaign returning $3 revenue per $1 spent (3× ROAS) may still lose money if gross margin is under 33%.","Retargeting ads to past site visitors usually post a high ROAS because they harvest existing intent."],
+   watch:"ROAS is measured on revenue, not profit — a 'great' 4× ROAS on a 25%-margin product is break-even at best, so always translate the target ROAS into your actual contribution margin before celebrating."},
+
+  {cat:"ops", name:"The Shopify App Store", hook:"Extend the store without building from scratch.",
+   def:"Shopify's core is deliberately lean; the App Store is how you add capabilities — reviews, subscriptions, upsells, advanced shipping, loyalty, email — by installing third-party apps that integrate with your store. It's the main reason a small team can run a sophisticated operation, but each app is a dependency with its own cost and quality.",
+   example:["Adding a reviews app puts social proof on every PDP without any custom development.","A subscriptions app turns a one-time product into recurring revenue."],
+   watch:"App sprawl is a silent tax — monthly fees stack up, apps can slow your storefront by injecting scripts, and each one is a third-party you now depend on, so audit installed apps for cost and performance regularly."},
+
+  {cat:"ops", name:"Shopify Plans & Plus", hook:"The tier you're on changes your fees and features.",
+   def:"Shopify sells tiered plans (from entry Basic up through Advanced, and enterprise-grade Shopify Plus). Higher tiers lower your payment-processing rate and unlock features like better reporting, more staff accounts, and — on Plus — checkout customization, higher API limits, and dedicated support. The right tier is a math problem: does the fee saving and feature set beat the higher subscription?",
+   example:["A growing store moving up a tier can save enough in per-transaction fees to more than cover the higher monthly price.","A high-volume brand on Plus customizes checkout and automates workflows in ways lower tiers don't allow."],
+   watch:"Plan pricing and the exact features per tier change over time and by region — don't hard-code today's tier details into a long-term plan without re-checking Shopify's current pricing page."},
+
+  {cat:"ops", name:"Analytics & Attribution", hook:"Knowing which effort actually drove the sale.",
+   def:"Shopify's analytics show sessions, conversion rate, AOV, and revenue by channel, while attribution tries to credit which marketing touch drove each order. Post-privacy-changes (cookie restrictions, iOS updates), attribution has gotten noisier, so blended metrics (total revenue vs. total spend) are increasingly trusted over per-channel precision.",
+   example:["The Shopify dashboard breaks conversion rate down by traffic source to show where quality visitors come from.","A blended CAC — all marketing spend divided by all new customers — sidesteps unreliable per-platform attribution."],
+   watch:"Per-channel ROAS numbers from ad platforms often double-count and over-claim credit — trusting each platform's self-reported attribution can make you scale a channel that's quietly riding on another's demand."},
+
+  {cat:"ops", name:"Taxes & Shopify Markets", hook:"Selling across borders multiplies the rules.",
+   def:"Ecommerce sales trigger tax obligations that vary by where the customer is — sales tax/VAT/GST, thresholds, and registration. Shopify helps calculate and collect tax, and Shopify Markets manages selling internationally: local currencies, pricing, and duties. As you cross regions, compliance becomes a real operational surface, not a footnote.",
+   example:["Shopify Markets shows a UK shopper prices in GBP and can handle local duties at checkout.","Tax settings auto-apply the right sales tax rate based on the customer's location and your nexus."],
+   watch:"Tax collection is a legal obligation, not a Shopify setting you can 'figure out later' — selling into a region where you have obligations without collecting correctly creates liability that compounds quietly until it's expensive."},
+
+  {cat:"ops", name:"POS & Omnichannel", hook:"One inventory, many places to sell.",
+   def:"Shopify POS lets you sell in person — pop-ups, retail, markets — on the same backend as your online store, so inventory, customers, and reporting stay unified. Omnichannel is the broader idea that the web store, physical POS, and marketplace channels should share one source of truth so a customer's experience is seamless across them.",
+   example:["A pop-up shop rings up in-person sales on Shopify POS, decrementing the same inventory the website sells from.","Buy-online-pickup-in-store bridges the web and physical channels on one system."],
+   watch:"Omnichannel only delivers if the channels genuinely share data in real time — bolting on a POS or marketplace that syncs on a delay recreates the overselling and reporting gaps unification was supposed to solve."},
+];
+
+const SCENARIOS = [
+  {q:"Your store gets 20,000 visits a month but only 1% buy. Before spending more on ads, which lever should you probably fix first?",
+   options:["Buy more traffic","Conversion rate (CRO)","Raise prices","Add more SKUs"], correct:1,
+   why:"Conversion rate — at 1% you're wasting most of the traffic you already pay for; fixing CRO compounds on every future visit before you spend a rupee more on ads.", cat:"growth"},
+  {q:"A shopper fills a cart, reaches checkout, sees an unexpected shipping charge, and leaves. This is the classic cause of:",
+   options:["Low AOV","Cart abandonment","Poor SEO","High COGS"], correct:1,
+   why:"Cart abandonment — surprise shipping cost at checkout is the single most-cited reason carts are abandoned, which is why shipping is a conversion decision, not just logistics.", cat:"growth"},
+  {q:"You sell a product for $40 that costs you $16. Your 60% figure here is your:",
+   options:["Contribution margin","Gross margin","ROAS","Conversion rate"], correct:1,
+   why:"Gross margin — the share of price left after COGS. It's the pool that must still cover fees, shipping, ads, and overhead before any profit.", cat:"money"},
+  {q:"Your Meta ads return $3 of revenue for every $1 spent, but your product only has a 25% gross margin. What's the problem?",
+   options:["ROAS is measured on revenue, not profit","Conversion rate is too high","AOV is irrelevant","Nothing — 3× is always great"], correct:0,
+   why:"ROAS is on revenue — a 3× return on a 25%-margin product means the margin ($0.75) barely covers the $1 ad cost, so you're roughly break-even at best.", cat:"growth"},
+  {q:"You want to nudge a shopper with $42 in their cart to spend more, using traffic you already have. The cheapest lever is:",
+   options:["More ad spend","Raising AOV (e.g. free-shipping threshold)","Improving SEO","Switching 3PL"], correct:1,
+   why:"AOV — a 'free shipping over $50' threshold or a bundle lifts spend on existing traffic, which is far cheaper than acquiring new visitors.", cat:"money"},
+  {q:"You use a third-party payment gateway instead of Shopify Payments on a lower plan. What extra cost do you incur?",
+   options:["Higher COGS","An additional Shopify transaction fee","A higher AOV","Lower conversion rate"], correct:1,
+   why:"An extra Shopify transaction fee — Shopify charges its own additional fee (on top of the gateway's) when you don't use Shopify Payments, so the native processor avoids that second bite.", cat:"money"},
+  {q:"A returning customer buys from your store in a single tap without re-entering shipping or card details. This is:",
+   options:["A collection","Shop Pay / accelerated checkout","A metafield","Dropshipping"], correct:1,
+   why:"Shop Pay — accelerated checkout stores details so returning shoppers buy in one tap, reducing friction at the leakiest step of the funnel.", cat:"store"},
+  {q:"You list products you don't hold in inventory; when an order comes in, a supplier ships it directly to the customer. This model is:",
+   options:["3PL fulfillment","Dropshipping","Omnichannel","Wholesale"], correct:1,
+   why:"Dropshipping — no upfront inventory, supplier ships directly. Low inventory risk, but thin margins and no control over quality or shipping speed.", cat:"prod"},
+  {q:"Your website and your pop-up POS both sell the last unit of an item within minutes, and now you must cancel one order. The root cause is:",
+   options:["A theme bug","Inventory not reconciling across channels in real time","Low gross margin","Poor SEO"], correct:1,
+   why:"Inventory sync — overselling happens at the seams between channels; without near-real-time reconciliation, two channels sell the same last unit.", cat:"prod"},
+  {q:"Ads cost you $20 to acquire a customer whose first order yields only $13 of margin. This business is only healthy if:",
+   options:["The customer buys again (repeat / LTV)","You raise the ad budget","Gross margin is ignored","Shipping is free"], correct:0,
+   why:"Repeat purchases — first-order margin is below CAC, so profitability depends on LTV from repeat orders exceeding the $20 acquisition cost.", cat:"growth"},
+  {q:"You keep running 20%-off promotions every few weeks. What's the long-term risk beyond the immediate margin hit?",
+   options:["Faster shipping","Customers learn to wait for the sale, eroding full-price demand","Higher SEO rankings","Lower return rate"], correct:1,
+   why:"Reference-price reset — perpetual discounting trains shoppers that the sale price is the 'real' price, so full price starts to feel like a rip-off and margin is permanently taxed.", cat:"money"},
+  {q:"You want reviews on every product page but have no developers. The fastest path on Shopify is:",
+   options:["Rebuild the theme in Liquid","Install a reviews app from the App Store","Upgrade to Plus","Switch 3PL"], correct:1,
+   why:"The App Store — installing a reviews app adds social proof to every PDP with no custom development, which is exactly what the app ecosystem is for.", cat:"ops"},
+  {q:"Your store's revenue equation is 10,000 sessions × 2% conversion × $50 AOV. Lifting conversion to 2.5% (same traffic and AOV) does what?",
+   options:["Nothing meaningful","Adds $2,500/month from traffic you already pay for","Only helps if you also cut prices","Requires a new 3PL"], correct:1,
+   why:"The growth equation — 10,000 × 2.5% × $50 = $12,500 vs $10,000. A half-point of conversion adds $2,500 with zero extra traffic spend.", cat:"growth"},
+  {q:"A high-variant catalog (say 5 sizes × 6 colors × 5 styles per product) suddenly won't let you add all combinations. The likely cause is:",
+   options:["A pricing bug","Shopify's per-product variant limit","Low inventory","A tax setting"], correct:1,
+   why:"Variant limit — Shopify caps variants per product, so very high-variant products can hit the ceiling and need a different data model or an app.", cat:"prod"},
+  {q:"You're relying on organic search to carry traffic in your store's first month. Why is this risky?",
+   options:["SEO is a slow-compounding asset, not a launch tactic","SEO costs more than ads","SEO lowers conversion","SEO breaks checkout"], correct:0,
+   why:"SEO compounds slowly — it rewards structure and content over months, so counting on organic traffic at launch stalls new stores; pair it with paid acquisition until it matures.", cat:"growth"},
+];
+
+let state = {
+  view:"library", search:"", activeCat:"all", openIdx:null,
+  quizOrder:[], quizIndex:0, quizScore:0, quizAnswered:null, quizHistory:[], quizDone:false,
+  fSessions:10000, fAtc:9, fCheckout:55, fPurchase:62, fAov:55,
+};
+
+function shuffledIndices(n){ const a=Array.from({length:n},(_,i)=>i); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+function resetQuiz(){ state.quizOrder=shuffledIndices(SCENARIOS.length); state.quizIndex=0; state.quizScore=0; state.quizAnswered=null; state.quizHistory=[]; state.quizDone=false; }
+resetQuiz();
+
+function catCounts(){ const c={}; ENTRIES.forEach(p=>{c[p.cat]=(c[p.cat]||0)+1;}); return c; }
+
+function renderLibrary(){
+  const counts=catCounts();
+  const pills=Object.keys(CATS).map(c=>{
+    const active=state.activeCat===c;
+    return `<button class="pill" data-cat="${c}" data-active="${active}" onclick="setCat('${c}')">${CATS[c].icon} ${CATS[c].label} <span class="count">${counts[c]}</span></button>`;
+  }).join('');
+  const q=state.search.trim().toLowerCase();
+  const filtered=ENTRIES.filter(p=>{
+    const mc=state.activeCat==='all'||p.cat===state.activeCat;
+    const ms=!q||p.name.toLowerCase().includes(q)||p.hook.toLowerCase().includes(q)||p.def.toLowerCase().includes(q);
+    return mc&&ms;
+  });
+  const cards=filtered.map(p=>{
+    const idx=ENTRIES.indexOf(p);
+    return `<div class="card" data-cat="${p.cat}" tabindex="0" role="button" aria-label="Open details for ${p.name}"
+      onclick="openEntry(${idx})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEntry(${idx});}">
+      <span class="cat-tag" data-cat="${p.cat}">${CATS[p.cat].icon} ${CATS[p.cat].label}</span>
+      <h3>${p.name}</h3>
+      <p class="hook">${p.hook}</p>
+      <span class="explore-row">Explore <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </div>`;
+  }).join('');
+  return `
+    <div class="lib-controls">
+      <div class="search-wrap">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8b9089" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="searchInput" type="text" placeholder="Search 28 concepts — try 'AOV', 'Shop Pay', 'dropshipping'..." value="${state.search.replace(/"/g,'&quot;')}" oninput="setSearch(this.value)"/>
+      </div>
+    </div>
+    <div class="lib-controls pill-row">${pills}</div>
+    <p class="result-count">${filtered.length} concept${filtered.length===1?'':'s'} shown</p>
+    <div class="grid">${cards||'<div class="empty-state">No concepts match that search. Try a different keyword or clear the category filter.</div>'}</div>`;
+}
+function setCat(c){ state.activeCat=(state.activeCat===c)?'all':c; render(); }
+function setSearch(v){ state.search=v; render(true); }
+
+function openEntry(i){ state.openIdx=i; renderModal(); }
+function closeEntry(){ state.openIdx=null; renderModal(); }
+function renderModal(){
+  const root=document.getElementById('modalRoot');
+  if(state.openIdx===null){ root.innerHTML=''; return; }
+  const p=ENTRIES[state.openIdx];
+  const examples=p.example.map(e=>`<li>${e}</li>`).join('');
+  root.innerHTML=`
+    <div class="modal-overlay" onclick="if(event.target===this) closeEntry();">
+      <div class="modal" role="dialog" aria-modal="true" aria-label="${p.name} details">
+        <div class="modal-top">
+          <span class="cat-tag" data-cat="${p.cat}">${CATS[p.cat].icon} ${CATS[p.cat].label}</span>
+          <button class="modal-close" onclick="closeEntry()" aria-label="Close">✕</button>
+        </div>
+        <h2>${p.name}</h2>
+        <p class="modal-hook">${p.hook}</p>
+        <div class="section-label">📖 What it means</div>
+        <p class="body-text">${p.def}</p>
+        <div class="section-label">🛒 In practice</div>
+        <ul class="example-list">${examples}</ul>
+        <div class="section-label">⚠️ Watch out for</div>
+        <div class="watch-box"><strong>Operator trap:</strong> ${p.watch}</div>
+      </div>
+    </div>`;
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&state.openIdx!==null) closeEntry(); });
+
+function renderScenarios(){
+  if(state.quizDone){
+    const byCat={};
+    state.quizHistory.forEach(h=>{ byCat[h.cat]=byCat[h.cat]||{c:0,t:0}; byCat[h.cat].t++; if(h.correct)byCat[h.cat].c++; });
+    const breakdown=Object.keys(byCat).map(c=>`
+      <div class="bd-item"><div class="lbl">${CATS[c].icon} ${CATS[c].label}</div><div class="n">${byCat[c].c} / ${byCat[c].t}</div></div>`).join('');
+    const missed=state.quizHistory.filter(h=>!h.correct).map(h=>`
+      <div class="missed-item"><strong>${h.q}</strong><br/>→ Correct: ${h.correctLabel}. ${h.why}</div>`).join('');
+    return `<div class="results">
+      <h2>Practice complete 🎉</h2>
+      <div class="big-score">${state.quizScore} / ${SCENARIOS.length}</div>
+      <p style="color:var(--ink-soft);">How you did across each area:</p>
+      <div class="breakdown">${breakdown}</div>
+      <button class="restart-btn" onclick="restartQuiz()">Practice again (new shuffle)</button>
+      ${missed.length?`<div class="missed-list"><h3>Review what you missed</h3>${missed}</div>`:`<p style="margin-top:20px;font-weight:600;">Perfect score — you're store-ready. 🔥</p>`}
+    </div>`;
+  }
+  const s=SCENARIOS[state.quizOrder[state.quizIndex]];
+  const pct=Math.round((state.quizIndex/SCENARIOS.length)*100);
+  const options=s.options.map((opt,i)=>{
+    let cls="option-btn",dis="";
+    if(state.quizAnswered!==null){ dis="disabled"; if(i===s.correct)cls+=" reveal-correct"; else if(i===state.quizAnswered)cls+=" incorrect"; }
+    return `<button class="${cls}" ${dis} onclick="answerQuiz(${i})">${opt}</button>`;
+  }).join('');
+  const feedback=state.quizAnswered!==null?`
+    <div class="feedback-box"><strong>${state.quizAnswered===s.correct?"✅ Correct — ":"❌ Not quite — "}</strong>${s.why}</div>
+    <button class="next-btn" onclick="nextQuiz()">${state.quizIndex===SCENARIOS.length-1?"See results":"Next scenario →"}</button>`:'';
+  return `<div class="scenario-wrap">
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <span class="score-chip">${state.quizIndex+1} / ${SCENARIOS.length} · score ${state.quizScore}</span>
+    </div>
+    <div class="scenario-card">
+      <div class="scenario-eyebrow">Scenario</div>
+      <p class="scenario-text">${s.q}</p>
+      <div class="options">${options}</div>
+      ${feedback}
+    </div></div>`;
+}
+function answerQuiz(i){
+  if(state.quizAnswered!==null) return;
+  const s=SCENARIOS[state.quizOrder[state.quizIndex]];
+  const correct=i===s.correct;
+  state.quizAnswered=i;
+  if(correct) state.quizScore++;
+  state.quizHistory.push({q:s.q, why:s.why, correct, correctLabel:s.options[s.correct], cat:s.cat});
+  render();
+}
+function nextQuiz(){ if(state.quizIndex===SCENARIOS.length-1){ state.quizDone=true; } else { state.quizIndex++; state.quizAnswered=null; } render(); }
+function restartQuiz(){ resetQuiz(); render(); }
+
+function nfmt(n){ return Math.round(n).toLocaleString('en-US'); }
+function money(n){ return '$'+n.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0}); }
+function renderFunnel(){
+  const sessions=state.fSessions;
+  const atc=sessions*state.fAtc/100;
+  const checkout=atc*state.fCheckout/100;
+  const orders=checkout*state.fPurchase/100;
+  const revenue=orders*state.fAov;
+  const cvr=orders/sessions*100;
+  const stages=[
+    {name:"Sessions", count:sessions, color:"var(--store)"},
+    {name:"Added to cart", count:atc, color:"var(--growth)"},
+    {name:"Reached checkout", count:checkout, color:"var(--prod)"},
+    {name:"Completed order", count:orders, color:"var(--money)"},
+  ];
+  const maxW=100, minW=26;
+  const viz=stages.map((st,i)=>{
+    const w = maxW - (i*(maxW-minW)/(stages.length-1));
+    const dropHtml = i>0 ? `<div class="drop">▼ ${(100-(st.count/stages[i-1].count*100)).toFixed(0)}% drop-off</div>` : '';
+    return `${dropHtml}<div class="funnel-stage" style="width:${w}%; background:${st.color};">
+      <span class="st-name">${st.name}</span><span class="st-count">${nfmt(st.count)}</span></div>`;
+  }).join('');
+  const fld=(label,val,id,min,max,step,suffix)=>`
+    <div class="funnel-field">
+      <label>${label}</label>
+      <div class="val">${val}${suffix||''}</div>
+      <input type="range" min="${min}" max="${max}" step="${step}" value="${state[id]}" oninput="setFunnel('${id}',this.value)" aria-label="${label}"/>
+    </div>`;
+  return `
+    <p class="funnel-intro"><strong>The one equation that runs every ecommerce store:</strong> Revenue = Traffic × Conversion Rate × AOV. Move the sliders and watch where shoppers fall out of the funnel — and which lever actually changes your revenue the most.</p>
+    <div class="funnel-eq mono">Revenue = Sessions × (ATC% × Checkout% × Purchase%) × AOV</div>
+    <div class="funnel-controls">
+      ${fld('Monthly sessions', nfmt(sessions), 'fSessions', 500, 100000, 500, '')}
+      ${fld('Add-to-cart rate', state.fAtc, 'fAtc', 1, 40, 1, '%')}
+      ${fld('Cart → checkout', state.fCheckout, 'fCheckout', 10, 95, 1, '%')}
+      ${fld('Checkout → order', state.fPurchase, 'fPurchase', 20, 98, 1, '%')}
+      ${fld('Average order value', money(state.fAov), 'fAov', 10, 300, 5, '')}
+    </div>
+    <div class="funnel-viz">${viz}</div>
+    <div class="funnel-out">
+      <div class="out-card"><div class="lbl">Orders / month</div><div class="big">${nfmt(orders)}</div></div>
+      <div class="out-card"><div class="lbl">Overall conversion</div><div class="big">${cvr.toFixed(2)}%</div></div>
+      <div class="out-card hero"><div class="lbl">Revenue / month</div><div class="big">${money(revenue)}</div></div>
+    </div>
+    <p class="funnel-note">Illustrative model. Typical ecommerce overall conversion runs ~1–3% and cart abandonment ~70%, but every store differs. Notice: a few points on any single stage — or on AOV — reshapes revenue without buying a single extra session. That's why conversion and AOV are often cheaper wins than more traffic.</p>`;
+}
+function setFunnel(id,v){ state[id]=parseInt(v,10); render(); }
+
+function render(keepFocus){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===state.view));
+  const main=document.getElementById('main');
+  main.innerHTML = state.view==='library'?renderLibrary() : state.view==='scenarios'?renderScenarios() : renderFunnel();
+  if(keepFocus){ const inp=document.getElementById('searchInput'); if(inp){ inp.focus(); inp.selectionStart=inp.selectionEnd=inp.value.length; } }
+}
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{ state.view=t.dataset.view; state.openIdx=null; renderModal(); render(); });
+});
+render();
+</script>
+</body>
+</html>
