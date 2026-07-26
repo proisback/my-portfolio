@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTC Ecommerce Unit Economics — Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F1E7; --ink:#14213A; --ink-soft:#5A6274; --paper:#FFFDF8; --line:#E6DECC;
+
+    --marg:#047857;  --marg-tint:#E1F1EA;  --marg-dark:#04624A;
+    --acq:#1D4ED8;   --acq-tint:#E4EAFB;   --acq-dark:#1740A6;
+    --val:#7C3AED;   --val-tint:#EEE7FB;   --val-dark:#5B21B6;
+    --ord:#B45309;   --ord-tint:#FAEEDA;   --ord-dark:#8A3F07;
+    --cash:#BE123C;  --cash-tint:#FBE3E8;  --cash-dark:#8F0E2E;
+
+    --accent:#14213A;
+    --soft-shadow: 0 1px 2px rgba(20,33,58,.05), 0 12px 28px -16px rgba(20,33,58,.24);
+    --lift-shadow: 0 2px 5px rgba(20,33,58,.07), 0 22px 46px -20px rgba(20,33,58,.32);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 3% 1%, rgba(4,120,87,0.05) 0, transparent 30%),
+      radial-gradient(circle at 98% 4%, rgba(180,83,9,0.05) 0, transparent 32%),
+      radial-gradient(circle at 50% 100%, rgba(124,58,237,0.035) 0, transparent 40%),
+      linear-gradient(var(--bg), var(--bg));
+    color:var(--ink); font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh; padding-bottom:60px; -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:repeating-linear-gradient(to bottom, transparent 0, transparent 27px, rgba(20,33,58,0.035) 27px, rgba(20,33,58,0.035) 28px);
+    opacity:.7;
+  }
+  header,.tabbar,main,footer{position:relative; z-index:1;}
+  h1,h2,h3,.display{font-family:'Fraunces','Fraunces Fallback',Georgia,serif; font-weight:600; letter-spacing:-0.01em;}
+  .mono{font-family:'JetBrains Mono',monospace; font-variant-numeric:tabular-nums;}
+  button{font-family:inherit;}
+
+  header{max-width:1080px; margin:0 auto; padding:34px 24px 12px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap;}
+  .brand{display:flex; align-items:flex-start; gap:15px;}
+  .brand .mark{flex-shrink:0; transition:transform .3s ease; margin-top:2px;}
+  .brand:hover .mark{transform:translateY(-2px) rotate(-3deg);}
+  .brand-text h1{font-size:31px; margin:0; line-height:1.05;}
+  .brand-text p{margin:7px 0 0; color:var(--ink-soft); font-size:13.5px; max-width:60ch; line-height:1.55;}
+  .chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:11px;}
+  .disclaimer{display:inline-flex; align-items:center; gap:7px; font-size:11px; color:var(--ord-dark); background:var(--ord-tint); border:1px solid rgba(180,83,9,.28); border-radius:999px; padding:5px 11px; font-weight:600;}
+  .srcchip{display:inline-flex; align-items:center; gap:6px; font-size:11px; color:var(--ink-soft); background:var(--paper); border:1px solid var(--line); border-radius:999px; padding:5px 11px; font-weight:600;}
+
+  .tabbar{max-width:1080px; margin:22px auto 0; padding:0 24px; display:flex; gap:8px; flex-wrap:wrap;}
+  .tab{font-family:'Fraunces',serif; font-weight:600; font-size:14.5px; padding:11px 18px; border-radius:12px; border:1.5px solid var(--line); background:var(--paper); color:var(--ink-soft); cursor:pointer; display:flex; align-items:center; gap:7px; transition:all .15s ease; box-shadow:var(--soft-shadow);}
+  .tab:hover{color:var(--ink); transform:translateY(-1px);}
+  .tab.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+
+  main{max-width:1080px; margin:18px auto 0; padding:26px 24px 30px; background:var(--paper); border:1.5px solid var(--line); border-radius:22px; min-height:420px; box-shadow:var(--soft-shadow);}
+
+  .lib-controls{display:flex; align-items:center; margin-bottom:10px;}
+  .lib-controls.pill-row{gap:8px; overflow-x:auto; flex-wrap:nowrap; padding-bottom:6px; scrollbar-width:thin;}
+  .search-wrap{position:relative; flex:1 1 260px;}
+  .search-wrap input{width:100%; padding:13px 16px 13px 44px; border-radius:12px; border:1.5px solid var(--line); font-size:15px; font-family:inherit; background:var(--bg); color:var(--ink);}
+  .search-wrap input:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(20,33,58,.12);}
+  .search-wrap svg{position:absolute; left:15px; top:50%; transform:translateY(-50%);}
+
+  .pill{display:flex; align-items:center; gap:7px; flex-shrink:0; border:1.5px solid var(--line); border-radius:999px; padding:8px 14px; font-size:12.5px; font-weight:600; cursor:pointer; background:var(--paper); color:var(--ink); font-family:'Inter',sans-serif; white-space:nowrap; transition:all .13s ease;}
+  .pill:hover{transform:translateY(-1px); border-color:var(--ink-soft);}
+  .pill .count{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:11px; opacity:.55;}
+  .pill[data-active="true"]{color:#fff; border-color:transparent;}
+  .pill[data-active="true"] .count{opacity:.9;}
+  .pill[data-cat="marg"][data-active="true"]{background:var(--marg);}
+  .pill[data-cat="acq"][data-active="true"]{background:var(--acq);}
+  .pill[data-cat="val"][data-active="true"]{background:var(--val);}
+  .pill[data-cat="ord"][data-active="true"]{background:var(--ord);}
+  .pill[data-cat="cash"][data-active="true"]{background:var(--cash);}
+
+  .result-count{font-size:12.5px; color:var(--ink-soft); margin:12px 0 14px; font-weight:600;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(252px,1fr)); gap:16px; padding-bottom:6px;}
+  .card{border-radius:16px; border:1.5px solid var(--line); padding:18px; display:flex; flex-direction:column; gap:10px; background:var(--paper); box-shadow:var(--soft-shadow); cursor:pointer; min-height:172px; transition:transform .14s ease, box-shadow .14s ease, border-color .14s ease; border-top:3px solid var(--line);}
+  .card:hover{transform:translateY(-3px); box-shadow:var(--lift-shadow);}
+  .card:focus-visible{outline:3px solid var(--accent); outline-offset:2px;}
+  .card[data-cat="marg"]{border-top-color:var(--marg);}
+  .card[data-cat="acq"]{border-top-color:var(--acq);}
+  .card[data-cat="val"]{border-top-color:var(--val);}
+  .card[data-cat="ord"]{border-top-color:var(--ord);}
+  .card[data-cat="cash"]{border-top-color:var(--cash);}
+
+  .cat-tag{font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; padding:4px 9px; border-radius:6px; display:inline-flex; align-items:center; gap:5px; align-self:flex-start;}
+  .cat-tag[data-cat="marg"]{color:var(--marg-dark); background:var(--marg-tint);}
+  .cat-tag[data-cat="acq"]{color:var(--acq-dark); background:var(--acq-tint);}
+  .cat-tag[data-cat="val"]{color:var(--val-dark); background:var(--val-tint);}
+  .cat-tag[data-cat="ord"]{color:var(--ord-dark); background:var(--ord-tint);}
+  .cat-tag[data-cat="cash"]{color:var(--cash-dark); background:var(--cash-tint);}
+
+  .card h3{font-size:18px; margin:0; line-height:1.24;}
+  .card .hook{font-size:13px; color:var(--ink-soft); line-height:1.48; margin:0; flex-grow:1;}
+  .explore-row{display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; font-family:'Fraunces',serif; color:var(--ink-soft); margin-top:auto;}
+  .explore-row svg{transition:transform .15s ease;}
+  .card:hover .explore-row svg{transform:translateX(3px);}
+  .card:hover .explore-row{color:var(--ink);}
+  .empty-state{grid-column:1/-1; text-align:center; padding:50px 20px; color:var(--ink-soft);}
+
+  .modal-overlay{position:fixed; inset:0; background:rgba(20,33,58,0.5); backdrop-filter:blur(3px); display:flex; align-items:flex-start; justify-content:center; padding:5vh 20px; z-index:100; overflow-y:auto; animation:fadeIn .15s ease;}
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  .modal{background:var(--paper); border:1.5px solid var(--line); border-radius:20px; max-width:620px; width:100%; padding:28px 30px 26px; box-shadow:0 30px 60px -20px rgba(20,33,58,.5); animation:popIn .2s cubic-bezier(.3,.5,.3,1.2);}
+  @keyframes popIn{from{transform:translateY(12px) scale(.98); opacity:0;}to{transform:none; opacity:1;}}
+  .modal-top{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:8px;}
+  .modal-close{background:var(--bg); border:1.5px solid var(--line); border-radius:10px; width:36px; height:36px; font-size:15px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--ink-soft);}
+  .modal-close:hover{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .modal h2{font-size:26px; margin:6px 0 5px; line-height:1.15;}
+  .modal .modal-hook{font-size:14.5px; color:var(--ink-soft); font-style:italic; margin:0 0 20px;}
+  .section-label{display:flex; align-items:center; gap:7px; font-family:'Fraunces',serif; font-weight:600; font-size:13px; text-transform:uppercase; letter-spacing:.03em; margin:20px 0 9px; color:var(--ink-soft);}
+  .modal p.body-text{font-size:15px; line-height:1.65; margin:0; color:var(--ink);}
+  .example-list{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px;}
+  .example-list li{font-size:13.8px; line-height:1.55; padding:12px 14px 12px 34px; border-radius:10px; background:var(--bg); border:1px solid var(--line); position:relative;}
+  .example-list li::before{content:"₹"; position:absolute; left:12px; top:11px; font-size:13px; font-family:'JetBrains Mono',monospace; color:var(--marg-dark); font-weight:700;}
+  .watch-box{background:var(--cash-tint); border:1px solid rgba(190,18,60,.28); border-radius:10px; padding:12px 14px; font-size:13.5px; line-height:1.55;}
+  .watch-box strong{color:var(--cash-dark);}
+
+  .scenario-wrap{padding-bottom:20px;}
+  .progress-row{display:flex; align-items:center; gap:14px; margin-bottom:22px;}
+  .progress-track{flex:1; height:9px; background:var(--line); border-radius:6px; overflow:hidden;}
+  .progress-fill{height:100%; background:var(--accent); transition:width .35s ease; border-radius:6px;}
+  .score-chip{font-family:'JetBrains Mono',monospace; font-weight:600; font-size:12.5px; border:1.5px solid var(--line); border-radius:8px; padding:6px 11px; white-space:nowrap;}
+  .scenario-card{border:1.5px solid var(--line); border-radius:18px; padding:26px; background:linear-gradient(180deg,#fff,#FBF7EE); box-shadow:var(--soft-shadow);}
+  .scenario-eyebrow{font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px;}
+  .scenario-text{font-size:18px; line-height:1.5; margin:0 0 22px; font-weight:500;}
+  .options{display:grid; gap:10px;}
+  .option-btn{text-align:left; padding:14px 16px; border-radius:12px; border:1.5px solid var(--line); background:var(--paper); font-family:'Inter',sans-serif; font-weight:600; font-size:14.5px; cursor:pointer; transition:all .12s ease; color:var(--ink);}
+  .option-btn:hover:not([disabled]){border-color:var(--ink-soft); transform:translateX(3px);}
+  .option-btn[disabled]{cursor:default;}
+  .option-btn.incorrect{background:var(--cash-tint); border-color:var(--cash); color:var(--cash-dark);}
+  .option-btn.reveal-correct{background:var(--marg-tint); border-color:var(--marg); color:var(--marg-dark);}
+  .feedback-box{margin-top:18px; padding:15px 18px; border-radius:12px; border:1.5px dashed var(--line); font-size:13.8px; line-height:1.55; background:var(--bg);}
+  .feedback-box strong{font-family:'Fraunces',serif;}
+  .next-btn{margin-top:18px; font-family:'Fraunces',serif; font-weight:600; font-size:14.5px; background:var(--ink); color:#fff; border:1.5px solid var(--ink); border-radius:12px; padding:12px 22px; cursor:pointer;}
+  .next-btn:hover{opacity:.9;}
+  .results{text-align:center; padding:24px 10px 10px;}
+  .results h2{font-size:26px; margin-bottom:4px;}
+  .big-score{font-family:'Fraunces',serif; font-size:56px; margin:10px 0; color:var(--accent); font-variant-numeric:tabular-nums;}
+  .breakdown{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin:22px 0; text-align:left;}
+  .bd-item{border:1.5px solid var(--line); border-radius:12px; padding:12px 14px;}
+  .bd-item .lbl{font-size:11.5px; color:var(--ink-soft); font-weight:600;}
+  .bd-item .n{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:16px; margin-top:2px;}
+  .restart-btn{font-family:'Fraunces',serif; font-weight:600; background:var(--marg); color:#fff; border:none; border-radius:12px; padding:13px 26px; cursor:pointer; font-size:15px; box-shadow:var(--soft-shadow);}
+  .restart-btn:hover{opacity:.92;}
+  .missed-list{text-align:left; margin-top:20px;}
+  .missed-list h3{font-size:17px;}
+  .missed-item{border-left:3px solid var(--cash); background:var(--cash-tint); border-radius:8px; padding:11px 14px; margin-bottom:8px; font-size:13px; line-height:1.5;}
+
+  /* calculator */
+  .calc-intro{font-size:14.5px; color:var(--ink-soft); line-height:1.6; margin:0 0 6px; max-width:70ch;}
+  .calc-eq{font-family:'JetBrains Mono',monospace; font-size:12px; background:var(--marg-tint); color:var(--marg-dark); border:1px solid rgba(4,120,87,.28); border-radius:8px; padding:8px 12px; display:inline-block; margin:12px 0 4px; font-weight:600;}
+  .calc-controls{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:18px; margin:22px 0 24px; padding:20px; background:var(--bg); border:1.5px solid var(--line); border-radius:16px;}
+  .calc-field{display:flex; flex-direction:column; gap:7px;}
+  .calc-field label{font-size:11px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; font-family:'Inter',sans-serif;}
+  .calc-field .val{font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:700; color:var(--ink);}
+  input[type=range]{width:100%; accent-color:var(--marg); height:6px;}
+
+  .verdict{border-radius:16px; padding:18px 22px; margin:4px 0 22px; display:flex; align-items:center; gap:14px; border:1.5px solid; box-shadow:var(--soft-shadow);}
+  .verdict .vic{font-size:26px; line-height:1; flex-shrink:0;}
+  .verdict .vtx{font-family:'Fraunces',serif; font-weight:600; font-size:17px; line-height:1.3;}
+  .verdict .vsub{font-size:12.5px; color:var(--ink-soft); margin-top:3px; font-family:'Inter',sans-serif; font-weight:500;}
+  .verdict.good{background:var(--marg-tint); border-color:var(--marg);}
+  .verdict.good .vtx{color:var(--marg-dark);}
+  .verdict.warn{background:var(--ord-tint); border-color:var(--ord);}
+  .verdict.warn .vtx{color:var(--ord-dark);}
+  .verdict.bad{background:var(--cash-tint); border-color:var(--cash);}
+  .verdict.bad .vtx{color:var(--cash-dark);}
+
+  .calc-out{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px;}
+  .out-card{border:1.5px solid var(--line); border-radius:14px; padding:16px; text-align:center; background:var(--paper);}
+  .out-card.hero{border-color:var(--marg); background:var(--marg-tint);}
+  .out-card .lbl{font-size:11px; color:var(--ink-soft); font-weight:600; text-transform:uppercase; letter-spacing:.04em;}
+  .out-card .big{font-family:'Fraunces',serif; font-size:27px; font-weight:700; margin-top:5px; font-variant-numeric:tabular-nums; line-height:1.05;}
+  .out-card .sub{font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--ink-soft); margin-top:4px; font-weight:600;}
+  .out-card.hero .big{color:var(--marg-dark);}
+  .calc-note{margin-top:20px; font-size:12px; color:var(--ink-soft); font-style:italic; line-height:1.55;}
+
+  footer{text-align:center; color:var(--ink-soft); font-size:12px; margin-top:30px; padding:0 24px; line-height:1.6;}
+  footer a{color:var(--acq-dark); text-decoration:none; border-bottom:1px solid rgba(29,78,216,.25);}
+  footer a:hover{border-bottom-color:var(--acq-dark);}
+  .src-line{max-width:900px; margin:0 auto 10px; font-size:11.5px;}
+
+  @media (max-width:600px){
+    .brand-text h1{font-size:24px;}
+    .modal{padding:22px 20px 20px;}
+    main{padding:22px 16px 26px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <svg class="mark" width="52" height="52" viewBox="0 0 52 52" fill="none">
+      <rect x="9" y="7" width="34" height="38" rx="4" fill="#FFFDF8" stroke="#14213A" stroke-width="2.4"/>
+      <path d="M15 17h22M15 24h22M15 31h13" stroke="#14213A" stroke-width="2" stroke-linecap="round"/>
+      <path d="M30 33l4 4 7-8" stroke="#047857" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
+    <div class="brand-text">
+      <h1>DTC Ecommerce Unit Economics</h1>
+      <p>The measurement and decision layer for direct-to-consumer brands: contribution margin, CAC, MER versus ROAS, the attribution gap, cohort LTV, payback, and the cash failure modes that kill growing stores. Written for a finance or analyst brain moving into DTC marketing.</p>
+      <div class="chips">
+        <span class="disclaimer">⚠️ Source-pinned primer — definitions durable; any benchmark figures illustrative (Jul 2026)</span>
+        <span class="srcchip">📚 5 verified practitioner sources</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="tabbar">
+  <div class="tab active" data-view="library">📓 Concept Ledger</div>
+  <div class="tab" data-view="scenarios">🎯 Decision Practice</div>
+  <div class="tab" data-view="calc">🧮 Unit Economics Calculator</div>
+</div>
+
+<main id="main"></main>
+
+<footer>
+  <p class="src-line"><strong>Source-pinned to 5 web-verified practitioner sources (Jul 2026):</strong>
+    <a href="https://commonthreadco.com/blogs/coachs-corner/customer-lifetime-value-ecommerce" target="_blank" rel="noopener">Common Thread Collective</a> ·
+    <a href="https://eightx.co/blog/dtc-unit-economics-end-to-end" target="_blank" rel="noopener">Eightx (DTC fractional CFO)</a> ·
+    <a href="https://www.shopify.com/blog/marketing-efficiency-ratio" target="_blank" rel="noopener">Shopify Blog</a> ·
+    <a href="https://www.polaranalytics.com/post/mer-marketing-efficiency-ratio" target="_blank" rel="noopener">Polar Analytics</a> ·
+    <a href="https://www.finaloop.com/blog/the-smart-dtc-playbook-unit-economics-contribution-margins-and-profitability" target="_blank" rel="noopener">Finaloop</a>
+  </p>
+  <p>An interactive primer built with the field-guide-builder skill; sources sourced and verified with the signal-in-noise skill. Definitions are durable; any specific percentages, ratios, or currency figures are illustrative teaching numbers (dated Jul 2026), not benchmarks to plan against. Confirm live figures against the sources above.</p>
+</footer>
+
+<div id="modalRoot"></div>
+
+<script>
+const CATS = {
+  marg: { label:"Margin & Cost Structure", icon:"📐" },
+  acq:  { label:"Acquisition Cost", icon:"🎯" },
+  val:  { label:"Customer Value", icon:"🔁" },
+  ord:  { label:"Order Economics", icon:"🧾" },
+  cash: { label:"Cash & Failure Modes", icon:"⚠️" },
+};
+
+const ENTRIES = [
+  // ---------- MARGIN & COST STRUCTURE ----------
+  {cat:"marg", name:"Landed COGS", hook:"What a unit truly costs you before a single ad runs.",
+   def:"In DTC, cost of goods sold is not just the factory invoice. Landed COGS folds in the product cost, inbound freight, import duties, and inspection, so it reflects what a saleable unit actually cost to put on your shelf. Getting this right is the foundation of every margin number downstream: understate landed COGS and every margin, CAC ceiling, and LTV you calculate is optimistic by the same amount.",
+   example:["A unit invoiced at a certain factory price plus ocean freight and duty lands materially higher; the difference is real margin you would otherwise miss.","Two SKUs with identical retail prices can have very different landed COGS once freight-per-unit and duty rates differ, so blended COGS hides the truth."],
+   watch:"Landed COGS moves with freight rates and FX, so a margin modelled on last quarter's landed cost quietly drifts. Re-cost inbound periodically instead of treating COGS as a fixed constant."},
+
+  {cat:"marg", name:"Gross vs Contribution Margin", hook:"One number stops at the product; the other reaches your bank.",
+   def:"Gross margin is revenue minus COGS. Contribution margin keeps subtracting every variable cost tied to fulfilling and acquiring that order: shipping, fulfilment, payment processing, returns, and often the marketing cost to win the customer. Gross margin tells you the product economics; contribution margin tells you whether one more order actually adds cash. The gap between them is where DTC brands with 'healthy' gross margins still lose money.",
+   example:["A brand can show a strong gross margin and still run a thin or negative contribution margin once shipping, fees, and ad cost per order are subtracted.","Sorting the same P&L by contribution margin rather than gross margin reveals which channels and SKUs are actually funding the business."],
+   watch:"A founder celebrating gross margin is looking at a number that has not yet met shipping, fees, returns, or ad spend. It is the ceiling on profit, never the profit itself."},
+
+  {cat:"marg", name:"Contribution Margin as the Decision Metric", hook:"Why the CFO trusts CM per order over any ROAS.",
+   def:"Contribution margin per order is the single figure that answers 'does selling one more unit help or hurt?' It is denominated in real money you keep, so it composes cleanly upward: sum it across orders and it becomes the pool that must cover fixed costs and profit. ROAS and gross margin each hide a variable cost, so they can look green while the business bleeds. The Eightx framing is blunt: contribution margin divided by new-customer CAC is the real test of whether you can profitably scale spend.",
+   example:["Deciding whether to raise ad budget: if contribution margin per order comfortably exceeds CAC, scaling adds cash; a strong ROAS alone cannot confirm that.","Ranking campaigns by contribution dollars generated, not revenue or ROAS, changes which ones you actually keep on."],
+   watch:"Contribution margin is only trustworthy if you have loaded every variable cost into it. A CM that quietly omits returns, chargebacks, or free-shipping subsidy is just gross margin wearing a better label."},
+
+  {cat:"marg", name:"Variable vs Fixed Costs", hook:"The sort that decides which costs belong in unit economics.",
+   def:"Variable costs scale with each order (COGS, shipping, fulfilment pick-pack, payment fees, per-order ad cost). Fixed costs do not move with the next order in the short run (salaries, rent, software subscriptions, retainers). Unit economics only subtracts variable costs, because contribution margin is meant to measure what each incremental order contributes toward covering the fixed base. Misclassify a cost and you either flatter or crush the per-order math.",
+   example:["A monthly 3PL storage fee is closer to fixed; the per-order pick-and-pack fee is variable and belongs in contribution margin.","A creative agency retainer is fixed overhead; the media spend it buys is variable acquisition cost."],
+   watch:"The boundary is a modelling choice, and semi-variable costs (support, warehouse labour) hide on it. Decide the rule explicitly, because sliding a big cost from fixed to variable can flip a channel from 'profitable' to 'not' on paper alone."},
+
+  {cat:"marg", name:"Contribution Margin by SKU, Channel & Campaign", hook:"The blended average is where losers hide behind winners.",
+   def:"A single company-wide contribution margin is an average, and averages conceal. The same brand can have one hero SKU subsidising three margin-negative ones, or a strong wholesale margin masking a bleeding DTC-paid channel. Cutting contribution margin by SKU, by channel, and by campaign is how you find the specific units of the business to fix, cut, or scale. Luca and Saras both frame this cut as the core diagnostic move.",
+   example:["A 'bestseller' by revenue can be a contribution-margin loser once its heavy returns and discount depth are attributed to it specifically.","Splitting CM by acquisition channel shows that paid-social customers and organic customers are not the same business at all."],
+   watch:"Attribution of shared variable costs (blended shipping, bundled discounts) to the SKU or channel level is fiddly, and a sloppy allocation manufactures fake winners and losers. Be consistent about the allocation rule before you trust the cut."},
+
+  {cat:"marg", name:"First-Order vs Blended Contribution Margin", hook:"The first order rarely tells you if the business works.",
+   def:"First-order contribution margin subtracts CAC and is often thin or negative in DTC, because you paid to acquire that customer. Blended (or lifetime) contribution margin spreads that one-time CAC across all the orders the customer places, so repeat orders carry no acquisition cost and lift the average. Which lens is correct depends on the category: a repeat-heavy consumable justifies a negative first order; a one-and-done purchase does not.",
+   example:["A skincare brand may accept a break-even first order because contribution on refills, which carry no CAC, makes the blended figure healthy.","A mattress brand cannot lean on repeat orders, so its first-order contribution has to stand on its own."],
+   watch:"Judging a repeat-heavy brand on first-order margin makes you underinvest in acquisition; judging a one-and-done brand on blended margin makes you overspend. The repeat rate decides which trap you are standing in."},
+
+  // ---------- ACQUISITION COST ----------
+  {cat:"acq", name:"CAC (New-Customer)", hook:"What you spend to convert one first-time buyer.",
+   def:"Customer acquisition cost is marketing and sales spend divided by the number of new customers it produced over the same window. The disciplined version counts new customers only, not total orders, because acquisition is about first purchases; mixing in repeat orders understates the true cost of growth. The scope of 'spend' matters too: ad media alone gives a flattering CAC, while media plus agency fees, creative, and tools gives the honest one.",
+   example:["Spending on paid media in a month and acquiring a set of first-time buyers yields a paid CAC; adding agency and creative costs raises it to a fully-loaded CAC.","Counting every order rather than only new customers deflates CAC and makes acquisition look cheaper than it is."],
+   watch:"CAC that divides by total orders instead of new customers is a common self-deception, especially for subscription brands where repeat orders inflate the denominator."},
+
+  {cat:"acq", name:"Blended CAC vs Paid CAC", hook:"Two CACs, and each answers a different question.",
+   def:"Blended CAC is all marketing spend divided by all new customers, including those who arrived organically. Paid (or marginal) CAC is paid spend divided by the customers that paid spend actually produced. Blended CAC is what the whole acquisition engine costs and is robust to attribution noise; paid CAC tells you what the next dollar of ad spend buys at the margin. You need both: blended for business truth, paid for budget decisions.",
+   example:["A brand with strong word-of-mouth shows a low blended CAC even as its paid CAC on the last incremental dollar is high.","Scaling budget on a healthy blended CAC can disappoint if marginal paid CAC is already climbing steeply."],
+   watch:"Blended CAC can look great purely because organic demand is subsidising it. Ride blended CAC up without watching marginal paid CAC and you scale spend straight past the point where each new dollar stops paying back."},
+
+  {cat:"acq", name:"Marketing Efficiency Ratio (MER)", hook:"Total revenue over total marketing spend. The number the bank agrees with.",
+   def:"MER is total revenue divided by total marketing spend across every channel, over a period. Because it uses real top-line revenue and real total spend, it cannot be double-counted by any single ad platform. Polar Analytics and Shopify both position MER as the business-level efficiency read: it does not tell you which channel worked, but it tells you, unarguably, whether the whole marketing engine is efficient. Break-even MER is set by your contribution margin.",
+   example:["Summing each platform's self-reported ROAS can imply the ads are wildly profitable while blended MER shows the true, lower efficiency of the whole engine.","Tracking MER weekly catches an efficiency slide that per-channel dashboards paper over."],
+   watch:"MER is blended by design, so it will not tell you where the money worked or credit organic versus paid. Use it for business-level health, not for allocating budget between channels."},
+
+  {cat:"acq", name:"ROAS and Its Blind Spots", hook:"Return on ad spend, measured on revenue, not profit.",
+   def:"ROAS is revenue attributed to ads divided by ad spend. Its two blind spots are structural: it is measured on revenue (so a great ROAS on a thin-margin product can still lose money) and it relies on platform attribution (so each channel over-credits itself). ROAS is useful as a within-channel optimisation signal, but it is the wrong metric to judge whether the business makes money. Translate any target ROAS into contribution margin before trusting it.",
+   example:["A 3x ROAS on a product whose contribution margin is a third of price is roughly break-even, not a win.","Two campaigns with identical ROAS can have very different profit if their products carry different margins."],
+   watch:"ROAS on revenue flatters low-margin catalogues. The break-even ROAS is one divided by your contribution-margin fraction, so always ask 'break-even against what margin?' before celebrating a multiple."},
+
+  {cat:"acq", name:"Platform-Attributed vs Blended Spend", hook:"The gap between what the ad platforms claim and what your bank shows.",
+   def:"Ad platforms report conversions using their own attribution windows and last-touch logic, and since privacy changes (ATT and cookie loss) they increasingly model and estimate. The result: summed platform-attributed revenue routinely exceeds real total revenue, because Meta, Google, and TikTok all claim the same sales. Blended metrics (MER, blended CAC) sidestep this by ignoring per-platform credit entirely. The size of the gap between summed-platform ROAS and blended MER is itself a diagnostic.",
+   example:["If summed platform-reported revenue is far above actual Shopify revenue, the platforms are collectively over-claiming and their ROAS cannot be trusted at face value.","When blended MER and blended ROAS move together, attribution is roughly reliable; when they diverge, one channel is riding another's demand."],
+   watch:"Scaling a channel purely on its self-reported ROAS can pour budget into ads that are harvesting demand another channel or organic created. The platform grading its own homework is the default failure mode of DTC measurement."},
+
+  {cat:"acq", name:"Break-even ROAS & Break-even MER", hook:"The efficiency line your margin draws for you.",
+   def:"Break-even ROAS (or MER) is the revenue-per-ad-dollar at which contribution margin exactly covers the ad spend, with nothing left over. Mathematically it is one divided by your contribution-margin fraction: a 40% contribution margin implies a 2.5x break-even. Anything above the line contributes profit; anything below loses money. This single translation turns an abstract ROAS target into a hard yes-or-no rule tied to your actual economics.",
+   example:["At a 25% contribution margin, break-even sits at 4x, so a 'good-looking' 3x ad set is quietly unprofitable.","Raising contribution margin (better landed cost, higher AOV) lowers the break-even line and widens the room to spend."],
+   watch:"Break-even is computed on contribution margin, not gross margin. Use gross margin and you will set a break-even line that is too generous and scale spend into a loss."},
+
+  {cat:"acq", name:"Marginal CAC & Incrementality", hook:"What the next ad dollar buys, not the average one.",
+   def:"Average CAC blends cheap early conversions with expensive later ones. Marginal CAC is the cost of the next customer as you push budget higher, and it rises because you exhaust the cheapest audiences first. Incrementality asks the sharper question: how many of these 'acquired' customers would have bought anyway? Retargeting and brand-search ads often post great ROAS while acquiring few truly incremental customers, so scaling decisions should hinge on marginal and incremental cost, not the flattering average.",
+   example:["A budget doubling that only grows new customers slightly means marginal CAC has spiked, even if average CAC looks stable.","A geo holdout or spend-pause test reveals that some 'converting' ads were harvesting demand that existed without them."],
+   watch:"Average CAC hides the diminishing returns at the edge of your spend. Brands scale on average CAC and then wonder why the incremental budget produced almost no incremental customers."},
+
+  // ---------- CUSTOMER VALUE ----------
+  {cat:"val", name:"Cohort LTV (Contribution-Based)", hook:"Group customers by when they arrived, then follow their real value.",
+   def:"Cohort LTV tracks the customers acquired in a given period and measures the cumulative value they generate over subsequent months. The version that matters is built on contribution margin, not revenue, because only margin pays the bills. Cohorting exposes acquisition quality: customers won during a heavy promotion or a viral spike often behave differently from steady-state ones, and a blended lifetime average would hide that. Common Thread Collective tracks cohorts precisely to see this shape.",
+   example:["A discount-driven cohort can show high first-order revenue but weak repeat behaviour, so its contribution LTV lags a full-price cohort.","Watching a cohort's cumulative margin curve flatten tells you when, realistically, its value stops growing."],
+   watch:"Revenue-based LTV overstates customer value by the entire cost of serving them. A cohort can look valuable in revenue while its contribution LTV barely clears the CAC that won it."},
+
+  {cat:"val", name:"Repeat Rate & Purchase Frequency", hook:"The engine that decides whether repeat orders exist to spread CAC over.",
+   def:"Repeat rate is the share of customers who buy again; purchase frequency is how often they do. Together they determine how many orders a customer places, which is what turns a thin first-order margin into a healthy lifetime one. In DTC, this is often the difference between a viable and a doomed acquisition strategy, because a repeat order carries no CAC. Category dictates the realistic ceiling: consumables repeat, durables largely do not.",
+   example:["A consumable brand with a high repeat rate can absorb a break-even first order because subsequent orders are pure contribution above serving cost.","A durable-goods brand with a naturally low repeat rate must earn its return on the first order alone."],
+   watch:"Repeat rate is a measured behaviour, not a wish. Modelling lifetime value on a hoped-for repeat rate the category has never delivered is how a plan that pencils out on a spreadsheet fails in the bank."},
+
+  {cat:"val", name:"LTV:CAC (and Why LTV Is Fiction)", hook:"A ratio that is only as honest as the LTV inside it.",
+   def:"LTV:CAC compares the lifetime contribution of a customer to the cost of acquiring them; a commonly cited healthy zone is around 3:1 (illustrative, Jul 2026), with much higher ratios sometimes signalling underinvestment in growth. The catch, as Eightx puts it bluntly, is that LTV is partly fiction: it projects future behaviour that has not happened yet, and small assumption changes swing it wildly. A 3:1 built on a fantasy lifetime is worse than a 2:1 built on observed data.",
+   example:["An LTV:CAC that looks excellent collapses when the assumed 5-year lifetime is replaced with the 12 months you can actually observe.","A very high ratio can mean you are underspending on acquisition and leaving profitable growth on the table."],
+   watch:"The ratio rewards inflating the LTV numerator, which is the easiest number to fabricate. Anchor LTV to an observed time window before dividing, or the ratio becomes a story you tell to justify the spend you already wanted."},
+
+  {cat:"val", name:"CAC Payback Period", hook:"How fast the customer repays what you spent to get them.",
+   def:"Payback period is the time (or number of orders) it takes for a customer's cumulative contribution margin to recover their CAC. It is the cash-flow companion to LTV:CAC: a great lifetime ratio is small comfort if the payback takes eighteen months and you are funding inventory in the meantime. Shorter payback means acquisition self-funds faster and you can scale on your own cash rather than borrowing against a distant lifetime.",
+   example:["A brand whose customers repay CAC inside the first order or two can reinvest quickly and grow on internal cash.","A long payback forces a brand to finance the gap between spending on acquisition and earning it back, straining working capital."],
+   watch:"Payback is a cash metric, so it must be built on contribution margin actually collected, not projected LTV. A brand can be 'LTV-profitable' on paper and still run out of cash waiting for a slow payback to arrive."},
+
+  {cat:"val", name:"LTV Time Horizon", hook:"Twelve-month, 24-month, or lifetime — pick before you compare.",
+   def:"Because true lifetime is unknowable in advance, operators bound LTV to a horizon: a 12-month LTV for conservative planning and payback, a 24-month view for a fuller picture, and a full-lifetime figure only for strategy. The horizon is a choice with consequences, because a longer window always produces a larger, less certain LTV. Comparing a 12-month CAC payback against a lifetime LTV:CAC quietly mixes two different clocks.",
+   example:["A conservative brand plans acquisition against 12-month contribution, treating anything beyond as upside rather than budget.","Stretching to a lifetime horizon makes LTV:CAC look far healthier while making it far less reliable."],
+   watch:"Mixing horizons is a subtle way to lie to yourself: pairing a short payback with a long-horizon LTV lets almost any acquisition look justified. State the window on every LTV number and hold it constant across comparisons."},
+
+  // ---------- ORDER ECONOMICS ----------
+  {cat:"ord", name:"AOV as a Measurement", hook:"Average order value as a diagnostic, not a growth hack.",
+   def:"AOV is total revenue divided by number of orders. As a measurement, it is the pivot between the acquisition side and the margin side: it sets how much contribution each order can carry and how much CAC an order can support. This guide treats AOV as a number to read, not a tactic to juice; the point is to understand what a moving AOV tells you about mix, discounting, and margin room, before anyone reaches for a bundle or upsell.",
+   example:["A rising AOV alongside falling contribution margin signals the increase is being bought with discounts, not genuine basket growth.","Segmenting AOV by channel shows which acquisition sources bring higher-value baskets, informing where a higher CAC is affordable."],
+   watch:"AOV is an average and inherits every distortion of one. A few large orders can lift it while the typical customer's basket is unchanged, so read the distribution, not just the mean."},
+
+  {cat:"ord", name:"AOV × Margin Interaction", hook:"Order value and margin percent multiply into contribution dollars.",
+   def:"Contribution dollars per order are AOV times contribution-margin percent, so the two levers interact rather than add. A higher AOV at the same margin percent widens the absolute contribution that must cover CAC and fixed costs; the same higher AOV bought by discounting cuts the margin percent and can leave contribution dollars flat or lower. Reading them together is what separates a real basket-value gain from a vanity one.",
+   example:["Lifting AOV while holding margin percent steady raises the CAC an order can profitably absorb.","A promotion that raises AOV but cuts margin percent proportionally leaves contribution dollars unchanged, so the higher AOV bought nothing."],
+   watch:"AOV and margin percent are frequently traded against each other without anyone noticing. Track contribution dollars per order as the joint outcome, because either lever alone can move while profit stands still."},
+
+  {cat:"ord", name:"Units per Transaction (UPT)", hook:"Basket depth, read underneath the AOV headline.",
+   def:"Units per transaction is the average number of items per order, and it decomposes AOV into 'more items' versus 'pricier items'. As a measurement it tells you why AOV moved: rising UPT usually means genuine basket-building, while a flat UPT with rising AOV points to price or mix. It also carries a cost signal, because more units per order can mean better shipping economics per item, spreading fixed per-order fulfilment across more product.",
+   example:["An AOV increase driven by higher UPT often improves per-item shipping economics, since one parcel carries more units.","Flat UPT with a higher AOV means the basket got pricier, not fuller, which is a mix or pricing story, not a bundling one."],
+   watch:"UPT can rise while contribution falls if the added units are the low-margin or heavily discounted ones. More items in the basket is only good news once you confirm they are contribution-positive items."},
+
+  {cat:"ord", name:"Discount Depth as a Margin Read", hook:"Promotions are a margin measurement, not just a sales tactic.",
+   def:"Discount depth is the average percentage off actually realised across orders, and it is one of the most direct reads on margin leakage. Measured properly it reveals how much of your gross margin is being handed back at checkout and whether 'promotional' has quietly become 'permanent'. As a measurement layer it belongs next to AOV and contribution margin, because a rising realised discount silently resets the effective price and the margin every other calculation assumes.",
+   example:["A realised discount depth creeping up quarter over quarter shows promotions have become the default price, taxing margin structurally.","Attributing discount depth by cohort reveals that a heavily-promoted acquisition cohort was never full-margin to begin with."],
+   watch:"List price is not realised price. Modelling margin on the sticker while a chunk of orders redeem codes overstates every downstream number, so measure the discount you actually give, not the one you advertise."},
+
+  // ---------- CASH & FAILURE MODES ----------
+  {cat:"cash", name:"Cash Conversion Cycle", hook:"Profitable on paper, out of cash in reality.",
+   def:"The cash conversion cycle is days inventory outstanding plus days sales outstanding minus days payable outstanding. In DTC, DSO is near zero because customers pay at checkout, so the cycle is dominated by how long cash sits in inventory versus how long suppliers let you defer payment. A positive cycle means you fund inventory before customers fund you, which is why fast-growing, profitable brands can still run out of cash. Eightx frames working-capital cash as the constraint that quietly strangles growth.",
+   example:["Paying a supplier upfront and holding stock for months before it sells creates a long inventory-driven cash gap the brand must finance.","Negotiating longer supplier payment terms shortens the cycle and frees cash without changing a single unit of profit."],
+   watch:"Growth widens the cash gap: each faster-growing month ties up more cash in inventory ahead of the sales that repay it. Scaling a profitable brand can consume cash faster than it earns it, and the P&L will not warn you."},
+
+  {cat:"cash", name:"Inventory Turns & GMROI", hook:"How hard each dollar tied up in stock is working.",
+   def:"Inventory turnover is how many times you sell through and replace stock in a year; GMROI (gross margin return on inventory investment) measures the gross profit generated per dollar of inventory. Both translate the balance-sheet reality of a physical-product business into an efficiency read. Slow turns and low GMROI mean cash is trapped in stock that is not earning, which is a working-capital problem even when the P&L looks fine.",
+   example:["A SKU with slow turns quietly locks up cash and warehouse space regardless of its margin per unit.","Comparing GMROI across SKUs surfaces which products earn their shelf space and which are cash traps wearing a decent margin."],
+   watch:"A high-margin SKU that barely sells can have worse cash economics than a lower-margin one that turns quickly. Margin percent alone is blind to how long your cash sits still, so pair it with turns."},
+
+  {cat:"cash", name:"The Negative-Contribution Growth Trap", hook:"When every order loses money, growth is the accelerant.",
+   def:"If contribution margin per order is negative, once all variable costs and per-order acquisition are counted, then every incremental order deepens the loss and scaling makes it worse, not better. This is the most dangerous failure mode in DTC because revenue growth masks it: the top line rises, the team celebrates, and the losses compound underneath. The only test that catches it early is contribution margin per order, watched as spend scales.",
+   example:["A brand growing revenue fast while contribution per order is negative is buying revenue at a loss; more marketing simply loses money faster.","The trap often opens when rising marginal CAC pushes per-order acquisition cost above the contribution the order generates."],
+   watch:"Revenue growth and profitability are entirely different claims, and this trap lives in the gap between them. 'We are growing' can be the symptom, not the success, when the underlying contribution per order is below zero."},
+
+  {cat:"cash", name:"Optimizing the Wrong Number", hook:"The metric you worship decides the mistakes you make.",
+   def:"Every headline metric optimises a behaviour, and choosing the wrong one steers the whole brand off a cliff quietly. Chase ROAS and you tilt toward low-margin, easily-attributed sales; chase revenue and you buy growth at any contribution; chase AOV with discounts and you trade margin for a bigger vanity number. The discipline is to optimise contribution dollars and cash payback, the numbers that survive contact with the bank account.",
+   example:["A team rewarded on ROAS narrows to retargeting and brand search, posting great numbers while incremental new-customer growth stalls.","Optimising for top-line revenue justifies deep discounts that lift sales and erase the contribution those sales were supposed to earn."],
+   watch:"Any metric measured on revenue rather than contribution can look excellent while the business loses money. Before optimising a number hard, check that improving it actually improves cash, not just the dashboard."},
+
+  {cat:"cash", name:"Blended-vs-Marginal Decision Error", hook:"Using the average to make a decision only the margin can answer.",
+   def:"Blended metrics (blended CAC, MER, average contribution margin) describe the health of the whole engine. Marginal metrics (marginal CAC, incremental contribution) describe what the next decision changes. The classic error is using a healthy blended figure to justify a marginal move: scaling budget because blended CAC is fine, when the marginal customer already costs more than they are worth. Business-level health and next-dollar decisions are different questions with different numbers.",
+   example:["A comfortable blended MER hides that the last increment of spend is below break-even, so 'the ads are working' green-lights an unprofitable scale-up.","Cutting a channel because its blended contribution is low can be wrong if its marginal contribution on the next dollar is still positive."],
+   watch:"Blended metrics are robust and reassuring, which is exactly why they get misused for marginal decisions. Ask whether the number describes the whole engine or the next dollar, and match it to the question you are actually deciding."},
+];
+
+const SCENARIOS = [
+  {q:"Your Meta and Google dashboards each report strong ROAS, and summed they imply revenue well above what actually hit your Shopify account. Which metric do you trust to judge whether marketing is efficient?",
+   options:["Summed platform ROAS","Blended MER (total revenue / total spend)","Highest single-channel ROAS","Last-click ROAS only"], correct:1,
+   why:"Blended MER uses real total revenue and real total spend, so it cannot be double-counted. When summed platform-attributed revenue exceeds actual revenue, the platforms are collectively over-claiming.", cat:"acq"},
+
+  {q:"A product runs a 4x ROAS but its contribution margin is 25% of price. What is the honest read?",
+   options:["Clearly profitable, 4x is great","Roughly break-even at best","Profitable only if AOV falls","ROAS is irrelevant here"], correct:1,
+   why:"Break-even ROAS is 1 divided by contribution-margin fraction: at 25% that is 4x. So a 4x ROAS on this product exactly covers the ad cost and contributes nothing above it.", cat:"acq"},
+
+  {q:"A brand shows a strong gross margin but is losing money per order. The most likely explanation is:",
+   options:["COGS is negative","Contribution margin turns negative after shipping, fees and CAC","Gross margin is miscalculated","Revenue is too high"], correct:1,
+   why:"Gross margin stops at COGS. Contribution margin keeps subtracting shipping, fulfilment, payment fees, returns and per-order CAC, and that is where an apparently healthy brand loses money.", cat:"marg"},
+
+  {q:"You want to know whether scaling ad budget will add cash. Which single comparison answers it most directly?",
+   options:["Revenue vs last month","ROAS vs 3x","Contribution margin per order vs CAC","Gross margin vs 50%"], correct:2,
+   why:"Contribution margin per order divided by new-customer CAC is the real test of profitable scale. If contribution comfortably exceeds CAC, more spend adds cash; ROAS or revenue alone cannot confirm it.", cat:"marg"},
+
+  {q:"Your blended CAC looks healthy, but you have strong organic word-of-mouth. Before doubling paid budget, what should you check?",
+   options:["Gross margin","Marginal paid CAC on the next dollar","Total revenue","AOV distribution"], correct:1,
+   why:"Blended CAC can look great because organic is subsidising it. Marginal paid CAC tells you what the next ad dollar actually buys, which is the number the scaling decision depends on.", cat:"acq"},
+
+  {q:"A consumable brand runs a break-even first order but a healthy blended lifetime margin. This is defensible because:",
+   options:["First-order margin is all that matters","Repeat orders carry no CAC and lift the blended margin","Gross margin is high","Shipping is free"], correct:1,
+   why:"Repeat orders carry no acquisition cost, so for a repeat-heavy category the blended contribution margin, not the first order, is the right lens. The repeat rate is what makes it work.", cat:"marg"},
+
+  {q:"A durable-goods brand with a naturally low repeat rate is judged on its blended lifetime margin and told to spend up. What is the risk?",
+   options:["It will underspend on acquisition","It leans on repeat orders the category rarely delivers, so it overspends","Its gross margin will fall","Its AOV will drop"], correct:1,
+   why:"For a one-and-done category, blended margin assumes repeat behaviour that mostly will not happen. The first order has to stand on its own, or the brand overspends on acquisition.", cat:"val"},
+
+  {q:"An LTV:CAC of 3:1 is built on an assumed 5-year customer lifetime, but you can only observe 12 months of data. The concern is:",
+   options:["3:1 is always too low","The LTV numerator is largely projected fiction and can be inflated","CAC is measured wrong","The ratio should use revenue"], correct:1,
+   why:"LTV projects behaviour that has not happened; small assumption changes swing it wildly. A 3:1 built on a fantasy lifetime is weaker than a 2:1 built on an observed window. Anchor LTV to observed data.", cat:"val"},
+
+  {q:"Two campaigns post an identical LTV:CAC, but one recovers CAC in the first order and the other over eighteen months. Why might you still prefer the fast one?",
+   options:["It has higher revenue","Shorter payback self-funds growth and eases working capital","It has a better ROAS","Longer payback is always better"], correct:1,
+   why:"Payback is the cash-flow companion to LTV:CAC. A fast payback lets acquisition self-fund and spares working capital; a slow one forces you to finance the gap even when the lifetime ratio matches.", cat:"val"},
+
+  {q:"Revenue is growing fast, the team is celebrating, but contribution margin per order is negative. What is actually happening?",
+   options:["The brand is scaling profitably","Every incremental order deepens the loss; growth makes it worse","Fixed costs are too high","AOV is too low to matter"], correct:1,
+   why:"If contribution per order is negative, more orders compound the loss. Revenue growth masks it, which is why 'we are growing' and 'we are profitable' are entirely different claims.", cat:"cash"},
+
+  {q:"A profitable, fast-growing DTC brand keeps running short of cash. The most likely structural cause is:",
+   options:["Gross margin is negative","A long cash conversion cycle ties cash up in inventory ahead of sales","ROAS is too high","Too many repeat customers"], correct:1,
+   why:"With DSO near zero, the cash conversion cycle is dominated by inventory. Growth ties up more cash in stock before the sales that repay it, so a profitable brand can still run out of cash.", cat:"cash"},
+
+  {q:"A promotion lifts AOV but cuts contribution-margin percent by roughly the same proportion. What did the higher AOV buy you?",
+   options:["More contribution dollars per order","Little or nothing; contribution dollars are roughly flat","A lower CAC","A shorter payback"], correct:1,
+   why:"Contribution dollars are AOV times margin percent. If a discount raises AOV but cuts margin percent proportionally, contribution dollars stay flat, so the higher AOV is a vanity gain.", cat:"ord"},
+
+  {q:"Your blended MER is comfortably above break-even, so a manager wants to scale budget hard. What is the flaw in that reasoning?",
+   options:["MER is always wrong","A healthy blended figure can hide that the next dollar of spend is below break-even","Break-even MER does not exist","MER ignores revenue"], correct:1,
+   why:"Blended metrics describe the whole engine's health; marginal metrics describe the next decision. A fine blended MER can coexist with marginal spend that is already unprofitable.", cat:"cash"},
+
+  {q:"You are comparing SKUs and one has a high margin per unit but very slow inventory turns. Why might it be a worse cash bet than a lower-margin SKU?",
+   options:["Margin percent is the only thing that matters","Slow turns trap cash in stock that is not earning","High margin always means high turns","Turns do not affect cash"], correct:1,
+   why:"Margin percent is blind to how long cash sits still. A high-margin SKU that barely sells locks up working capital, so a lower-margin SKU that turns fast can have better cash economics.", cat:"ord"},
+
+  {q:"A team is compensated purely on ROAS. What behaviour does that metric quietly incentivise?",
+   options:["Maximising incremental new customers","Tilting toward low-margin, easily-attributed sales like retargeting","Improving contribution margin","Shortening payback"], correct:1,
+   why:"ROAS is measured on revenue and rewards easily-attributed conversions, so the team narrows to retargeting and brand search, posting great numbers while incremental new-customer growth stalls. Optimise the wrong number, get the wrong behaviour.", cat:"cash"},
+];
+
+let state = {
+  view:"library", search:"", activeCat:"all", openIdx:null,
+  quizOrder:[], quizIndex:0, quizScore:0, quizAnswered:null, quizHistory:[], quizDone:false,
+  cAov:60, cCogs:40, cShip:6, cFee:2.5, cCac:22, cRepeat:1.8,
+};
+
+function shuffledIndices(n){ const a=Array.from({length:n},(_,i)=>i); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+function resetQuiz(){ state.quizOrder=shuffledIndices(SCENARIOS.length); state.quizIndex=0; state.quizScore=0; state.quizAnswered=null; state.quizHistory=[]; state.quizDone=false; }
+resetQuiz();
+
+function catCounts(){ const c={}; ENTRIES.forEach(p=>{c[p.cat]=(c[p.cat]||0)+1;}); return c; }
+
+function renderLibrary(){
+  const counts=catCounts();
+  const pills=Object.keys(CATS).map(c=>{
+    const active=state.activeCat===c;
+    return `<button class="pill" data-cat="${c}" data-active="${active}" onclick="setCat('${c}')">${CATS[c].icon} ${CATS[c].label} <span class="count">${counts[c]}</span></button>`;
+  }).join('');
+  const q=state.search.trim().toLowerCase();
+  const filtered=ENTRIES.filter(p=>{
+    const mc=state.activeCat==='all'||p.cat===state.activeCat;
+    const ms=!q||p.name.toLowerCase().includes(q)||p.hook.toLowerCase().includes(q)||p.def.toLowerCase().includes(q);
+    return mc&&ms;
+  });
+  const cards=filtered.map(p=>{
+    const idx=ENTRIES.indexOf(p);
+    return `<div class="card" data-cat="${p.cat}" tabindex="0" role="button" aria-label="Open details for ${p.name}"
+      onclick="openEntry(${idx})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEntry(${idx});}">
+      <span class="cat-tag" data-cat="${p.cat}">${CATS[p.cat].icon} ${CATS[p.cat].label}</span>
+      <h3>${p.name}</h3>
+      <p class="hook">${p.hook}</p>
+      <span class="explore-row">Explore <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </div>`;
+  }).join('');
+  return `
+    <div class="lib-controls">
+      <div class="search-wrap">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8b8f97" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="searchInput" type="text" placeholder="Search 27 concepts — try 'MER', 'contribution margin', 'payback'..." value="${state.search.replace(/"/g,'&quot;')}" oninput="setSearch(this.value)"/>
+      </div>
+    </div>
+    <div class="lib-controls pill-row">${pills}</div>
+    <p class="result-count">${filtered.length} concept${filtered.length===1?'':'s'} shown</p>
+    <div class="grid">${cards||'<div class="empty-state">No concepts match that search. Try a different keyword or clear the category filter.</div>'}</div>`;
+}
+function setCat(c){ state.activeCat=(state.activeCat===c)?'all':c; render(); }
+function setSearch(v){ state.search=v; render(true); }
+
+function openEntry(i){ state.openIdx=i; renderModal(); }
+function closeEntry(){ state.openIdx=null; renderModal(); }
+function renderModal(){
+  const root=document.getElementById('modalRoot');
+  if(state.openIdx===null){ root.innerHTML=''; return; }
+  const p=ENTRIES[state.openIdx];
+  const examples=p.example.map(e=>`<li>${e}</li>`).join('');
+  root.innerHTML=`
+    <div class="modal-overlay" onclick="if(event.target===this) closeEntry();">
+      <div class="modal" role="dialog" aria-modal="true" aria-label="${p.name} details">
+        <div class="modal-top">
+          <span class="cat-tag" data-cat="${p.cat}">${CATS[p.cat].icon} ${CATS[p.cat].label}</span>
+          <button class="modal-close" onclick="closeEntry()" aria-label="Close">✕</button>
+        </div>
+        <h2>${p.name}</h2>
+        <p class="modal-hook">${p.hook}</p>
+        <div class="section-label">📖 What it means</div>
+        <p class="body-text">${p.def}</p>
+        <div class="section-label">🧾 In practice</div>
+        <ul class="example-list">${examples}</ul>
+        <div class="section-label">⚠️ Watch out for</div>
+        <div class="watch-box"><strong>Operator trap:</strong> ${p.watch}</div>
+      </div>
+    </div>`;
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&state.openIdx!==null) closeEntry(); });
+
+function renderScenarios(){
+  if(state.quizDone){
+    const byCat={};
+    state.quizHistory.forEach(h=>{ byCat[h.cat]=byCat[h.cat]||{c:0,t:0}; byCat[h.cat].t++; if(h.correct)byCat[h.cat].c++; });
+    const breakdown=Object.keys(byCat).map(c=>`
+      <div class="bd-item"><div class="lbl">${CATS[c].icon} ${CATS[c].label}</div><div class="n">${byCat[c].c} / ${byCat[c].t}</div></div>`).join('');
+    const missed=state.quizHistory.filter(h=>!h.correct).map(h=>`
+      <div class="missed-item"><strong>${h.q}</strong><br/>→ Correct: ${h.correctLabel}. ${h.why}</div>`).join('');
+    return `<div class="results">
+      <h2>Practice complete 🎉</h2>
+      <div class="big-score">${state.quizScore} / ${SCENARIOS.length}</div>
+      <p style="color:var(--ink-soft);">How you did across each area:</p>
+      <div class="breakdown">${breakdown}</div>
+      <button class="restart-btn" onclick="restartQuiz()">Practice again (new shuffle)</button>
+      ${missed.length?`<div class="missed-list"><h3>Review what you missed</h3>${missed}</div>`:`<p style="margin-top:20px;font-weight:600;">Perfect score — you read the economics, not the vanity numbers. 🔥</p>`}
+    </div>`;
+  }
+  const s=SCENARIOS[state.quizOrder[state.quizIndex]];
+  const pct=Math.round((state.quizIndex/SCENARIOS.length)*100);
+  const options=s.options.map((opt,i)=>{
+    let cls="option-btn",dis="";
+    if(state.quizAnswered!==null){ dis="disabled"; if(i===s.correct)cls+=" reveal-correct"; else if(i===state.quizAnswered)cls+=" incorrect"; }
+    return `<button class="${cls}" ${dis} onclick="answerQuiz(${i})">${opt}</button>`;
+  }).join('');
+  const feedback=state.quizAnswered!==null?`
+    <div class="feedback-box"><strong>${state.quizAnswered===s.correct?"✅ Correct — ":"❌ Not quite — "}</strong>${s.why}</div>
+    <button class="next-btn" onclick="nextQuiz()">${state.quizIndex===SCENARIOS.length-1?"See results":"Next scenario →"}</button>`:'';
+  return `<div class="scenario-wrap">
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <span class="score-chip">${state.quizIndex+1} / ${SCENARIOS.length} · score ${state.quizScore}</span>
+    </div>
+    <div class="scenario-card">
+      <div class="scenario-eyebrow">Decision Scenario</div>
+      <p class="scenario-text">${s.q}</p>
+      <div class="options">${options}</div>
+      ${feedback}
+    </div></div>`;
+}
+function answerQuiz(i){
+  if(state.quizAnswered!==null) return;
+  const s=SCENARIOS[state.quizOrder[state.quizIndex]];
+  const correct=i===s.correct;
+  state.quizAnswered=i;
+  if(correct) state.quizScore++;
+  state.quizHistory.push({q:s.q, why:s.why, correct, correctLabel:s.options[s.correct], cat:s.cat});
+  render();
+}
+function nextQuiz(){ if(state.quizIndex===SCENARIOS.length-1){ state.quizDone=true; } else { state.quizIndex++; state.quizAnswered=null; } render(); }
+function restartQuiz(){ resetQuiz(); render(); }
+
+const CUR='₹';
+function cur(n){ if(!isFinite(n)) return '—'; const neg=n<0; const v=Math.abs(n); const s=v.toLocaleString('en-IN',{minimumFractionDigits:v<100?1:0,maximumFractionDigits:v<100?1:0}); return (neg?'-':'')+CUR+s; }
+function pct(n){ if(!isFinite(n)) return '—'; return n.toFixed(0)+'%'; }
+
+function renderCalc(){
+  const aov=state.cAov, cogsPct=state.cCogs, ship=state.cShip, feePct=state.cFee, cac=state.cCac, repeat=state.cRepeat;
+  const cogs=aov*cogsPct/100;
+  const grossProfit=aov-cogs;
+  const grossMarginPct=aov>0?grossProfit/aov*100:0;
+  const fee=aov*feePct/100;
+  const cmOrder=aov-cogs-ship-fee;               // contribution margin per order, pre-CAC
+  const cmPct=aov>0?cmOrder/aov*100:0;
+  const breakeven=cmOrder>0?aov/cmOrder:Infinity; // = 100 / cmPct
+  const ltv=repeat*cmOrder;                        // contribution LTV, pre-CAC
+  const ltvCac=cac>0?ltv/cac:Infinity;
+  const firstOrderNet=cmOrder-cac;
+  const payback=cmOrder>0?cac/cmOrder:Infinity;    // orders to recover CAC
+
+  let vClass, vIcon, vText, vSub;
+  if(cmOrder<=0){
+    vClass='bad'; vIcon='🩸';
+    vText='Losing money on every order — growth makes it worse.';
+    vSub='Contribution margin per order is at or below zero before you even count CAC. Every incremental unit deepens the loss; more marketing accelerates it. Fix landed cost, shipping, fees or price before scaling anything.';
+  } else if(firstOrderNet>=0){
+    vClass='good'; vIcon='✅';
+    vText='Profitable on the first order.';
+    vSub='Contribution margin per order already exceeds CAC, so acquisition pays back inside the first purchase. Any repeat orders are upside and acquisition can self-fund.';
+  } else if(ltv>=cac){
+    vClass='warn'; vIcon='⏳';
+    vText='First order underwater — repeat purchases pay it back.';
+    vSub='The first order does not cover CAC, but projected lifetime contribution does. This only holds if the repeat rate is real for your category; it is a bet on retention, not a certainty.';
+  } else {
+    vClass='bad'; vIcon='❌';
+    vText='Unprofitable — lifetime value never recovers CAC.';
+    vSub='Neither the first order nor the projected lifetime contribution covers the cost to acquire the customer. Raise contribution per order, lift the repeat rate, or lower CAC.';
+  }
+
+  const fld=(label,val,id,min,max,step,suffix,pre)=>`
+    <div class="calc-field">
+      <label>${label}</label>
+      <div class="val">${pre||''}${val}${suffix||''}</div>
+      <input type="range" min="${min}" max="${max}" step="${step}" value="${state[id]}" oninput="setCalc('${id}',this.value)" aria-label="${label}"/>
+    </div>`;
+
+  return `
+    <p class="calc-intro"><strong>The whole business, in one order.</strong> Feed in the economics of a single order and see, live, whether the model makes money — and whether growth helps or hurts. This is the number the CFO trusts over any ROAS: real money kept per order.</p>
+    <div class="calc-eq mono">Contribution / order = AOV − COGS − Shipping&Fulfilment − Processing fee &nbsp;·&nbsp; Break-even ROAS = 1 ÷ CM%</div>
+    <div class="calc-controls">
+      ${fld('Average order value', aov, 'cAov', 10, 500, 5, '', CUR)}
+      ${fld('COGS (% of AOV)', cogsPct, 'cCogs', 0, 90, 1, '%')}
+      ${fld('Shipping + fulfilment / order', ship, 'cShip', 0, 60, 1, '', CUR)}
+      ${fld('Payment processing fee', feePct, 'cFee', 0, 5, 0.1, '%')}
+      ${fld('CAC (new customer)', cac, 'cCac', 0, 200, 1, '', CUR)}
+      ${fld('Orders per customer (lifetime)', repeat, 'cRepeat', 1, 8, 0.1, '×')}
+    </div>
+
+    <div class="verdict ${vClass}">
+      <div class="vic">${vIcon}</div>
+      <div><div class="vtx">${vText}</div><div class="vsub">${vSub}</div></div>
+    </div>
+
+    <div class="calc-out">
+      <div class="out-card hero"><div class="lbl">Contribution / order</div><div class="big">${cur(cmOrder)}</div><div class="sub">${cmPct.toFixed(0)}% of AOV</div></div>
+      <div class="out-card"><div class="lbl">Gross margin</div><div class="big">${pct(grossMarginPct)}</div><div class="sub">before ship, fees & CAC</div></div>
+      <div class="out-card"><div class="lbl">Break-even ROAS / MER</div><div class="big">${isFinite(breakeven)?breakeven.toFixed(2)+'×':'∞'}</div><div class="sub">spend below this loses money</div></div>
+      <div class="out-card"><div class="lbl">First-order net</div><div class="big">${cur(firstOrderNet)}</div><div class="sub">after CAC of ${cur(cac)}</div></div>
+      <div class="out-card"><div class="lbl">Contribution LTV</div><div class="big">${cur(ltv)}</div><div class="sub">${repeat.toFixed(1)}× orders, pre-CAC</div></div>
+      <div class="out-card"><div class="lbl">LTV : CAC</div><div class="big">${isFinite(ltvCac)?ltvCac.toFixed(2)+' : 1':'∞'}</div><div class="sub">${isFinite(payback)?'payback in '+payback.toFixed(1)+' orders':'never pays back'}</div></div>
+    </div>
+
+    <p class="calc-note">Illustrative model, not a benchmark. Break-even ROAS and break-even MER share the same value here (1 ÷ contribution-margin %) because both are revenue-over-spend ratios measured against the same margin — that equivalence is the point. Contribution LTV uses contribution margin (not revenue) across the lifetime order count, and carries CAC only on the first order. A commonly cited healthy LTV:CAC is around 3:1 (illustrative, Jul 2026), but a ratio built on an observed order count beats one built on a hoped-for lifetime. Confirm live figures against the sources in the footer.</p>`;
+}
+function setCalc(id,v){ state[id]=parseFloat(v); render(); }
+
+function render(keepFocus){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===state.view));
+  const main=document.getElementById('main');
+  main.innerHTML = state.view==='library'?renderLibrary() : state.view==='scenarios'?renderScenarios() : renderCalc();
+  if(keepFocus){ const inp=document.getElementById('searchInput'); if(inp){ inp.focus(); inp.selectionStart=inp.selectionEnd=inp.value.length; } }
+}
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{ state.view=t.dataset.view; state.openIdx=null; renderModal(); render(); });
+});
+render();
+</script>
+</body>
+</html>
