@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Experimentation &amp; Conversion Research — Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F5F8FA; --ink:#141A22; --ink-soft:#586576; --paper:#FFFFFF; --line:#E3E9EF; --line-soft:#EEF2F6;
+
+    /* five distinguishable, restrained scientific hues */
+    --research:#0E7C86; --research-tint:#E0F3F4; --research-dark:#0A5A61;
+    --hypo:#7C3AED;     --hypo-tint:#EEE7FC;     --hypo-dark:#5B23B8;
+    --design:#2563EB;   --design-tint:#E4ECFD;   --design-dark:#1A4BC0;
+    --stats:#E11D48;    --stats-tint:#FCE3E9;    --stats-dark:#AE1338;
+    --validity:#0D9488; --validity-tint:#DEF4F1; --validity-dark:#0A6E66;
+
+    --teal:#0E7C86; --violet:#7C3AED;
+    --soft-shadow: 0 1px 2px rgba(20,26,34,.04), 0 12px 26px -18px rgba(20,26,34,.24);
+    --lift-shadow: 0 2px 6px rgba(20,26,34,.06), 0 24px 46px -22px rgba(20,26,34,.32);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 3% 1%, rgba(14,124,134,0.06) 0, transparent 30%),
+      radial-gradient(circle at 99% 4%, rgba(124,58,237,0.055) 0, transparent 32%),
+      linear-gradient(var(--bg), var(--bg));
+    color:var(--ink); font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh; padding-bottom:56px; -webkit-font-smoothing:antialiased;
+  }
+  /* faint blueprint grid */
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:
+      linear-gradient(rgba(20,26,34,0.028) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(20,26,34,0.028) 1px, transparent 1px);
+    background-size:28px 28px; opacity:.7;
+  }
+  header,.tabbar,main,footer{position:relative; z-index:1;}
+  h1,h2,h3,.display{font-family:'Space Grotesk',sans-serif; font-weight:600; letter-spacing:-0.015em;}
+  .mono{font-family:'JetBrains Mono',monospace; font-variant-numeric:tabular-nums;}
+  button{font-family:inherit;}
+
+  header{max-width:1080px; margin:0 auto; padding:34px 24px 12px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap;}
+  .brand{display:flex; align-items:flex-start; gap:15px;}
+  .brand .mark{flex-shrink:0; transition:transform .35s ease;}
+  .brand:hover .mark{transform:rotate(-6deg);}
+  .brand-text h1{font-size:27px; margin:0; line-height:1.12;}
+  .brand-text p{margin:6px 0 0; color:var(--ink-soft); font-size:13.5px; max-width:56ch; line-height:1.55;}
+  .disclaimer{display:inline-flex; align-items:center; gap:7px; margin-top:11px; font-size:11.5px; color:var(--research-dark); background:var(--research-tint); border:1px solid rgba(14,124,134,.28); border-radius:999px; padding:5px 12px; font-weight:600;}
+
+  .tabbar{max-width:1080px; margin:22px auto 0; padding:0 24px; display:flex; gap:8px; flex-wrap:wrap;}
+  .tab{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px; padding:11px 18px; border-radius:11px; border:1.5px solid var(--line); background:var(--paper); color:var(--ink-soft); cursor:pointer; display:flex; align-items:center; gap:7px; transition:all .15s ease; box-shadow:var(--soft-shadow);}
+  .tab:hover{color:var(--ink); transform:translateY(-1px);}
+  .tab.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+
+  main{max-width:1080px; margin:18px auto 0; padding:26px 24px 30px; background:var(--paper); border:1.5px solid var(--line); border-radius:20px; min-height:420px; box-shadow:var(--soft-shadow);}
+
+  .lib-controls{display:flex; align-items:center; margin-bottom:10px;}
+  .lib-controls.pill-row{gap:8px; overflow-x:auto; flex-wrap:nowrap; padding-bottom:6px; scrollbar-width:thin;}
+  .search-wrap{position:relative; flex:1 1 260px;}
+  .search-wrap input{width:100%; padding:13px 16px 13px 44px; border-radius:11px; border:1.5px solid var(--line); font-size:15px; font-family:inherit; background:var(--bg); color:var(--ink);}
+  .search-wrap input:focus{outline:none; border-color:var(--teal); box-shadow:0 0 0 3px rgba(14,124,134,.15);}
+  .search-wrap svg{position:absolute; left:15px; top:50%; transform:translateY(-50%);}
+
+  .pill{display:flex; align-items:center; gap:7px; flex-shrink:0; border:1.5px solid var(--line); border-radius:999px; padding:8px 14px; font-size:12.5px; font-weight:600; cursor:pointer; background:var(--paper); color:var(--ink); font-family:'Space Grotesk',sans-serif; white-space:nowrap; transition:all .13s ease;}
+  .pill:hover{transform:translateY(-1px); border-color:var(--ink-soft);}
+  .pill .count{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:11px; opacity:.55;}
+  .pill[data-active="true"]{color:#fff; border-color:transparent;}
+  .pill[data-active="true"] .count{opacity:.9;}
+  .pill[data-cat="research"][data-active="true"]{background:var(--research);}
+  .pill[data-cat="hypo"][data-active="true"]{background:var(--hypo);}
+  .pill[data-cat="design"][data-active="true"]{background:var(--design);}
+  .pill[data-cat="stats"][data-active="true"]{background:var(--stats);}
+  .pill[data-cat="validity"][data-active="true"]{background:var(--validity);}
+
+  .result-count{font-size:12.5px; color:var(--ink-soft); margin:12px 0 14px; font-weight:600;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(252px,1fr)); gap:16px; padding-bottom:6px;}
+  .card{border-radius:15px; border:1.5px solid var(--line); padding:18px; display:flex; flex-direction:column; gap:10px; background:var(--paper); box-shadow:var(--soft-shadow); cursor:pointer; min-height:176px; transition:transform .14s ease, box-shadow .14s ease, border-color .14s ease; border-top:3px solid var(--line);}
+  .card:hover{transform:translateY(-3px); box-shadow:var(--lift-shadow);}
+  .card:focus-visible{outline:3px solid var(--teal); outline-offset:2px;}
+  .card[data-cat="research"]{border-top-color:var(--research);}
+  .card[data-cat="hypo"]{border-top-color:var(--hypo);}
+  .card[data-cat="design"]{border-top-color:var(--design);}
+  .card[data-cat="stats"]{border-top-color:var(--stats);}
+  .card[data-cat="validity"]{border-top-color:var(--validity);}
+
+  .cat-tag{font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:4px 9px; border-radius:6px; display:inline-flex; align-items:center; gap:5px; align-self:flex-start;}
+  .cat-tag[data-cat="research"]{color:var(--research-dark); background:var(--research-tint);}
+  .cat-tag[data-cat="hypo"]{color:var(--hypo-dark); background:var(--hypo-tint);}
+  .cat-tag[data-cat="design"]{color:var(--design-dark); background:var(--design-tint);}
+  .cat-tag[data-cat="stats"]{color:var(--stats-dark); background:var(--stats-tint);}
+  .cat-tag[data-cat="validity"]{color:var(--validity-dark); background:var(--validity-tint);}
+
+  .card h3{font-size:17px; margin:0; line-height:1.28;}
+  .card .hook{font-size:13px; color:var(--ink-soft); line-height:1.5; margin:0; flex-grow:1;}
+  .explore-row{display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; font-family:'Space Grotesk',sans-serif; color:var(--ink-soft); margin-top:auto;}
+  .explore-row svg{transition:transform .15s ease;}
+  .card:hover .explore-row svg{transform:translateX(3px);}
+  .card:hover .explore-row{color:var(--ink);}
+  .empty-state{grid-column:1/-1; text-align:center; padding:50px 20px; color:var(--ink-soft);}
+
+  .modal-overlay{position:fixed; inset:0; background:rgba(20,26,34,0.5); backdrop-filter:blur(3px); display:flex; align-items:flex-start; justify-content:center; padding:5vh 20px; z-index:100; overflow-y:auto; animation:fadeIn .15s ease;}
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  .modal{background:var(--paper); border:1.5px solid var(--line); border-radius:18px; max-width:620px; width:100%; padding:28px 30px 26px; box-shadow:0 30px 60px -20px rgba(20,26,34,.5); animation:popIn .2s cubic-bezier(.3,.5,.3,1.2);}
+  @keyframes popIn{from{transform:translateY(12px) scale(.98); opacity:0;}to{transform:none; opacity:1;}}
+  .modal-top{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:8px;}
+  .modal-close{background:var(--bg); border:1.5px solid var(--line); border-radius:10px; width:36px; height:36px; font-size:15px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--ink-soft);}
+  .modal-close:hover{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .modal h2{font-size:24px; margin:6px 0 5px; line-height:1.2;}
+  .modal .modal-hook{font-size:14.5px; color:var(--ink-soft); font-style:italic; margin:0 0 20px;}
+  .section-label{display:flex; align-items:center; gap:7px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:12.5px; text-transform:uppercase; letter-spacing:.04em; margin:20px 0 9px; color:var(--ink-soft);}
+  .modal p.body-text{font-size:14.6px; line-height:1.66; margin:0; color:var(--ink);}
+  .example-list{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px;}
+  .example-list li{font-size:13.6px; line-height:1.55; padding:12px 14px 12px 36px; border-radius:10px; background:var(--bg); border:1px solid var(--line); position:relative;}
+  .example-list li::before{content:"\002261"; position:absolute; left:13px; top:10px; font-size:14px; color:var(--teal); font-weight:700;}
+  .watch-box{background:var(--stats-tint); border:1px solid rgba(225,29,72,.28); border-radius:10px; padding:12px 14px; font-size:13.4px; line-height:1.58;}
+  .watch-box strong{color:var(--stats-dark);}
+
+  .scenario-wrap{padding-bottom:20px;}
+  .progress-row{display:flex; align-items:center; gap:14px; margin-bottom:22px;}
+  .progress-track{flex:1; height:9px; background:var(--line); border-radius:6px; overflow:hidden;}
+  .progress-fill{height:100%; background:linear-gradient(90deg,var(--teal),var(--violet)); transition:width .35s ease; border-radius:6px;}
+  .score-chip{font-family:'JetBrains Mono',monospace; font-weight:600; font-size:12.5px; border:1.5px solid var(--line); border-radius:8px; padding:6px 11px; white-space:nowrap;}
+  .scenario-card{border:1.5px solid var(--line); border-radius:16px; padding:26px; background:linear-gradient(180deg,#fff,#FAFCFD); box-shadow:var(--soft-shadow);}
+  .scenario-eyebrow{font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px;}
+  .scenario-text{font-size:17.5px; line-height:1.5; margin:0 0 22px; font-weight:500;}
+  .options{display:grid; gap:10px;}
+  .option-btn{text-align:left; padding:14px 16px; border-radius:11px; border:1.5px solid var(--line); background:var(--paper); font-family:'Inter',sans-serif; font-weight:600; font-size:14.3px; cursor:pointer; transition:all .12s ease; color:var(--ink); line-height:1.4;}
+  .option-btn:hover:not([disabled]){border-color:var(--ink-soft); transform:translateX(3px);}
+  .option-btn[disabled]{cursor:default;}
+  .option-btn.incorrect{background:var(--stats-tint); border-color:var(--stats); color:var(--stats-dark);}
+  .option-btn.reveal-correct{background:var(--validity-tint); border-color:var(--validity); color:var(--validity-dark);}
+  .feedback-box{margin-top:18px; padding:15px 18px; border-radius:11px; border:1.5px dashed var(--line); font-size:13.6px; line-height:1.6; background:var(--bg);}
+  .feedback-box strong{font-family:'Space Grotesk',sans-serif;}
+  .next-btn{margin-top:18px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14.5px; background:var(--ink); color:#fff; border:1.5px solid var(--ink); border-radius:11px; padding:12px 22px; cursor:pointer;}
+  .next-btn:hover{opacity:.9;}
+  .results{text-align:center; padding:24px 10px 10px;}
+  .results h2{font-size:24px; margin-bottom:4px;}
+  .big-score{font-family:'Space Grotesk',sans-serif; font-size:52px; margin:10px 0; color:var(--teal); font-variant-numeric:tabular-nums; font-weight:700;}
+  .breakdown{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin:22px 0; text-align:left;}
+  .bd-item{border:1.5px solid var(--line); border-radius:11px; padding:12px 14px;}
+  .bd-item .lbl{font-size:11.5px; color:var(--ink-soft); font-weight:600;}
+  .bd-item .n{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:16px; margin-top:2px;}
+  .restart-btn{font-family:'Space Grotesk',sans-serif; font-weight:600; background:var(--teal); color:#fff; border:none; border-radius:11px; padding:13px 26px; cursor:pointer; font-size:15px; box-shadow:var(--soft-shadow);}
+  .restart-btn:hover{opacity:.92;}
+  .missed-list{text-align:left; margin-top:20px;}
+  .missed-list h3{font-size:16px;}
+  .missed-item{border-left:3px solid var(--stats); background:var(--stats-tint); border-radius:8px; padding:11px 14px; margin-bottom:8px; font-size:13px; line-height:1.55;}
+
+  /* calculator */
+  .calc-intro{font-size:14.5px; color:var(--ink-soft); line-height:1.6; margin:0 0 6px; max-width:70ch;}
+  .calc-eq{font-family:'JetBrains Mono',monospace; font-size:12.5px; background:var(--design-tint); color:var(--design-dark); border:1px solid rgba(37,99,235,.28); border-radius:9px; padding:11px 14px; display:block; margin:14px 0 6px; font-weight:500; line-height:1.7; overflow-x:auto; white-space:nowrap;}
+  .calc-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:20px; margin-top:20px;}
+  .calc-panel{padding:22px; background:var(--bg); border:1.5px solid var(--line); border-radius:16px;}
+  .calc-panel h4{font-family:'Space Grotesk',sans-serif; font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); margin:0 0 16px;}
+  .calc-field{margin-bottom:17px;}
+  .calc-field label{display:block; font-size:12px; font-weight:700; color:var(--ink); margin-bottom:7px; font-family:'Space Grotesk',sans-serif;}
+  .calc-field .hint{font-weight:400; color:var(--ink-soft); font-size:11px;}
+  .calc-input{width:100%; padding:11px 13px; border-radius:9px; border:1.5px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:15px; background:var(--paper); color:var(--ink); font-variant-numeric:tabular-nums;}
+  .calc-input:focus{outline:none; border-color:var(--teal); box-shadow:0 0 0 3px rgba(14,124,134,.14);}
+  select.calc-input{cursor:pointer;}
+  .seg{display:flex; gap:6px;}
+  .seg button{flex:1; padding:9px 10px; border-radius:9px; border:1.5px solid var(--line); background:var(--paper); font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:12.5px; color:var(--ink-soft); cursor:pointer; transition:all .12s ease;}
+  .seg button[data-on="true"]{background:var(--violet); color:#fff; border-color:var(--violet);}
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+
+  .out-stack{display:flex; flex-direction:column; gap:12px;}
+  .out-card{border:1.5px solid var(--line); border-radius:13px; padding:16px 18px; background:var(--paper);}
+  .out-card .lbl{font-size:11.5px; color:var(--ink-soft); font-weight:600; text-transform:uppercase; letter-spacing:.04em; display:flex; align-items:center; justify-content:space-between; gap:8px;}
+  .out-card .big{font-family:'Space Grotesk',sans-serif; font-size:30px; font-weight:700; margin-top:5px; font-variant-numeric:tabular-nums; letter-spacing:-.01em;}
+  .out-card.hero{border-color:var(--teal); background:linear-gradient(180deg,var(--research-tint),#fff);}
+  .out-card.hero .big{color:var(--research-dark);}
+  .out-card.dur{border-color:var(--violet); background:linear-gradient(180deg,var(--hypo-tint),#fff);}
+  .out-card.dur .big{color:var(--hypo-dark);}
+  .out-sub{font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--ink-soft); margin-top:4px;}
+  .calc-error{border:1.5px solid var(--stats); background:var(--stats-tint); color:var(--stats-dark); border-radius:13px; padding:16px 18px; font-size:13.5px; line-height:1.55; font-weight:500;}
+  .peek-note{margin-top:22px; padding:16px 18px; border-radius:12px; border:1px solid rgba(225,29,72,.25); background:var(--stats-tint); font-size:13px; line-height:1.62; color:var(--ink);}
+  .peek-note strong{color:var(--stats-dark); font-family:'Space Grotesk',sans-serif;}
+  .calc-assume{margin-top:14px; font-size:11.5px; color:var(--ink-soft); font-style:italic; line-height:1.55;}
+
+  footer{max-width:1080px; margin:30px auto 0; color:var(--ink-soft); font-size:12px; padding:0 24px; line-height:1.7;}
+  footer .src{margin-top:8px;}
+  footer a{color:var(--teal); text-decoration:none;}
+  footer a:hover{text-decoration:underline;}
+
+  @media (max-width:760px){
+    .calc-grid{grid-template-columns:1fr;}
+  }
+  @media (max-width:600px){
+    .brand-text h1{font-size:22px;}
+    .modal{padding:22px 20px 20px;}
+    main{padding:22px 16px 26px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <svg class="mark" width="50" height="50" viewBox="0 0 50 50" fill="none">
+      <rect x="4" y="4" width="42" height="42" rx="10" fill="#fff" stroke="#141A22" stroke-width="2.2"/>
+      <path d="M12 34c5-1 6-14 9-14s4 8 9 8 6-14 8-14" stroke="#7C3AED" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <path d="M12 38h26" stroke="#0E7C86" stroke-width="2.4" stroke-linecap="round"/>
+      <circle cx="21" cy="20" r="2.6" fill="#0E7C86"/>
+      <circle cx="30" cy="28" r="2.6" fill="#E11D48"/>
+    </svg>
+    <div class="brand-text">
+      <h1>Experimentation &amp; Conversion Research</h1>
+      <p>A field guide to designing and judging online experiments the way a trustworthy team does — from conversion research and falsifiable hypotheses to sample size, statistical pitfalls, and the validity threats that quietly invalidate a result.</p>
+      <span class="disclaimer">&#9633; Source-pinned — statistics and method are durable</span>
+    </div>
+  </div>
+</header>
+
+<div class="tabbar">
+  <div class="tab active" data-view="library">&#128218; Concept Library</div>
+  <div class="tab" data-view="scenarios">&#127919; Scenario Practice</div>
+  <div class="tab" data-view="calc">&#129518; Sample-Size Calculator</div>
+</div>
+
+<main id="main"></main>
+
+<footer>
+  Source-pinned interactive primer built with the <strong>field-guide-builder</strong> skill; sources verified with <strong>signal-in-noise</strong>. The methodology and statistics here are durable and do not depend on any specific testing tool.
+  <div class="src">
+    <strong>Sources:</strong>
+    Kohavi, Tang &amp; Xu, <a href="https://experimentguide.com/" target="_blank" rel="noopener">Trustworthy Online Controlled Experiments</a> (Cambridge, 2020) &middot;
+    <a href="https://cxl.com/conversion-optimization/conversion-research/" target="_blank" rel="noopener">CXL — ResearchXL conversion research</a> &middot;
+    Georgi Georgiev, <a href="https://blog.analytics-toolkit.com/" target="_blank" rel="noopener">Analytics-Toolkit</a> (statistics of A/B testing) &middot;
+    Evan Miller, <a href="https://www.evanmiller.org/how-not-to-run-an-ab-test.html" target="_blank" rel="noopener">How Not To Run An A/B Test</a> &middot;
+    Chris Goward / WiderFunnel, <em>You Should Test That!</em> (PIE prioritization).
+  </div>
+</footer>
+
+<div id="modalRoot"></div>
+
+<script>
+const CATS = {
+  research: { label:"Research → Hypothesis", icon:"🔬" },
+  hypo:     { label:"Hypothesis & Prioritization", icon:"🧭" },
+  design:   { label:"Experiment Design", icon:"📐" },
+  stats:    { label:"Statistics & Pitfalls", icon:"📊" },
+  validity: { label:"Validity & Reading Results", icon:"🔍" },
+};
+
+const ENTRIES = [
+  // ---------------- RESEARCH -> HYPOTHESIS ----------------
+  {cat:"research", name:"Heuristic Analysis", hook:"An expert walkthrough of the funnel, before you touch the data.",
+   def:"A structured expert review of a page or flow against known persuasion and usability principles — clarity, motivation, friction, relevance, distraction, trust. One trained reviewer walks the funnel as a skeptical user and logs every point where the value proposition is unclear, the next step is uncertain, or anxiety is introduced. It is fast and cheap, and its job is not to be right but to generate a ranked list of suspected problem areas that other methods then confirm or kill.",
+   example:["A reviewer flags that the pricing page never states what happens when the free trial ends — a trust gap worth testing a clarification against.","Walking checkout on a throttled mobile connection surfaces a slow payment step that no desktop review would catch."],
+   watch:"Heuristic findings are hypotheses, not verdicts. 'Best practice says X' is an opinion until your own analytics or a test confirms the problem is real on your traffic — expert reviews are notorious for confident, well-argued guesses that don't replicate."},
+
+  {cat:"research", name:"Session Replay & Heatmaps", hook:"Watch real users struggle, without a lab.",
+   def:"Session replay reconstructs individual visits (cursor movement, clicks, scroll, form interactions); heatmaps aggregate that behavior across many sessions into click, scroll, and attention maps. Together they answer 'what are people actually doing?' — rage clicks on non-clickable elements, forms abandoned at a specific field, content below a scroll wall nobody reaches. They are discovery tools that localize a problem you then quantify.",
+   example:["A scroll map shows 60% of visitors never reach the section holding your primary CTA — a layout hypothesis writes itself.","Replays reveal repeated clicks on a static product image; users expect a zoom that isn't there."],
+   watch:"Replay is qualitative and self-selecting — you watch the sessions you happen to sample, and it's easy to over-index on one vivid rage-click. Use it to find candidate problems and size them with analytics; never quote 'I watched a few sessions' as evidence a change will lift conversion."},
+
+  {cat:"research", name:"On-Site & Exit Surveys", hook:"Ask the people who are actually on the page.",
+   def:"Short, targeted polls served in context — on a page, on exit intent, or after a purchase. Because they capture intent and objection in the moment, they surface the 'why' that clickstream data can't: what almost stopped you, what information was missing, what you came to do. The strongest questions are open-ended and behavioral ('What nearly stopped you from buying today?') rather than satisfaction scores.",
+   example:["An exit survey on the pricing page returns repeated mentions of 'no annual option shown' — a concrete, testable objection.","A post-purchase 'what almost stopped you?' survey clusters around shipping-time uncertainty."],
+   watch:"Survey responses are what people say, not what they do, and responders skew toward the vocal and the extreme. Treat verbatims as a source of hypotheses and copy language, not as a measured effect size — the fix still has to win a controlled test."},
+
+  {cat:"research", name:"Voice-of-Customer Mining", hook:"The words customers already use are your test copy.",
+   def:"Systematic harvesting of unsolicited customer language from support tickets, reviews, chat logs, sales calls, and community threads to find recurring objections, desired outcomes, and the exact phrasing people use. It grounds hypotheses in real demand language rather than internal jargon, and frequently produces higher-converting copy because it mirrors how customers actually describe the problem.",
+   example:["Mining reviews shows customers repeatedly call the product 'the only one that didn't irritate my skin' — language worth testing as a headline.","Support tickets cluster on a single confusing step, pointing to both a copy fix and a UX test."],
+   watch:"Frequency in feedback isn't the same as importance to conversion — loud complaints can come from a tiny, already-converted segment. Pair the themes with quantitative sizing before prioritizing, or you'll optimize for the noisiest customers rather than the ones on the fence."},
+
+  {cat:"research", name:"Analytics-Driven Problem Discovery", hook:"The funnel report tells you where, never why.",
+   def:"Using quantitative behavioral data — funnel drop-off, segment comparisons, device and source splits, page-level conversion — to locate where the money is leaking before deciding what to fix. Segmentation is the core move: an average conversion rate hides that mobile converts at a third of desktop, or that one traffic source is pure bounce. It answers 'where is the biggest, most addressable loss?' so qualitative methods can be aimed at that spot.",
+   example:["A funnel report shows a 70% drop between cart and checkout on mobile specifically — that's where research effort should concentrate.","Segmenting by browser reveals near-zero conversion on one browser — a bug hypothesis, not a persuasion one."],
+   watch:"Analytics tells you where the drop is, never why it's there — a big drop-off can be a healthy filter (window-shoppers leaving) or a broken page. Jumping from 'big drop here' straight to a redesign skips the diagnosis; the number sets the priority, qualitative research sets the hypothesis."},
+
+  // ---------------- HYPOTHESIS & PRIORITIZATION ----------------
+  {cat:"hypo", name:"The Falsifiable Hypothesis", hook:"If it can't be proven wrong, it isn't a hypothesis.",
+   def:"A test hypothesis is a specific, falsifiable prediction tying an observed problem to a proposed change and a measurable outcome: 'Because [evidence] showed [problem], we believe [change] will cause [effect] for [segment], measured by [metric].' The evidence clause is what separates a hypothesis from a guess — it forces the idea to be grounded in research and makes the result interpretable whether it wins, loses, or draws.",
+   example:["'Because exit surveys cited shipping-time doubt, adding a delivery-date estimate to the PDP will increase add-to-cart rate.'","A weak version — 'a green button will convert better' — has no evidence and no mechanism, so its result teaches nothing."],
+   watch:"A hypothesis that names only the change ('test a sticky CTA') and not the mechanism and metric can't be learned from — win or lose, you won't know why. Vague hypotheses produce a graveyard of tests that moved a number once and can't be generalized or trusted."},
+
+  {cat:"hypo", name:"ICE Scoring", hook:"Impact × Confidence × Ease — fast, and famously gameable.",
+   def:"A prioritization heuristic that scores each idea 1–10 on Impact (how much it could move the metric), Confidence (how sure you are it will), and Ease (how cheap to build), then ranks by the product or average. Its value is speed and forcing a portfolio conversation; it's popular because anyone can score a backlog in an afternoon.",
+   example:["A checkout-trust test scores Impact 8, Confidence 6, Ease 7 — high enough to jump the queue over a low-traffic blog tweak.","Comparing ICE scores stops the loudest stakeholder's pet idea from automatically going first."],
+   watch:"Confidence usually reflects how persuasively the idea was argued, not the strength of evidence behind it, and the same idea earns wildly different scores from different people. ICE has no built-in sense of traffic — a niche page and the checkout can score identically — so treat the number as a conversation starter, not a decision."},
+
+  {cat:"hypo", name:"PIE Framework", hook:"Potential, Importance, Ease — traffic-aware prioritization.",
+   def:"WiderFunnel's model (Chris Goward) scores each opportunity on Potential (how much room to improve, given how weak the page is), Importance (how valuable the traffic to it is), and Ease (implementation and political difficulty). Its edge over ICE is Importance: a fix on a page every buyer passes through outranks the same fix on a page 2% of traffic sees, so it naturally biases toward high-leverage pages.",
+   example:["Checkout scores high Importance because all revenue flows through it, pushing checkout tests up the queue.","A high-traffic but already-optimized page scores low Potential, correctly deprioritizing a test with little room to move."],
+   watch:"PIE still rests on human estimates and false precision — 'Potential 7' feels rigorous but is a guess dressed as a measurement. It sequences work; it does not predict outcomes, and treating the score as a forecast of lift is how teams rationalize whatever they wanted to do anyway."},
+
+  {cat:"hypo", name:"Evidence-Weighted Prioritization (PXL)", hook:"Score the evidence, not the vibe.",
+   def:"PXL (CXL's model) replaces vague 1–10 gut scores with concrete, mostly binary questions: Is the change above the fold? Does it target a top-traffic page? Is it backed by user testing, analytics, a survey, heatmaps? Each 'yes' adds weight, and ease is scored in explicit time bands. By tying score to how many independent research methods flagged the problem, it makes prioritization more reproducible and less of a popularity contest.",
+   example:["A test flagged by heatmaps, exit surveys, and session replay accumulates evidence points and outranks a single-source hunch.","'Is it above the fold?' as a yes/no removes the argument over a subjective Impact score."],
+   watch:"More structure narrows disagreement but doesn't remove judgment — the questions and their weights are themselves opinions, and stacking research methods can just mean several methods caught the same self-selected complaint. Evidence-weighting reduces bias; it doesn't manufacture certainty about the outcome."},
+
+  {cat:"hypo", name:"The Limits of Prioritization Frameworks", hook:"The score is an argument, not a measurement.",
+   def:"Every scoring framework (ICE, PIE, PXL, RICE) converts guesses into numbers, which lends an aura of objectivity the inputs never earned. They are useful for sequencing a backlog, surfacing assumptions, and defusing HiPPO decisions — but the output is only as good as the estimates fed in, and multiplying three fuzzy numbers doesn't produce a precise one. Their real function is to make reasoning explicit and comparable, not to forecast lift.",
+   example:["Two analysts scoring the same backlog produce different rankings — a signal the numbers encode judgment, not fact.","A team uses the framework to force a conversation about traffic and evidence, then overrides the raw ranking with context."],
+   watch:"The failure mode is false precision: treating a composite score as a prediction and skipping the thinking the framework was meant to provoke. If the score becomes the decision instead of an input to the decision, you've automated your biases with extra steps."},
+
+  // ---------------- EXPERIMENT DESIGN ----------------
+  {cat:"design", name:"Minimum Detectable Effect (MDE)", hook:"The smallest lift you're willing to build a test to catch.",
+   def:"MDE is the smallest true effect you want the test to reliably detect, set before launch. It is the pivotal input to sample size: roughly halving the MDE quadruples the sample required, because precision scales with the square of the effect you're chasing. MDE should be a business decision — the smallest lift that would actually be worth shipping — not a number reverse-engineered to fit the traffic you happen to have.",
+   example:["Setting a 5% relative MDE on a 4% baseline commits you to a far larger sample than chasing a 20% lift would.","A team decides a lift below 3% isn't worth the engineering cost, so 3% becomes the MDE and defines the sample."],
+   watch:"Picking an MDE larger than plausible just to make the test 'fit' the traffic guarantees an underpowered test dressed as a powered one — you'll declare 'no significant difference' on a real effect you never had the sample to see. Set MDE from business value first, then check the traffic; if it isn't enough, that's a reason not to run the test, not to inflate the MDE."},
+
+  {cat:"design", name:"Statistical Power", hook:"Your odds of catching an effect that's really there.",
+   def:"Power (1 − β) is the probability a test detects a true effect of at least the MDE when one genuinely exists. Convention is 80%, meaning a 20% chance of a false negative — missing a real winner. Power rises with sample size and with larger true effects. Underpowered tests are the field's quiet epidemic: they can't find the effects they were run to find, so most of their 'flat' results are simply uninformative.",
+   example:["At 80% power, one in five genuine winners reads as inconclusive purely by chance — a reason to stay humble about a single flat result.","Doubling the traffic to a test raises power, shrinking the odds of missing a real effect."],
+   watch:"Power is decided before the test, by sample size and MDE — you can't rescue an underpowered test after the fact by staring harder at the data. A 'no difference' result from an underpowered test means 'we couldn't tell,' not 'there's no effect,' and conflating the two kills good ideas."},
+
+  {cat:"design", name:"Sample Size Determination", hook:"How many users per variant, decided before launch.",
+   def:"The required sample per variant is fixed in advance from four inputs: baseline conversion rate, MDE, significance level (α), and power (1−β). For two proportions the standard approximation is n = (z_{α/2} + z_{β})² · [p₁(1−p₁) + p₂(1−p₂)] / (p₂ − p₁)². Committing to this number up front is what makes the later significance test honest — the math assumes you looked once, at the end, at a pre-set sample.",
+   example:["Baseline 5%, 10% relative MDE, 95% significance, 80% power needs roughly 31,000 per variant — small effects are expensive.","Raising the baseline or the target effect shrinks the required sample sharply."],
+   watch:"The sample-size formula and the significance test are a matched pair: the p-value is only valid if you stop at the pre-computed n. Deciding sample size after you've started peeking, or 'topping up' a test that's nearly significant, silently invalidates the statistics the number was supposed to protect."},
+
+  {cat:"design", name:"Test Duration & Business Cycles", hook:"Hit the sample, but never run less than full weeks.",
+   def:"Duration is sample size divided by traffic rate — but with two floors. Run for whole weeks (usually one to two full cycles minimum) so every day of the week is represented, because weekday and weekend buyers differ. And run long enough to cover a full purchase-consideration cycle, so you're not measuring only impulse buyers. Reaching the sample number on a Tuesday afternoon is not permission to stop mid-week.",
+   example:["A test that hits its sample in 4 days still runs to a full week so Saturday behavior is included.","A considered-purchase product runs two full weeks to capture visitors who research before buying."],
+   watch:"Stopping the instant the sample count is met can bake a day-of-week or campaign artifact into the result — a test that ended mid-week or during a promo isn't representative. But running far past the needed sample just to 'be sure' invites peeking and novelty contamination; longer is not automatically safer."},
+
+  {cat:"design", name:"The OEC & Guardrail Metrics", hook:"One metric to decide, several to keep you honest.",
+   def:"The Overall Evaluation Criterion (OEC) is the single primary metric a test is designed to move — chosen up front so the decision rule is unambiguous. Guardrail metrics are the ones that must not get worse (page load, revenue per session, refund rate, unsubscribe rate). Naming both before launch prevents the classic move of fishing through twenty metrics after the fact and declaring victory on whichever one turned green.",
+   example:["A checkout test's OEC is completed orders; a revenue-per-visitor guardrail catches a 'win' that discounted its way into losses.","A signup test guards against a downstream drop in activation, not just a rise in top-of-funnel signups."],
+   watch:"Optimizing a narrow OEC without guardrails invites local wins that hurt the business — more signups of users who never activate, more clicks that cannibalize revenue. If you didn't declare the primary metric before the test, any post-hoc 'winner' is a story, not a result."},
+
+  // ---------------- STATISTICS & PITFALLS ----------------
+  {cat:"stats", name:"The p-value", hook:"The probability of your data if nothing changed — nothing more.",
+   def:"A p-value is the probability of observing a result at least as extreme as yours if the null hypothesis (no difference) were true. p = 0.03 means 'data this striking would occur 3% of the time by chance alone under no real effect.' It is a statement about the data given a hypothesis, not about the hypothesis given the data — which is exactly the inversion most people read into it.",
+   example:["p = 0.04 does not mean a 96% chance the variant is better; it means data this extreme is unlikely under pure chance.","A very large sample can push p below 0.05 on an effect far too small to matter — significance without importance."],
+   watch:"The p-value is not the probability the variant wins, and 1 − p is not your confidence in the result — that misreading is the single most common statistical error in A/B testing. A p-value also says nothing about effect size; pair it with the confidence interval or you'll ship trivially small 'significant' wins."},
+
+  {cat:"stats", name:"Statistical vs Practical Significance", hook:"Real, but is it big enough to matter?",
+   def:"Statistical significance says an effect is probably not zero; practical significance asks whether it's large enough to justify shipping and its costs. With enough traffic, a 0.1% lift can be statistically significant and commercially pointless. The decision that matters is whether the effect clears your MDE — the smallest lift worth having — not merely whether it cleared p < 0.05.",
+   example:["A 0.2% conversion lift, significant at huge sample size, may not cover the maintenance cost of the feature that produced it.","A 6% lift that just misses significance may still be the right bet, given the point estimate and business context."],
+   watch:"Chasing statistical significance on effects below your MDE turns testing into a rubber stamp for trivial changes. Always read the effect size and its interval; 'significant' answers 'is it real?' but never 'is it worth it?'"},
+
+  {cat:"stats", name:"Confidence Intervals", hook:"The range of effects your data is compatible with.",
+   def:"A confidence interval gives a range of plausible values for the true effect, with a stated long-run coverage — a 95% CI is built by a procedure that captures the true value 95% of the time. It carries far more information than a bare p-value: its width shows precision, and whether it includes zero mirrors the significance test — but it also shows how large or small the effect might really be.",
+   example:["A lift of +4% with a 95% CI of [+1%, +7%] is a confident win; [−2%, +10%] on the same point estimate is not.","A CI sitting entirely above your MDE is a far stronger ship signal than 'p < 0.05' alone."],
+   watch:"A 95% CI does not mean '95% probability the true value is in this range' — for a given interval the true value is either in it or not; the 95% describes the method across many repetitions. And a wide interval crossing zero is not proof of no effect, only proof you lack the precision to say."},
+
+  {cat:"stats", name:"The Peeking Problem", hook:"Every early look inflates your false-positive rate.",
+   def:"Fixed-horizon statistics assume you check significance once, at the pre-computed sample size. Peeking — repeatedly checking and stopping the moment p dips below 0.05 — massively inflates the Type I error rate, because a random walk will cross the threshold by chance if you give it enough chances. Evan Miller's demonstration is stark: check after every observation and stop at first significance, and a nominal 5% false-positive rate balloons toward ~26%.",
+   example:["A test that 'reached significance' on day 2, watched daily, is far more likely a false positive than the 5% label suggests.","Ten interim looks turn a nominal 1% test into roughly a 5% one — the guarantee you thought you had is gone."],
+   watch:"Live dashboards that show a running 'significance' or 'chance to beat' figure invite exactly this error — the number is only valid at the planned sample size. If you genuinely need to stop early, use a method built for it (sequential testing), not fixed-horizon significance read repeatedly."},
+
+  {cat:"stats", name:"Multiple Comparisons", hook:"Test twenty things and one goes green by luck.",
+   def:"Each significance test at α = 0.05 carries a 5% false-positive risk. Run many at once — several variants, many metrics, many segments — and the chance that at least one lights up by pure chance climbs fast (about 64% across twenty independent tests). Corrections such as Bonferroni or Benjamini–Hochberg lower the per-test threshold to hold the overall error rate, at the cost of power.",
+   example:["A 5-arm test compared on 6 metrics is 30 comparisons; expecting one spurious 'winner' is the baseline, not the exception.","Slicing a flat result into 15 segments until one is 'significant' is multiple comparisons wearing a disguise."],
+   watch:"Segment-hunting after a null result is the most seductive form of this error — keep splitting and something always turns significant. Decide your primary metric and segments before the test; post-hoc 'the variant won for left-handed users in Ohio' is noise you went looking for."},
+
+  {cat:"stats", name:"Sequential Testing", hook:"The honest way to look early — because the math expects it.",
+   def:"Sequential methods (group-sequential boundaries, always-valid inference / mixture sequential probability ratio tests) are designed for continuous monitoring: they spend the error budget across many looks so you can stop as soon as evidence is decisive without inflating false positives. This is the legitimate answer to the peeking problem — not 'never look,' but 'use statistics that account for looking.'",
+   example:["An always-valid confidence sequence lets a team stop a clear winner early without the peeking penalty.","Group-sequential boundaries pre-specify interim checks so an obvious harm can be halted mid-test, ethically and validly."],
+   watch:"Sequential validity comes from using the right adjusted boundaries — bolting 'stop early' onto an ordinary fixed-horizon p-value is just peeking with extra confidence. And sequential tests trade some efficiency for that flexibility: on a borderline effect they can demand more data, not less."},
+
+  // ---------------- VALIDITY & READING RESULTS ----------------
+  {cat:"validity", name:"Sample Ratio Mismatch (SRM)", hook:"If the split isn't what you set, trust nothing else.",
+   def:"SRM is when the observed traffic split between variants differs significantly from the intended ratio — you assigned 50/50 but see 52/48 at scale. A chi-squared test on the raw counts flags it. SRM is a red alert: it means randomization or logging is broken (bots, redirect bugs, differential loading, bad bucketing), so any lift you see is likely an artifact of who got counted, not what they saw. Kohavi et al. treat an SRM as grounds to discard the result outright.",
+   example:["A test intended 50/50 shows 100,000 vs 96,000 users; a chi-squared p far below 0.01 signals a broken experiment, not a win.","A redirect on the variant silently drops slow-connection users, skewing both the ratio and the outcome."],
+   watch:"A variant can look like a winner precisely because SRM dropped its worst-performing users — the 'lift' is a counting artifact. Always run the SRM check first; if the split is broken, no amount of significance on the primary metric is trustworthy, and interpreting the result is malpractice."},
+
+  {cat:"validity", name:"Novelty & Primacy Effects", hook:"The first-week spike that quietly evaporates.",
+   def:"Novelty effect: existing users react to a change simply because it's new — clicking the shiny new button — inflating early results that decay as the novelty wears off. Primacy (change aversion) is the mirror image: users initially resist a change and underperform before adapting. Both mean short tests on a returning-user population can measure the reaction to change rather than the steady-state value of the change.",
+   example:["A redesigned nav spikes clicks in week one, then settles to baseline by week three as regulars re-learn the layout.","Segmenting new vs returning users shows the 'win' exists only among returning users reacting to novelty."],
+   watch:"Reading a returning-user test at day three risks shipping a novelty bump that won't last, or killing a good change users just needed time to adapt to. Run long enough for the effect to stabilize, and segment new versus returning — a lift that lives only in returning users is a novelty flag, not a durable win."},
+
+  {cat:"validity", name:"Seasonality & External Validity", hook:"A true result from an untypical week may not generalize.",
+   def:"A test can be internally valid (correctly measuring the effect during the window it ran) yet externally invalid (that window doesn't represent normal conditions). Holiday traffic, a payday spike, a viral campaign, or a competitor outage all shift the mix of visitors and their intent. The effect you measured was real for that population; whether it holds in an ordinary week is a separate question the test can't answer on its own.",
+   example:["A checkout test run entirely over Black Friday measures deal-hunters, and its lift may not survive January's browsing traffic.","A test riding a PR spike is dominated by high-intent visitors unlike your steady-state mix."],
+   watch:"'The test was significant' guarantees internal validity, never external validity — a clean result from an atypical period can mislead when you roll it out to normal traffic. Avoid launching decisive tests across known anomalies, or plan to re-validate in a representative window before trusting the number."},
+
+  {cat:"validity", name:"Instrumentation & Tracking Effects", hook:"Sometimes the variant changed the measurement, not the behavior.",
+   def:"Implementing a variant can alter how events are recorded: an added script delays the page and depresses the very conversion it was meant to lift; a moved button fires a different tracking event; a tag misfires on one arm only. The result is a difference in the data that reflects a measurement artifact rather than any real change in user behavior — a favorite explanation for results that are 'too good' or nonsensically large.",
+   example:["A variant's extra testing-tool script slows load by 300ms, and the 'losing' variant actually lost to latency, not design.","A relabeled CTA fires a new event name, double-counting conversions on one arm until someone notices."],
+   watch:"Suspiciously large or physically implausible effects are more often instrumentation bugs than breakthroughs (Twyman's law: any figure that looks interesting is probably wrong). Before believing a dramatic result, verify both arms are tracked identically and the variant didn't change performance or event wiring."},
+
+  {cat:"validity", name:"Reading an Inconclusive Result", hook:"'Not significant' is not the same as 'no difference'.",
+   def:"A test that fails to reach significance means the data didn't provide enough evidence to distinguish the variant from control at your threshold — it does not prove they're equal. The information is in the confidence interval: a tight interval hugging zero is genuine evidence of little effect; a wide interval spanning both meaningful gains and losses means you simply lacked power and learned little. Flat results should feed back into research, not just be filed as 'lost.'",
+   example:["A CI of [−0.3%, +0.4%] is real evidence the change barely matters; a CI of [−6%, +8%] means the test was uninformative.","An inconclusive test with a promising point estimate can justify a rerun with more traffic, not abandonment."],
+   watch:"Declaring 'no difference, ship neither' from an underpowered flat test throws away effects you never had the sample to detect. And accepting the null as proof of equivalence is a formal error — proving 'no meaningful difference' requires an equivalence test, not a failed significance test."},
+
+  {cat:"validity", name:"When Not to Test", hook:"A/B testing is a tax you shouldn't always pay.",
+   def:"Controlled experiments cost traffic, time, and engineering, and they pay off only when you have enough traffic to detect a worthwhile effect and genuine uncertainty about the outcome. Below a traffic floor, tests are chronically underpowered and you're better served by qualitative research and reasoned judgment. Some decisions shouldn't be tested at all: obvious bug fixes, legal or trust requirements, table-stakes usability, and one-way-door strategic bets where the point was never a local metric.",
+   example:["A site with 200 conversions a month can't power a test on a 5% lift in any reasonable time — fix the obvious problems and ship.","You don't A/B test whether to remove a dark pattern that erodes trust; you remove it."],
+   watch:"Testing everything signals rigor but can be its own failure — you burn months underpowered, or you demand 'proof' for changes that are clearly right and stall on them. Match the method to the traffic and the stakes: experiments resolve real uncertainty at sufficient scale, not every judgment call."},
+];
+
+const SCENARIOS = [
+  {q:"A test hit p = 0.04 after three days of daily monitoring, and the team wants to ship immediately. The strongest objection is:",
+   options:["The significance level should have been 99%","They peeked repeatedly, so the true false-positive rate is well above 5%","The baseline conversion rate was too high","The MDE was set after launch"], correct:1,
+   why:"The peeking problem — checking daily and stopping the moment p dips below 0.05 inflates the Type I error rate far past the nominal 5%. The result is likely a false positive, not a real win.", cat:"stats"},
+
+  {q:"You assigned traffic 50/50 but observe 51,000 vs 47,000 users, with a chi-squared p < 0.001 on the split. Before reading the conversion result you should:",
+   options:["Declare the larger group the winner","Treat it as a Sample Ratio Mismatch and distrust the result — randomization or logging is broken","Increase the MDE and continue","Run one more day and re-check"], correct:1,
+   why:"Sample Ratio Mismatch — a split that diverges from the intended ratio at scale means the experiment plumbing is broken, so any lift is likely a counting artifact. Discard and fix before interpreting.", cat:"validity"},
+
+  {q:"Holding everything else constant, to detect a smaller minimum detectable effect the required sample size:",
+   options:["Decreases linearly","Increases roughly with the square of the reduction","Stays the same","Depends only on the power setting"], correct:1,
+   why:"Sample size scales inversely with the square of the effect — roughly halving the MDE quadruples the sample needed. Small effects are expensive to detect.", cat:"design"},
+
+  {q:"A stakeholder reads p = 0.03 as 'a 97% chance the variant is better.' This is:",
+   options:["Correct","A misreading — p is the probability of data this extreme under no effect, not the probability the variant wins","Correct only at 95% power","True for one-tailed tests only"], correct:1,
+   why:"The p-value describes the data given the null hypothesis, not the hypothesis given the data. 1 − p is not your confidence that the variant wins — the most common statistical error in A/B testing.", cat:"stats"},
+
+  {q:"A redesigned navigation shows a large click lift in week one that fades to baseline by week three, and only among returning users. The most likely cause is:",
+   options:["Seasonality","Novelty effect","Sample Ratio Mismatch","Insufficient power"], correct:1,
+   why:"Novelty effect — existing users click because the change is new, inflating early results that decay. A lift living only in returning users is the classic tell.", cat:"validity"},
+
+  {q:"Your test reaches its pre-computed sample size on a Wednesday afternoon. Best practice is to:",
+   options:["Stop immediately to save traffic","Run to at least a full week so every day of the week is represented","Keep running for a full month regardless","Switch to a one-tailed test to finish faster"], correct:1,
+   why:"Run whole weeks — weekday and weekend buyers differ, so stopping mid-week can bake a day-of-week artifact into the result even after the sample number is met.", cat:"design"},
+
+  {q:"A flat result comes back with a 95% confidence interval on the lift of [−6%, +9%]. The correct read is:",
+   options:["The variant and control are equal","The test was underpowered and inconclusive — you learned little","Ship the variant, since the point estimate is positive","This is a significant negative result"], correct:1,
+   why:"A wide interval spanning large gains and losses means you lacked the precision to distinguish them. 'Not significant' is not 'no difference' — the test simply couldn't tell.", cat:"validity"},
+
+  {q:"A prioritization framework scores a pet idea 8/10 on Confidence, mostly because a VP argued it persuasively. This exposes the core weakness that:",
+   options:["ICE is too slow to compute","Confidence often reflects persuasiveness, not the strength of evidence","PIE ignores implementation ease","Scoring frameworks are always wrong"], correct:1,
+   why:"Confidence scores tend to track how well an idea was argued rather than the evidence behind it, and the same idea earns different scores from different people. The score is an input to a decision, not the decision.", cat:"hypo"},
+
+  {q:"You run 5 variants measured on 6 metrics, and one cell hits p < 0.05. Why should you be skeptical?",
+   options:["The baseline is wrong","Multiple comparisons — across 30 tests, a chance 'winner' is expected by luck","The power was set too high","The MDE was too small"], correct:1,
+   why:"Multiple comparisons — each test carries a 5% false-positive risk, so across 30 comparisons at least one spurious 'winner' is the baseline expectation, not a surprise.", cat:"stats"},
+
+  {q:"A variant reports a suspiciously huge +40% lift. The first explanation to rule out is:",
+   options:["A genuine breakthrough","An instrumentation or tracking artifact (Twyman's law)","A novelty effect","Seasonality"], correct:1,
+   why:"Twyman's law — any figure that looks too interesting is probably wrong. Implausibly large effects are usually tracking bugs, latency from an added script, or mismatched event wiring, not breakthroughs.", cat:"validity"},
+
+  {q:"Which of these is a properly formed, testable hypothesis?",
+   options:["'Let's test a green CTA button.'","'Because exit surveys cited shipping doubt, adding a delivery-date estimate will raise add-to-cart rate.'","'The homepage feels cluttered.'","'Users want a better experience.'"], correct:1,
+   why:"A real hypothesis ties evidence to a change to a measurable outcome. Naming only the change ('a green button') has no mechanism or metric, so its result teaches nothing.", cat:"hypo"},
+
+  {q:"Your site gets 150 conversions a month and you want to detect a 5% relative lift. The honest recommendation is:",
+   options:["Run the test for two weeks and read it","You likely can't power this in a reasonable time — rely on research and judgment, or don't test","Lower significance to 80% to compensate","Peek daily to reach significance sooner"], correct:1,
+   why:"Below a traffic floor a test is chronically underpowered and would run for years. This is a 'when not to test' case — use qualitative research and reasoned judgment instead.", cat:"validity"},
+
+  {q:"A 0.15% conversion lift is statistically significant at very large sample size but sits below your 2% MDE. You should:",
+   options:["Ship it — significance is what matters","Recognize significance ≠ practical importance; it's below the smallest lift worth shipping","Rerun the test at higher power","Attribute it to a novelty effect"], correct:1,
+   why:"With enough traffic, trivial effects become significant. The decision hinges on whether the effect clears your MDE — the smallest lift worth having — not merely whether p < 0.05.", cat:"stats"},
+
+  {q:"You genuinely need the ability to stop a test early when evidence is decisive, without inflating error. The right approach is:",
+   options:["Read the fixed-horizon p-value daily and stop at 0.05","Use a sequential testing method with adjusted boundaries","Increase the MDE so significance arrives sooner","Add more variants to gather data faster"], correct:1,
+   why:"Sequential methods spend the error budget across many looks, so you can stop early validly. Reading an ordinary fixed-horizon p-value repeatedly is just peeking.", cat:"stats"},
+
+  {q:"Analytics shows a 70% drop-off at the checkout step on mobile. The correct next step before designing a test is:",
+   options:["Immediately redesign the whole checkout","Use qualitative research (session replay, surveys) to learn why the drop happens","Raise prices to filter low-intent buyers","Buy more traffic to that page"], correct:1,
+   why:"Analytics locates where the loss is; it never says why. Aim qualitative research at the drop-off to form a grounded hypothesis before building the test.", cat:"research"},
+];
+
+let state = {
+  view:"library", search:"", activeCat:"all", openIdx:null,
+  quizOrder:[], quizIndex:0, quizScore:0, quizAnswered:null, quizHistory:[], quizDone:false,
+  // calculator
+  cBaseline:5, cMdeMode:"relative", cMde:10, cAlpha:95, cPower:80, cWeekly:5000, cVariants:2,
+};
+
+function shuffledIndices(n){ const a=Array.from({length:n},(_,i)=>i); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+function resetQuiz(){ state.quizOrder=shuffledIndices(SCENARIOS.length); state.quizIndex=0; state.quizScore=0; state.quizAnswered=null; state.quizHistory=[]; state.quizDone=false; }
+resetQuiz();
+
+function catCounts(){ const c={}; ENTRIES.forEach(p=>{c[p.cat]=(c[p.cat]||0)+1;}); return c; }
+
+/* ---------------- LIBRARY ---------------- */
+function renderLibrary(){
+  const counts=catCounts();
+  const pills=Object.keys(CATS).map(c=>{
+    const active=state.activeCat===c;
+    return `<button class="pill" data-cat="${c}" data-active="${active}" onclick="setCat('${c}')">${CATS[c].icon} ${CATS[c].label} <span class="count">${counts[c]}</span></button>`;
+  }).join('');
+  const q=state.search.trim().toLowerCase();
+  const filtered=ENTRIES.filter(p=>{
+    const mc=state.activeCat==='all'||p.cat===state.activeCat;
+    const ms=!q||p.name.toLowerCase().includes(q)||p.hook.toLowerCase().includes(q)||p.def.toLowerCase().includes(q);
+    return mc&&ms;
+  });
+  const cards=filtered.map(p=>{
+    const idx=ENTRIES.indexOf(p);
+    return `<div class="card" data-cat="${p.cat}" tabindex="0" role="button" aria-label="Open details for ${p.name}"
+      onclick="openEntry(${idx})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEntry(${idx});}">
+      <span class="cat-tag" data-cat="${p.cat}">${CATS[p.cat].icon} ${CATS[p.cat].label}</span>
+      <h3>${p.name}</h3>
+      <p class="hook">${p.hook}</p>
+      <span class="explore-row">Explore <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </div>`;
+  }).join('');
+  return `
+    <div class="lib-controls">
+      <div class="search-wrap">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8b9089" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="searchInput" type="text" placeholder="Search ${ENTRIES.length} concepts — try 'peeking', 'MDE', 'SRM', 'power'..." value="${state.search.replace(/"/g,'&quot;')}" oninput="setSearch(this.value)"/>
+      </div>
+    </div>
+    <div class="lib-controls pill-row">${pills}</div>
+    <p class="result-count">${filtered.length} concept${filtered.length===1?'':'s'} shown</p>
+    <div class="grid">${cards||'<div class="empty-state">No concepts match that search. Try a different keyword or clear the category filter.</div>'}</div>`;
+}
+function setCat(c){ state.activeCat=(state.activeCat===c)?'all':c; render(); }
+function setSearch(v){ state.search=v; render(true); }
+
+function openEntry(i){ state.openIdx=i; renderModal(); }
+function closeEntry(){ state.openIdx=null; renderModal(); }
+function renderModal(){
+  const root=document.getElementById('modalRoot');
+  if(state.openIdx===null){ root.innerHTML=''; return; }
+  const p=ENTRIES[state.openIdx];
+  const examples=p.example.map(e=>`<li>${e}</li>`).join('');
+  root.innerHTML=`
+    <div class="modal-overlay" onclick="if(event.target===this) closeEntry();">
+      <div class="modal" role="dialog" aria-modal="true" aria-label="${p.name} details">
+        <div class="modal-top">
+          <span class="cat-tag" data-cat="${p.cat}">${CATS[p.cat].icon} ${CATS[p.cat].label}</span>
+          <button class="modal-close" onclick="closeEntry()" aria-label="Close">✕</button>
+        </div>
+        <h2>${p.name}</h2>
+        <p class="modal-hook">${p.hook}</p>
+        <div class="section-label">📖 What it means</div>
+        <p class="body-text">${p.def}</p>
+        <div class="section-label">🧪 In practice</div>
+        <ul class="example-list">${examples}</ul>
+        <div class="section-label">⚠️ Watch out for</div>
+        <div class="watch-box"><strong>The trap:</strong> ${p.watch}</div>
+      </div>
+    </div>`;
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&state.openIdx!==null) closeEntry(); });
+
+/* ---------------- SCENARIOS ---------------- */
+function renderScenarios(){
+  if(state.quizDone){
+    const byCat={};
+    state.quizHistory.forEach(h=>{ byCat[h.cat]=byCat[h.cat]||{c:0,t:0}; byCat[h.cat].t++; if(h.correct)byCat[h.cat].c++; });
+    const breakdown=Object.keys(byCat).map(c=>`
+      <div class="bd-item"><div class="lbl">${CATS[c].icon} ${CATS[c].label}</div><div class="n">${byCat[c].c} / ${byCat[c].t}</div></div>`).join('');
+    const missed=state.quizHistory.filter(h=>!h.correct).map(h=>`
+      <div class="missed-item"><strong>${h.q}</strong><br/>→ Correct: ${h.correctLabel}. ${h.why}</div>`).join('');
+    return `<div class="results">
+      <h2>Practice complete</h2>
+      <div class="big-score">${state.quizScore} / ${SCENARIOS.length}</div>
+      <p style="color:var(--ink-soft);">How you did across each area:</p>
+      <div class="breakdown">${breakdown}</div>
+      <button class="restart-btn" onclick="restartQuiz()">Practice again (new shuffle)</button>
+      ${missed.length?`<div class="missed-list"><h3>Review what you missed</h3>${missed}</div>`:`<p style="margin-top:20px;font-weight:600;">Perfect score — you can design and defend a test. 🔬</p>`}
+    </div>`;
+  }
+  const s=SCENARIOS[state.quizOrder[state.quizIndex]];
+  const pct=Math.round((state.quizIndex/SCENARIOS.length)*100);
+  const options=s.options.map((opt,i)=>{
+    let cls="option-btn",dis="";
+    if(state.quizAnswered!==null){ dis="disabled"; if(i===s.correct)cls+=" reveal-correct"; else if(i===state.quizAnswered)cls+=" incorrect"; }
+    return `<button class="${cls}" ${dis} onclick="answerQuiz(${i})">${opt}</button>`;
+  }).join('');
+  const feedback=state.quizAnswered!==null?`
+    <div class="feedback-box"><strong>${state.quizAnswered===s.correct?"✅ Correct — ":"❌ Not quite — "}</strong>${s.why}</div>
+    <button class="next-btn" onclick="nextQuiz()">${state.quizIndex===SCENARIOS.length-1?"See results":"Next scenario →"}</button>`:'';
+  return `<div class="scenario-wrap">
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <span class="score-chip">${state.quizIndex+1} / ${SCENARIOS.length} · score ${state.quizScore}</span>
+    </div>
+    <div class="scenario-card">
+      <div class="scenario-eyebrow">Judge the test · ${CATS[s.cat].label}</div>
+      <p class="scenario-text">${s.q}</p>
+      <div class="options">${options}</div>
+      ${feedback}
+    </div></div>`;
+}
+function answerQuiz(i){
+  if(state.quizAnswered!==null) return;
+  const s=SCENARIOS[state.quizOrder[state.quizIndex]];
+  const correct=i===s.correct;
+  state.quizAnswered=i;
+  if(correct) state.quizScore++;
+  state.quizHistory.push({q:s.q, why:s.why, correct, correctLabel:s.options[s.correct], cat:s.cat});
+  render();
+}
+function nextQuiz(){ if(state.quizIndex===SCENARIOS.length-1){ state.quizDone=true; } else { state.quizIndex++; state.quizAnswered=null; } render(); }
+function restartQuiz(){ resetQuiz(); render(); }
+
+/* ---------------- SAMPLE-SIZE CALCULATOR ---------------- */
+const Z_ALPHA={90:1.6448536, 95:1.9599640, 99:2.5758293}; // two-sided
+const Z_BETA ={80:0.8416212, 90:1.2815516, 95:1.6448536};
+
+function nfmt(n){ return Math.round(n).toLocaleString('en-US'); }
+
+function computeSampleSize(){
+  const p1=state.cBaseline/100;
+  const mde=state.cMde/100;
+  let p2;
+  if(state.cMdeMode==="relative"){ p2=p1*(1+mde); }
+  else { p2=p1+mde; }
+  const za=Z_ALPHA[state.cAlpha], zb=Z_BETA[state.cPower];
+  // validation
+  if(!(p1>0 && p1<1)) return {error:"Baseline conversion rate must be between 0% and 100% (exclusive)."};
+  if(!(p2>0 && p2<1)) return {error:"The target rate implied by your MDE falls outside 0–100%. Lower the MDE or the baseline."};
+  if(Math.abs(p2-p1)<1e-9) return {error:"MDE is zero — there is no effect to detect. Enter a positive minimum detectable effect."};
+  if(!(state.cWeekly>0)) return {error:"Weekly visitors per variant must be greater than zero."};
+  const delta=p2-p1;
+  const nPer=Math.ceil( Math.pow(za+zb,2) * (p1*(1-p1)+p2*(1-p2)) / (delta*delta) );
+  const variants=state.cVariants;
+  const total=nPer*variants;
+  const weeksRaw=nPer/state.cWeekly;
+  const weeks=Math.max(1, Math.ceil(weeksRaw));
+  return {p1,p2,delta,nPer,total,variants,weeks,weeksRaw};
+}
+
+function renderCalc(){
+  const r=computeSampleSize();
+  const modeRel=state.cMdeMode==="relative";
+  const outputs = r.error ? `<div class="calc-error"><strong>Check your inputs.</strong><br/>${r.error}</div>` : `
+    <div class="out-card hero">
+      <div class="lbl"><span>Sample per variant</span><span class="mono">n</span></div>
+      <div class="big mono">${nfmt(r.nPer)}</div>
+      <div class="out-sub">users needed in each arm before you read the result</div>
+    </div>
+    <div class="out-card">
+      <div class="lbl"><span>Total sample</span><span class="mono">×${r.variants}</span></div>
+      <div class="big mono">${nfmt(r.total)}</div>
+      <div class="out-sub">across ${r.variants} variants (control + ${r.variants-1})</div>
+    </div>
+    <div class="out-card dur">
+      <div class="lbl"><span>Estimated duration</span><span class="mono">weeks</span></div>
+      <div class="big mono">${r.weeks} ${r.weeks===1?'week':'weeks'}</div>
+      <div class="out-sub">at ${nfmt(state.cWeekly)} / variant / week &middot; raw ${r.weeksRaw.toFixed(1)}w, rounded up to whole weeks</div>
+    </div>
+    <div class="out-card">
+      <div class="lbl"><span>Baseline → target</span><span class="mono">p₁ → p₂</span></div>
+      <div class="big mono" style="font-size:22px;">${(r.p1*100).toFixed(2)}% → ${(r.p2*100).toFixed(2)}%</div>
+      <div class="out-sub">absolute lift to detect: ${(r.delta*100).toFixed(2)} pts</div>
+    </div>`;
+
+  return `
+    <p class="calc-intro"><strong>Is this test even powered?</strong> Enter your baseline conversion rate, the smallest lift worth detecting (MDE), your significance and power, and how much traffic each variant gets per week. The calculator returns the sample size you must commit to <em>before</em> launch — and how long that will take.</p>
+    <code class="calc-eq">n&nbsp;=&nbsp;(z<sub>α/2</sub> + z<sub>β</sub>)² · [ p₁(1−p₁) + p₂(1−p₂) ] / (p₂ − p₁)²&nbsp;&nbsp;&nbsp;(two-sided test of two proportions, per variant)</code>
+    <div class="calc-grid">
+      <div class="calc-panel">
+        <h4>Inputs</h4>
+        <div class="calc-field">
+          <label>Baseline conversion rate <span class="hint">(current, %)</span></label>
+          <input class="calc-input" type="number" min="0.01" max="99" step="0.1" value="${state.cBaseline}" oninput="setCalc('cBaseline',this.value)" aria-label="Baseline conversion rate percent"/>
+        </div>
+        <div class="calc-field">
+          <label>Minimum detectable effect <span class="hint">(${modeRel?'relative % lift':'absolute % points'})</span></label>
+          <div class="seg" style="margin-bottom:9px;">
+            <button data-on="${modeRel}" onclick="setCalcMode('relative')">Relative</button>
+            <button data-on="${!modeRel}" onclick="setCalcMode('absolute')">Absolute</button>
+          </div>
+          <input class="calc-input" type="number" min="0.1" step="0.5" value="${state.cMde}" oninput="setCalc('cMde',this.value)" aria-label="Minimum detectable effect"/>
+        </div>
+        <div class="two-col">
+          <div class="calc-field">
+            <label>Significance <span class="hint">(1−α)</span></label>
+            <select class="calc-input" onchange="setCalc('cAlpha',this.value)" aria-label="Significance level">
+              <option value="90" ${state.cAlpha==90?'selected':''}>90%</option>
+              <option value="95" ${state.cAlpha==95?'selected':''}>95%</option>
+              <option value="99" ${state.cAlpha==99?'selected':''}>99%</option>
+            </select>
+          </div>
+          <div class="calc-field">
+            <label>Power <span class="hint">(1−β)</span></label>
+            <select class="calc-input" onchange="setCalc('cPower',this.value)" aria-label="Statistical power">
+              <option value="80" ${state.cPower==80?'selected':''}>80%</option>
+              <option value="90" ${state.cPower==90?'selected':''}>90%</option>
+              <option value="95" ${state.cPower==95?'selected':''}>95%</option>
+            </select>
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="calc-field">
+            <label>Weekly visitors <span class="hint">(per variant)</span></label>
+            <input class="calc-input" type="number" min="1" step="100" value="${state.cWeekly}" oninput="setCalc('cWeekly',this.value)" aria-label="Weekly visitors per variant"/>
+          </div>
+          <div class="calc-field">
+            <label>Variants <span class="hint">(incl. control)</span></label>
+            <select class="calc-input" onchange="setCalc('cVariants',this.value)" aria-label="Number of variants">
+              <option value="2" ${state.cVariants==2?'selected':''}>2 (A/B)</option>
+              <option value="3" ${state.cVariants==3?'selected':''}>3</option>
+              <option value="4" ${state.cVariants==4?'selected':''}>4</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="calc-panel" style="background:var(--paper);">
+        <h4>Required scale</h4>
+        <div class="out-stack">${outputs}</div>
+      </div>
+    </div>
+    <div class="peek-note">
+      <strong>Why you can't stop early when it "looks significant."</strong> This sample size is computed for a single look at the pre-set n. If you watch a live dashboard and stop the moment p dips below your threshold, you are peeking — and every extra look inflates the false-positive rate. Evan Miller's demonstration: check after every observation and stop at first significance, and a nominal 5% error rate climbs toward ~26%. Commit to the number above, run the full duration, and read the result once. If you truly need to stop early, use a sequential-testing method built to spend the error budget across many looks — not a fixed-horizon p-value read repeatedly.
+    </div>
+    <p class="calc-assume">Assumptions: two-sided test comparing two proportions using the normal approximation; equal allocation across variants; each variant receives the stated weekly traffic independently. z values — significance 90/95/99% → 1.645/1.960/2.576; power 80/90/95% → 0.842/1.282/1.645. Real platforms may differ slightly (continuity correction, pooled vs. unpooled variance, one-sided tests); treat this as a planning estimate, and add variance/allocation for multi-arm tests.</p>`;
+}
+function setCalc(key,v){
+  const num=parseFloat(v);
+  state[key]=isNaN(num)?0:num;
+  render();
+}
+function setCalcMode(m){ state.cMdeMode=m; render(); }
+
+/* ---------------- ROOT RENDER ---------------- */
+function render(keepFocus){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===state.view));
+  const main=document.getElementById('main');
+  main.innerHTML = state.view==='library'?renderLibrary() : state.view==='scenarios'?renderScenarios() : renderCalc();
+  if(keepFocus){ const inp=document.getElementById('searchInput'); if(inp){ inp.focus(); inp.selectionStart=inp.selectionEnd=inp.value.length; } }
+}
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{ state.view=t.dataset.view; state.openIdx=null; renderModal(); render(); });
+});
+render();
+</script>
+</body>
+</html>
