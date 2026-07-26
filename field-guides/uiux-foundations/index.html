@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI/UX Foundations — Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,900&family=Space+Mono:wght@400;700&family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16140f; --paper:#f4efe6; --paper-2:#ece4d6; --cream:#fbf8f1; --line:#16140f;
+    --rust:#c8542a; --ochre:#d99c2b; --sage:#5a6e52; --teal:#1f5e63; --plum:#6b3f6e;
+    --primary:#3b32d6; --err:#c8326b;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 6% 4%, rgba(217,156,43,0.16) 0, transparent 34%),
+      radial-gradient(circle at 96% 96%, rgba(31,94,99,0.14) 0, transparent 38%),
+      var(--paper);
+    color:var(--ink); font-family:'Archivo',system-ui,sans-serif;
+    min-height:100vh; padding-bottom:60px; -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:999; opacity:.4;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+    mix-blend-mode:multiply;
+  }
+  header,.tabbar,main,footer{position:relative; z-index:1;}
+
+  h1,h2,h3,.display{font-family:'Fraunces',Georgia,serif; font-weight:900; letter-spacing:-0.01em; line-height:1.08;}
+  h1 em,.rust-em{font-style:italic; color:var(--rust);}
+  .mono{font-family:'Space Mono',monospace;}
+  .kicker{font-family:'Space Mono',monospace; text-transform:uppercase; letter-spacing:.18em; font-size:11px; font-weight:700;}
+  button{font-family:inherit;}
+
+  /* ---------- HEADER ---------- */
+  header{max-width:1120px; margin:0 auto; padding:38px 24px 6px; display:flex; align-items:flex-start; justify-content:space-between; gap:26px; flex-wrap:wrap;}
+  .head-left{flex:1 1 460px; min-width:300px;}
+  .head-left .kicker{color:var(--rust); display:block; margin-bottom:14px;}
+  header h1{font-size:clamp(38px,6vw,64px); margin:0;}
+  .lede{font-family:'Fraunces',serif; font-style:italic; font-weight:400; font-size:clamp(16px,2.1vw,20px); line-height:1.45; margin:18px 0 0; max-width:60ch; color:#3a352b;}
+  .head-meta{flex:0 0 auto; text-align:right; border:2.5px solid var(--line); background:var(--cream); box-shadow:5px 5px 0 var(--line); border-radius:4px; padding:14px 18px; min-width:170px;}
+  .head-meta .row{font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.06em; padding:4px 0; display:flex; justify-content:space-between; gap:16px; border-bottom:1px dashed rgba(22,20,15,.25);}
+  .head-meta .row:last-child{border-bottom:none;}
+  .head-meta .row span:first-child{color:#7a7263; text-transform:uppercase;}
+  .head-meta .row span:last-child{font-weight:700;}
+
+  /* ---------- TAB BAR ---------- */
+  .tabbar{max-width:1120px; margin:26px auto 0; padding:0 24px; display:flex; gap:10px; flex-wrap:wrap;}
+  .tab{font-family:'Space Mono',monospace; font-weight:700; font-size:12.5px; text-transform:uppercase; letter-spacing:.08em; padding:12px 18px; border:2.5px solid var(--line); background:var(--cream); color:var(--ink); cursor:pointer; display:flex; align-items:center; gap:8px; border-radius:4px; box-shadow:3px 3px 0 var(--line); transition:transform .12s ease, box-shadow .12s ease, background .12s ease;}
+  .tab:hover{transform:translate(-1px,-1px); box-shadow:5px 5px 0 var(--line);}
+  .tab:active{transform:translate(2px,2px); box-shadow:1px 1px 0 var(--line);}
+  .tab.active{background:var(--ink); color:var(--paper);}
+
+  /* ---------- MAIN ---------- */
+  main{max-width:1120px; margin:20px auto 0; padding:30px 28px 34px; background:var(--cream); border:2.5px solid var(--line); border-radius:4px; min-height:440px; box-shadow:6px 6px 0 var(--line);}
+
+  .sec-head{font-family:'Space Mono',monospace; text-transform:uppercase; letter-spacing:.16em; font-size:11px; font-weight:700; color:#57503f; display:flex; align-items:center; gap:14px; margin:0 0 18px;}
+  .sec-head::after{content:""; flex:1; height:2px; background:var(--line); opacity:.55;}
+
+  /* ---------- LIBRARY CONTROLS ---------- */
+  .search-wrap{position:relative; margin-bottom:16px;}
+  .search-wrap input{width:100%; padding:14px 16px 14px 46px; border:2.5px solid var(--line); border-radius:4px; font-size:15px; font-family:'Archivo',sans-serif; background:var(--paper); color:var(--ink); box-shadow:3px 3px 0 var(--line);}
+  .search-wrap input:focus{outline:none; box-shadow:3px 3px 0 var(--primary); border-color:var(--primary);}
+  .search-wrap svg{position:absolute; left:16px; top:50%; transform:translateY(-50%);}
+
+  .pill-row{display:flex; gap:9px; flex-wrap:wrap; margin-bottom:8px;}
+  .pill{display:inline-flex; align-items:center; gap:8px; border:2.5px solid var(--line); border-radius:4px; padding:8px 13px; font-family:'Space Mono',monospace; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; cursor:pointer; background:var(--paper); color:var(--ink); box-shadow:2px 2px 0 var(--line); transition:transform .1s ease, box-shadow .1s ease;}
+  .pill:hover{transform:translate(-1px,-1px); box-shadow:4px 4px 0 var(--line);}
+  .pill .count{font-weight:700; opacity:.6;}
+  .pill[data-active="true"]{color:#fff;}
+  .pill[data-active="true"] .count{opacity:.85;}
+  .pill[data-cat="blocks"][data-active="true"]{background:var(--rust); border-color:var(--rust);}
+  .pill[data-cat="structure"][data-active="true"]{background:var(--teal); border-color:var(--teal);}
+  .pill[data-cat="emphasis"][data-active="true"]{background:var(--ochre); border-color:var(--ochre); color:var(--ink);}
+  .pill[data-cat="colortype"][data-active="true"]{background:var(--plum); border-color:var(--plum);}
+  .pill[data-cat="states"][data-active="true"]{background:var(--sage); border-color:var(--sage);}
+  .pill[data-cat="all"][data-active="true"]{background:var(--ink); border-color:var(--ink);}
+
+  .result-count{font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.06em; color:#7a7263; margin:14px 0 16px; text-transform:uppercase;}
+
+  /* ---------- CARD GRID ---------- */
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:20px;}
+  @keyframes rise{from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:none;}}
+  .card{border:2.5px solid var(--line); border-radius:4px; padding:18px; display:flex; flex-direction:column; gap:11px; background:var(--cream); box-shadow:5px 5px 0 var(--line); cursor:pointer; min-height:184px; animation:rise .4s ease both; transition:transform .13s ease, box-shadow .13s ease; border-top-width:7px;}
+  .card:hover{transform:translate(-2px,-2px); box-shadow:8px 8px 0 var(--line);}
+  .card:active{transform:translate(1px,1px); box-shadow:3px 3px 0 var(--line);}
+  .card:focus-visible{outline:3px solid var(--primary); outline-offset:3px;}
+  .card:nth-child(1){animation-delay:.02s;} .card:nth-child(2){animation-delay:.05s;} .card:nth-child(3){animation-delay:.08s;}
+  .card:nth-child(4){animation-delay:.11s;} .card:nth-child(5){animation-delay:.14s;} .card:nth-child(6){animation-delay:.17s;}
+  .card:nth-child(7){animation-delay:.2s;} .card:nth-child(8){animation-delay:.23s;} .card:nth-child(9){animation-delay:.26s;}
+  .card[data-cat="blocks"]{border-top-color:var(--rust);}
+  .card[data-cat="structure"]{border-top-color:var(--teal);}
+  .card[data-cat="emphasis"]{border-top-color:var(--ochre);}
+  .card[data-cat="colortype"]{border-top-color:var(--plum);}
+  .card[data-cat="states"]{border-top-color:var(--sage);}
+
+  .cat-tag{font-family:'Space Mono',monospace; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; padding:4px 8px; border:1.5px solid var(--line); border-radius:3px; display:inline-flex; align-items:center; gap:5px; align-self:flex-start;}
+  .cat-tag[data-cat="blocks"]{background:rgba(200,84,42,.14); color:var(--rust);}
+  .cat-tag[data-cat="structure"]{background:rgba(31,94,99,.14); color:var(--teal);}
+  .cat-tag[data-cat="emphasis"]{background:rgba(217,156,43,.2); color:#8a6410;}
+  .cat-tag[data-cat="colortype"]{background:rgba(107,63,110,.14); color:var(--plum);}
+  .cat-tag[data-cat="states"]{background:rgba(90,110,82,.16); color:#3f4d39;}
+
+  .card h3{font-size:20px; font-weight:600; margin:0; line-height:1.18;}
+  .card .hook{font-size:13.5px; color:#4a4436; line-height:1.5; margin:0; flex-grow:1;}
+  .explore-row{font-family:'Space Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.1em; font-weight:700; display:flex; align-items:center; gap:7px; color:#7a7263; margin-top:auto;}
+  .card:hover .explore-row{color:var(--rust);}
+  .card:hover .explore-row svg{transform:translateX(4px);}
+  .explore-row svg{transition:transform .15s ease;}
+  .empty-state{grid-column:1/-1; text-align:center; padding:56px 20px; color:#7a7263; font-family:'Space Mono',monospace; font-size:13px;}
+
+  /* ---------- MODAL ---------- */
+  .modal-overlay{position:fixed; inset:0; background:rgba(22,20,15,.55); display:flex; align-items:flex-start; justify-content:center; padding:5vh 18px; z-index:500; overflow-y:auto; animation:fadeIn .14s ease;}
+  @keyframes fadeIn{from{opacity:0;} to{opacity:1;}}
+  .modal{background:var(--cream); border:2.5px solid var(--line); border-radius:4px; max-width:660px; width:100%; padding:30px 32px 30px; box-shadow:9px 9px 0 var(--line); animation:pop .2s cubic-bezier(.3,.6,.3,1.3);}
+  @keyframes pop{from{transform:translateY(14px); opacity:0;} to{transform:none; opacity:1;}}
+  .modal-top{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:6px;}
+  .modal-close{background:var(--paper); border:2.5px solid var(--line); border-radius:4px; width:38px; height:38px; font-size:15px; cursor:pointer; flex-shrink:0; box-shadow:2px 2px 0 var(--line); transition:transform .1s ease;}
+  .modal-close:hover{background:var(--ink); color:var(--paper); transform:translate(-1px,-1px);}
+  .modal h2{font-size:30px; font-weight:900; margin:8px 0 6px; line-height:1.12;}
+  .modal .modal-hook{font-family:'Fraunces',serif; font-style:italic; font-size:16px; color:var(--rust); margin:0 0 22px;}
+  .section-label{font-family:'Space Mono',monospace; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.12em; margin:22px 0 10px; color:#57503f; display:flex; align-items:center; gap:8px;}
+  .modal p.body-text{font-size:15px; line-height:1.68; margin:0; color:#2c281f;}
+  .example-list{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px;}
+  .example-list li{font-size:14px; line-height:1.55; padding:12px 14px 12px 36px; border:2px solid var(--line); border-radius:4px; background:var(--paper); position:relative;}
+  .example-list li::before{content:"→"; position:absolute; left:13px; top:11px; font-family:'Space Mono',monospace; font-weight:700; color:var(--rust);}
+  .watch-box{background:rgba(200,50,107,.09); border:2px solid var(--err); border-radius:4px; padding:13px 15px; font-size:14px; line-height:1.6;}
+  .watch-box strong{color:var(--err); font-family:'Space Mono',monospace; text-transform:uppercase; font-size:11px; letter-spacing:.1em;}
+  .deeper-links{display:flex; flex-direction:column; gap:6px;}
+  .deeper-links a{font-family:'Space Mono',monospace; font-size:12.5px; color:var(--primary); text-decoration:none; padding:8px 12px; border:2px solid var(--line); border-radius:4px; background:var(--paper); display:flex; align-items:center; gap:9px; transition:transform .1s ease, box-shadow .1s ease;}
+  .deeper-links a:hover{transform:translate(-1px,-1px); box-shadow:3px 3px 0 var(--primary); text-decoration:underline;}
+  .deeper-links a .arr{margin-left:auto; opacity:.6;}
+
+  /* ---------- STUDIO ---------- */
+  .studio-pills{display:flex; gap:9px; flex-wrap:wrap; margin-bottom:22px;}
+  .spill{font-family:'Space Mono',monospace; font-weight:700; font-size:11.5px; text-transform:uppercase; letter-spacing:.07em; padding:10px 15px; border:2.5px solid var(--line); border-radius:4px; background:var(--paper); cursor:pointer; box-shadow:2px 2px 0 var(--line); transition:transform .1s ease, box-shadow .1s ease;}
+  .spill:hover{transform:translate(-1px,-1px); box-shadow:4px 4px 0 var(--line);}
+  .spill[data-active="true"]{background:var(--ink); color:var(--paper);}
+  .demo-intro{font-size:14.5px; line-height:1.6; color:#3a352b; margin:0 0 20px; max-width:70ch;}
+  .demo-intro strong{font-family:'Fraunces',serif; font-weight:600;}
+  .demo-wrap{border:2.5px solid var(--line); border-radius:4px; background:var(--paper); box-shadow:5px 5px 0 var(--line); padding:22px; margin-bottom:16px;}
+  .ctrl-row{display:flex; flex-wrap:wrap; gap:20px; align-items:flex-end; margin-bottom:22px;}
+  .ctrl{display:flex; flex-direction:column; gap:7px;}
+  .ctrl label{font-family:'Space Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; font-weight:700; color:#57503f;}
+  .ctrl .val{font-family:'Space Mono',monospace; font-size:18px; font-weight:700;}
+  input[type=range]{width:220px; accent-color:var(--primary); height:6px;}
+  input[type=color]{width:56px; height:44px; border:2.5px solid var(--line); border-radius:4px; padding:2px; background:var(--paper); cursor:pointer; box-shadow:2px 2px 0 var(--line);}
+  input[type=number]{width:88px; padding:9px 11px; border:2.5px solid var(--line); border-radius:4px; font-family:'Space Mono',monospace; font-size:15px; background:var(--paper); box-shadow:2px 2px 0 var(--line);}
+  input[type=number]:focus{outline:none; border-color:var(--primary); box-shadow:2px 2px 0 var(--primary);}
+  select{font-family:'Space Mono',monospace; font-size:13px; padding:9px 11px; border:2.5px solid var(--line); border-radius:4px; background:var(--paper); cursor:pointer; box-shadow:2px 2px 0 var(--line);}
+  .demo-note{font-family:'Space Mono',monospace; font-size:11.5px; line-height:1.6; color:#57503f; background:rgba(217,156,43,.12); border:2px dashed var(--line); border-radius:4px; padding:12px 14px; margin-top:6px;}
+
+  /* squint mock */
+  .squint-mock{border:2.5px solid var(--line); border-radius:4px; background:var(--cream); padding:28px 26px; transition:filter .12s linear;}
+  .sq-hero{font-family:'Fraunces',serif; font-weight:900; font-size:34px; line-height:1.05; margin:0 0 10px;}
+  .sq-label{font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:.16em; color:var(--rust); margin:0 0 6px;}
+  .sq-body{font-size:14.5px; line-height:1.6; color:#3a352b; margin:0 0 18px; max-width:52ch;}
+  .sq-cta{font-family:'Space Mono',monospace; font-weight:700; font-size:13px; text-transform:uppercase; letter-spacing:.06em; background:var(--primary); color:#fff; border:2.5px solid var(--line); border-radius:4px; padding:12px 22px; box-shadow:4px 4px 0 var(--line); display:inline-block;}
+  .sq-cap{font-size:11.5px; color:#9a9184; margin:16px 0 0;}
+
+  /* contrast */
+  .contrast-preview{border:2.5px solid var(--line); border-radius:4px; padding:30px 26px; margin-bottom:18px;}
+  .contrast-preview .cp-lg{font-family:'Fraunces',serif; font-weight:900; font-size:32px; margin:0 0 10px; line-height:1.1;}
+  .contrast-preview .cp-sm{font-size:15px; line-height:1.55; margin:0;}
+  .ratio-big{font-family:'Fraunces',serif; font-weight:900; font-size:52px; line-height:1; margin:0;}
+  .ratio-sub{font-family:'Space Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:#7a7263; margin:4px 0 18px;}
+  .badge-row{display:flex; gap:12px; flex-wrap:wrap;}
+  .wbadge{border:2.5px solid var(--line); border-radius:4px; padding:11px 15px; box-shadow:3px 3px 0 var(--line); min-width:130px;}
+  .wbadge .wlab{font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:#57503f;}
+  .wbadge .wres{font-family:'Space Mono',monospace; font-weight:700; font-size:15px; margin-top:3px; display:flex; align-items:center; gap:6px;}
+  .wbadge.pass{background:rgba(90,110,82,.16);} .wbadge.pass .wres{color:#3f4d39;}
+  .wbadge.fail{background:rgba(200,50,107,.1);} .wbadge.fail .wres{color:var(--err);}
+
+  /* mixer */
+  .mix-screen{border:2.5px solid var(--line); border-radius:4px; overflow:hidden; margin-bottom:16px; min-height:280px; display:flex; flex-direction:column;}
+  .mix-top{padding:16px 20px; display:flex; align-items:center; justify-content:space-between;}
+  .mix-top .mt-brand{font-family:'Fraunces',serif; font-weight:900; font-size:20px;}
+  .mix-top .mt-btn{font-family:'Space Mono',monospace; font-size:11px; font-weight:700; padding:8px 14px; border-radius:4px; border:2px solid rgba(0,0,0,.35);}
+  .mix-body{flex:1; padding:24px 22px; display:flex; flex-direction:column; gap:14px;}
+  .mix-card{border-radius:4px; padding:18px 20px; border:2px solid rgba(0,0,0,.18);}
+  .mix-card h4{font-family:'Fraunces',serif; font-weight:600; font-size:19px; margin:0 0 8px;}
+  .mix-card p{font-size:13.5px; line-height:1.5; margin:0 0 14px; opacity:.9;}
+  .mix-accent-btn{font-family:'Space Mono',monospace; font-weight:700; font-size:12px; padding:10px 18px; border-radius:4px; border:2px solid rgba(0,0,0,.4); display:inline-block;}
+  .prop-bar{display:flex; height:38px; border:2.5px solid var(--line); border-radius:4px; overflow:hidden; margin-bottom:8px; box-shadow:3px 3px 0 var(--line);}
+  .prop-seg{display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:11px; font-weight:700;}
+
+  /* type scale */
+  .specimen{border:2.5px solid var(--line); border-radius:4px; background:var(--cream); padding:8px 24px 20px;}
+  .spec-row{display:flex; align-items:baseline; gap:16px; padding:12px 0; border-bottom:1px dashed rgba(22,20,15,.2);}
+  .spec-row:last-child{border-bottom:none;}
+  .spec-px{font-family:'Space Mono',monospace; font-size:11px; color:#9a9184; flex:0 0 84px; white-space:nowrap;}
+  .spec-txt{line-height:1.1; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+
+  /* ---------- PRACTICE ---------- */
+  .scenario-wrap{padding-bottom:14px;}
+  .progress-row{display:flex; align-items:center; gap:16px; margin-bottom:24px;}
+  .progress-track{flex:1; height:12px; background:var(--paper); border:2.5px solid var(--line); border-radius:4px; overflow:hidden;}
+  .progress-fill{height:100%; background:var(--primary); transition:width .35s ease;}
+  .score-chip{font-family:'Space Mono',monospace; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.06em; border:2.5px solid var(--line); border-radius:4px; padding:8px 12px; white-space:nowrap; box-shadow:2px 2px 0 var(--line); background:var(--paper);}
+  .scenario-card{border:2.5px solid var(--line); border-radius:4px; padding:28px; background:var(--paper); box-shadow:5px 5px 0 var(--line);}
+  .scenario-eyebrow{font-family:'Space Mono',monospace; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.14em; color:var(--rust); margin-bottom:12px;}
+  .scenario-text{font-family:'Fraunces',serif; font-weight:600; font-size:22px; line-height:1.32; margin:0 0 24px;}
+  .options{display:grid; gap:11px;}
+  .option-btn{text-align:left; padding:15px 17px; border:2.5px solid var(--line); border-radius:4px; background:var(--cream); font-family:'Archivo',sans-serif; font-weight:600; font-size:15px; cursor:pointer; color:var(--ink); box-shadow:3px 3px 0 var(--line); transition:transform .1s ease, box-shadow .1s ease;}
+  .option-btn:hover:not([disabled]){transform:translate(-1px,-1px); box-shadow:5px 5px 0 var(--line);}
+  .option-btn[disabled]{cursor:default;}
+  .option-btn.incorrect{background:rgba(200,50,107,.12); border-color:var(--err); color:var(--err);}
+  .option-btn.reveal-correct{background:rgba(90,110,82,.18); border-color:var(--sage);}
+  .feedback-box{margin-top:20px; padding:16px 18px; border:2.5px dashed var(--line); border-radius:4px; font-size:14.5px; line-height:1.6; background:var(--cream);}
+  .feedback-box strong{font-family:'Space Mono',monospace; text-transform:uppercase; font-size:11px; letter-spacing:.08em;}
+  .next-btn,.restart-btn{font-family:'Space Mono',monospace; font-weight:700; text-transform:uppercase; letter-spacing:.06em; font-size:13px; background:var(--ink); color:var(--paper); border:2.5px solid var(--line); border-radius:4px; padding:13px 24px; cursor:pointer; box-shadow:4px 4px 0 var(--line); transition:transform .1s ease, box-shadow .1s ease; margin-top:20px;}
+  .next-btn:hover,.restart-btn:hover{transform:translate(-1px,-1px); box-shadow:6px 6px 0 var(--line);}
+  .results{text-align:center; padding:16px 6px 8px;}
+  .results h2{font-size:32px; margin-bottom:4px;}
+  .big-score{font-family:'Fraunces',serif; font-weight:900; font-size:66px; margin:14px 0; color:var(--rust); line-height:1;}
+  .breakdown{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin:24px 0; text-align:left;}
+  .bd-item{border:2.5px solid var(--line); border-radius:4px; padding:13px 15px; background:var(--paper); box-shadow:3px 3px 0 var(--line);}
+  .bd-item .lbl{font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:#57503f;}
+  .bd-item .n{font-family:'Space Mono',monospace; font-weight:700; font-size:18px; margin-top:3px;}
+  .missed-list{text-align:left; margin-top:26px;}
+  .missed-list h3{font-family:'Space Mono',monospace; font-size:13px; text-transform:uppercase; letter-spacing:.08em;}
+  .missed-item{border-left:5px solid var(--err); background:rgba(200,50,107,.08); border-radius:4px; padding:12px 15px; margin-bottom:9px; font-size:13.5px; line-height:1.55;}
+
+  /* ---------- WHERE TO STUDY ---------- */
+  .res-section{margin-bottom:30px;}
+  .res-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px;}
+  .res-item{border:2.5px solid var(--line); border-radius:4px; background:var(--paper); box-shadow:4px 4px 0 var(--line); padding:16px 17px; display:flex; flex-direction:column; gap:8px; text-decoration:none; color:var(--ink); animation:rise .4s ease both; transition:transform .12s ease, box-shadow .12s ease;}
+  .res-item:hover{transform:translate(-2px,-2px); box-shadow:7px 7px 0 var(--line);}
+  .res-item .rn{font-family:'Fraunces',serif; font-weight:600; font-size:18px; display:flex; align-items:center; justify-content:space-between; gap:10px;}
+  .res-item .rn svg{flex-shrink:0; opacity:.55;}
+  .res-item:hover .rn svg{opacity:1; transform:translate(2px,-2px);}
+  .res-item .rb{font-size:13px; color:#4a4436; line-height:1.5;}
+  .res-item .rtag{font-family:'Space Mono',monospace; font-size:9.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--teal); margin-top:auto;}
+  .prin-group{margin-bottom:20px;}
+  .prin-title{font-family:'Fraunces',serif; font-weight:900; font-size:22px; margin:0 0 4px; display:flex; align-items:baseline; gap:12px;}
+  .prin-title .num{font-family:'Space Mono',monospace; font-size:15px; color:var(--rust); font-weight:700;}
+  .prin-links{display:flex; flex-wrap:wrap; gap:9px; margin-top:12px;}
+  .prin-links a{font-family:'Space Mono',monospace; font-size:11.5px; color:var(--primary); text-decoration:none; padding:8px 12px; border:2px solid var(--line); border-radius:4px; background:var(--paper); box-shadow:2px 2px 0 var(--line); transition:transform .1s ease, box-shadow .1s ease;}
+  .prin-links a:hover{transform:translate(-1px,-1px); box-shadow:4px 4px 0 var(--primary); text-decoration:underline;}
+  .megalink{display:inline-flex; align-items:center; gap:10px; font-family:'Space Mono',monospace; font-size:13px; font-weight:700; color:#fff; background:var(--plum); border:2.5px solid var(--line); border-radius:4px; padding:14px 20px; text-decoration:none; box-shadow:4px 4px 0 var(--line); transition:transform .1s ease, box-shadow .1s ease;}
+  .megalink:hover{transform:translate(-2px,-2px); box-shadow:6px 6px 0 var(--line);}
+
+  footer{max-width:1120px; margin:34px auto 0; padding:20px 24px 0; font-family:'Space Mono',monospace; font-size:11px; line-height:1.7; color:#7a7263; text-align:center; border-top:2px solid rgba(22,20,15,.25);}
+  footer strong{color:var(--ink);}
+
+  @media (max-width:640px){
+    header{padding:26px 18px 6px;}
+    .head-meta{text-align:left;}
+    main{padding:22px 16px 26px;}
+    .modal{padding:22px 20px;}
+    .scenario-text{font-size:19px;}
+    input[type=range]{width:170px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-left">
+    <span class="kicker">UI/UX Foundations · Field Guide</span>
+    <h1>How to <em>see</em> an interface.</h1>
+    <p class="lede">Every screen you'll ever use is built from five atoms, arranged by seven principles, across a handful of states. Learn to see them and you can take any interface apart — then put a better one back together.</p>
+  </div>
+  <div class="head-meta">
+    <div class="row"><span>Concepts</span><span id="metaConcepts">29</span></div>
+    <div class="row"><span>Categories</span><span>5</span></div>
+    <div class="row"><span>Studio demos</span><span>4</span></div>
+    <div class="row"><span>Scenarios</span><span id="metaScen">14</span></div>
+    <div class="row"><span>Format</span><span>Interactive</span></div>
+  </div>
+</header>
+
+<div class="tabbar">
+  <div class="tab active" data-view="library">📚 Concept Library</div>
+  <div class="tab" data-view="studio">🧪 Studio</div>
+  <div class="tab" data-view="practice">🎯 Practice</div>
+  <div class="tab" data-view="resources">🧭 Where to Study</div>
+</div>
+
+<main id="main"></main>
+
+<footer>
+  <div>Design reference: <strong>Diana Palavandishvili</strong> · Built with the field-guide-builder skill.</div>
+  <div>Concepts are a study synthesis of durable UI/UX foundations — use them as a lens, then pressure-test against real interfaces and the deep-dive sources in "Where to Study."</div>
+</footer>
+
+<div id="modalRoot"></div>
+
+<script>
+/* ============================ DATA ============================ */
+const CATS = {
+  blocks:    { label:"Building Blocks",     icon:"🧱", accent:"var(--rust)" },
+  structure: { label:"Layout & Composition",icon:"📐", accent:"var(--teal)" },
+  emphasis:  { label:"Hierarchy & Contrast",icon:"👁️", accent:"var(--ochre)" },
+  colortype: { label:"Colour & Type",       icon:"🎨", accent:"var(--plum)" },
+  states:    { label:"States & Consistency",icon:"🎚️", accent:"var(--sage)" },
+};
+
+const ENTRIES = [
+  /* ---------- BUILDING BLOCKS ---------- */
+  {cat:"blocks", name:"Shapes", hook:"The invisible containers everything else lives inside.",
+   def:"Shapes are the structural atoms of an interface — rectangles, rounded cards, circles, dividers, the negative regions between them. Before a screen has any content, it already has shape: the frame of a button, the boundary of a modal, the pill of a tag. Shape communicates function before a word is read. A sharp-cornered block reads as serious and system-like; a soft, heavily-rounded card reads as friendly and approachable; a circle almost always means 'person' or 'action'. Getting shape language consistent is why a product feels like one product and not a pile of screens.",
+   example:["A fully-rounded (pill) button vs. a square-cornered one sets the entire personality of a UI before you add color — compare a banking app to a kids' game.","A circular avatar instantly reads as 'a person' where the same photo in a square reads as 'content' or 'a thumbnail'."],
+   watch:"Mixing corner radii randomly (8px here, 16px there, sharp corners next to them) is one of the fastest ways to make a competent design feel amateur. Pick a small radius scale and hold it everywhere."},
+
+  {cat:"blocks", name:"Icons", hook:"Visual shorthand that saves the user from reading.",
+   def:"Icons are compressed meaning — a symbol that stands in for a word or action so the eye can navigate faster than it can read. A magnifying glass means search, a house means home, a gear means settings. Their power is speed and space efficiency; their danger is ambiguity, because an icon only 'works' if its meaning is already shared. Good icon systems are consistent in weight, size, and metaphor so they read as a family, and they pair icon with label whenever the meaning isn't near-universal.",
+   example:["A bottom tab bar uses home / search / heart / profile icons because these metaphors are learned and instantly scannable.","A hamburger (☰) icon alone confuses some users; pairing it with the word 'Menu' measurably improves discovery."],
+   watch:"A 'clever' or novel icon with no label forces users to guess — the mystery-meat navigation trap. If a first-time user can't name what an icon does, it needs a text label or a different metaphor."},
+
+  {cat:"blocks", name:"Images", hook:"Where emotion and real-world context enter the screen.",
+   def:"Images — photography, illustration, product shots — carry the emotional and contextual load that shape and text can't. They tell the user who a product is for, what a thing looks like in real life, and what feeling to attach to it. Because they're high-bandwidth, images dominate visual hierarchy: the eye goes to a human face or a large photo before it reads a headline. That makes image choice a strategic decision, not decoration — the wrong stock photo can undercut an otherwise sharp interface.",
+   example:["An e-commerce PDP lives or dies on real, zoomable product photography — it's the closest a shopper gets to holding the item.","A landing page that swaps generic stock photos for authentic in-context shots often lifts trust and conversion."],
+   watch:"Images are also the heaviest thing on a page. Uncompressed hero images silently kill load time on mobile, and a beautiful screen that takes six seconds to appear has already lost the user. Weigh emotional payoff against performance cost."},
+
+  {cat:"blocks", name:"Text", hook:"The actual content — the reason the screen exists.",
+   def:"Text is the content atom: the words that carry the real information and the majority of a product's meaning. Everything else — shape, color, layout — exists to make text findable, readable, and scannable. This is why 'UI is 95% typography' is a useful exaggeration. Treating copy as a first-class design material (clear labels, honest microcopy, scannable structure) usually improves a product more than any visual flourish, because users came for the words, not the wrapper.",
+   example:["A button labeled 'Start free trial' converts differently than 'Submit' — the words are part of the interface, not filler.","Breaking a wall of text into short paragraphs, bold key phrases, and lists makes the same content feel effortless to read."],
+   watch:"Designers love to prototype with lorem ipsum, but placeholder text hides real problems — long product names that break layouts, empty states with nothing to say, error messages that never got written. Design with real, worst-case content."},
+
+  {cat:"blocks", name:"Colour (as a block)", hook:"The atom that sets mood and meaning at a glance.",
+   def:"Beyond the deep colour-theory topics, colour is one of the five raw building blocks: the fastest signal on a screen. Before the user reads or recognizes a shape, they've already registered warmth, energy, and mood from colour. As a building block it does three jobs — it sets emotional tone (a calm sage vs. an urgent red), it encodes meaning (green = success, red = danger), and it directs attention (one saturated accent in a muted field pulls the eye). Because it's pre-cognitive, colour is powerful and easy to overuse.",
+   example:["A single rust-coloured button in an otherwise neutral layout becomes the obvious next action with zero instruction.","Status colours — green 'paid', amber 'pending', red 'failed' — let a user parse a dashboard row before reading a single word."],
+   watch:"Colour is a signal, never the only signal. Roughly 1 in 12 men has some colour-vision deficiency, so meaning carried by colour alone (a red dot with no icon or label) is invisible to them. Always back colour with shape, text, or position."},
+
+  /* ---------- LAYOUT & COMPOSITION ---------- */
+  {cat:"structure", name:"Composition", hook:"How all the pieces are arranged into one intentional whole.",
+   def:"Composition is the arrangement of every element on a screen so they read as a deliberate whole rather than a scatter of parts. It's the umbrella discipline that layout, alignment, proximity, and whitespace all serve. Good composition guides the eye on a chosen path, balances visual weight so nothing feels like it's about to tip over, and leaves room to breathe. It's the difference between a screen that feels 'designed' and one that feels 'assembled' — even when both contain identical content.",
+   example:["A landing page that leads the eye headline → subhead → CTA → proof, in that order, is composition doing its job invisibly.","Balancing a heavy image on the left with a block of text and a button on the right keeps a hero from feeling lopsided."],
+   watch:"Composition is easy to admire and hard to justify with rules. Beginners over-center everything for 'balance' and get a static, boring result; deliberate asymmetry usually feels more alive. Learn the rules (grid, alignment) before you break them on instinct.",
+   links:[
+     {label:"Understanding Composition — UX Planet", url:"https://uxplanet.org/composition-and-its-rules-in-the-design-of-interfaces-65a86e4d09a7"},
+     {label:"5 Composition Principles — Enou & Co", url:"https://www.linkedin.com/pulse/5-design-composition-key-principles-better-enou-co/"},
+     {label:"Techniques for Composition — Canva", url:"https://www.canva.com/learn/visual-design-composition/"}
+   ]},
+
+  {cat:"structure", name:"Layout & Grids", hook:"The invisible skeleton that keeps everything aligned.",
+   def:"A grid is a system of columns, rows, and gutters that gives every element a logical place to sit. Layout is how you use that grid to organize content into a scannable structure. Grids create the underlying order that makes an interface feel calm and coherent, and they make responsive design tractable — reflow becomes 'rearrange the columns' instead of 'move a hundred things by hand'. Most digital work uses a flexible column grid (often 12 columns) plus a consistent spacing scale.",
+   example:["A 12-column grid lets a card span 4 columns on desktop and 12 (full width) on mobile without redesigning it.","A consistent 8-point spacing scale (8, 16, 24, 32…) makes gaps feel rhythmic instead of arbitrary."],
+   watch:"A grid is a servant, not a jail. Snapping everything rigidly to columns can produce lifeless, boxy layouts; the best work knows when to break the grid for emphasis. But break it on purpose — accidental misalignment just looks broken.",
+   links:[
+     {label:"Fundamentals of Layout — UX Collective", url:"https://uxdesign.cc/fundamentals-of-layout-in-interface-design-ui-3a9dba31f1"},
+     {label:"Grid Systems History — Designlab", url:"https://designlab.com/blog/grid-systems-history-ux-ui-layout"},
+     {label:"Better Layout Grids — Smashing Magazine", url:"https://www.smashingmagazine.com/2017/12/building-better-ui-designs-layout-grids/"},
+     {label:"Responsive Design — UXPin", url:"https://www.uxpin.com/studio/blog/best-practices-examples-of-excellent-responsive-design/"}
+   ]},
+
+  {cat:"structure", name:"Alignment", hook:"Line things up and the whole screen looks intentional.",
+   def:"Alignment is the arrangement of elements along shared edges or a common axis. It's the cheapest, highest-impact way to make a design look professional, because the human eye is exquisitely sensitive to things that are almost-but-not-quite lined up. Consistent alignment creates invisible lines that connect elements and guide reading. The default rule of thumb: prefer strong left-alignment for text-heavy layouts (it gives the eye a stable return edge), and avoid mixing many alignment axes on one screen.",
+   example:["Left-aligning a form's labels, inputs, and helper text along one edge makes it feel like a single tidy column.","A pricing table where every price, feature, and button aligns row-to-row reads instantly; a few pixels off and it feels sloppy."],
+   watch:"Centered text looks elegant for a short headline but becomes hard to read in longer blocks — every line starts at a different point, so the eye has to hunt for the beginning. Reserve centering for short, punchy elements."},
+
+  {cat:"structure", name:"Proximity", hook:"Things that belong together should sit together.",
+   def:"Proximity is the principle that elements placed near each other are perceived as related, and space between groups signals separation. It's how you create structure without drawing a single line or box. Correct proximity lets a user parse a screen's information architecture at a glance — this label goes with that input, this caption belongs to that image. It's one of the Gestalt principles, and arguably the most practical: fixing spacing is often the single biggest readability win available.",
+   example:["Putting a form field's label tight against its input, with a bigger gap before the next field, makes the pairing unmistakable.","Grouping related settings with generous space between groups removes the need for heavy dividing lines and borders."],
+   watch:"The classic bug is a label floating equidistant between two inputs — is it the label for the field above or below? Ambiguous spacing forces the user to guess. Space should always make the relationship obvious, not neutral."},
+
+  {cat:"structure", name:"Whitespace", hook:"Empty space isn't wasted — it's doing the heavy lifting.",
+   def:"Whitespace (negative space) is the empty area between and around elements. Far from being 'nothing', it's an active design material: it creates focus by isolating important elements, establishes grouping via proximity, and gives content room to breathe so a screen feels calm instead of cramped. Generous whitespace signals confidence and quality — it's why premium brands leave so much of the page empty. Cramming more in almost never makes a screen easier to use.",
+   example:["A checkout page with lots of space around the single primary button makes the next step obvious and reduces anxiety.","Increasing line spacing and margins on a text-heavy article measurably improves reading comprehension and reduces fatigue."],
+   watch:"Whitespace has an economic tension: stakeholders often push to 'fill the empty space' with more content, more banners, more CTAs. Adding to whitespace usually lowers clarity and conversion. Defend the emptiness — it's a feature, not a gap."},
+
+  {cat:"structure", name:"Responsive Design", hook:"One design that works from a phone to a monitor.",
+   def:"Responsive design is building interfaces that adapt fluidly to any screen size — reflowing columns, resizing type, and rearranging content so it stays usable from a 360px phone to a wide desktop. Because most traffic is mobile, the discipline is best practiced mobile-first: design the hardest, most constrained layout first, then progressively enhance for bigger screens. Breakpoints, flexible grids, and relative units are the mechanics; the mindset is 'content adapts to the user's context, not the other way around'.",
+   example:["A three-column desktop card grid collapses to a single stacked column on mobile, keeping every card fully usable.","Thumb-friendly tap targets and a sticky mobile CTA respect how a phone is actually held and used one-handed."],
+   watch:"'Responsive' isn't just shrinking — a desktop layout squeezed onto a phone produces tiny tap targets and horizontal scroll. Designing on a big monitor and 'checking mobile later' inverts reality when most of your users are on phones."},
+
+  /* ---------- HIERARCHY & CONTRAST ---------- */
+  {cat:"emphasis", name:"Visual Hierarchy", hook:"Telling the eye what to look at, and in what order.",
+   def:"Visual hierarchy is the deliberate ordering of elements by importance so the eye knows where to go first, second, and third. It's arguably the single most important skill in UI, because a screen without hierarchy forces the user to do the sorting work themselves. You create it with the tools of emphasis: size, weight, colour, contrast, position, and whitespace. Done well, hierarchy is invisible — the user just 'knows' what matters. Done badly, everything competes and nothing wins.",
+   example:["A pricing page makes the recommended plan bigger, bolder, and colour-highlighted so the eye lands there first, by design.","A dashboard surfaces the one number that matters at large size, with supporting metrics smaller and quieter around it."],
+   watch:"When everything is emphasized, nothing is. Making every element bold, big, or brightly coloured (the 'shout everything' trap) flattens hierarchy to zero. Emphasis only works by contrast — something must be quiet for something else to feel loud.",
+   links:[
+     {label:"Importance of Visual Hierarchy — Toptal", url:"https://www.toptal.com/designers/ux/visual-hierarchy-infographic"},
+     {label:"Principles of Visual Hierarchy — Visme", url:"https://visme.co/blog/visual-hierarchy/"},
+     {label:"Creating Visual Hierarchy — Canva", url:"https://www.canva.com/learn/visual-hierarchy/"}
+   ]},
+
+  {cat:"emphasis", name:"Contrast", hook:"Difference is what makes anything visible at all.",
+   def:"Contrast is difference — in colour, size, weight, shape, or space — and it's the mechanism behind both aesthetics and accessibility. Perceptually, we only notice what differs from its surroundings, so contrast is how you create focal points and hierarchy. Functionally, text-to-background contrast is a hard accessibility requirement: WCAG sets minimum contrast ratios (4.5:1 for normal text, 3:1 for large) so people with low vision can actually read. Contrast is therefore both an expressive tool and a measurable standard.",
+   example:["A dark, heavy CTA on a light, airy page has high contrast and becomes the obvious action — contrast building hierarchy.","Trendy light-grey text on a white background fails WCAG contrast and is genuinely unreadable for many users."],
+   watch:"Low-contrast 'elegant' greys are one of the most common accessibility failures on the web. If you can't comfortably read it in bright sunlight on a cheap phone, it fails — and 'it looks subtle on my Retina display' isn't the test. Check the ratio.",
+   links:[
+     {label:"Role of Contrast — Halo Lab", url:"https://www.halo-lab.com/blog/how-contrast-works-in-user-experience-design"},
+     {label:"Types of Contrast — Tubik Studio", url:"https://blog.tubikstudio.com/contrast-in-user-interface-design/"},
+     {label:"How to Create Contrast — UX Knowledge Base", url:"https://uxknowledgebase.com/contrast-in-ui-design-4dbf9c6ac84a"}
+   ]},
+
+  {cat:"emphasis", name:"Gestalt Principles", hook:"How the brain groups parts into wholes automatically.",
+   def:"Gestalt principles describe how humans instinctively perceive organization — we group elements into wholes rather than seeing isolated parts. The key ones for UI: proximity (near = related), similarity (alike = related), closure (we complete implied shapes), continuity (the eye follows lines and curves), and figure/ground (we separate an object from its background). Designers use these to create structure the user 'feels' without being told — grouping, sections, and relationships that need no borders or labels because perception does the work.",
+   example:["Similarity: styling all clickable links the same colour teaches users 'this style = tappable' across the whole product.","Closure: an icon made of a few disconnected strokes still reads as a complete shape because the brain fills the gaps."],
+   watch:"Gestalt cuts both ways — accidental proximity or similarity creates relationships you didn't intend. Two unrelated buttons styled identically imply they do similar things; an ad placed too close to content gets grouped with it. Perception is automatic, so check what you're implying."},
+
+  {cat:"emphasis", name:"Focal Point", hook:"The one place the eye is meant to land first.",
+   def:"A focal point is the single element designed to grab attention first — the visual anchor a composition is built around. Every effective screen has one clear entry point for the eye, whether it's a hero headline, a key product image, or a primary CTA. The focal point is created with maximum contrast against its surroundings: the biggest, boldest, most colourful, or most isolated element wins. Establishing it is the first move of hierarchy; everything else is arranged in relation to it.",
+   example:["A hero section makes the headline the focal point, with the CTA as the clear second stop on the eye's journey.","A photography portfolio uses one large image as the focal point per screen, letting the rest recede as supporting grid."],
+   watch:"Competing focal points cancel out. Two 'hero' elements fighting for first attention (a giant banner and a giant popup) create a tug-of-war that leaves the user disoriented. Decide the one thing that matters most per screen, and let it clearly win."},
+
+  {cat:"emphasis", name:"Size & Scale", hook:"Bigger reads as more important — use it deliberately.",
+   def:"Size and scale are the most direct tools of hierarchy: bigger elements are perceived as more important and are seen first. Scale isn't just about a single big thing — it's about the ratio between elements. Strong scale contrast (a huge headline over tiny caption) feels confident and dramatic; timid, similar sizes feel flat and uncertain. A deliberate type scale and consistent sizing system turn 'bigger = more important' from a vague instinct into a repeatable, harmonious rhythm across a product.",
+   example:["A landing hero pairs a very large headline with much smaller supporting text — the dramatic scale ratio commands attention.","A stat card shows the number huge and its label small, so the value is grasped before the description is even read."],
+   watch:"Weak scale contrast is a silent hierarchy killer — a 24px headline over 20px body looks like a mistake, not a hierarchy. If two things have different importance, make the size difference obvious. Timid steps read as accidental, not intentional."},
+
+  /* ---------- COLOUR & TYPE ---------- */
+  {cat:"colortype", name:"Colour Theory", hook:"Why some colour combinations just work.",
+   def:"Colour theory is the framework for choosing colours that work together — built on the colour wheel and relationships like complementary (opposite, high-energy), analogous (adjacent, harmonious), and triadic (evenly spaced, balanced-but-vibrant). It also covers the three properties you actually manipulate: hue (which colour), saturation (how intense), and lightness (how bright). Understanding these lets you build a palette on purpose instead of picking colours that 'look nice' individually but clash as a set. In UI, restraint plus intention beats variety every time.",
+   example:["A complementary pairing (e.g. a warm accent against a cool neutral base) makes a CTA pop with built-in tension.","Building a palette from one hue at several lightness/saturation levels yields a coherent, professional look effortlessly."],
+   watch:"Saturation is the usual culprit behind amateur palettes — several fully-saturated colours competing at max intensity vibrate and exhaust the eye. Mature palettes lean on desaturated, tinted neutrals and spend saturation carefully, on the few things that must pop.",
+   links:[
+     {label:"Color Theory Basics — UX Planet", url:"https://uxplanet.org/color-theory-brief-guide-for-designers-76e11c57eaa"},
+     {label:"History of Colours — Khinkhwab", url:"https://khinkhwab.com/blogs/news/the-origins-of-colour-a-fascinating-history"},
+     {label:"Color Psychology in UI — UX Design", url:"https://bootcamp.uxdesign.cc/color-psychology-in-ui-design-how-colors-shape-emotions-and-user-behavior-6254708fd5fb"},
+     {label:"Choosing Colour for UI — NALS", url:"https://medium.com/@NALSengineering/color-in-ui-design-part-1-foundation-of-using-color-to-create-effectively-ui-034f9da6995d"}
+   ]},
+
+  {cat:"colortype", name:"The 60-30-10 Rule", hook:"One dominant, one secondary, one accent. That's it.",
+   def:"The 60-30-10 rule is a proportion guide for balanced palettes: roughly 60% a dominant colour (usually a neutral background), 30% a secondary colour (supporting surfaces and larger elements), and 10% an accent (the sharp colour reserved for CTAs and highlights). The magic is the 10% — because the accent is rare, it automatically becomes the thing the eye is drawn to, which is exactly what you want your primary action to be. The rule enforces restraint and gives you working hierarchy for free.",
+   example:["A clean app: 60% off-white background, 30% muted surface panels and cards, 10% a single bold brand colour on buttons.","Because the accent covers only ~10% of the screen, every button in that colour reads as 'the important action here'."],
+   watch:"The rule breaks the instant you spend your accent everywhere. Eight competing accent colours (or the brand colour on every element) destroys the 10% scarcity that made the accent powerful — now nothing stands out and the palette feels chaotic. Guard the accent's rarity."},
+
+  {cat:"colortype", name:"Colour Psychology", hook:"Colour carries meaning before you read a word.",
+   def:"Colour psychology is the study of the emotional and cultural associations colours carry — blue reads as trustworthy and calm (why so many banks and tech brands use it), red as urgent/passionate/dangerous, green as growth/success/go, yellow as optimistic and attention-grabbing. These associations shape how a product feels and what actions users expect. But associations are partly cultural and contextual, so psychology is a starting hypothesis, not a law — the same red means 'error' in a form and 'sale' on a price tag.",
+   example:["A fintech app leans on blues and greens to signal stability and trust — the emotional register the category demands.","Green for 'confirm/success' and red for 'delete/danger' set up expectations users carry across every app they use."],
+   watch:"Colour meaning is contextual and cultural, not universal — white signifies purity in some cultures and mourning in others; red is luck in China and danger in a Western dashboard. Never rely on a single 'colour = emotion' mapping for a global audience without checking context."},
+
+  {cat:"colortype", name:"Typography", hook:"Ninety-five percent of the web is words — treat type as design.",
+   def:"Typography is the craft of arranging type to be legible, readable, and expressive. It covers typeface choice, size, line height (leading), letter spacing (tracking), line length (measure), and hierarchy. Because interfaces are overwhelmingly text, typography does more work than any other visual element — it sets tone, creates hierarchy, and determines whether content is effortless or exhausting to consume. Mastering a few fundamentals (comfortable line length of ~45–75 characters, generous line height for body, a clear type scale) improves almost any screen.",
+   example:["Setting body text at ~16px with 1.5 line height and a 60-character measure makes long content genuinely comfortable to read.","A clear scale — big bold headings, medium subheads, readable body, quiet captions — creates hierarchy with type alone."],
+   watch:"The most common typography failure is too many type styles — five sizes, three fonts, random weights — which reads as noise. Discipline (a small, deliberate scale and one or two families) almost always beats variety. Constraint is the skill.",
+   links:[
+     {label:"Basics of Typography — Designlab", url:"https://designlab.com/blog/what-is-typography-how-is-it-important-to-ux-ui-design"},
+     {label:"Principles of Typography — UX Planet", url:"https://uxplanet.org/principles-of-typography-in-ui-design-bc28f1f9666d"},
+     {label:"Typography History — Fontfabric", url:"https://www.fontfabric.com/blog/history-and-evolution-of-typography-fonts-timeline/"},
+     {label:"Type Classification — Toptal", url:"https://www.toptal.com/designers/typography/typeface-classification"},
+     {label:"Choosing Typefaces — UX Planet", url:"https://uxplanet.org/making-the-right-choice-how-to-select-the-perfect-font-for-your-ui-e14e593f6aef"}
+   ]},
+
+  {cat:"colortype", name:"Type Classification", hook:"Serif, sans, mono, and what each one says.",
+   def:"Type classification groups typefaces by their structural features and the tone they carry. The big families: serifs (small feet on the strokes — traditional, authoritative, editorial: think of a newspaper); sans-serifs (no feet — clean, modern, neutral: most app UI); slab serifs (heavy, blocky feet — bold and confident); scripts (handwriting — personal, decorative, used sparingly); and monospace (fixed-width — technical, code, data). Knowing the families lets you pick a voice on purpose and pair fonts that contrast meaningfully instead of clashing.",
+   example:["A serif like Fraunces gives headlines an editorial, crafted authority; a clean sans like Archivo keeps body text neutral and legible.","Monospace (like Space Mono) instantly signals 'technical / data / code' — perfect for labels, metrics, and tags."],
+   watch:"Decorative and script faces are seductive and almost always the wrong choice for anything a user must read repeatedly — they're for a logo or one hero word, never body text or UI labels. Legibility beats personality wherever the user has to work."},
+
+  {cat:"colortype", name:"Font Pairing", hook:"Two fonts that contrast on purpose, not by accident.",
+   def:"Font pairing is choosing two (rarely more) typefaces that work together — typically one for headings and one for body. The reliable formula is contrast with harmony: pair fonts that are clearly different (a characterful serif display with a neutral sans body) so each has a distinct job, while sharing some quality (similar proportions or era) so they don't clash. A safe default is a single versatile family used at different weights — you literally can't clash with yourself. When in doubt, one expressive display font plus one workhorse text font covers almost everything.",
+   example:["Fraunces (expressive serif) for headlines + Archivo (clean sans) for body — high contrast, clear division of labour.","Using one family like Archivo at 800 for headings and 400 for body is a foolproof, always-harmonious pairing."],
+   watch:"The trap is pairing two fonts that are similar-but-not-identical — two humanist sans-serifs that are almost alike read as a mistake, not a choice. If you're going to pair, make the difference obvious and intentional; near-misses look like an error."},
+
+  /* ---------- STATES & CONSISTENCY ---------- */
+  {cat:"states", name:"The State Vocabulary", hook:"Every interactive element has a life cycle of states.",
+   def:"An interactive element is never just 'a button' — it's a set of states, each communicating something specific: default (available), hover (this is interactive, you're over it), focus (keyboard is here), active/pressed (you're clicking now), filled (has a value), disabled (not available right now), error (something's wrong), and loading (working, wait). Designing all of these — not just the happy-path default — is what separates a real product from a mockup. Each state answers a question the user is silently asking, and skipping states leaves the user guessing whether the interface even heard them.",
+   example:["A form input should visibly change on focus, show its filled value clearly, and turn into an error state with a message when validation fails — three distinct looks for one field.","A submit button that shows a loading spinner after the tap reassures the user the click registered, preventing frustrated double-submits."],
+   watch:"The states nobody designs are the ones that break trust — the empty state with no guidance, the error with no message, the loading with no feedback. A dead-looking button after a tap makes users click again (and double-submit). Design the whole life cycle, not just the resting look."},
+
+  {cat:"states", name:"Hover", hook:"A quiet signal that something is interactive.",
+   def:"The hover state is the visual change when a pointer rests over an interactive element — a colour shift, a shadow, an underline. Its job is affordance: it tells mouse users 'this is clickable' before they commit. Good hover states are subtle but unmistakable, and they reinforce the boundaries of the clickable area. Crucially, hover is a mouse-only luxury — it doesn't exist on touchscreens — so it must be an enhancement, never the only way to discover that something is interactive.",
+   example:["A card that lifts with a shadow on hover clearly signals 'this whole tile is clickable', not just the text inside it.","A nav link that underlines on hover confirms it's a link and shows exactly which item the pointer is targeting."],
+   watch:"Never hide essential information or actions behind hover-only reveals — touch users (the majority) will never trigger them, and it fails keyboard users too. Hover enhances discovery; it must never be the sole path to a feature."},
+
+  {cat:"states", name:"Focus", hook:"The keyboard's cursor — and a hard accessibility line.",
+   def:"The focus state shows which element currently has keyboard focus — the visible ring or highlight that moves as a user tabs through a page. It is not decoration and it is not optional: for anyone navigating without a mouse (keyboard users, people with motor impairments, screen-reader users), the focus indicator is the only way to know where they are. WCAG requires focus to be visible. It's also the single most commonly destroyed accessibility feature, because the default browser outline is 'ugly' and gets removed without a replacement.",
+   example:["A clear, high-contrast focus ring on buttons and inputs lets a keyboard user tab through a form and always know their position.","Custom focus styles (a bold outline or ring in the brand colour) keep the design polished while preserving accessibility."],
+   watch:"Writing `outline: none` in CSS without providing a visible replacement is an accessibility catastrophe — it makes the entire interface unusable by keyboard, invisibly, for the users who need it most. If you remove the default ring, you MUST add a clear custom focus indicator. This is non-negotiable."},
+
+  {cat:"states", name:"Active / Pressed", hook:"Instant confirmation that the click landed.",
+   def:"The active (pressed) state is the momentary look while an element is actively being clicked or tapped — the button that visually depresses, darkens, or shifts under the finger. It provides immediate tactile-feeling feedback confirming the interaction registered, in the fraction of a second before the result appears. On touch, this matters even more because there's no hover to precede it: the press state is the user's only real-time signal that the tap connected. It's small, but its absence makes an interface feel dead and unresponsive.",
+   example:["A button that visibly presses in (darker + slightly shifted, like this guide's brutalist buttons) confirms the tap the instant it happens.","A tapped list row that briefly highlights reassures a mobile user their touch registered before the next screen loads."],
+   watch:"Skipping the active state makes fast or laggy interactions feel broken — the user taps, sees nothing, and taps again. On slow connections that missing half-second of feedback is the difference between 'responsive' and 'is this thing working?'"},
+
+  {cat:"states", name:"Disabled", hook:"Present but not available — and it must look it.",
+   def:"The disabled state marks an element that exists but isn't currently actionable — a submit button before the form is valid, an option not available on the current plan. It communicates 'not now' by lowering contrast and removing interactivity (no hover, no click). Its purpose is to keep the interface stable (the element doesn't jump around by appearing/disappearing) while clearly signalling unavailability. The key is that disabled must be visually obvious yet ideally paired with a reason, so the user isn't left wondering why they're stuck.",
+   example:["A greyed-out 'Continue' button until all required fields are filled shows the path forward without letting the user hit a dead end.","A plan feature shown disabled with an 'Upgrade to unlock' hint tells the user both that it exists and how to access it."],
+   watch:"A disabled button with no explanation is a silent trap — the user sees they can't proceed but has no idea why. And beware over-lowering contrast: a disabled state so faint it's invisible is as confusing as no state at all. Show it's disabled, and ideally say why."},
+
+  {cat:"states", name:"Error", hook:"Never signal an error with colour alone.",
+   def:"The error state communicates that something went wrong — a failed validation, a rejected input, a broken action. A good error state does three things: it's clearly visible, it explains what happened in plain language, and it tells the user how to fix it. The cardinal accessibility rule is that error must never be conveyed by colour alone: a field that only turns its border red is invisible to colourblind users (and easy to miss for everyone). Effective errors stack signals — colour AND an icon AND a text message — so the meaning survives no matter how the user perceives the screen.",
+   example:["A form field that fails validation shows a red border, a warning icon, AND a message like 'Enter a valid email' — three redundant signals so no one misses it.","Inline errors that appear right next to the offending field (not a generic banner at the top) tell the user exactly what and where to fix."],
+   watch:"Colour-alone errors are the classic accessibility failure: roughly 1 in 12 men can't distinguish the red border from a normal one, so to them nothing looks wrong. Always pair the colour with an icon and a written message. Redundancy isn't clutter here — it's the point."},
+
+  {cat:"states", name:"Consistency", hook:"Same thing, same look, everywhere — so users can predict.",
+   def:"Consistency means the same element, action, or pattern looks and behaves the same way throughout a product (internal consistency) and matches platform conventions users already know (external consistency). It's the foundation of learnability: once a user learns that your primary button is a certain colour, or that a swipe does a certain thing, consistency lets them apply that knowledge everywhere without relearning. It reduces cognitive load, builds trust, and is exactly what design systems exist to enforce. Consistency is quiet — users only notice when it's broken.",
+   example:["Every primary action across the product uses the identical button style, so users instantly recognise 'this is the main action' on any screen.","Following the platform convention (a back arrow top-left, a familiar settings gear) means users don't have to learn your product from scratch."],
+   watch:"Consistency is a default, not a dogma — blind consistency can preserve a bad pattern everywhere, and sometimes a deliberate inconsistency (making the destructive 'Delete' button look different) is exactly right. Be consistent by default, and break it only with a clear, intentional reason.",
+   links:[
+     {label:"Importance of Consistency — CareerFoundry", url:"https://careerfoundry.com/en/blog/ui-design/the-importance-of-consistency-in-ui-design/"},
+     {label:"Consistency & Standards — IxDF", url:"https://www.interaction-design.org/literature/article/principle-of-consistency-and-standards-in-user-interface-design"},
+     {label:"Creating Consistency in UI — Manjesh Yadav", url:"https://www.linkedin.com/pulse/creating-consistency-ui-design-manjesh-yadav-/"}
+   ]},
+];
+
+const SCENARIOS = [
+  {q:"A form field the user typed into wrong shows nothing but a red border — no icon, no message. Which principle does this violate?",
+   options:["Whitespace","Error states must not rely on colour alone","Font pairing","The 60-30-10 rule"], correct:1,
+   why:"Error should never be signalled by colour alone. Roughly 1 in 12 men is colourblind and can't distinguish the red border, so to them nothing looks wrong. Stack border + icon + message.", cat:"states"},
+
+  {q:"A landing page has a huge headline, a bold subhead, giant bold body text, and three equally loud CTAs. Nothing seems more important than anything else. What's broken?",
+   options:["Visual hierarchy","Responsive design","Colour psychology","Proximity"], correct:0,
+   why:"When everything is emphasized, nothing is. Hierarchy works by contrast — something must be quiet for something else to feel loud. Emphasizing all of it flattens hierarchy to zero.", cat:"emphasis"},
+
+  {q:"A dashboard uses eight fully-saturated accent colours across its buttons, tags, and charts. It feels chaotic and nothing stands out. Which guideline is being ignored?",
+   options:["Alignment","The 60-30-10 rule","Gestalt closure","Type classification"], correct:1,
+   why:"60-30-10 reserves ~10% for a single accent so it stays scarce and eye-catching. Spend the accent everywhere and the scarcity that made it powerful is gone — everything competes.", cat:"colortype"},
+
+  {q:"A developer writes `outline: none` on all buttons and inputs to 'clean up' the design, adding no replacement. Who just lost the ability to use the site?",
+   options:["Mobile users","Keyboard and screen-reader users (focus is gone)","Users on slow connections","Colourblind users"], correct:1,
+   why:"The focus ring is the only way keyboard users know where they are. Removing it with no visible replacement makes the whole interface unusable by keyboard — a WCAG failure.", cat:"states"},
+
+  {q:"A form label floats exactly halfway between the input above it and the input below it. Users can't tell which field it describes. Which principle would fix it?",
+   options:["Contrast","Proximity","Colour theory","Size & scale"], correct:1,
+   why:"Proximity: related things must sit closer together than unrelated ones. Tighten the label to its own input and add space before the next field so the pairing is unmistakable.", cat:"structure"},
+
+  {q:"Body text is set in trendy light-grey on a white background. It looks elegant on the designer's Retina screen but many users literally can't read it. What failed?",
+   options:["Font pairing","Sufficient contrast (WCAG)","Whitespace","Active state"], correct:1,
+   why:"Text contrast is a measurable accessibility requirement — WCAG needs 4.5:1 for normal text. Low-contrast grey-on-white is one of the most common real-world accessibility failures.", cat:"emphasis"},
+
+  {q:"A key feature is only revealed when you hover your mouse over an element. On phones — most of the traffic — users never find it. Which state was misused?",
+   options:["Hover used as the only path to a feature","Disabled","Error","Focus"], correct:0,
+   why:"Hover doesn't exist on touchscreens. It's an enhancement that signals interactivity to mouse users — it must never be the sole way to discover a feature, or touch and keyboard users are locked out.", cat:"states"},
+
+  {q:"A user taps 'Submit', the button shows no change at all, so they tap it three more times and create duplicate orders. Which state was missing?",
+   options:["Hover","Active/pressed and loading feedback","Font pairing","Alignment"], correct:1,
+   why:"Without an active/pressed and loading state, the tap gives no feedback — the interface feels dead, so users re-tap. Immediate feedback is what prevents frustrated double-submits.", cat:"states"},
+
+  {q:"A pricing table's prices, features, and buttons are each a few pixels off row-to-row. It reads as sloppy even though the content is correct. The cheapest fix is:",
+   options:["More colour","Alignment","A new font","Bigger images"], correct:1,
+   why:"Alignment is the highest-leverage, lowest-cost polish move — the eye is very sensitive to almost-aligned edges. Snap everything to shared edges and the table instantly looks professional.", cat:"structure"},
+
+  {q:"A stakeholder demands you 'fill the empty space' on a clean checkout page with more banners and cross-sells. Removing that emptiness would most likely hurt what?",
+   options:["Whitespace (focus and clarity)","Type classification","Colour psychology","Consistency"], correct:0,
+   why:"Whitespace is an active material — the space around the primary button creates focus and reduces anxiety. Cramming content in usually lowers clarity and conversion. Defend the emptiness.", cat:"structure"},
+
+  {q:"Across one product, the 'primary action' button appears blue on one screen, green on another, and a pill on a third. New users can't tell what the main action is. What's missing?",
+   options:["Consistency","Contrast","Focal point","Responsive design"], correct:0,
+   why:"Consistency is the foundation of learnability. When the same action looks different everywhere, users can't transfer what they learned — they have to relearn each screen. One primary style, everywhere.", cat:"states"},
+
+  {q:"A hero section has a giant headline AND an equally giant auto-popup modal fighting for attention the instant you land. The eye doesn't know where to go. What broke?",
+   options:["Two competing focal points","Proximity","Line height","Disabled state"], correct:0,
+   why:"Every screen needs one clear focal point — the first place the eye lands. Two 'hero' elements create a tug-of-war that disorients the user. Decide the one thing that matters most and let it win.", cat:"emphasis"},
+
+  {q:"A designer pairs two humanist sans-serifs that are almost identical for headings and body. It looks slightly off, like a mistake rather than a choice. The pairing lacks:",
+   options:["Enough colour","Intentional contrast (or should just use one family)","Whitespace","A grid"], correct:1,
+   why:"Font pairing needs contrast with harmony — clearly different fonts with distinct jobs. Two near-identical faces read as an error, not a decision. Make the difference obvious, or use one family at different weights.", cat:"colortype"},
+
+  {q:"A desktop layout is squeezed onto a phone with no rework: tiny tap targets, horizontal scroll, unreadable text. Which discipline was skipped?",
+   options:["Gestalt principles","Responsive (mobile-first) design","Colour theory","Focal point"], correct:1,
+   why:"Responsive design adapts content to context — most traffic is mobile, so the constrained phone layout is the real target. Shrinking a desktop design produces tiny targets and scroll, not a usable mobile experience.", cat:"structure"},
+
+  {q:"A brand new fintech app uses aggressive reds and hot pinks throughout. Users report it feels alarming and untrustworthy for something holding their money. What was ignored?",
+   options:["Colour psychology (context and expectation)","Alignment","Whitespace","Active state"], correct:0,
+   why:"Colour carries emotional and contextual meaning. Finance leans on blues and greens to signal stability and trust; red reads as danger/urgency. The palette fights the reassurance the category demands.", cat:"colortype"},
+];
+
+/* ============================ STATE ============================ */
+let state = {
+  view:"library", search:"", activeCat:"all", openIdx:null,
+  quizOrder:[], quizIndex:0, quizScore:0, quizAnswered:null, quizHistory:[], quizDone:false,
+  studioMode:"squint",
+  sqBlur:0,
+  cText:"#16140f", cBg:"#f4efe6",
+  mDom:"#f4efe6", mSec:"#1f5e63", mAcc:"#c8542a",
+  typeBase:16, typeRatio:1.25, typePair:0,
+  resSearch:"",
+};
+
+function shuffledIndices(n){ const a=Array.from({length:n},(_,i)=>i); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+function resetQuiz(){ state.quizOrder=shuffledIndices(SCENARIOS.length); state.quizIndex=0; state.quizScore=0; state.quizAnswered=null; state.quizHistory=[]; state.quizDone=false; }
+resetQuiz();
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function catCounts(){ const c={}; ENTRIES.forEach(p=>{c[p.cat]=(c[p.cat]||0)+1;}); return c; }
+
+/* ============================ LIBRARY ============================ */
+function renderLibrary(){
+  const counts=catCounts();
+  const allActive=state.activeCat==='all';
+  let pills=`<button class="pill" data-cat="all" data-active="${allActive}" onclick="setCat('all')">✦ All <span class="count">${ENTRIES.length}</span></button>`;
+  pills+=Object.keys(CATS).map(c=>{
+    const active=state.activeCat===c;
+    return `<button class="pill" data-cat="${c}" data-active="${active}" onclick="setCat('${c}')">${CATS[c].icon} ${CATS[c].label} <span class="count">${counts[c]||0}</span></button>`;
+  }).join('');
+  const q=state.search.trim().toLowerCase();
+  const filtered=ENTRIES.filter(p=>{
+    const mc=state.activeCat==='all'||p.cat===state.activeCat;
+    const ms=!q||p.name.toLowerCase().includes(q)||p.hook.toLowerCase().includes(q)||p.def.toLowerCase().includes(q);
+    return mc&&ms;
+  });
+  const cards=filtered.map(p=>{
+    const idx=ENTRIES.indexOf(p);
+    return `<div class="card" data-cat="${p.cat}" tabindex="0" role="button" aria-label="Open ${esc(p.name)}"
+      onclick="openEntry(${idx})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEntry(${idx});}">
+      <span class="cat-tag" data-cat="${p.cat}">${CATS[p.cat].icon} ${CATS[p.cat].label}</span>
+      <h3>${esc(p.name)}</h3>
+      <p class="hook">${esc(p.hook)}</p>
+      <span class="explore-row">Explore <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </div>`;
+  }).join('');
+  return `
+    <div class="sec-head">The 29 concepts · search &amp; filter</div>
+    <div class="search-wrap">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7a7263" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="searchInput" type="text" placeholder="Search ${ENTRIES.length} concepts — try 'contrast', 'whitespace', 'error state'..." value="${esc(state.search)}" oninput="setSearch(this.value)"/>
+    </div>
+    <div class="pill-row">${pills}</div>
+    <p class="result-count">${filtered.length} concept${filtered.length===1?'':'s'} shown</p>
+    <div class="grid">${cards||'<div class="empty-state">No concepts match that search. Try a different keyword, or clear the category filter.</div>'}</div>`;
+}
+function setCat(c){ state.activeCat=(state.activeCat===c)?'all':c; render(); }
+function setSearch(v){ state.search=v; render(true); }
+
+function openEntry(i){ state.openIdx=i; renderModal(); }
+function closeEntry(){ state.openIdx=null; renderModal(); }
+function renderModal(){
+  const root=document.getElementById('modalRoot');
+  if(state.openIdx===null){ root.innerHTML=''; return; }
+  const p=ENTRIES[state.openIdx];
+  const examples=p.example.map(e=>`<li>${esc(e)}</li>`).join('');
+  const links=(p.links&&p.links.length)?`
+    <div class="section-label">🔗 Go deeper</div>
+    <div class="deeper-links">${p.links.map(l=>`<a href="${l.url}" target="_blank" rel="noopener">${esc(l.label)}<span class="arr">↗</span></a>`).join('')}</div>`:'';
+  root.innerHTML=`
+    <div class="modal-overlay" onclick="if(event.target===this) closeEntry();">
+      <div class="modal" role="dialog" aria-modal="true" aria-label="${esc(p.name)}">
+        <div class="modal-top">
+          <span class="cat-tag" data-cat="${p.cat}">${CATS[p.cat].icon} ${CATS[p.cat].label}</span>
+          <button class="modal-close" onclick="closeEntry()" aria-label="Close">✕</button>
+        </div>
+        <h2>${esc(p.name)}</h2>
+        <p class="modal-hook">${esc(p.hook)}</p>
+        <div class="section-label">📖 What it means</div>
+        <p class="body-text">${esc(p.def)}</p>
+        <div class="section-label">🛠 In practice</div>
+        <ul class="example-list">${examples}</ul>
+        <div class="section-label">⚠️ Watch out for</div>
+        <div class="watch-box"><strong>The trap:</strong> ${esc(p.watch)}</div>
+        ${links}
+      </div>
+    </div>`;
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&state.openIdx!==null) closeEntry(); });
+
+/* ============================ STUDIO ============================ */
+function studioPills(){
+  const modes=[["squint","🫥 Squint Test"],["contrast","◐ Contrast Checker"],["mixer","🎨 60·30·10 Mixer"],["type","🔤 Type Scale"]];
+  return `<div class="studio-pills">${modes.map(m=>`<button class="spill" data-active="${state.studioMode===m[0]}" onclick="setStudio('${m[0]}')">${m[1]}</button>`).join('')}</div>`;
+}
+function setStudio(m){ state.studioMode=m; render(); }
+
+function renderStudio(){
+  let body='';
+  if(state.studioMode==='squint') body=renderSquint();
+  else if(state.studioMode==='contrast') body=renderContrast();
+  else if(state.studioMode==='mixer') body=renderMixer();
+  else body=renderTypeScale();
+  return `<div class="sec-head">Studio · learn by doing</div>${studioPills()}${body}`;
+}
+
+/* ---- 1. Squint Test ---- */
+function renderSquint(){
+  const b=state.sqBlur;
+  return `
+    <p class="demo-intro"><strong>The squint test.</strong> Blur a design until the detail drops away and only the true hierarchy survives. Drag the slider — if your call-to-action is the <em>first</em> thing to disappear, your hierarchy is upside down.</p>
+    <div class="ctrl-row">
+      <div class="ctrl">
+        <label>Blur amount</label>
+        <div class="val">${b.toFixed(1)}px</div>
+        <input type="range" min="0" max="8" step="0.5" value="${b}" oninput="setSq(this.value)" aria-label="Blur amount"/>
+      </div>
+    </div>
+    <div class="demo-wrap">
+      <div class="squint-mock" style="filter:blur(${b}px);">
+        <p class="sq-label">New · Field Guide</p>
+        <h3 class="sq-hero">See any interface,<br/>then take it apart.</h3>
+        <p class="sq-body">A study synthesis of the five building blocks, seven principles, and the states that turn a mockup into a real, usable product.</p>
+        <span class="sq-cta">Start reading →</span>
+        <p class="sq-cap">Free · No account needed · ~20 min</p>
+      </div>
+    </div>
+    <div class="demo-note">Notice what stays legible as blur climbs: the big Fraunces headline and the coloured CTA button survive longest because they have the most size and contrast. The tiny grey caption vanishes first — exactly as it should, because it's the least important. Working hierarchy means importance and visual weight agree.</div>`;
+}
+function setSq(v){ let n=parseFloat(v); if(isNaN(n)) n=0; state.sqBlur=Math.max(0,Math.min(8,n)); render(); }
+
+/* ---- 2. Contrast Checker ---- */
+function hexToRgb(hex){
+  if(!/^#?[0-9a-fA-F]{6}$/.test(hex||'')) return null;
+  hex=hex.replace('#','');
+  return [parseInt(hex.substr(0,2),16),parseInt(hex.substr(2,2),16),parseInt(hex.substr(4,2),16)];
+}
+function relLum(rgb){
+  const a=rgb.map(v=>{ v/=255; return v<=0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055,2.4); });
+  return 0.2126*a[0]+0.7152*a[1]+0.0722*a[2];
+}
+function contrastRatio(hex1,hex2){
+  const r1=hexToRgb(hex1), r2=hexToRgb(hex2);
+  if(!r1||!r2) return null;
+  const L1=relLum(r1), L2=relLum(r2);
+  const hi=Math.max(L1,L2), lo=Math.min(L1,L2);
+  return (hi+0.05)/(lo+0.05);
+}
+function renderContrast(){
+  const ratio=contrastRatio(state.cText,state.cBg);
+  const r=ratio||1;
+  const badge=(lbl,thr)=>{ const pass=r>=thr; return `<div class="wbadge ${pass?'pass':'fail'}"><div class="wlab">${lbl} (≥${thr})</div><div class="wres">${pass?'✓ PASS':'✕ FAIL'}</div></div>`; };
+  return `
+    <p class="demo-intro"><strong>WCAG contrast checker.</strong> Pick a text and background colour and read the real contrast ratio, computed with the WCAG relative-luminance formula. The thresholds are legal-grade accessibility minimums, not opinions. <em>(Sanity check: pure black on white = 21:1, the maximum possible.)</em></p>
+    <div class="ctrl-row">
+      <div class="ctrl"><label>Text colour</label><input type="color" value="${state.cText}" oninput="setC('cText',this.value)" aria-label="Text colour"/><div class="val" style="font-size:12px;">${state.cText}</div></div>
+      <div class="ctrl"><label>Background</label><input type="color" value="${state.cBg}" oninput="setC('cBg',this.value)" aria-label="Background colour"/><div class="val" style="font-size:12px;">${state.cBg}</div></div>
+      <button class="spill" onclick="swapC()" style="align-self:flex-end;">⇄ Swap</button>
+    </div>
+    <div class="demo-wrap">
+      <div class="contrast-preview" style="background:${state.cBg}; color:${state.cText};">
+        <p class="cp-lg">Large text sample</p>
+        <p class="cp-sm">This is body-size text at the ratio you picked. If it's a strain to read here, it will be worse on a cheap phone in daylight — that's the whole point of the standard.</p>
+      </div>
+      <p class="ratio-big">${ratio?ratio.toFixed(2):'—'}:1</p>
+      <p class="ratio-sub">Contrast ratio (1:1 identical → 21:1 max)</p>
+      <div class="badge-row">
+        ${badge('AA normal text',4.5)}
+        ${badge('AA large text',3)}
+        ${badge('AAA normal text',7)}
+      </div>
+    </div>
+    <div class="demo-note">AA is the practical baseline every product should hit: 4.5:1 for normal text, 3:1 for large (≈24px+ or 19px bold). AAA (7:1) is the gold standard for maximum legibility. Large text gets a lower bar because thicker strokes are easier to read at the same ratio.</div>`;
+}
+function setC(id,v){ state[id]=v; render(); }
+function swapC(){ const t=state.cText; state.cText=state.cBg; state.cBg=t; render(); }
+
+/* ---- 3. 60-30-10 Mixer ---- */
+function renderMixer(){
+  const {mDom,mSec,mAcc}=state;
+  const txtOn=(hex)=>{ const rgb=hexToRgb(hex)||[0,0,0]; return relLum(rgb)>0.4?'#16140f':'#fbf8f1'; };
+  return `
+    <p class="demo-intro"><strong>The 60·30·10 mixer.</strong> Pick a dominant, a secondary, and an accent colour, then watch them applied at roughly 60/30/10 of the screen area. One dominant + one secondary + one rare accent is what reads as <em>intentional</em> — the scarce accent automatically becomes the thing your eye chases.</p>
+    <div class="ctrl-row">
+      <div class="ctrl"><label>60% Dominant</label><input type="color" value="${mDom}" oninput="setC('mDom',this.value)" aria-label="Dominant colour"/><div class="val" style="font-size:12px;">${mDom}</div></div>
+      <div class="ctrl"><label>30% Secondary</label><input type="color" value="${mSec}" oninput="setC('mSec',this.value)" aria-label="Secondary colour"/><div class="val" style="font-size:12px;">${mSec}</div></div>
+      <div class="ctrl"><label>10% Accent</label><input type="color" value="${mAcc}" oninput="setC('mAcc',this.value)" aria-label="Accent colour"/><div class="val" style="font-size:12px;">${mAcc}</div></div>
+    </div>
+    <div class="demo-wrap">
+      <div class="mix-screen" style="background:${mDom}; color:${txtOn(mDom)};">
+        <div class="mix-top" style="background:${mSec}; color:${txtOn(mSec)};">
+          <span class="mt-brand">Aperture</span>
+          <span class="mt-btn" style="background:${mAcc}; color:${txtOn(mAcc)}; border-color:${mAcc};">Get started</span>
+        </div>
+        <div class="mix-body">
+          <div class="mix-card" style="background:${mSec}; color:${txtOn(mSec)};">
+            <h4>Your dashboard, at a glance</h4>
+            <p>Most of this screen is the dominant colour. The panels use the secondary. Only one element gets the accent — and that's exactly the one your eye finds first.</p>
+            <span class="mix-accent-btn" style="background:${mAcc}; color:${txtOn(mAcc)}; border-color:${mAcc};">Primary action</span>
+          </div>
+        </div>
+      </div>
+      <div class="prop-bar">
+        <div class="prop-seg" style="flex:0 0 60%; background:${mDom}; color:${txtOn(mDom)};">60%</div>
+        <div class="prop-seg" style="flex:0 0 30%; background:${mSec}; color:${txtOn(mSec)};">30%</div>
+        <div class="prop-seg" style="flex:0 0 10%; background:${mAcc}; color:${txtOn(mAcc)};">10%</div>
+      </div>
+    </div>
+    <div class="demo-note">Try making the accent cover more of the screen (imagine every button that colour): the moment the accent stops being scarce, it stops pulling the eye and the whole thing feels loud and undecided. Restraint is what buys you a working focal point for free.</div>`;
+}
+
+/* ---- 4. Type Scale + Pairing ---- */
+const PAIRINGS=[
+  {name:"Fraunces × Archivo", heading:"'Fraunces',serif", body:"'Archivo',sans-serif", note:"Expressive serif display + clean sans body — high contrast, clear division of labour."},
+  {name:"Space Mono × Archivo", heading:"'Space Mono',monospace", body:"'Archivo',sans-serif", note:"Technical monospace headings + neutral sans body — reads as precise and systematic."},
+  {name:"Archivo × Archivo", heading:"'Archivo',sans-serif", body:"'Archivo',sans-serif", note:"One family at heavy vs. regular weight — literally cannot clash with itself. The safe default."},
+  {name:"Georgia × Verdana (web-safe)", heading:"Georgia,serif", body:"Verdana,Geneva,sans-serif", note:"Classic system-font pairing — installed everywhere, zero load cost, reliably readable."},
+];
+function typeSizes(){
+  let base=parseFloat(state.typeBase); if(isNaN(base)) base=16; base=Math.max(10,Math.min(28,base));
+  const r=state.typeRatio;
+  return {
+    base,
+    caption: base/r,
+    body: base,
+    h2: base*Math.pow(r,2),
+    h1: base*Math.pow(r,3),
+    display: base*Math.pow(r,4),
+  };
+}
+function renderTypeScale(){
+  const s=typeSizes();
+  const p=PAIRINGS[state.typePair];
+  const hf=p.heading, bf=p.body;
+  const ratios=[["1.200","Minor third"],["1.250","Major third"],["1.333","Perfect fourth"],["1.414","Augmented fourth"],["1.618","Golden ratio"]];
+  const opts=ratios.map(rr=>`<option value="${rr[0]}" ${Math.abs(state.typeRatio-parseFloat(rr[0]))<0.001?'selected':''}>${rr[0]} · ${rr[1]}</option>`).join('');
+  const pairOpts=PAIRINGS.map((pp,i)=>`<option value="${i}" ${state.typePair===i?'selected':''}>${pp.name}</option>`).join('');
+  const row=(lbl,px,font,weight)=>`<div class="spec-row"><span class="spec-px">${px.toFixed(1)}px · ${lbl}</span><span class="spec-txt" style="font-family:${font}; font-size:${px}px; font-weight:${weight};">The quick brown fox</span></div>`;
+  return `
+    <p class="demo-intro"><strong>Type scale + pairing explorer.</strong> A modular scale multiplies one base size by a ratio, over and over, so every step relates to the last — that's what makes type feel like a rhythm instead of a random pile of sizes. Change the base, the ratio, and the heading/body pairing and feel the hierarchy shift.</p>
+    <div class="ctrl-row">
+      <div class="ctrl"><label>Base size (px)</label><input type="number" min="10" max="28" step="1" value="${state.typeBase}" oninput="setTypeBase(this.value)" aria-label="Base font size"/></div>
+      <div class="ctrl"><label>Scale ratio</label><select onchange="setTypeRatio(this.value)" aria-label="Scale ratio">${opts}</select></div>
+      <div class="ctrl"><label>Font pairing</label><select onchange="setTypePair(this.value)" aria-label="Font pairing">${pairOpts}</select></div>
+    </div>
+    <div class="demo-wrap">
+      <div class="specimen">
+        ${row('Display', s.display, hf, 900)}
+        ${row('H1', s.h1, hf, 900)}
+        ${row('H2', s.h2, hf, 600)}
+        ${row('Body', s.body, bf, 400)}
+        ${row('Caption', s.caption, bf, 400)}
+      </div>
+    </div>
+    <div class="demo-note"><strong style="font-family:'Space Mono',monospace;">Pairing:</strong> ${p.note} A bigger ratio (1.414, 1.618) creates dramatic, confident jumps for marketing pages; a smaller ratio (1.2, 1.25) keeps steps tight and calm for dense, information-heavy apps.</div>`;
+}
+function setTypeBase(v){ let n=parseFloat(v); if(isNaN(n)) n=16; state.typeBase=Math.max(10,Math.min(28,Math.round(n))); render(); }
+function setTypeRatio(v){ let n=parseFloat(v); if(isNaN(n)) n=1.25; state.typeRatio=n; render(); }
+function setTypePair(v){ let n=parseInt(v,10); if(isNaN(n)||n<0||n>=PAIRINGS.length) n=0; state.typePair=n; render(); }
+
+/* ============================ PRACTICE ============================ */
+function renderPractice(){
+  if(state.quizDone){
+    const byCat={};
+    state.quizHistory.forEach(h=>{ byCat[h.cat]=byCat[h.cat]||{c:0,t:0}; byCat[h.cat].t++; if(h.correct)byCat[h.cat].c++; });
+    const breakdown=Object.keys(byCat).map(c=>`
+      <div class="bd-item"><div class="lbl">${CATS[c].icon} ${CATS[c].label}</div><div class="n">${byCat[c].c} / ${byCat[c].t}</div></div>`).join('');
+    const missed=state.quizHistory.filter(h=>!h.correct).map(h=>`
+      <div class="missed-item"><strong>${esc(h.q)}</strong><br/>→ Correct: ${esc(h.correctLabel)}. ${esc(h.why)}</div>`).join('');
+    const pct=Math.round(state.quizScore/SCENARIOS.length*100);
+    return `<div class="results">
+      <div class="scenario-eyebrow">Practice complete</div>
+      <h2>You scored ${pct}%</h2>
+      <div class="big-score">${state.quizScore} / ${SCENARIOS.length}</div>
+      <p style="font-family:'Space Mono',monospace; font-size:12px; color:#7a7263;">How you did across each area</p>
+      <div class="breakdown">${breakdown}</div>
+      <button class="restart-btn" onclick="restartQuiz()">↺ Practice again (new shuffle)</button>
+      ${missed.length?`<div class="missed-list"><h3>Review what you missed</h3>${missed}</div>`:`<p style="margin-top:22px;font-family:'Fraunces',serif;font-style:italic;font-size:18px;">Perfect score — you can see the interface now. 🔥</p>`}
+    </div>`;
+  }
+  const s=SCENARIOS[state.quizOrder[state.quizIndex]];
+  const pct=Math.round((state.quizIndex/SCENARIOS.length)*100);
+  const options=s.options.map((opt,i)=>{
+    let cls="option-btn",dis="";
+    if(state.quizAnswered!==null){ dis="disabled"; if(i===s.correct)cls+=" reveal-correct"; else if(i===state.quizAnswered)cls+=" incorrect"; }
+    return `<button class="${cls}" ${dis} onclick="answerQuiz(${i})">${esc(opt)}</button>`;
+  }).join('');
+  const feedback=state.quizAnswered!==null?`
+    <div class="feedback-box"><strong>${state.quizAnswered===s.correct?"✓ Correct — ":"✕ Not quite — "}</strong>${esc(s.why)}</div>
+    <button class="next-btn" onclick="nextQuiz()">${state.quizIndex===SCENARIOS.length-1?"See results →":"Next scenario →"}</button>`:'';
+  return `<div class="scenario-wrap">
+    <div class="sec-head">Practice · which principle is at work?</div>
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <span class="score-chip">${state.quizIndex+1} / ${SCENARIOS.length} · score ${state.quizScore}</span>
+    </div>
+    <div class="scenario-card">
+      <div class="scenario-eyebrow">Scenario ${state.quizIndex+1}</div>
+      <p class="scenario-text">${esc(s.q)}</p>
+      <div class="options">${options}</div>
+      ${feedback}
+    </div></div>`;
+}
+function answerQuiz(i){
+  if(state.quizAnswered!==null) return;
+  const s=SCENARIOS[state.quizOrder[state.quizIndex]];
+  const correct=i===s.correct;
+  state.quizAnswered=i;
+  if(correct) state.quizScore++;
+  state.quizHistory.push({q:s.q, why:s.why, correct, correctLabel:s.options[s.correct], cat:s.cat});
+  render();
+}
+function nextQuiz(){ if(state.quizIndex===SCENARIOS.length-1){ state.quizDone=true; } else { state.quizIndex++; state.quizAnswered=null; } render(); }
+function restartQuiz(){ resetQuiz(); render(); }
+
+/* ============================ WHERE TO STUDY ============================ */
+const RES_INSPO=[
+  {n:"MaxiBestof", u:"https://maxibestof.one", b:"Curated best-of web design", t:"Gallery"},
+  {n:"Mobbin", u:"https://mobbin.com", b:"Real mobile & web app UI patterns", t:"Patterns"},
+  {n:"One Page Love", u:"https://onepagelove.com", b:"Single-page site inspiration", t:"Gallery"},
+  {n:"SaaS Landing Page", u:"https://saaslandingpage.com", b:"SaaS landing page teardowns", t:"Teardowns"},
+  {n:"Landing.Love", u:"https://www.landing.love", b:"Landing page gallery", t:"Gallery"},
+  {n:"DesignSpells", u:"https://www.designspells.com", b:"Delightful micro-interactions", t:"Interactions"},
+  {n:"ScreenLane", u:"https://screenlane.com", b:"Mobile UI + design tips", t:"Mobile"},
+  {n:"Doing Cool Stuff", u:"https://www.doingcoolstuff.xyz", b:"Experimental / creative work", t:"Experimental"},
+  {n:"Dribbble", u:"https://dribbble.com/", b:"Concept shots, visual polish", t:"Gallery"},
+  {n:"Behance", u:"https://www.behance.net/", b:"Full case studies", t:"Case studies"},
+  {n:"Pinterest", u:"https://in.pinterest.com/", b:"Mood / visual collection", t:"Mood"},
+  {n:"Lapa Ninja", u:"https://www.lapa.ninja/", b:"Landing page gallery", t:"Gallery"},
+  {n:"CSS Design Awards", u:"https://www.cssdesignawards.com/", b:"Award-winning production sites", t:"Awards"},
+  {n:"Collect UI", u:"https://collectui.com/", b:"Daily UI, organised by category", t:"Patterns"},
+  {n:"Awwwards", u:"https://www.awwwards.com/", b:"The high bar for web craft", t:"Awards"},
+  {n:"Land-book", u:"https://land-book.com/", b:"Landing page gallery", t:"Gallery"},
+];
+const RES_TOOLS=[
+  {n:"Checklist.Design", u:"https://www.checklist.design", b:"Component-by-component UI checklists", t:"Reference"},
+  {n:"Typewolf", u:"https://www.typewolf.com", b:"Typography in the wild, font pairings", t:"Type"},
+  {n:"Fonts In Use", u:"https://fontsinuse.com", b:"Type used in real projects", t:"Type"},
+  {n:"HTML to Design", u:"https://html.to.design/", b:"Import any live site into Figma", t:"Tool"},
+];
+const RES_PRINCIPLES=[
+  {num:"1", title:"Visual Hierarchy", links:[
+    {label:"Importance — Toptal", url:"https://www.toptal.com/designers/ux/visual-hierarchy-infographic"},
+    {label:"Principles — Visme", url:"https://visme.co/blog/visual-hierarchy/"},
+    {label:"Creating it — Canva", url:"https://www.canva.com/learn/visual-hierarchy/"}]},
+  {num:"2", title:"Contrast", links:[
+    {label:"Role of Contrast — Halo Lab", url:"https://www.halo-lab.com/blog/how-contrast-works-in-user-experience-design"},
+    {label:"Types — Tubik Studio", url:"https://blog.tubikstudio.com/contrast-in-user-interface-design/"},
+    {label:"How to create — UX KB", url:"https://uxknowledgebase.com/contrast-in-ui-design-4dbf9c6ac84a"}]},
+  {num:"3", title:"Composition", links:[
+    {label:"Understanding — UX Planet", url:"https://uxplanet.org/composition-and-its-rules-in-the-design-of-interfaces-65a86e4d09a7"},
+    {label:"Elements — Enou & Co", url:"https://www.linkedin.com/pulse/5-design-composition-key-principles-better-enou-co/"},
+    {label:"Techniques — Canva", url:"https://www.canva.com/learn/visual-design-composition/"}]},
+  {num:"4", title:"Layout & Grids", links:[
+    {label:"Intro to Layout — UX Collective", url:"https://uxdesign.cc/fundamentals-of-layout-in-interface-design-ui-3a9dba31f1"},
+    {label:"Grid Systems — Designlab", url:"https://designlab.com/blog/grid-systems-history-ux-ui-layout"},
+    {label:"Effective Layouts — Smashing", url:"https://www.smashingmagazine.com/2017/12/building-better-ui-designs-layout-grids/"},
+    {label:"Responsive — UXPin", url:"https://www.uxpin.com/studio/blog/best-practices-examples-of-excellent-responsive-design/"}]},
+  {num:"5", title:"Colour", links:[
+    {label:"Color Theory — UX Planet", url:"https://uxplanet.org/color-theory-brief-guide-for-designers-76e11c57eaa"},
+    {label:"History of Colours — Khinkhwab", url:"https://khinkhwab.com/blogs/news/the-origins-of-colour-a-fascinating-history"},
+    {label:"Color Psychology — UX Design", url:"https://bootcamp.uxdesign.cc/color-psychology-in-ui-design-how-colors-shape-emotions-and-user-behavior-6254708fd5fb"},
+    {label:"Choosing Colour — NALS", url:"https://medium.com/@NALSengineering/color-in-ui-design-part-1-foundation-of-using-color-to-create-effectively-ui-034f9da6995d"}]},
+  {num:"6", title:"Typography", links:[
+    {label:"Basics — Designlab", url:"https://designlab.com/blog/what-is-typography-how-is-it-important-to-ux-ui-design"},
+    {label:"Principles — UX Planet", url:"https://uxplanet.org/principles-of-typography-in-ui-design-bc28f1f9666d"},
+    {label:"History — Fontfabric", url:"https://www.fontfabric.com/blog/history-and-evolution-of-typography-fonts-timeline/"},
+    {label:"Classification — Toptal", url:"https://www.toptal.com/designers/typography/typeface-classification"},
+    {label:"Choosing typefaces — UX Planet", url:"https://uxplanet.org/making-the-right-choice-how-to-select-the-perfect-font-for-your-ui-e14e593f6aef"}]},
+  {num:"7", title:"Consistency", links:[
+    {label:"Importance — CareerFoundry", url:"https://careerfoundry.com/en/blog/ui-design/the-importance-of-consistency-in-ui-design/"},
+    {label:"Elements — IxDF", url:"https://www.interaction-design.org/literature/article/principle-of-consistency-and-standards-in-user-interface-design"},
+    {label:"Creating it — Manjesh Yadav", url:"https://www.linkedin.com/pulse/creating-consistency-ui-design-manjesh-yadav-/"}]},
+];
+const MEGALIST_URL="https://docs.google.com/spreadsheets/d/1YwZgwpITZ28GCt7eCOJWVPTVpRvPr6qE_PTaVRblrzo/edit?usp=sharing";
+
+function resItemsCount(){ return RES_INSPO.length+RES_TOOLS.length+1+RES_PRINCIPLES.reduce((n,p)=>n+p.links.length,0); }
+
+function resCard(x){
+  return `<a class="res-item" href="${x.u}" target="_blank" rel="noopener">
+    <span class="rn">${esc(x.n)} <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+    <span class="rb">${esc(x.b)}</span>
+    <span class="rtag">${esc(x.t)}</span>
+  </a>`;
+}
+function renderResources(){
+  const q=state.resSearch.trim().toLowerCase();
+  const match=x=>!q||x.n.toLowerCase().includes(q)||x.b.toLowerCase().includes(q)||x.t.toLowerCase().includes(q);
+  const inspo=RES_INSPO.filter(match), tools=RES_TOOLS.filter(match);
+  const prin=RES_PRINCIPLES.map(p=>{
+    const links=p.links.filter(l=>!q||l.label.toLowerCase().includes(q)||p.title.toLowerCase().includes(q));
+    return {...p, links};
+  }).filter(p=>p.links.length||p.title.toLowerCase().includes(q));
+  const megaVisible=!q||"megalist master resource sheet".includes(q);
+
+  const inspoHtml=inspo.length?`<div class="res-grid">${inspo.map(resCard).join('')}</div>`:'';
+  const toolsHtml=tools.length?`<div class="res-grid">${tools.map(resCard).join('')}</div>`:'';
+  const prinHtml=prin.map(p=>`
+    <div class="prin-group">
+      <h3 class="prin-title"><span class="num">${p.num}</span>${esc(p.title)}</h3>
+      <div class="prin-links">${p.links.map(l=>`<a href="${l.url}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`).join('')}</div>
+    </div>`).join('');
+
+  const anything = inspo.length||tools.length||prin.length||megaVisible;
+
+  return `
+    <div class="sec-head">Where to study · the launchpad</div>
+    <div class="search-wrap">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7a7263" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="resSearchInput" type="text" placeholder="Filter resources — try 'landing', 'typography', 'grid'..." value="${esc(state.resSearch)}" oninput="setResSearch(this.value)"/>
+    </div>
+    ${!anything?'<div class="empty-state">No resources match that filter. Try a broader keyword.</div>':''}
+    ${inspoHtml?`<div class="res-section"><p class="result-count">Inspiration &amp; galleries — where to see how good work is built</p>${inspoHtml}</div>`:''}
+    ${toolsHtml?`<div class="res-section"><p class="result-count">References &amp; tools — what you check while designing</p>${toolsHtml}</div>`:''}
+    ${megaVisible?`<div class="res-section"><p class="result-count">The megalist — one master resource sheet</p><a class="megalink" href="${MEGALIST_URL}" target="_blank" rel="noopener">📑 Open the master resource spreadsheet ↗</a></div>`:''}
+    ${prin.length?`<div class="res-section"><p class="result-count">The 7 principles — deep dives, grouped by principle</p>${prinHtml}</div>`:''}`;
+}
+function setResSearch(v){ state.resSearch=v; render('res'); }
+
+/* ============================ RENDER LOOP ============================ */
+function render(keepFocus){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===state.view));
+  const main=document.getElementById('main');
+  if(state.view==='library') main.innerHTML=renderLibrary();
+  else if(state.view==='studio') main.innerHTML=renderStudio();
+  else if(state.view==='practice') main.innerHTML=renderPractice();
+  else main.innerHTML=renderResources();
+  if(keepFocus===true){ const inp=document.getElementById('searchInput'); if(inp){ inp.focus(); inp.selectionStart=inp.selectionEnd=inp.value.length; } }
+  if(keepFocus==='res'){ const inp=document.getElementById('resSearchInput'); if(inp){ inp.focus(); inp.selectionStart=inp.selectionEnd=inp.value.length; } }
+}
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{ state.view=t.dataset.view; state.openIdx=null; renderModal(); render(); });
+});
+
+/* sync header meta with real data */
+document.getElementById('metaConcepts').textContent=ENTRIES.length;
+document.getElementById('metaScen').textContent=SCENARIOS.length;
+
+render();
+</script>
+</body>
+</html>
