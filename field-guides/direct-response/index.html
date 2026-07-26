@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Direct Response Fundamentals — A Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,600;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1E9D6; --paper:#FBF6EA; --ink:#191510; --ink-soft:#5E5340; --line:#DDCFB2;
+    --red:#B4231C;
+
+    --offer:#B4231C;  --offer-tint:#F6E1DA;  --offer-dark:#851310;
+    --aware:#25507D;  --aware-tint:#DCE6F0;  --aware-dark:#163553;
+    --angle:#A66C12;  --angle-tint:#F3E7CB;  --angle-dark:#754A07;
+    --proof:#2C6A47;  --proof-tint:#D9E9DC;  --proof-dark:#164A2C;
+    --eval:#7A335F;   --eval-tint:#EFDBE8;   --eval-dark:#551E40;
+
+    --soft-shadow: 0 1px 2px rgba(25,21,16,.06), 0 14px 30px -18px rgba(25,21,16,.30);
+    --lift-shadow: 0 2px 5px rgba(25,21,16,.08), 0 24px 48px -22px rgba(25,21,16,.40);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink); font-family:'Source Serif 4',Georgia,serif;
+    min-height:100vh; padding-bottom:60px; -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:radial-gradient(rgba(25,21,16,0.05) 1px, transparent 1px);
+    background-size:20px 20px; opacity:.55;
+  }
+  header,.tabbar,main,footer{position:relative; z-index:1;}
+  h1,h2,h3,.display{font-family:'Playfair Display',Georgia,serif; font-weight:700; letter-spacing:-0.005em;}
+  .anton{font-family:'Anton',Impact,sans-serif; font-weight:400; letter-spacing:.01em; text-transform:uppercase;}
+  .mono{font-family:'JetBrains Mono',monospace; font-variant-numeric:tabular-nums;}
+  .ui{font-family:'Inter',system-ui,sans-serif;}
+  button{font-family:'Inter',system-ui,sans-serif;}
+
+  /* masthead */
+  header{max-width:1080px; margin:0 auto; padding:30px 24px 14px;}
+  .rule-top{height:4px; background:var(--ink); border-radius:2px; margin-bottom:3px;}
+  .rule-thin{height:1.5px; background:var(--ink); opacity:.5; margin-bottom:16px;}
+  .masthead{display:flex; align-items:flex-end; justify-content:space-between; gap:18px; flex-wrap:wrap;}
+  .mast-left{max-width:660px;}
+  .eyebrow{font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.22em; color:var(--red); margin:0 0 6px;}
+  .masthead h1{font-family:'Anton',Impact,sans-serif; font-weight:400; text-transform:uppercase; font-size:clamp(34px,6vw,62px); line-height:.94; margin:0; letter-spacing:.005em;}
+  .mast-left p{font-family:'Source Serif 4',serif; font-style:italic; margin:11px 0 0; color:var(--ink-soft); font-size:16px; line-height:1.5; max-width:56ch;}
+  .est{text-align:right; flex-shrink:0; padding-bottom:4px;}
+  .est .no{font-family:'Anton',sans-serif; font-size:40px; line-height:1; color:var(--ink);}
+  .est .lbl{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-soft); margin-top:4px;}
+  .disclaimer{display:inline-flex; align-items:center; gap:7px; margin-top:14px; font-family:'Inter',sans-serif; font-size:11.5px; color:var(--offer-dark); background:var(--offer-tint); border:1px solid rgba(180,35,28,.32); border-radius:3px; padding:5px 11px; font-weight:600; letter-spacing:.01em;}
+
+  .tabbar{max-width:1080px; margin:20px auto 0; padding:0 24px; display:flex; gap:8px; flex-wrap:wrap;}
+  .tab{font-family:'Inter',sans-serif; font-weight:600; font-size:14px; padding:11px 18px; border-radius:4px; border:1.5px solid var(--ink); background:var(--paper); color:var(--ink); cursor:pointer; display:flex; align-items:center; gap:7px; transition:all .15s ease; box-shadow:2px 2px 0 rgba(25,21,16,.16);}
+  .tab:hover{transform:translate(-1px,-1px); box-shadow:3px 3px 0 rgba(25,21,16,.2);}
+  .tab.active{background:var(--ink); color:var(--paper); box-shadow:2px 2px 0 rgba(180,35,28,.55);}
+
+  main{max-width:1080px; margin:18px auto 0; padding:28px 26px 32px; background:var(--paper); border:2px solid var(--ink); border-radius:6px; min-height:420px; box-shadow:var(--soft-shadow);}
+
+  .lib-controls{display:flex; align-items:center; margin-bottom:10px;}
+  .lib-controls.pill-row{gap:8px; overflow-x:auto; flex-wrap:nowrap; padding-bottom:6px; scrollbar-width:thin;}
+  .search-wrap{position:relative; flex:1 1 260px;}
+  .search-wrap input{width:100%; padding:13px 16px 13px 44px; border-radius:4px; border:1.5px solid var(--line); font-size:15px; font-family:'Inter',sans-serif; background:var(--bg); color:var(--ink);}
+  .search-wrap input:focus{outline:none; border-color:var(--red); box-shadow:0 0 0 3px rgba(180,35,28,.15);}
+  .search-wrap svg{position:absolute; left:15px; top:50%; transform:translateY(-50%);}
+
+  .pill{display:flex; align-items:center; gap:7px; flex-shrink:0; border:1.5px solid var(--ink); border-radius:999px; padding:8px 14px; font-size:12.5px; font-weight:600; cursor:pointer; background:var(--paper); color:var(--ink); font-family:'Inter',sans-serif; white-space:nowrap; transition:all .13s ease;}
+  .pill:hover{transform:translateY(-1px);}
+  .pill .count{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:11px; opacity:.6;}
+  .pill[data-active="true"]{color:#fff; border-color:transparent;}
+  .pill[data-active="true"] .count{opacity:.9;}
+  .pill[data-cat="offer"][data-active="true"]{background:var(--offer);}
+  .pill[data-cat="aware"][data-active="true"]{background:var(--aware);}
+  .pill[data-cat="angle"][data-active="true"]{background:var(--angle);}
+  .pill[data-cat="proof"][data-active="true"]{background:var(--proof);}
+  .pill[data-cat="eval"][data-active="true"]{background:var(--eval);}
+
+  .result-count{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--ink-soft); margin:12px 0 14px; font-weight:600; letter-spacing:.02em;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(252px,1fr)); gap:16px; padding-bottom:6px;}
+  .card{border-radius:5px; border:1.5px solid var(--line); padding:18px; display:flex; flex-direction:column; gap:10px; background:var(--paper); box-shadow:var(--soft-shadow); cursor:pointer; min-height:176px; transition:transform .14s ease, box-shadow .14s ease; border-top:4px solid var(--line);}
+  .card:hover{transform:translateY(-3px); box-shadow:var(--lift-shadow);}
+  .card:focus-visible{outline:3px solid var(--red); outline-offset:2px;}
+  .card[data-cat="offer"]{border-top-color:var(--offer);}
+  .card[data-cat="aware"]{border-top-color:var(--aware);}
+  .card[data-cat="angle"]{border-top-color:var(--angle);}
+  .card[data-cat="proof"]{border-top-color:var(--proof);}
+  .card[data-cat="eval"]{border-top-color:var(--eval);}
+
+  .cat-tag{font-family:'JetBrains Mono',monospace; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; padding:4px 9px; border-radius:3px; display:inline-flex; align-items:center; gap:5px; align-self:flex-start;}
+  .cat-tag[data-cat="offer"]{color:var(--offer-dark); background:var(--offer-tint);}
+  .cat-tag[data-cat="aware"]{color:var(--aware-dark); background:var(--aware-tint);}
+  .cat-tag[data-cat="angle"]{color:var(--angle-dark); background:var(--angle-tint);}
+  .cat-tag[data-cat="proof"]{color:var(--proof-dark); background:var(--proof-tint);}
+  .cat-tag[data-cat="eval"]{color:var(--eval-dark); background:var(--eval-tint);}
+
+  .card h3{font-family:'Playfair Display',serif; font-size:19px; font-weight:700; margin:0; line-height:1.2;}
+  .card .hook{font-size:14px; color:var(--ink-soft); line-height:1.5; margin:0; flex-grow:1; font-style:italic;}
+  .explore-row{display:flex; align-items:center; gap:6px; font-family:'Inter',sans-serif; font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); margin-top:auto;}
+  .explore-row svg{transition:transform .15s ease;}
+  .card:hover .explore-row svg{transform:translateX(3px);}
+  .card:hover .explore-row{color:var(--red);}
+  .empty-state{grid-column:1/-1; text-align:center; padding:50px 20px; color:var(--ink-soft); font-style:italic;}
+
+  .modal-overlay{position:fixed; inset:0; background:rgba(25,21,16,0.55); backdrop-filter:blur(3px); display:flex; align-items:flex-start; justify-content:center; padding:5vh 20px; z-index:100; overflow-y:auto; animation:fadeIn .15s ease;}
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  .modal{background:var(--paper); border:2px solid var(--ink); border-radius:6px; max-width:640px; width:100%; padding:30px 32px 28px; box-shadow:0 30px 60px -20px rgba(25,21,16,.6); animation:popIn .2s cubic-bezier(.3,.5,.3,1.2);}
+  @keyframes popIn{from{transform:translateY(12px) scale(.98); opacity:0;}to{transform:none; opacity:1;}}
+  .modal-top{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:6px;}
+  .modal-close{background:var(--bg); border:1.5px solid var(--ink); border-radius:4px; width:36px; height:36px; font-size:15px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--ink);}
+  .modal-close:hover{background:var(--ink); color:var(--paper);}
+  .modal h2{font-family:'Playfair Display',serif; font-size:28px; font-weight:900; margin:8px 0 5px; line-height:1.14;}
+  .modal .modal-hook{font-size:16px; color:var(--ink-soft); font-style:italic; margin:0 0 8px;}
+  .src-chip{display:inline-flex; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); background:var(--bg); border:1px solid var(--line); border-radius:3px; padding:4px 9px; margin:2px 0 4px;}
+  .src-chip b{color:var(--ink);}
+  .section-label{display:flex; align-items:center; gap:7px; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.09em; margin:22px 0 9px; color:var(--red);}
+  .modal p.body-text{font-size:16px; line-height:1.62; margin:0; color:var(--ink);}
+  .example-list{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px;}
+  .example-list li{font-size:14.5px; line-height:1.52; padding:12px 14px 12px 36px; border-radius:4px; background:var(--bg); border:1px solid var(--line); position:relative;}
+  .example-list li::before{content:"\275D"; font-family:Georgia,serif; position:absolute; left:12px; top:9px; font-size:20px; color:var(--red); line-height:1;}
+  .watch-box{background:var(--offer-tint); border-left:3px solid var(--offer); border-radius:3px; padding:12px 14px; font-size:14.5px; line-height:1.55;}
+  .watch-box strong{color:var(--offer-dark);}
+
+  .scenario-wrap{padding-bottom:20px;}
+  .progress-row{display:flex; align-items:center; gap:14px; margin-bottom:22px;}
+  .progress-track{flex:1; height:9px; background:var(--line); border-radius:6px; overflow:hidden;}
+  .progress-fill{height:100%; background:var(--red); transition:width .35s ease; border-radius:6px;}
+  .score-chip{font-family:'JetBrains Mono',monospace; font-weight:600; font-size:12px; border:1.5px solid var(--ink); border-radius:4px; padding:6px 11px; white-space:nowrap;}
+  .scenario-card{border:2px solid var(--ink); border-radius:6px; padding:28px; background:var(--paper); box-shadow:var(--soft-shadow);}
+  .scenario-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:700; color:var(--red); text-transform:uppercase; letter-spacing:.14em; margin-bottom:10px;}
+  .scenario-text{font-family:'Playfair Display',serif; font-size:21px; font-weight:700; line-height:1.34; margin:0 0 22px;}
+  .options{display:grid; gap:10px;}
+  .option-btn{text-align:left; padding:14px 16px; border-radius:4px; border:1.5px solid var(--line); background:var(--paper); font-family:'Inter',sans-serif; font-weight:600; font-size:14.5px; cursor:pointer; transition:all .12s ease; color:var(--ink);}
+  .option-btn:hover:not([disabled]){border-color:var(--ink); transform:translateX(3px);}
+  .option-btn[disabled]{cursor:default;}
+  .option-btn.incorrect{background:var(--offer-tint); border-color:var(--offer); color:var(--offer-dark);}
+  .option-btn.reveal-correct{background:var(--proof-tint); border-color:var(--proof); color:var(--proof-dark);}
+  .feedback-box{margin-top:18px; padding:15px 18px; border-radius:4px; border:1.5px dashed var(--ink); font-size:14.5px; line-height:1.55; background:var(--bg);}
+  .feedback-box strong{font-family:'Inter',sans-serif; font-weight:700;}
+  .next-btn{margin-top:18px; font-family:'Inter',sans-serif; font-weight:600; font-size:14.5px; background:var(--ink); color:var(--paper); border:1.5px solid var(--ink); border-radius:4px; padding:12px 22px; cursor:pointer;}
+  .next-btn:hover{background:var(--red); border-color:var(--red);}
+  .results{text-align:center; padding:24px 10px 10px;}
+  .results h2{font-family:'Playfair Display',serif; font-size:28px; font-weight:900; margin-bottom:4px;}
+  .big-score{font-family:'Anton',sans-serif; font-size:64px; margin:10px 0; color:var(--red); font-variant-numeric:tabular-nums; line-height:1;}
+  .breakdown{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin:22px 0; text-align:left;}
+  .bd-item{border:1.5px solid var(--line); border-radius:4px; padding:12px 14px;}
+  .bd-item .lbl{font-family:'Inter',sans-serif; font-size:11.5px; color:var(--ink-soft); font-weight:600;}
+  .bd-item .n{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:16px; margin-top:2px;}
+  .restart-btn{font-family:'Inter',sans-serif; font-weight:600; background:var(--red); color:#fff; border:none; border-radius:4px; padding:13px 26px; cursor:pointer; font-size:15px; box-shadow:var(--soft-shadow);}
+  .restart-btn:hover{opacity:.92;}
+  .missed-list{text-align:left; margin-top:20px;}
+  .missed-list h3{font-family:'Playfair Display',serif; font-size:18px;}
+  .missed-item{border-left:3px solid var(--offer); background:var(--offer-tint); border-radius:3px; padding:11px 14px; margin-bottom:8px; font-size:13.5px; line-height:1.5;}
+
+  /* Awareness Spectrum */
+  .spec-intro{font-size:16px; color:var(--ink); line-height:1.6; margin:0 0 4px; max-width:74ch;}
+  .spec-product{display:flex; gap:12px; align-items:flex-start; margin:16px 0 6px; padding:14px 16px; background:var(--bg); border:1.5px solid var(--line); border-radius:5px; font-size:14.5px; line-height:1.5;}
+  .spec-product .pico{font-size:24px; line-height:1;}
+  .spec-product b{color:var(--offer-dark);}
+
+  .stepper{display:flex; gap:0; margin:24px 0 6px; border:1.5px solid var(--ink); border-radius:5px; overflow:hidden;}
+  .step{flex:1; border:none; border-right:1.5px solid var(--ink); background:var(--paper); padding:12px 8px; cursor:pointer; text-align:center; transition:all .15s ease; min-width:0;}
+  .step:last-child{border-right:none;}
+  .step .snum{font-family:'Anton',sans-serif; font-size:20px; color:var(--ink-soft); line-height:1;}
+  .step .sname{font-family:'Inter',sans-serif; font-size:11px; font-weight:700; color:var(--ink-soft); margin-top:4px; text-transform:uppercase; letter-spacing:.02em; line-height:1.2;}
+  .step:hover{background:var(--bg);}
+  .step.active{background:var(--aware);}
+  .step.active .snum,.step.active .sname{color:#fff;}
+  .spec-slider{width:100%; margin:14px 0 4px; accent-color:var(--aware); height:6px;}
+  .spec-slider-labels{display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em;}
+
+  .stage-panel{margin-top:22px; border:2px solid var(--ink); border-radius:6px; overflow:hidden; box-shadow:var(--soft-shadow); animation:fadeIn .2s ease;}
+  .stage-head{background:var(--aware); color:#fff; padding:18px 22px; display:flex; align-items:center; gap:16px;}
+  .stage-head .snum-big{font-family:'Anton',sans-serif; font-size:52px; line-height:.85;}
+  .stage-head .sh-txt h3{font-family:'Playfair Display',serif; font-weight:900; font-size:26px; margin:0; color:#fff;}
+  .stage-head .sh-txt .sh-tag{font-family:'Inter',sans-serif; font-size:12.5px; font-weight:600; opacity:.9; margin-top:2px;}
+  .stage-body{padding:22px;}
+  .stage-block{margin-bottom:18px;}
+  .stage-block:last-child{margin-bottom:0;}
+  .sb-label{font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--red); margin-bottom:7px; display:flex; align-items:center; gap:7px;}
+  .sb-text{font-size:15.5px; line-height:1.58; margin:0;}
+  .ad-mock{border:2px dashed var(--offer); background:var(--offer-tint); border-radius:5px; padding:18px 20px; position:relative;}
+  .ad-mock .ad-stamp{position:absolute; top:10px; right:14px; font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--offer); opacity:.8;}
+  .ad-mock .ad-copy{font-family:'Playfair Display',serif; font-size:18.5px; font-weight:600; font-style:italic; line-height:1.42; margin:0; color:var(--ink);}
+  .pitfall-line{margin-top:16px; padding:12px 14px; background:var(--bg); border-left:3px solid var(--ink); border-radius:3px; font-size:14px; line-height:1.5;}
+  .pitfall-line strong{font-family:'Inter',sans-serif;}
+  .stage-nav{display:flex; justify-content:space-between; gap:12px; margin-top:16px;}
+  .stage-nav button{font-family:'Inter',sans-serif; font-weight:600; font-size:14px; background:var(--paper); color:var(--ink); border:1.5px solid var(--ink); border-radius:4px; padding:10px 18px; cursor:pointer;}
+  .stage-nav button:hover:not([disabled]){background:var(--ink); color:var(--paper);}
+  .stage-nav button[disabled]{opacity:.35; cursor:default;}
+
+  .diag-head{font-family:'Playfair Display',serif; font-weight:700; font-size:21px; margin:34px 0 6px; border-top:1.5px solid var(--ink); padding-top:22px;}
+  .diag-sub{font-size:14.5px; color:var(--ink-soft); margin:0 0 16px; font-style:italic;}
+  .diag-list{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px;}
+  .diag-card{border:1.5px solid var(--line); border-radius:5px; padding:16px; background:var(--paper); box-shadow:var(--soft-shadow); display:flex; flex-direction:column; gap:12px;}
+  .diag-card .dc-desc{font-size:14.5px; line-height:1.5; margin:0;}
+  .diag-card .dc-btn{font-family:'Inter',sans-serif; font-weight:600; font-size:13px; background:var(--aware); color:#fff; border:none; border-radius:4px; padding:9px 14px; cursor:pointer; align-self:flex-start;}
+  .diag-card .dc-btn:hover{opacity:.9;}
+  .diag-answer{border-top:1px dashed var(--line); padding-top:11px; font-size:13.5px; line-height:1.5; animation:fadeIn .2s ease;}
+  .diag-answer .da-stage{font-family:'JetBrains Mono',monospace; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--aware-dark); display:block; margin-bottom:4px;}
+
+  footer{max-width:1080px; margin:34px auto 0; padding:0 26px; color:var(--ink-soft); font-size:12.5px; line-height:1.6;}
+  footer .foot-rule{height:2px; background:var(--ink); margin-bottom:14px;}
+  footer .foot-grid{display:flex; gap:26px; flex-wrap:wrap; justify-content:space-between;}
+  footer .src-col{max-width:640px;}
+  footer h4{font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.12em; color:var(--ink); margin:0 0 8px;}
+  footer ul{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:5px;}
+  footer ul li{font-size:12.5px;}
+  footer ul li b{color:var(--ink); font-family:'Source Serif 4',serif;}
+  footer .built{font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em; margin-top:16px; line-height:1.7;}
+
+  @media (max-width:640px){
+    .masthead h1{font-size:34px;}
+    .est{display:none;}
+    .modal{padding:24px 20px 20px;}
+    main{padding:22px 16px 26px;}
+    .step .sname{display:none;}
+    .stage-head .snum-big{font-size:40px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="rule-top"></div>
+  <div class="rule-thin"></div>
+  <div class="masthead">
+    <div class="mast-left">
+      <p class="eyebrow">A Field Guide to Persuasion That Sells</p>
+      <h1>Direct Response<br>Fundamentals</h1>
+      <p>The durable principles behind why an ad works — offer, awareness, mechanism, and proof — for the product person who has to brief copywriters and judge creative, not write it.</p>
+      <span class="disclaimer">&#9670; Source-pinned &mdash; principles are durable, pre-digital.</span>
+    </div>
+    <div class="est">
+      <div class="no anton">28</div>
+      <div class="lbl">Principles<br>Indexed</div>
+    </div>
+  </div>
+</header>
+
+<div class="tabbar">
+  <div class="tab active" data-view="library">&#128218; Concept Library</div>
+  <div class="tab" data-view="scenarios">&#127919; Evaluate the Creative</div>
+  <div class="tab" data-view="spectrum">&#129522; Awareness Spectrum</div>
+</div>
+
+<main id="main"></main>
+
+<footer>
+  <div class="foot-rule"></div>
+  <div class="foot-grid">
+    <div class="src-col">
+      <h4>Pinned Sources &amp; Attribution</h4>
+      <ul>
+        <li><b>Eugene Schwartz, "Breakthrough Advertising" (1966)</b> &mdash; the five stages of awareness, the five stages of market sophistication, mass desire, mechanism escalation.</li>
+        <li><b>Claude Hopkins, "Scientific Advertising" (1923, public domain)</b> &mdash; salesmanship in print, reason-why, specificity, testing, the unique-mechanism root (Schlitz).</li>
+        <li><b>Robert Cialdini, "Influence: The Psychology of Persuasion" (New &amp; Expanded, 2021)</b> &mdash; social proof, authority, scarcity, reciprocity.</li>
+        <li><b>John Caples, "Tested Advertising Methods" (5th ed., 1998)</b> &mdash; judge by response, specificity, objection handling. Earlier editions retain more of Caples' original.</li>
+        <li><b>David Ogilvy, "Ogilvy on Advertising" (1983)</b> &mdash; the big idea, clarity over cleverness.</li>
+        <li><b>Modern practitioners:</b> Gary Bencivenga (proof beats persuasion, believability); Todd Brown (the unique mechanism); Jay Abraham (risk reversal); Alex Hormozi, "$100M Offers" (2021, the value equation).</li>
+      </ul>
+    </div>
+  </div>
+  <p class="built">Built with the field-guide-builder skill &middot; sources curated and verified via signal-in-noise &middot; concepts attributed to the canon above. This is a study reference, not a copywriting course.</p>
+</footer>
+
+<div id="modalRoot"></div>
+
+<script>
+const CATS = {
+  offer: { label:"The Offer", icon:"🎯" },
+  aware: { label:"Awareness & Sophistication", icon:"🪜" },
+  angle: { label:"Angles & Mechanisms", icon:"🎣" },
+  proof: { label:"Proof & Objections", icon:"🛡️" },
+  eval:  { label:"Evaluating Creative", icon:"🔍" },
+};
+
+const ENTRIES = [
+  {cat:"offer", name:"The Offer Is the Primary Lever", src:"Direct-response tradition / Hopkins",
+   hook:"Change what you're offering before you change how you say it.",
+   def:"In direct response, the offer (what the buyer gets, at what price, on what terms, and with what risk) moves results more than the cleverness of the words around it. Claude Hopkins established the discipline of testing offers against each other in 'Scientific Advertising', and generations of direct marketers formalized the rule that a mediocre pitch for a strong offer beats a brilliant pitch for a weak one. For a brief, this means the biggest lever you control is the deal itself, not the adjectives.",
+   example:["A 'buy one, get one free' offer often out-pulls '50% off' for identical economics, because the framing of the deal changes response.","A free 30-day trial can beat a discount, because it changes the risk and terms rather than just the price."],
+   watch:"Teams reflexively rewrite the headline when response is weak. Often the copy is fine and the offer is the problem, and no amount of wordsmithing rescues a weak offer."},
+
+  {cat:"offer", name:"Risk Reversal", src:"Jay Abraham (modern), classic DR",
+   hook:"Move the risk of being wrong from the buyer onto the seller.",
+   def:"Risk reversal removes the buyer's fear of losing money if the product disappoints, by shifting that risk onto the seller through guarantees, trials, or 'pay only if it works' terms. Jay Abraham popularized the term in modern direct marketing, but the mechanic is old: the more confidently and specifically you absorb the buyer's risk, the more the offer signals that you expect to deliver.",
+   example:["'Return it within 90 days for a full refund, no questions asked' converts hesitant buyers who would otherwise stall.","A 'refund you and let you keep it' guarantee reverses risk so completely it can lift response despite the abuse it invites."],
+   watch:"A bolder guarantee usually raises response more than it raises refunds, but only when the product delivers. Reversing risk on a weak product just accelerates refunds and chargebacks."},
+
+  {cat:"offer", name:"The Guarantee", src:"Claude Hopkins",
+   hook:"A guarantee is a confidence claim the buyer can hold you to.",
+   def:"A guarantee tells the prospect what happens if the product fails them, and a specific, generous one reads as proof that the seller expects to deliver. Hopkins used free trials and sampling for the same reason: let the risk sit with the party who actually knows the product's quality. Evaluate a guarantee on specificity and length. A vague 'satisfaction guaranteed' says far less than 'sleep better in 14 nights or your money back'.",
+   example:["'30 nights risk-free, then decide' outperforms 'satisfaction guaranteed' because it is concrete and time-bound.","A lifetime guarantee on a durable product costs little and signals durability better than any adjective."],
+   watch:"A guarantee nobody reads or believes does nothing. Placement, specificity, and believability matter more than the mere presence of the word 'guarantee'."},
+
+  {cat:"offer", name:"The Value Equation", src:"Alex Hormozi, '$100M Offers'",
+   hook:"Perceived value has four moving parts, not one.",
+   def:"Alex Hormozi's value equation frames perceived value as the dream outcome multiplied by the prospect's belief it will work, divided by the time it takes and the effort or sacrifice required. It is a useful evaluation lens: a claim can raise value by increasing the outcome or the believability, or by cutting the time and effort. Most weak offers fail on the bottom of the equation, they ask for too much time or effort, or the prospect does not believe it will work for them.",
+   example:["'Done-for-you setup in 24 hours' raises value by slashing time and effort, without touching price.","Adding a case study raises the 'perceived likelihood of success' term, which can matter more than a bigger promise."],
+   watch:"Chasing a bigger dream outcome while ignoring believability backfires. A huge promise the prospect does not believe lowers value, because the doubt in the denominator swamps the numerator."},
+
+  {cat:"offer", name:"Scarcity and Urgency", src:"Robert Cialdini",
+   hook:"A reason the offer cannot wait, if the reason is real.",
+   def:"Scarcity (limited quantity) and urgency (limited time) push a prospect who already wants the product to act now instead of later. Cialdini documents scarcity as a core principle of influence in 'Influence': people value what is less available. In an offer, a genuine deadline or limit converts intent into action. Its job is timing, not persuasion.",
+   example:["'Founding price ends Friday' moves fence-sitters who would otherwise defer the decision indefinitely.","A genuinely limited production run raises perceived value and speeds the decision."],
+   watch:"Manufactured or perpetual scarcity ('sale ends today', every single day) erodes trust the moment the prospect notices. Fake urgency buys one conversion and taxes every future one."},
+
+  {cat:"offer", name:"Price Is a Message, Not Just a Number", src:"Direct-response tradition",
+   hook:"The number itself makes a claim about the product.",
+   def:"Price communicates positioning before any copy does: a high price can signal quality, a low price can signal risk or cheapness, so the number is part of the argument. Direct marketers test price points not only for margin but because price changes who responds and what they expect. When you evaluate an offer, read the price as a statement, does it fit the promise and the market, or does it undercut the story the creative is telling?",
+   example:["A premium sleep supplement priced like a bargain can lower response, because the price contradicts the quality claim.","Anchoring against a higher 'compare at' price reframes the same number as a deal."],
+   watch:"Discounting to lift response can quietly reposition the product downmarket. A price cut is a message too, and it can say 'this was overpriced' or 'this is cheap' louder than the copy says anything."},
+
+  {cat:"aware", name:"The Five Stages of Awareness", src:"Eugene Schwartz",
+   hook:"How much the prospect already knows decides where you start.",
+   def:"Schwartz's 'Breakthrough Advertising' defines five stages of prospect awareness: Unaware (does not know they have the problem), Problem-Aware (feels the problem, not the solution), Solution-Aware (knows solutions exist, not yours), Product-Aware (knows your product, not convinced), and Most-Aware (ready, needs the deal). The stage dictates what the message must lead with. The same product needs a completely different opening for a cold, unaware prospect than for a past buyer.",
+   example:["A cold audience that does not know they sleep badly needs a story or problem lead, never a product name.","A list of past buyers (Most-Aware) needs the offer and a reason to act, not an education on the problem."],
+   watch:"Most misfires come from writing to the wrong stage. Copy that would convert a Product-Aware buyer falls flat on an Unaware audience, and the reverse is just as true. The words can be excellent and still mismatched."},
+
+  {cat:"aware", name:"Market Sophistication", src:"Eugene Schwartz",
+   hook:"How many times the market has already heard the claim.",
+   def:"Schwartz's second axis, market sophistication, tracks how many competing claims the audience has already heard. Stage 1: be first, a simple claim works. Stage 2: the claim is copied, so enlarge it. Stage 3: claims are exhausted, so introduce a mechanism (how it works). Stage 4: mechanisms compete, so make yours unique or bigger. Stage 5: the market is exhausted and cynical, so shift from claim to identification with the prospect. Sophistication tells you whether a claim can still land or has been burned out by repetition.",
+   example:["The first 'whitens teeth' ad wins on the claim alone; the twentieth must explain a new whitening mechanism.","In an exhausted market, an ad that sells identity and belonging can out-pull any feature claim."],
+   watch:"A claim that worked five years ago can fail now purely because the market grew more sophisticated. Judging creative without asking 'how many times has this audience heard this?' misreads why it is or is not working."},
+
+  {cat:"aware", name:"When Claims Wear Out: Mechanism Escalation", src:"Eugene Schwartz",
+   hook:"When everyone promises the result, sell how you get it.",
+   def:"Schwartz's core move for a sophisticated market: when direct claims stop being believed because every competitor makes them, stop shouting the result louder and start explaining the mechanism, the specific way your product produces the result. If mechanisms are also competing, make yours unique or more powerful. This is why 'how it works' becomes the battleground once 'what it does' is saturated.",
+   example:["When every diet promises weight loss, the winning ad explains a specific metabolic mechanism nobody else named.","A sleep product stops claiming 'sleep better' and starts explaining the exact mineral pathway it targets."],
+   watch:"Escalating the claim ('even faster!', 'even more!') in a saturated market invites disbelief. The escape is a new mechanism, not a louder promise. Teams that keep inflating claims accelerate the burnout."},
+
+  {cat:"aware", name:"Mass Desire", src:"Eugene Schwartz",
+   hook:"You channel desire that already exists; you cannot create it.",
+   def:"Schwartz's foundational premise: advertising cannot manufacture desire, it can only channel existing mass desire toward a product. The job is to find the powerful desire already in the market and connect the product to it. For evaluation, this means the strongest creative rarely invents a new want, it taps a want the audience already feels and points it at this product.",
+   example:["A product tied to an existing, urgent desire (look younger, sleep through the night) has far less persuasion to do.","An ad that tries to convince people to want something they do not already want almost always underperforms."],
+   watch:"If a campaign has to create the desire from scratch, no amount of clever copy saves it. Misreading a weak or absent desire as a copy problem sends teams polishing words when the real issue is market fit."},
+
+  {cat:"aware", name:"Awareness Sets the Lead", src:"Eugene Schwartz",
+   hook:"The opening line is an awareness decision, not a style choice.",
+   def:"Schwartz's practical rule: the lead (how the message opens) is chosen by the prospect's awareness stage, not by taste. Unaware prospects need a story or an emotional or identity entry; problem-aware prospects need the problem named and agitated; product-aware prospects need proof and the offer up front. The lead is where message-to-market match is won or lost.",
+   example:["A story lead works for an unaware audience but wastes a most-aware buyer's time.","Leading with the product name and price is right for a warm list and wrong for a cold one."],
+   watch:"Judging a lead in isolation is a mistake. A 'weak' opening may be exactly right for its stage, so always ask which audience the lead is written for before calling it good or bad."},
+
+  {cat:"angle", name:"Angle vs. Hook", src:"Direct-response tradition",
+   hook:"The angle is the strategy; the hook is the attention grab.",
+   def:"The angle is the strategic take on the product: which desire it targets, which benefit it leads with, which objection it dissolves. The hook is the specific attention-grabbing expression of that angle in the first moments of the ad. One angle can spawn many hooks. Confusing the two leads teams to chase catchy hooks with no strategy underneath, or to ship a sound strategy with a hook too dull to earn attention.",
+   example:["Angle: position the sleep drink around 'busy parents lose an hour of sleep to stress'. Hook: 'The 2am wake-up has a mineral cause'.","The same 'saves you time' angle can be hooked as a shocking stat, a question, or a one-line story."],
+   watch:"A great hook on a weak angle gets attention and no sale. When you evaluate creative, separate 'did it grab me?' from 'is the underlying angle right for this audience?', they fail independently."},
+
+  {cat:"angle", name:"The Big Idea", src:"David Ogilvy",
+   hook:"One dominant thought the whole piece is built around.",
+   def:"David Ogilvy argued that unless an ad is built on a big idea, it passes like a ship in the night. The big idea is the single dominant concept that organizes the creative: memorable, ownable, and tied to the product's core promise. Schwartz's work on channeling one dominant desire points the same way. For evaluation, ask whether a piece has one clear organizing idea or a pile of features competing for attention.",
+   example:["Ogilvy's Hathaway shirt campaign was built on one big idea: the man in the eyepatch.","A landing page organized around one striking idea out-pulls one that lists ten disconnected benefits."],
+   watch:"'More points' is not a big idea. Creative crammed with features and no central thought feels busy and forgettable. The absence of a big idea is the most common reason competent ads still fail to land."},
+
+  {cat:"angle", name:"The Unique Mechanism", src:"Todd Brown (modern), root in Hopkins",
+   hook:"A different way to get the result, not just a different benefit.",
+   def:"The unique mechanism is the specific method, ingredient, or process that explains why your product delivers, and why it is different from everything the prospect already tried. Todd Brown formalized it for modern direct response, but the root is Claude Hopkins: his Schlitz campaign described a beer-purification process every brewer used but none had mentioned, and Schlitz jumped from fifth to first. A unique mechanism gives a skeptical, tried-everything prospect a reason to believe this time is different.",
+   example:["'Magnesium glycinate, not the oxide everyone else uses' names a mechanism that differentiates in a crowded market.","Hopkins made Schlitz's ordinary purification steps famous simply by being the first to explain them."],
+   watch:"A unique mechanism is not a unique benefit. Everyone promises the same benefit (better sleep); the mechanism is the different route to it. Teams that differentiate on the benefit alone in a sophisticated market have nothing left to say."},
+
+  {cat:"angle", name:"Reason-Why", src:"Claude Hopkins",
+   hook:"Give the prospect a concrete reason the claim is true.",
+   def:"Hopkins' 'reason-why' principle: a claim persuades far more when it is backed by a specific reason it is true. 'It's purer' is weak; 'it's purified in filtered air and sterilized bottles' is strong because it supplies the mechanism and the proof in one stroke. Reason-why copy respects the reader's intelligence by explaining rather than merely asserting.",
+   example:["'Fresher because we roast in small batches and ship within 48 hours' beats 'the freshest coffee'.","A specific reason ('clinically dosed at 400mg') converts better than a bare superlative ('powerful')."],
+   watch:"Assertion without a reason reads as hype and invites doubt. When creative makes a bold claim, check whether it supplies a believable reason-why, a claim with no mechanism behind it is one the prospect quietly discounts."},
+
+  {cat:"angle", name:"Specificity Beats Superlatives", src:"Hopkins & Caples",
+   hook:"Specific numbers are believed; 'best' is not.",
+   def:"Both Hopkins and John Caples found that specific, concrete claims out-pull vague superlatives. '23 minutes faster' is believed where 'much faster' is skimmed, and 'used by 1,847 clinics' beats 'trusted everywhere'. Specificity signals that a real fact sits behind the claim, and a real fact is harder to dismiss than an adjective. Treat this as an evaluation heuristic: the more specific the claim, the more believable, all else equal.",
+   example:["'Lowers the average 4pm energy dip by 31%' out-pulls 'boosts your energy'.","Caples repeatedly found that concrete, factual headlines beat clever or general ones in tested results."],
+   watch:"Specificity only helps if the number is true and relevant. An oddly precise but meaningless stat ('97.3% more delightful') reads as manipulation. Precision has to be earned by a real measurement."},
+
+  {cat:"proof", name:"Proof Beats Persuasion", src:"Gary Bencivenga (modern)",
+   hook:"The prospect must believe before they can buy.",
+   def:"Gary Bencivenga, among the most rigorously tested direct-response copywriters, argued that proof is the copywriter's most valuable tool: people buy only what they believe, so stacking credible proof around a claim beats trying to out-argue the reader. The practical move is to 'sandwich' claims between proof elements (data, demonstrations, testimonials, credentials) so the claim lands inside evidence rather than standing alone.",
+   example:["A weight-loss claim placed between a clinical chart and three dated testimonials is believed; the same claim alone is doubted.","Bencivenga routinely beat cleverer competitors by out-proving them, not out-writing them."],
+   watch:"Persuasive language cannot substitute for proof with a skeptical audience. When creative leans on adjectives and enthusiasm instead of evidence, the more sophisticated the market, the harder it bounces."},
+
+  {cat:"proof", name:"Social Proof", src:"Robert Cialdini",
+   hook:"People look to others like them to decide.",
+   def:"Cialdini's principle of social proof: uncertain people follow the actions of similar others, which is why reviews, ratings, user counts, and testimonials move response. The strength of social proof rises when the people shown are similar to the prospect and when the numbers are specific and credible. It substitutes for the buyer's own certainty by borrowing the crowd's.",
+   example:["'Join 40,000 parents who finally sleep through the night' leverages social proof with a specific, relatable crowd.","Testimonials from people who match the prospect's exact situation convert better than generic five-star praise."],
+   watch:"Social proof from the wrong crowd, or numbers that feel inflated, can backfire. Borrowed credibility only works when the crowd is believable and clearly similar to the reader."},
+
+  {cat:"proof", name:"Authority and Credentials", src:"Robert Cialdini",
+   hook:"A credible source lends the claim its weight.",
+   def:"Cialdini's authority principle: people defer to credible experts and legitimate credentials, so 'doctor-formulated', third-party certifications, and named experts raise believability. Authority works because it lets the prospect outsource a judgment they cannot make themselves. In evaluation, check whether the authority is real and relevant, borrowed or vague authority signals weakness rather than strength.",
+   example:["'Formulated with a sleep researcher, third-party lab tested' borrows credible authority for the claim.","A relevant certification badge near the buy button can lift conversion by reducing perceived risk."],
+   watch:"Fake, vague, or irrelevant authority ('experts agree') erodes trust the moment it is questioned. Authority has to be specific and verifiable to help; hand-wavy authority reads as a tell."},
+
+  {cat:"proof", name:"The Believability Ceiling", src:"Schwartz & Bencivenga",
+   hook:"A claim too big to believe converts worse than a smaller one.",
+   def:"Every audience has a ceiling on what it will believe from a stranger, and a claim above that ceiling triggers disbelief no matter how true it is. Schwartz addressed this by building a claim up gradually through proof and mechanism rather than stating the biggest promise cold, and Bencivenga's proof-stacking does the same work. The evaluation question is not 'is this claim impressive?' but 'will this specific audience believe it as stated?'",
+   example:["'Fall asleep in 10 minutes' may be believed; 'cure insomnia forever' blows past the ceiling and is dismissed.","Leading with the mechanism first can make a big result believable that would be rejected if stated cold."],
+   watch:"A bigger promise is not always a better one. Past the believability ceiling, raising the claim lowers response, and the fix is more proof or a mechanism, not a bolder headline."},
+
+  {cat:"proof", name:"Objection Handling", src:"John Caples / DR tradition",
+   hook:"The good ad answers doubts in the order they arise.",
+   def:"A persuasive argument anticipates and dissolves the prospect's objections in sequence, so that by the decision point no unaddressed doubt remains. Caples and the direct-response tradition treated the ad as a structured argument: raise the objection the reader is already forming ('too expensive', 'won't work for me', 'no time'), then answer it with proof before moving on. Unhandled objections are silent exits.",
+   example:["A page that pre-empts 'I've tried supplements before' with a mechanism and a guarantee removes the top exit.","Ordering the copy to answer the price objection right after the strongest proof point keeps the reader moving."],
+   watch:"Objections the creative ignores do not disappear, the reader just leaves. When you evaluate a piece, list the objections a real prospect would raise and check that each is answered, and in the right order."},
+
+  {cat:"proof", name:"Reciprocity", src:"Robert Cialdini",
+   hook:"Give something of value first, and the ask lands softer.",
+   def:"Cialdini's reciprocity principle: people feel obliged to return value, so giving genuine help up front (a free tool, useful information, a sample) makes the later ask more welcome. In direct response this shows up as lead magnets and free trials that deliver real value before requesting the sale. The mechanism is obligation and goodwill, not bribery, and it works best when the gift is genuinely useful.",
+   example:["A free sleep-audit tool that gives real insight earns the right to pitch the product afterward.","A genuinely useful guide, given before any ask, converts better than jumping straight to the offer."],
+   watch:"Reciprocity fails when the 'gift' is thin or an obvious hook. A token freebie the prospect sees through creates no obligation and can read as manipulation."},
+
+  {cat:"eval", name:"Message-to-Market Match", src:"Synthesis of Schwartz",
+   hook:"The single question that decides whether creative works.",
+   def:"Message-to-market match asks whether this message, at this awareness and sophistication stage, aimed at this desire, fits this audience. It is the synthesis of Schwartz's awareness and sophistication axes: great creative is not universally great, it is matched to a specific market's state of mind. Most creative that 'tests badly' is not badly written, it is mismatched to the audience it reached.",
+   example:["A brilliant product-aware ad shown to a cold, unaware audience mismatches and underperforms.","The same ad moved to a warm, product-aware list suddenly 'works', because now the message matches the market."],
+   watch:"Do not judge creative in a vacuum. 'Is this good?' is the wrong question; 'is this matched to the audience it will reach?' is the right one, and the answer changes with the audience, not the ad."},
+
+  {cat:"eval", name:"Salesmanship in Print", src:"Claude Hopkins",
+   hook:"Judge the ad as a salesperson, not as art.",
+   def:"Hopkins' governing frame: 'Advertising is salesmanship'. An ad should be judged the way you would judge a salesperson, does it get attention, make a relevant claim, prove it, handle objections, and ask for the order? This reframes evaluation away from aesthetics and toward function. The prettiest ad in the room can be the worst salesperson, and the plainest can be the best.",
+   example:["Ask of any creative: if a salesperson said exactly this to a prospect, would they buy? If not, the ad will not sell either.","Hopkins judged copy by whether it did the job a good salesperson does, not by how it looked."],
+   watch:"Awards and admiration are not sales. Creative praised for craft can fail as salesmanship, so run the 'would this close a real prospect?' test before the 'is this beautiful?' one."},
+
+  {cat:"eval", name:"Judge by Response, Not Taste", src:"Hopkins & Caples",
+   hook:"The market's verdict beats the room's opinion.",
+   def:"Hopkins and Caples built direct response on measurement: the ad that pulls more response wins, regardless of who in the room prefers it. Taste, seniority, and cleverness lose to tested results. For a product or analytics person, this is the strongest position you can hold in a creative review, tie the decision to response data, not to whose opinion is loudest.",
+   example:["Two headlines split-tested: the plainer one pulls 40% more sign-ups, so it wins over the cleverer favorite.","Caples repeatedly reported that a headline change moved response many times over, settled by testing, not debate."],
+   watch:"Opinion dressed as fact ('customers will love this') is not evidence. When taste and data disagree, the honest move is to test, not to defer to the most confident voice in the room."},
+
+  {cat:"eval", name:"Does the Lead Match the Awareness?", src:"Applied Schwartz",
+   hook:"A one-line evaluation test for any opening.",
+   def:"The fastest diagnostic on a piece of creative: identify the audience's awareness stage, then check whether the lead is written for that stage. An offer-led opening to a cold audience fails; a story-led opening to a most-aware buyer wastes them. This turns Schwartz's awareness model into a concrete review question you can apply in seconds, before debating word choice.",
+   example:["Cold-traffic ad that opens with the product name and price: lead mismatched to an unaware audience, likely to underperform.","Retargeting ad to past visitors that opens with a long problem story: over-educating a warm, product-aware audience."],
+   watch:"Fixing the words before fixing the lead-to-awareness match is polishing the wrong layer. If the opening targets the wrong stage, better copy inside it still will not convert."},
+
+  {cat:"eval", name:"Clarity Over Cleverness", src:"David Ogilvy",
+   hook:"When cleverness fights clarity, clarity sells.",
+   def:"Ogilvy warned that copywriters who entertain instead of sell mistake the job, and that clarity almost always out-sells cleverness. Wordplay and wit that obscure the offer or slow comprehension cost response. This does not ban craft, it ranks it: the message must be understood instantly first, and only then can style add. For evaluation, if you have to explain the ad, it is probably too clever.",
+   example:["A pun headline that hides what is being sold underperforms a plain one that states the benefit clearly.","Ogilvy's most effective ads were often plainly worded and information-rich, not witty."],
+   watch:"Clever creative wins in the room and loses in the market more often than the reverse. Applause is not comprehension, if colleagues laugh but a stranger would be confused, cleverness has beaten clarity and will cost sales."},
+
+  {cat:"eval", name:"The Swipe Trap", src:"Evaluation nuance",
+   hook:"Copying the surface of a winning ad misses why it won.",
+   def:"A winning ad works because of an underlying fit, the right message to the right market at the right awareness and sophistication stage, expressed through a mechanism and proof. Copying its layout, tone, or headline structure ('swiping' the surface) without that underlying fit usually flops, because the surface was never the reason it worked. This is the most common way teams misread a competitor's success.",
+   example:["Cloning a competitor's viral ad format for a different audience mismatches the market and falls flat.","A swipe that copies the headline shape but not the mechanism or the audience match loses what made the original convert."],
+   watch:"'It worked for them' is not a reason it will work for you. Before borrowing a winning ad, identify why it won (audience, awareness, mechanism, proof), the transferable lesson is the fit, not the format."},
+];
+
+const SCENARIOS = [
+  {q:"A prospect does not think they have a sleep problem at all; they assume being tired is just normal. In Schwartz's model, which awareness stage are they in?",
+   options:["Problem-Aware","Unaware","Solution-Aware","Most-Aware"], correct:1,
+   why:"Unaware. They do not yet acknowledge the problem, so the message cannot lead with the product or even the solution, it has to open with a story or identity that surfaces the problem first.", cat:"aware"},
+  {q:"A cold audience that has never heard of your brand is shown an ad that opens with the product name and a 20% discount. What is the most likely problem?",
+   options:["The discount is too small","The message does not match the audience's awareness stage","The font is wrong","There is too much proof"], correct:1,
+   why:"Message-to-market mismatch. A cold, unaware or problem-aware audience needs a problem or story lead, not an offer lead. Product-and-price openings are right for a warm, most-aware list.", cat:"eval"},
+  {q:"Your market has heard 'whitens teeth' from twenty brands and response is falling. Schwartz's prescription for a sophisticated market is to:",
+   options:["Say the same claim louder","Introduce a new or unique mechanism","Cut the price","Add more testimonials only"], correct:1,
+   why:"Mechanism escalation. When direct claims are exhausted by repetition, you shift from the result to a unique mechanism (how it works). Inflating the claim in a saturated market just invites disbelief.", cat:"aware"},
+  {q:"Ad A says 'helps you sleep better'. Ad B says 'helped users fall asleep 23 minutes faster on average in a clinical study'. Why does B usually out-pull A?",
+   options:["B is longer","B is more specific and carries proof","B uses a bigger font","B is cheaper"], correct:1,
+   why:"Specificity plus proof. Hopkins and Caples found concrete, evidenced claims beat vague ones, because a real fact is harder to dismiss than an adjective.", cat:"proof"},
+  {q:"You add a '90 nights, full refund, no questions asked' guarantee to an offer. Its primary job is to:",
+   options:["Increase the price","Reverse the buyer's risk","Improve SEO","Shorten the copy"], correct:1,
+   why:"Risk reversal. The guarantee shifts the risk of being wrong from buyer to seller, which converts hesitant prospects. A bolder guarantee usually lifts response more than it lifts refunds, if the product delivers.", cat:"offer"},
+  {q:"A prospect reads your claim, decides it is 'too good to be true', and leaves. This is best described as:",
+   options:["A pricing error","Hitting the believability ceiling","A scarcity problem","A social-proof surplus"], correct:1,
+   why:"The believability ceiling. A claim above what this audience will believe from a stranger gets dismissed no matter how true it is. The fix is more proof or a mechanism first, not a bolder headline.", cat:"proof"},
+  {q:"A prospect knows magnesium can help sleep and is shopping supplements, but has never heard of your brand. Which stage are they in?",
+   options:["Unaware","Problem-Aware","Solution-Aware","Most-Aware"], correct:2,
+   why:"Solution-Aware. They know the solution category exists but not your product, so the message should lead with your differentiated approach or mechanism, then introduce the product.", cat:"aware"},
+  {q:"'9 out of 10 sleep specialists recommend this formulation.' Which principle of influence is this primarily using?",
+   options:["Scarcity","Authority","Reciprocity","Consistency"], correct:1,
+   why:"Authority. Cialdini's authority principle: people defer to credible experts. It only helps if the authority is real and verifiable, vague authority ('experts agree') reads as a tell.", cat:"proof"},
+  {q:"A campaign's creative is beautiful and wins praise internally, but sales are flat. Hopkins' evaluation frame says you should:",
+   options:["Add more visual polish","Judge the ad as a salesperson and by response, not by taste","Increase the ad budget","Make it more clever"], correct:1,
+   why:"Salesmanship in print, judged by response. Admiration is not sales. Ask whether the ad does a salesperson's job and let response, not the room's taste, decide.", cat:"eval"},
+  {q:"'Busy parents lose an hour of sleep to 2am stress' is the strategic take; 'The 2am wake-up has a mineral cause' is the attention-grab. These are, respectively:",
+   options:["Hook and angle","Angle and hook","Offer and guarantee","Proof and claim"], correct:1,
+   why:"Angle and hook. The angle is the strategy (which desire and benefit you target); the hook is its attention-grabbing expression. A great hook on a weak angle gets attention but no sale.", cat:"angle"},
+  {q:"You are messaging a list of past buyers (Most-Aware). What should the message lead with?",
+   options:["A long problem story","Basic education on the problem","The offer and a reason to act now","A mechanism explanation"], correct:2,
+   why:"Most-Aware prospects already want the product; they need the deal and a genuine reason to act, not more education. Leading with a story wastes a warm buyer's attention.", cat:"offer"},
+  {q:"A team copies a competitor's winning ad layout and headline structure word-for-word, but it flops. The most likely reason is:",
+   options:["They copied the surface, not the underlying message-to-market fit","The competitor cheated","The layout was patented","They spent too little"], correct:0,
+   why:"The swipe trap. An ad wins because of fit, the right message, market, awareness, mechanism, and proof. Copying the format without that fit misses the actual reason it worked.", cat:"eval"},
+  {q:"Every competitor promises 'better sleep'. You instead explain that you use magnesium glycinate, not the oxide others use. You are competing on:",
+   options:["A bigger benefit","A unique mechanism","A lower price","Social proof"], correct:1,
+   why:"Unique mechanism. It is a different route to the same benefit, not a different benefit. In a sophisticated market where the benefit claim is exhausted, the mechanism is what gives a skeptical prospect a reason to believe.", cat:"angle"},
+  {q:"Response to your offer is weak. The team's first instinct is to rewrite the headline. What does the direct-response tradition suggest you check first?",
+   options:["The logo","The offer itself","The font size","The color scheme"], correct:1,
+   why:"The offer is the primary lever. A mediocre pitch for a strong offer beats a brilliant pitch for a weak one, so test the offer (terms, price, risk, guarantee) before assuming the copy is the problem.", cat:"offer"},
+];
+
+const SPECTRUM = [
+  {n:"01", stage:"Unaware", tag:"Doesn't know they have a problem",
+   knows:"The prospect does not believe anything is wrong. They think being tired all the time is just the cost of a busy life. They are not looking for a sleep product, a supplement, or any solution, because in their mind there is no problem to solve.",
+   lead:"Do not name the product, or even the problem, up front. Enter the conversation already running in their head. Open with a story, an identity, or a provocative observation that gently surfaces the problem they have normalized.",
+   pitch:"“You've been told that running on empty is just what ambition costs. Here's the uncomfortable part: the most capable people don't push harder, they recover better at night. Most of us were never taught how.”",
+   pitfall:"Leading with 'RestWell magnesium drink, 20% off' is invisible to this person. They have no reason to care about a solution to a problem they will not admit they have."},
+  {n:"02", stage:"Problem-Aware", tag:"Feels the problem, not the solution",
+   knows:"The prospect knows they sleep badly and wake up tired. They feel the problem sharply. What they do not know is that a solution exists, or that a mineral deficiency could be behind it.",
+   lead:"Lead with the problem. Name it precisely, agitate it, and prove you understand it better than they can articulate it. Only then hint that a specific cause, and a solution, exists.",
+   pitch:"“Lying awake at 2am again, exhausted but wired? It probably isn't your stress levels or your screen time. For most adults, the hidden culprit is a mineral the modern diet quietly strips out, and there is a way to put it back.”",
+   pitfall:"Jumping straight to your brand name skips the step they need. They first have to believe there is a knowable cause before they care which product addresses it."},
+  {n:"03", stage:"Solution-Aware", tag:"Knows solutions exist, not yours",
+   knows:"The prospect knows sleep aids and magnesium supplements exist, and may have tried some. They are shopping the category. They do not know your product or why it beats the shelf full of alternatives.",
+   lead:"Lead with the solution they already believe in, then differentiate fast with your unique mechanism. Answer 'why this one, not the twenty others?' before anything else.",
+   pitch:"“Yes, magnesium helps you sleep. But the form matters more than the milligrams. Most supplements use magnesium oxide, which your body barely absorbs. RestWell uses magnesium glycinate, the form built for the bloodstream, not the bin.”",
+   pitfall:"Re-selling the category ('did you know magnesium helps sleep?') bores them, they already know. Skipping straight to price without differentiation gives them no reason to pick you."},
+  {n:"04", stage:"Product-Aware", tag:"Knows your product, not convinced",
+   knows:"The prospect knows RestWell exists and roughly what it claims. They are not yet convinced it will work for them specifically. They are weighing proof, comparing options, and holding objections.",
+   lead:"Lead with the product and stack proof and differentiation on top: evidence, demonstrations, testimonials, the guarantee. Answer the objections keeping them from saying yes.",
+   pitch:"“RestWell's magnesium glycinate is third-party lab tested and dosed at the level used in sleep studies. 40,000 people take it nightly, and the average user falls asleep 23 minutes faster within two weeks. Not for you? 90 nights, full refund, no questions.”",
+   pitfall:"Re-explaining the problem or the category wastes a warm prospect. At this stage, thin proof is the killer, they know the product, they just don't yet believe it."},
+  {n:"05", stage:"Most-Aware", tag:"Ready, just needs the deal",
+   knows:"The prospect knows and wants RestWell. Maybe they are a past buyer or an abandoned cart. They need almost no persuasion, only a reason to act now instead of later.",
+   lead:"Lead with the offer and a genuine reason to act now. Keep it short. The persuasion is done, your job is to remove friction and add a nudge with a real deadline or incentive.",
+   pitch:"“Your RestWell is running low. Restock this week and take 30% off your next three months, plus free shipping. One click and you are set through the season. Offer ends Sunday.”",
+   pitfall:"Sending this person a long educational story insults their time and can lose the sale. Over-selling a ready buyer creates doubt where there was none."},
+];
+
+const SPECTRUM_QUIZ = [
+  {desc:"A reader clicks an article titled 'Why high performers secretly struggle to switch off at night'. They nod along, but have never once thought of buying a sleep supplement.",
+   answer:"Unaware", note:"They don't yet frame their tiredness as a solvable problem. Lead with story and identity, not the product."},
+  {desc:"Someone types 'best magnesium for sleep' into a search engine and starts comparing brands side by side.",
+   answer:"Solution-Aware", note:"They believe in the solution category but haven't chosen a product. Lead with your unique mechanism to win the comparison."},
+  {desc:"A reader posts 'I'm so tired every morning no matter how long I sleep, what is wrong with me?' They know of no product or cause.",
+   answer:"Problem-Aware", note:"They feel the problem but don't know a solution or cause exists yet. Lead with the problem, then reveal the cause."},
+  {desc:"A past customer whose subscription lapsed opens your email. They already know and liked the product.",
+   answer:"Most-Aware", note:"No persuasion needed. Lead with the offer and a concrete reason to act now."},
+];
+
+let state = {
+  view:"library", search:"", activeCat:"all", openIdx:null,
+  quizOrder:[], quizIndex:0, quizScore:0, quizAnswered:null, quizHistory:[], quizDone:false,
+  stage:0, diag:{},
+};
+
+function shuffledIndices(n){ const a=Array.from({length:n},(_,i)=>i); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+function resetQuiz(){ state.quizOrder=shuffledIndices(SCENARIOS.length); state.quizIndex=0; state.quizScore=0; state.quizAnswered=null; state.quizHistory=[]; state.quizDone=false; }
+resetQuiz();
+
+function catCounts(){ const c={}; ENTRIES.forEach(p=>{c[p.cat]=(c[p.cat]||0)+1;}); return c; }
+
+function renderLibrary(){
+  const counts=catCounts();
+  const pills=Object.keys(CATS).map(c=>{
+    const active=state.activeCat===c;
+    return `<button class="pill" data-cat="${c}" data-active="${active}" onclick="setCat('${c}')">${CATS[c].icon} ${CATS[c].label} <span class="count">${counts[c]}</span></button>`;
+  }).join('');
+  const q=state.search.trim().toLowerCase();
+  const filtered=ENTRIES.filter(p=>{
+    const mc=state.activeCat==='all'||p.cat===state.activeCat;
+    const ms=!q||p.name.toLowerCase().includes(q)||p.hook.toLowerCase().includes(q)||p.def.toLowerCase().includes(q)||(p.src||'').toLowerCase().includes(q);
+    return mc&&ms;
+  });
+  const cards=filtered.map(p=>{
+    const idx=ENTRIES.indexOf(p);
+    return `<div class="card" data-cat="${p.cat}" tabindex="0" role="button" aria-label="Open details for ${p.name}"
+      onclick="openEntry(${idx})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEntry(${idx});}">
+      <span class="cat-tag" data-cat="${p.cat}">${CATS[p.cat].icon} ${CATS[p.cat].label}</span>
+      <h3>${p.name}</h3>
+      <p class="hook">${p.hook}</p>
+      <span class="explore-row">Read the principle <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </div>`;
+  }).join('');
+  return `
+    <div class="lib-controls">
+      <div class="search-wrap">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8b8266" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="searchInput" class="ui" type="text" placeholder="Search 28 principles &mdash; try 'offer', 'mechanism', 'Schwartz', 'proof'..." value="${state.search.replace(/"/g,'&quot;')}" oninput="setSearch(this.value)"/>
+      </div>
+    </div>
+    <div class="lib-controls pill-row">${pills}</div>
+    <p class="result-count">${filtered.length} PRINCIPLE${filtered.length===1?'':'S'} SHOWN</p>
+    <div class="grid">${cards||'<div class="empty-state">No principles match that search. Try a different keyword or clear the category filter.</div>'}</div>`;
+}
+function setCat(c){ state.activeCat=(state.activeCat===c)?'all':c; render(); }
+function setSearch(v){ state.search=v; render(true); }
+
+function openEntry(i){ state.openIdx=i; renderModal(); }
+function closeEntry(){ state.openIdx=null; renderModal(); }
+function renderModal(){
+  const root=document.getElementById('modalRoot');
+  if(state.openIdx===null){ root.innerHTML=''; return; }
+  const p=ENTRIES[state.openIdx];
+  const examples=p.example.map(e=>`<li>${e}</li>`).join('');
+  root.innerHTML=`
+    <div class="modal-overlay" onclick="if(event.target===this) closeEntry();">
+      <div class="modal" role="dialog" aria-modal="true" aria-label="${p.name} details">
+        <div class="modal-top">
+          <span class="cat-tag" data-cat="${p.cat}">${CATS[p.cat].icon} ${CATS[p.cat].label}</span>
+          <button class="modal-close" onclick="closeEntry()" aria-label="Close">&#10005;</button>
+        </div>
+        <h2>${p.name}</h2>
+        <p class="modal-hook">${p.hook}</p>
+        <span class="src-chip">&#9670; Source: <b>${p.src}</b></span>
+        <div class="section-label">&#128214; What it means</div>
+        <p class="body-text">${p.def}</p>
+        <div class="section-label">&#9670; How it shows up</div>
+        <ul class="example-list">${examples}</ul>
+        <div class="section-label">&#9888;&#65039; Watch out for</div>
+        <div class="watch-box"><strong>The trap:</strong> ${p.watch}</div>
+      </div>
+    </div>`;
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&state.openIdx!==null) closeEntry(); });
+
+function renderScenarios(){
+  if(state.quizDone){
+    const byCat={};
+    state.quizHistory.forEach(h=>{ byCat[h.cat]=byCat[h.cat]||{c:0,t:0}; byCat[h.cat].t++; if(h.correct)byCat[h.cat].c++; });
+    const breakdown=Object.keys(byCat).map(c=>`
+      <div class="bd-item"><div class="lbl">${CATS[c].icon} ${CATS[c].label}</div><div class="n">${byCat[c].c} / ${byCat[c].t}</div></div>`).join('');
+    const missed=state.quizHistory.filter(h=>!h.correct).map(h=>`
+      <div class="missed-item"><strong>${h.q}</strong><br/>&rarr; Correct: ${h.correctLabel}. ${h.why}</div>`).join('');
+    return `<div class="results">
+      <h2>Review complete</h2>
+      <div class="big-score">${state.quizScore} / ${SCENARIOS.length}</div>
+      <p style="color:var(--ink-soft); font-style:italic;">How you judged the creative across each area:</p>
+      <div class="breakdown">${breakdown}</div>
+      <button class="restart-btn" onclick="restartQuiz()">Run the drill again (new shuffle)</button>
+      ${missed.length?`<div class="missed-list"><h3>Review what you missed</h3>${missed}</div>`:`<p style="margin-top:20px;font-weight:600;">Perfect score. You can brief and judge creative with the canon behind you.</p>`}
+    </div>`;
+  }
+  const s=SCENARIOS[state.quizOrder[state.quizIndex]];
+  const pct=Math.round((state.quizIndex/SCENARIOS.length)*100);
+  const options=s.options.map((opt,i)=>{
+    let cls="option-btn",dis="";
+    if(state.quizAnswered!==null){ dis="disabled"; if(i===s.correct)cls+=" reveal-correct"; else if(i===state.quizAnswered)cls+=" incorrect"; }
+    return `<button class="${cls}" ${dis} onclick="answerQuiz(${i})">${opt}</button>`;
+  }).join('');
+  const feedback=state.quizAnswered!==null?`
+    <div class="feedback-box"><strong>${state.quizAnswered===s.correct?"✓ Correct — ":"✗ Not quite — "}</strong>${s.why}</div>
+    <button class="next-btn" onclick="nextQuiz()">${state.quizIndex===SCENARIOS.length-1?"See results":"Next case →"}</button>`:'';
+  return `<div class="scenario-wrap">
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <span class="score-chip">${state.quizIndex+1} / ${SCENARIOS.length} &middot; score ${state.quizScore}</span>
+    </div>
+    <div class="scenario-card">
+      <div class="scenario-eyebrow">Case ${state.quizIndex+1} &mdash; judge the creative</div>
+      <p class="scenario-text">${s.q}</p>
+      <div class="options">${options}</div>
+      ${feedback}
+    </div></div>`;
+}
+function answerQuiz(i){
+  if(state.quizAnswered!==null) return;
+  const s=SCENARIOS[state.quizOrder[state.quizIndex]];
+  const correct=i===s.correct;
+  state.quizAnswered=i;
+  if(correct) state.quizScore++;
+  state.quizHistory.push({q:s.q, why:s.why, correct, correctLabel:s.options[s.correct], cat:s.cat});
+  render();
+}
+function nextQuiz(){ if(state.quizIndex===SCENARIOS.length-1){ state.quizDone=true; } else { state.quizIndex++; state.quizAnswered=null; } render(); }
+function restartQuiz(){ resetQuiz(); render(); }
+
+function renderSpectrum(){
+  const i=state.stage;
+  const p=SPECTRUM[i];
+  const steps=SPECTRUM.map((s,idx)=>`
+    <button class="step ${idx===i?'active':''}" onclick="setStage(${idx})" aria-label="Stage ${idx+1}: ${s.stage}" aria-pressed="${idx===i}">
+      <div class="snum">${s.n}</div><div class="sname">${s.stage}</div>
+    </button>`).join('');
+  const diag=SPECTRUM_QUIZ.map((d,idx)=>{
+    const shown=state.diag[idx];
+    return `<div class="diag-card">
+      <p class="dc-desc">${d.desc}</p>
+      ${shown
+        ? `<div class="diag-answer"><span class="da-stage">&#129522; ${d.answer}</span>${d.note}</div>`
+        : `<button class="dc-btn" onclick="revealDiag(${idx})">Reveal the stage</button>`}
+    </div>`;
+  }).join('');
+  return `
+    <p class="spec-intro"><strong>The same product, pitched five ways.</strong> Eugene Schwartz's core insight: the message must match the prospect's awareness, not the other way around. Move through the five stages and watch a single product's message transform from a story that hides the pitch to a one-line deal.</p>
+    <div class="spec-product">
+      <span class="pico">&#128164;</span>
+      <div>One product throughout: <b>RestWell</b>, a nightly magnesium sleep drink. The product never changes. Only the prospect's awareness does, and so the message must.</div>
+    </div>
+    <div class="stepper">${steps}</div>
+    <input class="spec-slider" type="range" min="0" max="4" step="1" value="${i}" oninput="setStage(parseInt(this.value,10))" aria-label="Awareness stage slider"/>
+    <div class="spec-slider-labels"><span>Coldest</span><span>Warmest</span></div>
+
+    <div class="stage-panel">
+      <div class="stage-head">
+        <div class="snum-big anton">${p.n}</div>
+        <div class="sh-txt"><h3>${p.stage}</h3><div class="sh-tag">${p.tag}</div></div>
+      </div>
+      <div class="stage-body">
+        <div class="stage-block">
+          <div class="sb-label">&#128100; What the prospect knows</div>
+          <p class="sb-text">${p.knows}</p>
+        </div>
+        <div class="stage-block">
+          <div class="sb-label">&#127919; What the message must lead with</div>
+          <p class="sb-text">${p.lead}</p>
+        </div>
+        <div class="stage-block">
+          <div class="sb-label">&#9670; The same product, pitched for this stage</div>
+          <div class="ad-mock">
+            <span class="ad-stamp">RestWell &middot; ${p.stage}</span>
+            <p class="ad-copy">${p.pitch}</p>
+          </div>
+          <div class="pitfall-line"><strong>Get it wrong:</strong> ${p.pitfall}</div>
+        </div>
+        <div class="stage-nav">
+          <button onclick="setStage(${i-1})" ${i===0?'disabled':''}>&larr; Colder audience</button>
+          <button onclick="setStage(${i+1})" ${i===4?'disabled':''}>Warmer audience &rarr;</button>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="diag-head">Now diagnose the lead</h3>
+    <p class="diag-sub">Read each prospect and decide which stage they are in before revealing the answer. The stage decides the message.</p>
+    <div class="diag-list">${diag}</div>`;
+}
+function setStage(i){ if(i<0||i>4) return; state.stage=i; render(); }
+function revealDiag(i){ state.diag[i]=true; render(); }
+
+function render(keepFocus){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===state.view));
+  const main=document.getElementById('main');
+  main.innerHTML = state.view==='library'?renderLibrary() : state.view==='scenarios'?renderScenarios() : renderSpectrum();
+  if(keepFocus){ const inp=document.getElementById('searchInput'); if(inp){ inp.focus(); inp.selectionStart=inp.selectionEnd=inp.value.length; } }
+}
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{ state.view=t.dataset.view; state.openIdx=null; renderModal(); render(); });
+});
+render();
+</script>
+</body>
+</html>
