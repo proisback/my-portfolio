@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meta Ads Mechanics — Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4F6FB; --ink:#171A2B; --ink-soft:#5B6178; --paper:#FFFFFF; --line:#E4E7F1;
+
+    --struct:#6366F1;   --struct-tint:#EAEBFE;   --struct-dark:#4338CA;
+    --budget:#0EA5E9;   --budget-tint:#DEF2FC;   --budget-dark:#0369A1;
+    --creative:#D946EF; --creative-tint:#FBE6FE; --creative-dark:#A21CAF;
+    --scale:#F59E0B;    --scale-tint:#FDEFD6;    --scale-dark:#B45309;
+    --target:#F43F5E;   --target-tint:#FEE2E8;   --target-dark:#BE123C;
+
+    --accent:#4F46E5; --accent-soft:#EEF0FE;
+    --soft-shadow: 0 1px 2px rgba(23,26,43,.05), 0 12px 30px -18px rgba(23,26,43,.28);
+    --lift-shadow: 0 2px 6px rgba(23,26,43,.07), 0 24px 50px -22px rgba(79,70,229,.38);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 3% 0%, rgba(99,102,241,0.10) 0, transparent 30%),
+      radial-gradient(circle at 100% 4%, rgba(14,165,233,0.09) 0, transparent 32%),
+      radial-gradient(circle at 50% 100%, rgba(217,70,239,0.05) 0, transparent 42%),
+      linear-gradient(var(--bg), var(--bg));
+    color:var(--ink); font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh; padding-bottom:60px; -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:linear-gradient(rgba(23,26,43,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(23,26,43,0.035) 1px, transparent 1px);
+    background-size:44px 44px; opacity:.6;
+  }
+  .stale-banner,header,.tabbar,main,footer{position:relative; z-index:1;}
+  h1,h2,h3,.display{font-family:'Space Grotesk',sans-serif; font-weight:600; letter-spacing:-0.018em;}
+  .mono{font-family:'JetBrains Mono',monospace; font-variant-numeric:tabular-nums;}
+  button{font-family:inherit;}
+
+  .stale-banner{
+    background:linear-gradient(90deg,#4338CA,#6366F1); color:#fff;
+    font-size:12.5px; line-height:1.5; font-weight:500;
+    padding:11px 24px; text-align:center;
+    border-bottom:1px solid rgba(255,255,255,.18);
+  }
+  .stale-banner strong{font-family:'Space Grotesk',sans-serif; font-weight:700;}
+  .stale-banner .mono{font-size:11.5px; opacity:.92;}
+
+  header{max-width:1080px; margin:0 auto; padding:30px 24px 12px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap;}
+  .brand{display:flex; align-items:center; gap:15px;}
+  .brand .mark{flex-shrink:0; transition:transform .3s ease;}
+  .brand:hover .mark{transform:translateY(-2px) scale(1.03);}
+  .brand-text h1{font-size:29px; margin:0;}
+  .brand-text p{margin:5px 0 0; color:var(--ink-soft); font-size:13.5px; max-width:56ch; line-height:1.5;}
+
+  .tabbar{max-width:1080px; margin:20px auto 0; padding:0 24px; display:flex; gap:8px; flex-wrap:wrap;}
+  .tab{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px; padding:11px 18px; border-radius:12px; border:1.5px solid var(--line); background:var(--paper); color:var(--ink-soft); cursor:pointer; display:flex; align-items:center; gap:7px; transition:all .15s ease; box-shadow:var(--soft-shadow);}
+  .tab:hover{color:var(--ink); transform:translateY(-1px);}
+  .tab.active{background:var(--accent); color:#fff; border-color:var(--accent);}
+
+  main{max-width:1080px; margin:18px auto 0; padding:26px 24px 30px; background:var(--paper); border:1.5px solid var(--line); border-radius:22px; min-height:440px; box-shadow:var(--soft-shadow);}
+
+  .lib-controls{display:flex; align-items:center; margin-bottom:10px;}
+  .lib-controls.pill-row{gap:8px; overflow-x:auto; flex-wrap:nowrap; padding-bottom:6px; scrollbar-width:thin;}
+  .search-wrap{position:relative; flex:1 1 260px;}
+  .search-wrap input{width:100%; padding:13px 16px 13px 44px; border-radius:12px; border:1.5px solid var(--line); font-size:15px; font-family:inherit; background:var(--bg); color:var(--ink);}
+  .search-wrap input:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(79,70,229,.16);}
+  .search-wrap svg{position:absolute; left:15px; top:50%; transform:translateY(-50%);}
+
+  .pill{display:flex; align-items:center; gap:7px; flex-shrink:0; border:1.5px solid var(--line); border-radius:999px; padding:8px 14px; font-size:12.5px; font-weight:600; cursor:pointer; background:var(--paper); color:var(--ink); font-family:'Space Grotesk',sans-serif; white-space:nowrap; transition:all .13s ease;}
+  .pill:hover{transform:translateY(-1px); border-color:var(--ink-soft);}
+  .pill .count{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:11px; opacity:.55;}
+  .pill[data-active="true"]{color:#fff; border-color:transparent;}
+  .pill[data-active="true"] .count{opacity:.9;}
+  .pill[data-cat="struct"][data-active="true"]{background:var(--struct);}
+  .pill[data-cat="budget"][data-active="true"]{background:var(--budget);}
+  .pill[data-cat="creative"][data-active="true"]{background:var(--creative);}
+  .pill[data-cat="scale"][data-active="true"]{background:var(--scale);}
+  .pill[data-cat="target"][data-active="true"]{background:var(--target);}
+
+  .result-count{font-size:12.5px; color:var(--ink-soft); margin:12px 0 14px; font-weight:600;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(252px,1fr)); gap:16px; padding-bottom:6px;}
+  .card{border-radius:16px; border:1.5px solid var(--line); padding:18px; display:flex; flex-direction:column; gap:10px; background:var(--paper); box-shadow:var(--soft-shadow); cursor:pointer; min-height:174px; transition:transform .14s ease, box-shadow .14s ease, border-color .14s ease; border-top:3px solid var(--line);}
+  .card:hover{transform:translateY(-3px); box-shadow:var(--lift-shadow);}
+  .card:focus-visible{outline:3px solid var(--accent); outline-offset:2px;}
+  .card[data-cat="struct"]{border-top-color:var(--struct);}
+  .card[data-cat="budget"]{border-top-color:var(--budget);}
+  .card[data-cat="creative"]{border-top-color:var(--creative);}
+  .card[data-cat="scale"]{border-top-color:var(--scale);}
+  .card[data-cat="target"]{border-top-color:var(--target);}
+
+  .cat-tag{font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; padding:4px 9px; border-radius:6px; display:inline-flex; align-items:center; gap:5px; align-self:flex-start;}
+  .cat-tag[data-cat="struct"]{color:var(--struct-dark); background:var(--struct-tint);}
+  .cat-tag[data-cat="budget"]{color:var(--budget-dark); background:var(--budget-tint);}
+  .cat-tag[data-cat="creative"]{color:var(--creative-dark); background:var(--creative-tint);}
+  .cat-tag[data-cat="scale"]{color:var(--scale-dark); background:var(--scale-tint);}
+  .cat-tag[data-cat="target"]{color:var(--target-dark); background:var(--target-tint);}
+
+  .card h3{font-size:17.5px; margin:0; line-height:1.28;}
+  .card .hook{font-size:13px; color:var(--ink-soft); line-height:1.48; margin:0; flex-grow:1;}
+  .explore-row{display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; font-family:'Space Grotesk',sans-serif; color:var(--ink-soft); margin-top:auto;}
+  .explore-row svg{transition:transform .15s ease;}
+  .card:hover .explore-row svg{transform:translateX(3px);}
+  .card:hover .explore-row{color:var(--accent);}
+  .empty-state{grid-column:1/-1; text-align:center; padding:50px 20px; color:var(--ink-soft);}
+
+  .modal-overlay{position:fixed; inset:0; background:rgba(23,26,43,0.55); backdrop-filter:blur(3px); display:flex; align-items:flex-start; justify-content:center; padding:5vh 20px; z-index:100; overflow-y:auto; animation:fadeIn .15s ease;}
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  .modal{background:var(--paper); border:1.5px solid var(--line); border-radius:20px; max-width:620px; width:100%; padding:28px 30px 26px; box-shadow:0 30px 60px -20px rgba(23,26,43,.5); animation:popIn .2s cubic-bezier(.3,.5,.3,1.2);}
+  @keyframes popIn{from{transform:translateY(12px) scale(.98); opacity:0;}to{transform:none; opacity:1;}}
+  .modal-top{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:8px;}
+  .modal-close{background:var(--bg); border:1.5px solid var(--line); border-radius:10px; width:36px; height:36px; font-size:15px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--ink-soft);}
+  .modal-close:hover{background:var(--accent); color:#fff; border-color:var(--accent);}
+  .modal h2{font-size:25px; margin:6px 0 5px; line-height:1.2;}
+  .modal .modal-hook{font-size:14.5px; color:var(--ink-soft); font-style:italic; margin:0 0 20px;}
+  .section-label{display:flex; align-items:center; gap:7px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:12.5px; text-transform:uppercase; letter-spacing:.04em; margin:20px 0 9px; color:var(--ink-soft);}
+  .modal p.body-text{font-size:15px; line-height:1.65; margin:0; color:var(--ink);}
+  .example-list{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px;}
+  .example-list li{font-size:13.8px; line-height:1.55; padding:12px 14px 12px 36px; border-radius:10px; background:var(--bg); border:1px solid var(--line); position:relative;}
+  .example-list li::before{content:"▸"; position:absolute; left:14px; top:11px; font-size:13px; color:var(--accent); font-weight:700;}
+  .watch-box{background:var(--target-tint); border:1px solid rgba(244,63,94,.3); border-radius:10px; padding:12px 14px; font-size:13.5px; line-height:1.55;}
+  .watch-box strong{color:var(--target-dark);}
+  .stamp{display:inline-block; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; color:var(--budget-dark); background:var(--budget-tint); border-radius:5px; padding:2px 6px; margin-left:6px; vertical-align:middle; letter-spacing:.02em;}
+
+  .scenario-wrap{padding-bottom:20px;}
+  .progress-row{display:flex; align-items:center; gap:14px; margin-bottom:22px;}
+  .progress-track{flex:1; height:9px; background:var(--line); border-radius:6px; overflow:hidden;}
+  .progress-fill{height:100%; background:var(--accent); transition:width .35s ease; border-radius:6px;}
+  .score-chip{font-family:'JetBrains Mono',monospace; font-weight:600; font-size:12.5px; border:1.5px solid var(--line); border-radius:8px; padding:6px 11px; white-space:nowrap;}
+  .scenario-card{border:1.5px solid var(--line); border-radius:18px; padding:26px; background:linear-gradient(180deg,#fff,#F8F9FE); box-shadow:var(--soft-shadow);}
+  .scenario-eyebrow{font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px;}
+  .scenario-text{font-size:18px; line-height:1.5; margin:0 0 22px; font-weight:500;}
+  .options{display:grid; gap:10px;}
+  .option-btn{text-align:left; padding:14px 16px; border-radius:12px; border:1.5px solid var(--line); background:var(--paper); font-family:'Inter',sans-serif; font-weight:600; font-size:14.5px; cursor:pointer; transition:all .12s ease; color:var(--ink);}
+  .option-btn:hover:not([disabled]){border-color:var(--accent); transform:translateX(3px);}
+  .option-btn[disabled]{cursor:default;}
+  .option-btn.incorrect{background:var(--target-tint); border-color:var(--target); color:var(--target-dark);}
+  .option-btn.reveal-correct{background:#DFF6EA; border-color:#10B981; color:#0E7C4F;}
+  .feedback-box{margin-top:18px; padding:15px 18px; border-radius:12px; border:1.5px dashed var(--line); font-size:13.8px; line-height:1.55; background:var(--bg);}
+  .feedback-box strong{font-family:'Space Grotesk',sans-serif;}
+  .next-btn{margin-top:18px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14.5px; background:var(--accent); color:#fff; border:1.5px solid var(--accent); border-radius:12px; padding:12px 22px; cursor:pointer;}
+  .next-btn:hover{opacity:.9;}
+  .results{text-align:center; padding:24px 10px 10px;}
+  .results h2{font-size:25px; margin-bottom:4px;}
+  .big-score{font-family:'Space Grotesk',sans-serif; font-size:54px; margin:10px 0; color:var(--accent); font-variant-numeric:tabular-nums;}
+  .breakdown{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin:22px 0; text-align:left;}
+  .bd-item{border:1.5px solid var(--line); border-radius:12px; padding:12px 14px;}
+  .bd-item .lbl{font-size:11.5px; color:var(--ink-soft); font-weight:600;}
+  .bd-item .n{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:16px; margin-top:2px;}
+  .restart-btn{font-family:'Space Grotesk',sans-serif; font-weight:600; background:var(--accent); color:#fff; border:none; border-radius:12px; padding:13px 26px; cursor:pointer; font-size:15px; box-shadow:var(--soft-shadow);}
+  .restart-btn:hover{opacity:.92;}
+  .missed-list{text-align:left; margin-top:20px;}
+  .missed-list h3{font-size:16px;}
+  .missed-item{border-left:3px solid var(--target); background:var(--target-tint); border-radius:8px; padding:11px 14px; margin-bottom:8px; font-size:13px; line-height:1.5;}
+
+  /* decision helper */
+  .dh-intro{font-size:14.5px; color:var(--ink-soft); line-height:1.6; margin:0 0 4px; max-width:70ch;}
+  .dh-tagline{font-family:'JetBrains Mono',monospace; font-size:12px; background:var(--accent-soft); color:var(--accent); border:1px solid rgba(79,70,229,.25); border-radius:8px; padding:8px 12px; display:inline-block; margin:12px 0 6px; font-weight:600;}
+  .dh-stepdots{display:flex; gap:6px; margin:22px 0 18px; align-items:center;}
+  .dh-dot{height:8px; border-radius:6px; background:var(--line); flex:1; transition:background .3s ease;}
+  .dh-dot.done{background:var(--accent);}
+  .dh-dot.current{background:var(--struct);}
+  .dh-stepcount{font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--ink-soft); font-weight:700; margin-left:6px; white-space:nowrap;}
+  .dh-card{border:1.5px solid var(--line); border-radius:18px; padding:26px; background:linear-gradient(180deg,#fff,#F8F9FE); box-shadow:var(--soft-shadow);}
+  .dh-q-eyebrow{font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px;}
+  .dh-q{font-size:20px; line-height:1.4; margin:0 0 20px; font-weight:600; font-family:'Space Grotesk',sans-serif; letter-spacing:-.01em;}
+  .dh-opts{display:grid; gap:10px;}
+  .dh-opt{text-align:left; padding:15px 16px; border-radius:12px; border:1.5px solid var(--line); background:var(--paper); font-family:'Inter',sans-serif; font-weight:600; font-size:14.5px; cursor:pointer; transition:all .12s ease; color:var(--ink); display:flex; flex-direction:column; gap:3px;}
+  .dh-opt:hover{border-color:var(--accent); transform:translateX(3px); box-shadow:var(--soft-shadow);}
+  .dh-opt .sub{font-weight:500; font-size:12.5px; color:var(--ink-soft); line-height:1.45;}
+  .dh-back{margin-top:18px; background:none; border:none; color:var(--ink-soft); font-weight:600; font-size:13px; cursor:pointer; font-family:'Space Grotesk',sans-serif; padding:6px 2px;}
+  .dh-back:hover{color:var(--ink);}
+
+  .dh-result{border:1.5px solid var(--line); border-radius:18px; overflow:hidden; box-shadow:var(--soft-shadow);}
+  .dh-result-head{padding:22px 26px; color:#fff; background:linear-gradient(120deg,var(--accent),#6366F1);}
+  .dh-result-head.abo{background:linear-gradient(120deg,#0369A1,var(--budget));}
+  .dh-result-head.cbo{background:linear-gradient(120deg,#4338CA,var(--struct));}
+  .dh-result-head.consolidate{background:linear-gradient(120deg,#B45309,var(--scale));}
+  .dh-result-head.neutral{background:linear-gradient(120deg,#5B6178,#8A90A8);}
+  .dh-result-head .kicker{font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; opacity:.9;}
+  .dh-result-head h2{font-size:26px; margin:6px 0 0; color:#fff; line-height:1.2;}
+  .dh-result-body{padding:22px 26px 24px;}
+  .dh-block-label{display:flex; align-items:center; gap:7px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:12.5px; text-transform:uppercase; letter-spacing:.04em; margin:6px 0 10px; color:var(--ink-soft);}
+  .dh-list{margin:0 0 20px; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px;}
+  .dh-list li{font-size:14px; line-height:1.55; padding:11px 14px 11px 34px; border-radius:10px; background:var(--bg); border:1px solid var(--line); position:relative;}
+  .dh-list li::before{content:"→"; position:absolute; left:13px; top:10px; color:var(--accent); font-weight:700;}
+  .dh-caveats li{background:var(--scale-tint); border-color:rgba(245,158,11,.28);}
+  .dh-caveats li::before{content:"!"; color:var(--scale-dark); font-family:'JetBrains Mono',monospace;}
+  .dh-recap{display:flex; flex-wrap:wrap; gap:6px; margin:2px 0 20px;}
+  .dh-recap .chip{font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:600; background:var(--paper); border:1.5px solid var(--line); color:var(--ink-soft); border-radius:999px; padding:5px 10px;}
+  .dh-restart{margin-top:4px; font-family:'Space Grotesk',sans-serif; font-weight:600; background:var(--accent); color:#fff; border:none; border-radius:12px; padding:12px 24px; cursor:pointer; font-size:14.5px;}
+  .dh-restart:hover{opacity:.92;}
+  .dh-note{margin-top:18px; font-size:11.5px; color:var(--ink-soft); font-style:italic; line-height:1.55;}
+
+  footer{max-width:900px; text-align:center; color:var(--ink-soft); font-size:12px; margin:30px auto 0; padding:0 24px; line-height:1.6;}
+  footer .foot-warn{background:var(--target-tint); border:1px solid rgba(244,63,94,.3); border-radius:12px; padding:12px 16px; color:var(--target-dark); font-weight:600; margin-bottom:16px; font-size:12px; line-height:1.55;}
+  footer .src{margin-top:12px; text-align:left; display:inline-block;}
+  footer .src h4{font-family:'Space Grotesk',sans-serif; font-size:12px; margin:0 0 7px; color:var(--ink); text-transform:uppercase; letter-spacing:.04em;}
+  footer .src ul{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:5px;}
+  footer .src li{font-size:11.5px; line-height:1.5;}
+  footer .src a{color:var(--accent); text-decoration:none;}
+  footer .src a:hover{text-decoration:underline;}
+  footer .src .date{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--ink-soft);}
+
+  @media (max-width:600px){
+    .brand-text h1{font-size:23px;}
+    .modal{padding:22px 20px 20px;}
+    main{padding:22px 16px 26px;}
+    .dh-q{font-size:18px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="stale-banner">
+  <strong>⚠️ Highly perishable.</strong> Meta changes campaign mechanics constantly. <span class="mono">Verified Jul 2026.</span> Treat every specific as needing confirmation against current Meta docs. <span class="mono">Review by Jan 2027.</span>
+</div>
+
+<header>
+  <div class="brand">
+    <svg class="mark" width="52" height="52" viewBox="0 0 52 52" fill="none">
+      <rect x="4" y="4" width="44" height="44" rx="12" fill="#EEF0FE" stroke="#4F46E5" stroke-width="2.4"/>
+      <rect x="12" y="28" width="6" height="12" rx="2" fill="#6366F1"/>
+      <rect x="23" y="21" width="6" height="19" rx="2" fill="#0EA5E9"/>
+      <rect x="34" y="14" width="6" height="26" rx="2" fill="#D946EF"/>
+      <circle cx="15" cy="16" r="3.2" fill="#F59E0B"/>
+      <path d="M18 16h11" stroke="#F43F5E" stroke-width="2.2" stroke-linecap="round"/>
+      <circle cx="32" cy="16" r="3.2" fill="#F43F5E"/>
+    </svg>
+    <div class="brand-text">
+      <h1>Meta Ads Mechanics</h1>
+      <p>How a Meta ad account is actually structured, how budget and delivery decide who sees your ads, and how testing, scaling, and post-ATT attribution really work — for people who must evaluate media-buying decisions, not run them day to day.</p>
+    </div>
+  </div>
+</header>
+
+<div class="tabbar">
+  <div class="tab active" data-view="library">📚 Concept Library</div>
+  <div class="tab" data-view="scenarios">🎯 Scenario Practice</div>
+  <div class="tab" data-view="decision">🧭 CBO vs ABO Helper</div>
+</div>
+
+<main id="main"></main>
+
+<footer>
+  <div class="foot-warn">⚠️ This is the most perishable topic in the set. Meta renames features, changes defaults, and rewrites delivery logic on a rolling basis. Every mechanic here was verified Jul 2026 and is date-stamped inline — confirm each specific against the current Meta Business Help Center before you rely on it. Benchmark figures (CPMs, CPAs, ROAS) are deliberately excluded because they go stale on arrival and vary wildly by vertical and geography. <strong>Review by Jan 2027.</strong></div>
+  Built with the <strong>field-guide-builder</strong> skill; sources selected with <strong>signal-in-noise</strong>. Concepts are pinned to the sources below and cross-checked; where practitioners and Meta disagree, the guide says so rather than resolving it.
+  <div class="src">
+    <h4>Sources (last-updated / accessed)</h4>
+    <ul>
+      <li><a href="https://www.facebook.com/business/help/112167992830700">Meta Business Help Center — About the learning phase</a> <span class="date">· official, no public revision date, accessed Jul 2026</span></li>
+      <li><a href="https://www.facebook.com/business/help/128066880933676">Meta Business Help Center — About Advantage+ audience / detailed targeting</a> <span class="date">· official, accessed Jul 2026</span></li>
+      <li><a href="https://www.facebook.com/business/ads/meta-advantage-plus/audience">Meta for Business — Advantage+ (campaign budget, audience, placements)</a> <span class="date">· official, accessed Jul 2026</span></li>
+      <li><a href="https://www.jonloomer.com/meta-ads-attribution-2026/">Jon Loomer Digital — How Meta Ads Attribution Works in 2026</a> <span class="date">· practitioner, updated 2026 (covers the Mar 3 2026 click/engage-through change docs don't surface plainly)</span></li>
+      <li><a href="https://theoptimizer.io/blog/how-meta-ads-attribution-actually-works-in-2026">TheOptimizer — How Meta Ads Attribution Actually Works in 2026</a> <span class="date">· practitioner, published 2026 (AEM 8-event limit, modeling, reporting delay)</span></li>
+    </ul>
+  </div>
+</footer>
+
+<div id="modalRoot"></div>
+
+<script>
+const CATS = {
+  struct:   { label:"Account Structure", icon:"🗂️" },
+  budget:   { label:"Budget & Delivery", icon:"⚙️" },
+  creative: { label:"Creative Testing", icon:"🧪" },
+  scale:    { label:"Scaling", icon:"📈" },
+  target:   { label:"Targeting & Attribution", icon:"🎯" },
+};
+
+const ENTRIES = [
+  // ---------- STRUCTURE ----------
+  {cat:"struct", name:"The Three-Level Hierarchy", hook:"Campaign, ad set, ad — three levels, three jobs.",
+   def:"A Meta ad account is organised in three nested levels. The campaign holds the objective (what result you're buying). The ad set holds the audience, placements, optimization event, budget (in ABO), and schedule — it's where delivery decisions live. The ad holds the creative itself. Every control you touch belongs to exactly one of these levels, and knowing which is how you reason about why something delivered the way it did (as of Jul 2026).",
+   example:["'Sales' objective is set once at the campaign; you never re-pick it per ad set.","Two ad sets under one campaign can target different audiences but share the same objective."],
+   watch:"People blame 'the ad' for a delivery problem that actually lives at the ad set (wrong optimization event, starved budget) or the campaign (wrong objective). Diagnose at the right level before you touch creative."},
+
+  {cat:"struct", name:"What Lives at the Campaign Level", hook:"The campaign is mostly one decision: the objective.",
+   def:"The campaign level is where you choose the objective / optimization goal category (e.g. Sales, Leads, Traffic, Awareness, Engagement, App promotion). This tells Meta's system what outcome to buy and constrains everything below it. Campaign-level budget optimization (Advantage+ campaign budget) also lives here when switched on. Otherwise the campaign is a thin container — the interesting levers are one level down (as of Jul 2026).",
+   example:["Choosing 'Sales' unlocks conversion optimization and value optimization options in the ad set below.","Turning on Advantage+ campaign budget moves the budget field up from the ad set to the campaign."],
+   watch:"Objective choice is sticky and hard to change after launch — you often can't switch a live campaign's objective, you rebuild. Picking 'Traffic' when you actually want purchases is a costly, common miscategorisation."},
+
+  {cat:"struct", name:"What Lives at the Ad Set Level", hook:"The ad set is where delivery is actually decided.",
+   def:"The ad set is the engine room: it holds the audience (locations, age/gender suggestions, Advantage+ audience or manual), placements, the optimization event and conversion window, the schedule, and — under ABO — the budget. This is the unit that enters and exits the learning phase, the unit the auction competes at, and the unit you duplicate to scale. When people say 'the algorithm optimizes,' they mean at the ad set level (as of Jul 2026).",
+   example:["The '50 optimization events' learning threshold is counted per ad set, not per ad.","Duplicating an ad set into a new audience is the standard horizontal-scaling move."],
+   watch:"Splitting your budget across too many ad sets fragments the signal — each one needs its own ~50 events to learn, so five thin ad sets can all get stuck in learning while one consolidated ad set would have exited."},
+
+  {cat:"struct", name:"What Lives at the Ad Level", hook:"The ad is the creative the auction actually shows.",
+   def:"The ad level holds the creative: the media (image/video), copy, headline, call-to-action, and destination. Multiple ads can sit inside one ad set, and Meta's delivery system decides which of them to show more, based on early signal about which hooks users. In 2026 the ad is increasingly the main human lever — structure and targeting are automated, so creative is where a media buyer's judgment shows up most (as of Jul 2026).",
+   example:["Three video ads in one ad set — Meta concentrates impressions on whichever earns engagement fastest.","Swapping a thumbnail or hook is an ad-level change; it can restart learning if it's material."],
+   watch:"Editing a live ad's creative, copy, or destination can reset the ad set's learning phase. 'Just a quick tweak' can throw away days of accumulated optimization signal — batch edits, don't drip them."},
+
+  {cat:"struct", name:"The Optimization Event", hook:"You optimize for one event — choose it carefully.",
+   def:"Every ad set optimizes toward a single event: purchase, add-to-cart, lead, landing-page view, link click, and so on. Meta then hunts for people likely to take that specific action. Optimizing for a shallow event (link clicks) buys cheap clicks; optimizing for a deep event (purchase) buys fewer, costlier, but more valuable actions. The event you pick silently shapes who Meta shows the ad to (as of Jul 2026).",
+   example:["Optimizing for 'purchase' teaches Meta to find buyers; optimizing for 'traffic' teaches it to find clickers.","A low-volume advertiser sometimes optimizes for add-to-cart to get enough events to exit learning, then moves deeper."],
+   watch:"Optimizing for a cheap upper-funnel event because it 'looks efficient' is a classic trap — you'll hit your event target and still not sell anything, because Meta faithfully bought you the shallow action you asked for."},
+
+  // ---------- BUDGET & DELIVERY ----------
+  {cat:"budget", name:"Advantage+ Campaign Budget (CBO)", hook:"One budget at the campaign; Meta splits it.",
+   def:"Advantage+ campaign budget — the feature formerly and still widely called CBO (campaign budget optimization) — sets a single budget at the campaign level and lets Meta distribute it across ad sets in real time, pushing spend toward whichever is winning the auction most efficiently. Meta positions it as the default and cites internal data of roughly 4.6% lower cost per action on average (their claim, not independently verified). It shines when you're comfortable letting the machine pick winners (as of Jul 2026).",
+   example:["Three audiences under one campaign budget — Meta pours spend into the one converting cheapest that day.","Scaling a proven set of ad sets by raising one campaign-level number instead of many ad-set numbers."],
+   watch:"CBO optimizes for the campaign's total result, which means it will happily starve an ad set you wanted data on. If you need a clean read on each audience or guaranteed spend per ad set, campaign-level budgeting works against you."},
+
+  {cat:"budget", name:"Ad Set Budget Optimization (ABO)", hook:"You set the budget per ad set, by hand.",
+   def:"ABO puts the budget at the ad set level, so each ad set gets exactly what you assign and nothing gets starved. That manual control is precisely what makes ABO the classic choice for testing — every audience or variable you're evaluating gets a guaranteed, equal shot at delivering enough events to produce a readable result. You trade Meta's cross-ad-set optimization for control and clean data (as of Jul 2026).",
+   example:["Five test audiences each get a fixed daily budget so none is starved before it produces signal.","A media buyer keeps a proven audience on ABO to guarantee it never loses budget to a noisier one."],
+   watch:"ABO's guaranteed spend cuts both ways — it will keep funding an ad set that's clearly losing, because you told it to. Control means you, not the algorithm, are responsible for cutting the losers."},
+
+  {cat:"budget", name:"The Learning Phase", hook:"Every ad set starts unsure, then stabilises.",
+   def:"When an ad set is new or materially edited, it enters the learning phase: Meta's delivery system is still exploring who to show the ad to and performance is more volatile. Per Meta's Business Help Center, the ad set works toward roughly 50 optimization events in a 7-day window; once it gets there, delivery stabilises and it exits learning. Judging performance mid-learning is judging noise (as of Jul 2026).",
+   example:["A fresh ad set shows swingy CPA for the first few days, then settles once it exits learning.","Most healthy ad sets exit within one to two weeks of launch, per Meta's guidance."],
+   watch:"The ~50-events-in-7-days figure is Meta's stated rule of thumb, not a physical constant — don't treat it as a precise guarantee, and don't panic-edit an ad set that's simply still learning, because editing restarts the clock."},
+
+  {cat:"budget", name:"Learning Limited", hook:"Stuck in learning because it can't get 50 events.",
+   def:"'Learning Limited' is the status Meta shows when an ad set can't accumulate ~50 optimization events in 7 days, so it never fully exits learning and delivery stays less efficient. The usual causes are budget too low, audience too small, or an optimization event too deep/rare. Fixes (per Meta): raise budget, broaden the audience, consolidate ad sets, or optimize for a more frequent event (as of Jul 2026).",
+   example:["A tiny-budget ad set optimizing for purchase never reaches 50 sales/week and sits in Learning Limited.","Merging two thin ad sets into one pools the events and lets the combined set exit learning."],
+   watch:"Learning Limited is usually a structure problem, not a creative problem. Adding more ad sets to 'test your way out' makes it worse by splitting the events further — consolidation, not proliferation, is the fix."},
+
+  {cat:"budget", name:"~50 Optimization Events", hook:"The rough event budget an ad set needs to learn.",
+   def:"Meta's guidance ties learning-phase exit to roughly 50 optimization events per ad set within 7 days. This is why the optimization event you chose interacts with budget: if each event costs a lot, you need proportionally more spend to hit 50 in a week. A common back-of-envelope floor is target cost-per-event × ~7 events/day as a rough daily budget, purely as a sanity check (as of Jul 2026).",
+   example:["Need 50 purchases/week ≈ 7/day; at a target cost per purchase, that implies a rough daily budget floor.","If you can't fund 50 deep events, optimizing for a shallower, more frequent event can get the ad set learning."],
+   watch:"The count includes browser-pixel, server-side (CAPI), and modeled/estimated conversions — so the '50' you see is partly inferred, not 50 individually observed people. Post-ATT, some of your event count is a statistical estimate."},
+
+  {cat:"budget", name:"The Delivery System & Auction", hook:"Every impression is an auction Meta runs for you.",
+   def:"Meta doesn't 'place' your ad; for each available impression it runs an auction. Your effective bid combines your bid/optimization goal, the ad's estimated action rate (how likely this person takes your event), and ad quality/relevance. High predicted relevance can win impressions at a lower cost than a blunt higher bid. This is why creative and the chosen event move cost as much as budget does (as of Jul 2026).",
+   example:["A more engaging creative with higher predicted action rate can win auctions your rival's higher bid loses.","Two advertisers targeting the same person compete impression-by-impression, not for a fixed 'slot'."],
+   watch:"'The audience is too competitive / CPMs are high' often masks a creative problem — a low estimated action rate makes every auction cost more, so weak creative shows up as an inflated media cost, not as an obvious creative failure."},
+
+  {cat:"budget", name:"Daily vs Lifetime Budget", hook:"Pace by day, or across the whole flight.",
+   def:"A daily budget caps average spend per day and runs continuously; a lifetime budget sets a total for the ad set's whole run and lets Meta pace within it, which is what unlocks true dayparting (ad scheduling by hour/day). Lifetime gives Meta more freedom to spend more on high-opportunity days; daily is simpler and easier to reason about for open-ended campaigns (as of Jul 2026).",
+   example:["A time-boxed promo uses a lifetime budget so Meta front- or back-loads spend around peak days.","An always-on evergreen campaign uses a daily budget for predictable, ongoing pacing."],
+   watch:"'Daily budget' is an average, not a hard ceiling — Meta can spend meaningfully above it on a strong day and less on a weak one, balancing out over the week. Reading a single day's overspend as a bug is a common misread."},
+
+  // ---------- CREATIVE TESTING ----------
+  {cat:"creative", name:"Isolating One Variable", hook:"Change one thing, or learn nothing.",
+   def:"A creative test only teaches you something if you change one variable — the hook, the format, the visual, the headline — while holding the rest constant. Test the image against the video with identical copy and audience, and a performance gap is attributable to the format. Change three things at once and the result is uninterpretable: you know which combination won, not why (as of Jul 2026).",
+   example:["Same audience, same copy, image vs. short video — the winner tells you something about format.","Testing a new hook means keeping the visual and CTA fixed so the hook is the only difference."],
+   watch:"'It won' is not 'I learned why it won.' A multi-variable test that produces a winner still leaves you unable to reproduce the win on the next creative, which is the whole point of testing."},
+
+  {cat:"creative", name:"The 2026 Test-Structure Debate", hook:"Isolate by ad set, or let one ad set decide? Sources disagree.",
+   def:"There's a genuine, unresolved split here. The classic method isolates each variant in its own ad set (often via the A/B Test tool) for a statistically clean read. Many 2026 practitioners argue the opposite: put multiple creative concepts inside a single ad set and let Meta's delivery decide, because splitting concepts across ad sets 'starves' the algorithm's ability to allocate impressions to what hooks users. Meta's own automation (Advantage+, dynamic creative) pushes toward consolidation. This guide flags the disagreement rather than declaring a winner (as of Jul 2026).",
+   example:["Classic: one variant per ad set, A/B Test tool, clean attribution of the difference.","2026 practitioner view: several concepts in one ad set, let delivery concentrate spend on the live winner."],
+   watch:"Both camps can cite results. The honest position: isolated ad sets buy cleaner causal reads but cost more and can starve; single-ad-set testing leans on Meta's allocation but muddies why one won. Don't present either as settled fact — it isn't."},
+
+  {cat:"creative", name:"Dynamic & Advantage+ Creative", hook:"Feed the assets; Meta assembles the ad per person.",
+   def:"Dynamic creative and Advantage+ creative let you upload a pool of assets (images, videos, headlines, primary texts) and have Meta mix and match, and auto-apply enhancements, to assemble the combination it predicts will work for each viewer. It maximises delivery-time optimization but reduces your visibility into which exact combination is carrying performance — you gain reach efficiency, you lose some clean read on the individual asset (as of Jul 2026).",
+   example:["Upload five headlines and three videos; Meta serves per-person combinations it expects to convert.","Enhancements can auto-adjust aspects of the creative per placement without you building each version."],
+   watch:"Dynamic creative and a controlled isolated test are opposite tools. Running dynamic creative and then asking 'which headline won?' fights the feature — it optimises the blend, it doesn't hand you clean per-asset causality."},
+
+  {cat:"creative", name:"The A/B Test Tool (Split Test)", hook:"Meta's built-in way to compare fairly.",
+   def:"Meta's A/B Test (split test) tool splits your audience into non-overlapping groups so each variant is shown to a comparable, mutually exclusive slice — avoiding the audience-overlap problem where two ad sets bid against each other for the same people. It reports a winner with a confidence estimate. It's the disciplined way to isolate a variable when you specifically want a defensible causal comparison (as of Jul 2026).",
+   example:["Split-testing image vs. video with mutually exclusive audiences removes the overlap that skews naive duplication.","The tool reports a winner and a rough confidence level so you're not eyeballing noise."],
+   watch:"Naively duplicating an ad set to 'test' two things without the split-test tool causes audience overlap — the two ad sets cannibalise each other in the auction and the comparison is contaminated. Use the tool, don't fake it."},
+
+  {cat:"creative", name:"Creative Fatigue", hook:"Winners decay as the audience sees them too often.",
+   def:"A winning creative doesn't win forever. As the same people see it repeatedly, frequency climbs, response drops, and cost per result creeps up — that's creative fatigue. It's why a creative pipeline matters more than any single hero ad: you're always feeding fresh concepts so a fatiguing winner has a replacement ready. Rising frequency alongside rising CPA is the classic fatigue signature (as of Jul 2026).",
+   example:["A top ad's CPA drifts up over three weeks as frequency climbs — the audience has seen it too often.","Refreshing the hook or visual on a fatigued concept can revive it without a wholly new idea."],
+   watch:"Fatigue and audience saturation look identical in the dashboard (rising frequency, rising cost). Don't reflexively blame the creative — sometimes the audience is simply exhausted and the fix is new audience, not new art."},
+
+  // ---------- SCALING ----------
+  {cat:"scale", name:"Vertical Scaling", hook:"Same setup, bigger budget.",
+   def:"Vertical scaling means increasing the budget on an ad set or campaign that's already working, asking Meta to spend more on the same winning setup. It's the simplest way to grow, but large, sudden budget jumps can re-trigger the learning phase and destabilise a stable ad set — so practitioners often raise gradually. The common '~20% every few days' heuristic is a practitioner rule of thumb, not an official Meta number (as of Jul 2026).",
+   example:["Nudging a stable ad set's daily budget up in steps to avoid throwing it back into learning.","Doubling budget overnight on a winner and watching CPA spike as the ad set re-enters learning."],
+   watch:"The '20% rule' is folklore, not documentation — treat it as a cautious default, not a law. The real principle is: big budget changes are material edits that can reset learning, so scale in increments and watch for a learning restart."},
+
+  {cat:"scale", name:"Horizontal Scaling", hook:"Duplicate the winner into new places.",
+   def:"Horizontal scaling grows spend by expanding surface area rather than pumping one ad set: duplicating a winning ad set into new audiences, new geographies, or new placements, or launching fresh creative concepts. It sidesteps the single-ad-set saturation ceiling and spreads risk, at the cost of more setup and more ad sets to manage (each needing its own learning). It's how you grow past what one audience can absorb (as of Jul 2026).",
+   example:["Cloning a winning ad set into new countries to find fresh, unsaturated demand.","Launching new creative concepts so growth isn't bottlenecked by one fatiguing winner."],
+   watch:"Duplicating into audiences that overlap your original creates auction cannibalisation — your ad sets bid against each other, inflating your own costs. Horizontal scaling needs genuinely distinct audiences, not near-copies of the one you already run."},
+
+  {cat:"scale", name:"Where Scaling Breaks", hook:"Every winner has a ceiling — find it before it finds you.",
+   def:"Scaling breaks in predictable ways: audience saturation (you've reached most responsive people, frequency rises, CPA climbs), creative fatigue, and diminishing returns as budget outgrows the efficient demand available at your target cost. The tell is that added spend buys progressively worse marginal results. Recognising the ceiling is what separates 'scaled profitably' from 'scaled into losses' (as of Jul 2026).",
+   example:["Each budget increase past a point returns a worse marginal CPA — the efficient demand is tapped out.","Frequency and CPA rising together signals the current audience/creative combo is near its ceiling."],
+   watch:"Blended averages hide the ceiling. Your overall ROAS can still look fine while the last chunk of spend loses money — judge scaling on marginal (incremental) return, not the flattering account-wide average."},
+
+  {cat:"scale", name:"Consolidation as a Scaling Move", hook:"Fewer, fatter ad sets often scale better than many thin ones.",
+   def:"A counter-intuitive but well-supported 2026 principle: consolidating budget into fewer ad sets often outperforms spreading it thin, because each ad set gets enough events to exit learning and Meta's optimization has more signal to work with. The old instinct — many granular ad sets for control — fights the algorithm. Consolidation is why Advantage+ and campaign-level budgeting are pushed as defaults (as of Jul 2026).",
+   example:["Merging four thin, learning-limited ad sets into one that clears 50 events and stabilises.","Moving from granular interest ad sets to a single broad/Advantage+ ad set with more budget concentration."],
+   watch:"Consolidation trades control for signal. It's usually right for scaling, but it's the wrong instinct when you genuinely need per-audience data or guaranteed spend somewhere — don't consolidate away a test you actually needed to read cleanly."},
+
+  // ---------- TARGETING & ATTRIBUTION ----------
+  {cat:"target", name:"Advantage+ Audience", hook:"Broad targeting, steered not commanded, by AI.",
+   def:"Advantage+ audience is Meta's AI-led targeting: instead of strict interest filters, you give the system signals and it finds the audience. It reflects the post-detailed-targeting era where Meta's models, fed by your pixel/conversion data, often out-target hand-built interest stacks. You still set boundaries, but inside them the system explores. It's the default direction of 2026 targeting (as of Jul 2026).",
+   example:["Launching with Advantage+ audience and letting Meta's model find buyers beyond any interest list you'd guess.","Feeding strong conversion signal so the AI targeting has good data to learn from."],
+   watch:"'Broad' isn't 'no strategy' — Advantage+ leans hard on your conversion signal and creative to steer. Weak signal or weak creative means the AI has little to go on, and broad targeting quietly delivers to the wrong people."},
+
+  {cat:"target", name:"Suggestions vs Hard Controls", hook:"Some settings bind Meta; most now merely hint.",
+   def:"In 2026 Meta splits targeting into hard controls that genuinely constrain delivery — location, minimum age, exclusions, languages, and Special Ad Category restrictions — and audience suggestions (age, gender, detailed-targeting interests, custom/lookalike audiences) that steer the AI but don't strictly bind it. Suggestions mean your ad can reach people outside your stated audience when the system predicts better performance. Knowing which is which prevents false confidence about who you're actually reaching (as of Jul 2026).",
+   example:["Location and minimum age are enforced; a detailed-targeting interest is now treated as a hint.","An exclusion (e.g. existing customers) is a hard control you can still rely on."],
+   watch:"Treating a 'suggested' interest as a hard filter is a 2026 trap — you think you've fenced the audience, but Meta can and will deliver outside it. Only the hard controls (location, min age, exclusions, Special Ad Category) actually fence delivery."},
+
+  {cat:"target", name:"Advantage+ Placements", hook:"Let Meta choose where the ad runs.",
+   def:"Advantage+ placements (formerly automatic placements) lets Meta serve your ad across all eligible surfaces — Feed, Reels, Stories, in-stream, Audience Network, Marketplace, and more — and shift delivery to wherever it performs. It generally lowers cost by giving the auction the widest inventory, at the cost of your control over exactly where the brand shows up. Manual placements exist but narrow the auction (as of Jul 2026).",
+   example:["Advantage+ placements finds cheap, converting inventory in Reels you might not have picked manually.","A brand-safety-sensitive advertiser manually excludes Audience Network, accepting higher costs for control."],
+   watch:"Restricting placements to feel 'safer' shrinks the inventory Meta can optimise across and usually raises cost — and one creative aspect ratio rarely fits every placement well, so narrow placements to solve a real problem, not a vague preference."},
+
+  {cat:"target", name:"The Post-Detailed-Targeting Era", hook:"Interest targeting shrank; broad + signal took over.",
+   def:"Meta has steadily deprecated and removed detailed-targeting options (including a notable removal of options in January 2026) and repositioned the survivors as suggestions. The practical shift: broad targeting plus strong conversion signal and strong creative now frequently beats hand-built interest stacks, because the model targets better than a human guessing interests. The lever moved from 'who you pick' to 'what signal and creative you feed' (as of Jul 2026).",
+   example:["Interest options that once anchored a strategy are gone or downgraded to hints in 2026.","Media buyers shifting effort from audience-building to creative and clean conversion tracking."],
+   watch:"Playbooks that hinge on precise interest stacks are increasingly stale — if a 2023 tutorial's whole strategy is 'layer these five interests,' its foundation may have been removed. Re-verify any interest-targeting tactic against the current Ads Manager."},
+
+  {cat:"target", name:"iOS ATT & Signal Loss", hook:"App Tracking Transparency broke deterministic tracking.",
+   def:"Apple's App Tracking Transparency (ATT) forced apps to ask users to opt in to cross-app/site tracking; most decline. That severed a lot of the deterministic conversion signal Meta relied on, making measurement noisier and optimization harder. Meta's response was aggregation and modeling (see Aggregated Event Measurement). The core consequence: a meaningful share of conversions is now estimated, not directly observed (as of Jul 2026).",
+   example:["A purchase by a user who declined tracking may never be deterministically tied back to the ad that drove it.","Post-ATT, Meta leans on modeled conversions to fill the gaps the opt-outs created."],
+   watch:"'The numbers dropped after iOS updates' is often measurement loss, not performance loss — the sales may still be happening, just invisible to deterministic tracking. Confusing under-reporting with under-performing gets good campaigns killed."},
+
+  {cat:"target", name:"Attribution Settings", hook:"The window that decides which conversions get credited.",
+   def:"The attribution setting defines what counts as ad-driven: which clicks/views within which window get credit. Per practitioner tracking, Meta's default for new ad sets in 2026 is 7-day click and 1-day view (with a 1-day engage-through element). A notable change on Mar 3 2026 moved social interactions (likes, shares, comments) out of click-through and into engage-through. Change the window and the same campaign 'reports' different results — nothing about the ads changed, only the accounting (as of Jul 2026).",
+   example:["7-day click credits a purchase up to a week after someone clicked the ad.","Comparing two campaigns on different attribution windows is comparing two different rulers, not two performances."],
+   watch:"Attribution windows are reporting rules, not truth — a longer window flatters ROAS by claiming more delayed conversions. Always check which window a ROAS number was measured on before you compare, scale, or celebrate it."},
+
+  {cat:"target", name:"Aggregated Event Measurement (AEM)", hook:"Meta's privacy-era workaround for lost signal.",
+   def:"AEM is Meta's framework for measuring web conversions under ATT's constraints. Per practitioner documentation, each domain is limited to 8 prioritised conversion events, results can be reported with a delay (up to ~72 hours to satisfy privacy thresholds), and conversions below statistical-confidence thresholds are modeled — estimated via machine learning on comparable cohorts rather than directly observed. It's why post-ATT reporting is both delayed and partly inferred (as of Jul 2026).",
+   example:["You must prioritise your 8 events (e.g. purchase over add-to-cart) because that's the AEM ceiling per domain.","A conversion that's too sparse to report privately gets modeled into your totals rather than counted individually."],
+   watch:"Because AEM reports with delay and includes modeled conversions, same-day dashboard numbers are provisional and partly estimated — reading them as final, exact truth (especially early in the day) leads to premature, wrong decisions."},
+];
+
+const SCENARIOS = [
+  {q:"An ad set has swingy CPA for its first four days after launch. Nothing is broken — this is most likely:",
+   options:["A creative failure","The learning phase","An attribution bug","Audience saturation"], correct:1,
+   why:"The learning phase — a new ad set delivers volatily until it accumulates ~50 optimization events in 7 days (per Meta's guidance) and stabilises. Judging it mid-learning is judging noise.", cat:"budget"},
+
+  {q:"You're testing five new audiences and need each to get a fair, guaranteed shot at producing data. The better budget setup is:",
+   options:["Advantage+ campaign budget (CBO)","ABO (ad set budgets)","Lifetime budget only","No budget cap"], correct:1,
+   why:"ABO — manual per-ad-set budgets guarantee no test audience is starved, giving each a clean, readable result. CBO would happily divert spend away from audiences you wanted data on.", cat:"budget"},
+
+  {q:"An ad set shows 'Learning Limited'. Adding three more ad sets to test your way out will most likely:",
+   options:["Fix it faster","Make it worse by splitting events further","Have no effect","Reset attribution"], correct:1,
+   why:"Make it worse — Learning Limited means it can't reach ~50 events/week; splitting budget across more ad sets fragments events further. The fix is consolidation, more budget, a broader audience, or a more frequent event.", cat:"budget"},
+
+  {q:"You optimized an ad set for link clicks because it 'looked efficient'. You got cheap clicks but no sales. The cause is:",
+   options:["Wrong attribution window","Meta bought exactly the shallow event you asked for","The learning phase","A placement problem"], correct:1,
+   why:"You optimized for the wrong event — Meta faithfully finds people likely to take the event you chose. Ask for clicks, get clickers; to buy buyers, optimize for purchase.", cat:"struct"},
+
+  {q:"Your CPA spikes right after you doubled a stable ad set's budget overnight. The most likely reason:",
+   options:["Attribution changed","A big budget jump re-triggered the learning phase","Creative fatigue","iOS ATT"], correct:1,
+   why:"Learning reset — a large, sudden budget change is a material edit that can throw a stable ad set back into learning. Practitioners scale in increments to avoid it (the '~20%' rule is folklore, not official).", cat:"scale"},
+
+  {q:"You set a detailed-targeting interest and assume your ad only reaches people with that interest. In 2026 this is:",
+   options:["Guaranteed by Meta","A false assumption — interests are now suggestions","Only true on Reels","Enforced like location"], correct:1,
+   why:"False — in 2026 detailed-targeting interests are suggestions that steer the AI, not hard filters. Only location, minimum age, exclusions, languages, and Special Ad Category actually constrain delivery.", cat:"target"},
+
+  {q:"Your reported conversions dropped noticeably after an iOS update, but your actual sales look steady. This is probably:",
+   options:["A real performance drop","Measurement loss, not performance loss","A budget bug","A learning reset"], correct:1,
+   why:"Measurement loss — ATT opt-outs severed deterministic tracking, so conversions become under-reported even when they still happen. Confusing under-reporting with under-performing kills good campaigns.", cat:"target"},
+
+  {q:"You want a clean, defensible read on image vs. video with no audience overlap contaminating the result. Use:",
+   options:["Two duplicated ad sets","Meta's A/B Test (split test) tool","Dynamic creative","Advantage+ audience"], correct:1,
+   why:"The A/B Test tool — it splits the audience into mutually exclusive groups so the variants don't bid against each other. Naive duplication causes overlap and cannibalisation, contaminating the comparison.", cat:"creative"},
+
+  {q:"Two colleagues cite opposite 'best practices': isolate each creative in its own ad set vs. put concepts in one ad set. The honest answer is:",
+   options:["Isolation is always correct","Single ad set is always correct","This is genuinely unsettled — both have real tradeoffs","Neither works anymore"], correct:2,
+   why:"It's unsettled — isolation buys cleaner causal reads but costs more and can starve delivery; single-ad-set testing leans on Meta's allocation but muddies why one won. Present it as a tradeoff, not settled fact.", cat:"creative"},
+
+  {q:"Advantage+ campaign budget keeps starving an ad set you specifically wanted data on. This behaviour is:",
+   options:["A bug to report","Working as designed — CBO optimizes for the campaign total","An attribution issue","A learning-phase glitch"], correct:1,
+   why:"Working as designed — CBO shifts spend toward whatever wins the campaign's total result. If you need guaranteed spend or a clean per-audience read, that's exactly when ABO is the right tool.", cat:"budget"},
+
+  {q:"A top creative's CPA has drifted up over three weeks while its frequency climbed. This signature points to:",
+   options:["A tracking error","Creative fatigue (or audience saturation)","Wrong objective","Too few placements"], correct:1,
+   why:"Creative fatigue — rising frequency with rising CPA means the audience has seen it too often. Note: saturation looks identical, so the fix may be new creative OR a new audience.", cat:"creative"},
+
+  {q:"Your same-day dashboard shows exact-looking conversion numbers early in the morning. Under AEM you should treat them as:",
+   options:["Final and exact","Provisional and partly modeled","Always inflated 2x","Irrelevant"], correct:1,
+   why:"Provisional and partly modeled — AEM reports with delay (up to ~72h) and includes estimated conversions below privacy thresholds. Treating early same-day numbers as final truth drives premature, wrong calls.", cat:"target"},
+
+  {q:"You have four thin ad sets all stuck in Learning Limited on a modest budget. The scaling-minded fix is usually to:",
+   options:["Add more ad sets","Consolidate into fewer, better-funded ad sets","Lower the budget","Switch objective"], correct:1,
+   why:"Consolidate — merging pools the events so the combined ad set can clear ~50/week and give Meta more signal. Proliferating ad sets fragments events further; consolidation is the 2026 default for a reason.", cat:"scale"},
+
+  {q:"One campaign reports 6x ROAS on a 7-day-click window; another reports 3x on 1-day-click. Comparing them directly is:",
+   options:["Fair and valid","Comparing two different rulers, not two performances","Only wrong on Reels","Fine if budgets match"], correct:1,
+   why:"Different rulers — attribution windows are reporting rules; a longer window claims more delayed conversions and flatters ROAS. Always normalise the window before comparing, scaling, or celebrating.", cat:"target"},
+];
+
+let state = {
+  view:"library", search:"", activeCat:"all", openIdx:null,
+  quizOrder:[], quizIndex:0, quizScore:0, quizAnswered:null, quizHistory:[], quizDone:false,
+  dhStep:0, dhAnswers:[],
+};
+
+function shuffledIndices(n){ const a=Array.from({length:n},(_,i)=>i); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+function resetQuiz(){ state.quizOrder=shuffledIndices(SCENARIOS.length); state.quizIndex=0; state.quizScore=0; state.quizAnswered=null; state.quizHistory=[]; state.quizDone=false; }
+resetQuiz();
+
+function catCounts(){ const c={}; ENTRIES.forEach(p=>{c[p.cat]=(c[p.cat]||0)+1;}); return c; }
+
+function renderLibrary(){
+  const counts=catCounts();
+  const pills=Object.keys(CATS).map(c=>{
+    const active=state.activeCat===c;
+    return `<button class="pill" data-cat="${c}" data-active="${active}" onclick="setCat('${c}')">${CATS[c].icon} ${CATS[c].label} <span class="count">${counts[c]}</span></button>`;
+  }).join('');
+  const q=state.search.trim().toLowerCase();
+  const filtered=ENTRIES.filter(p=>{
+    const mc=state.activeCat==='all'||p.cat===state.activeCat;
+    const ms=!q||p.name.toLowerCase().includes(q)||p.hook.toLowerCase().includes(q)||p.def.toLowerCase().includes(q);
+    return mc&&ms;
+  });
+  const cards=filtered.map(p=>{
+    const idx=ENTRIES.indexOf(p);
+    return `<div class="card" data-cat="${p.cat}" tabindex="0" role="button" aria-label="Open details for ${p.name}"
+      onclick="openEntry(${idx})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEntry(${idx});}">
+      <span class="cat-tag" data-cat="${p.cat}">${CATS[p.cat].icon} ${CATS[p.cat].label}</span>
+      <h3>${p.name}</h3>
+      <p class="hook">${p.hook}</p>
+      <span class="explore-row">Explore <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </div>`;
+  }).join('');
+  return `
+    <div class="lib-controls">
+      <div class="search-wrap">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8b90a6" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="searchInput" type="text" placeholder="Search 28 concepts — try 'learning phase', 'CBO', 'ATT'..." value="${state.search.replace(/"/g,'&quot;')}" oninput="setSearch(this.value)"/>
+      </div>
+    </div>
+    <div class="lib-controls pill-row">${pills}</div>
+    <p class="result-count">${filtered.length} concept${filtered.length===1?'':'s'} shown</p>
+    <div class="grid">${cards||'<div class="empty-state">No concepts match that search. Try a different keyword or clear the category filter.</div>'}</div>`;
+}
+function setCat(c){ state.activeCat=(state.activeCat===c)?'all':c; render(); }
+function setSearch(v){ state.search=v; render(true); }
+
+function openEntry(i){ state.openIdx=i; renderModal(); }
+function closeEntry(){ state.openIdx=null; renderModal(); }
+function renderModal(){
+  const root=document.getElementById('modalRoot');
+  if(state.openIdx===null){ root.innerHTML=''; return; }
+  const p=ENTRIES[state.openIdx];
+  const examples=p.example.map(e=>`<li>${e}</li>`).join('');
+  root.innerHTML=`
+    <div class="modal-overlay" onclick="if(event.target===this) closeEntry();">
+      <div class="modal" role="dialog" aria-modal="true" aria-label="${p.name} details">
+        <div class="modal-top">
+          <span class="cat-tag" data-cat="${p.cat}">${CATS[p.cat].icon} ${CATS[p.cat].label}</span>
+          <button class="modal-close" onclick="closeEntry()" aria-label="Close">✕</button>
+        </div>
+        <h2>${p.name}</h2>
+        <p class="modal-hook">${p.hook}</p>
+        <div class="section-label">📖 What it means</div>
+        <p class="body-text">${p.def}</p>
+        <div class="section-label">🛠️ In practice</div>
+        <ul class="example-list">${examples}</ul>
+        <div class="section-label">⚠️ Watch out for</div>
+        <div class="watch-box"><strong>The trap:</strong> ${p.watch}</div>
+      </div>
+    </div>`;
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&state.openIdx!==null) closeEntry(); });
+
+function renderScenarios(){
+  if(state.quizDone){
+    const byCat={};
+    state.quizHistory.forEach(h=>{ byCat[h.cat]=byCat[h.cat]||{c:0,t:0}; byCat[h.cat].t++; if(h.correct)byCat[h.cat].c++; });
+    const breakdown=Object.keys(byCat).map(c=>`
+      <div class="bd-item"><div class="lbl">${CATS[c].icon} ${CATS[c].label}</div><div class="n">${byCat[c].c} / ${byCat[c].t}</div></div>`).join('');
+    const missed=state.quizHistory.filter(h=>!h.correct).map(h=>`
+      <div class="missed-item"><strong>${h.q}</strong><br/>→ Correct: ${h.correctLabel}. ${h.why}</div>`).join('');
+    return `<div class="results">
+      <h2>Practice complete 🎉</h2>
+      <div class="big-score">${state.quizScore} / ${SCENARIOS.length}</div>
+      <p style="color:var(--ink-soft);">How you did across each area:</p>
+      <div class="breakdown">${breakdown}</div>
+      <button class="restart-btn" onclick="restartQuiz()">Practice again (new shuffle)</button>
+      ${missed.length?`<div class="missed-list"><h3>Review what you missed</h3>${missed}</div>`:`<p style="margin-top:20px;font-weight:600;">Perfect score — you can reason about account structure and testing decisions. 🔥</p>`}
+    </div>`;
+  }
+  const s=SCENARIOS[state.quizOrder[state.quizIndex]];
+  const pct=Math.round((state.quizIndex/SCENARIOS.length)*100);
+  const options=s.options.map((opt,i)=>{
+    let cls="option-btn",dis="";
+    if(state.quizAnswered!==null){ dis="disabled"; if(i===s.correct)cls+=" reveal-correct"; else if(i===state.quizAnswered)cls+=" incorrect"; }
+    return `<button class="${cls}" ${dis} onclick="answerQuiz(${i})">${opt}</button>`;
+  }).join('');
+  const feedback=state.quizAnswered!==null?`
+    <div class="feedback-box"><strong>${state.quizAnswered===s.correct?"✅ Correct — ":"❌ Not quite — "}</strong>${s.why}</div>
+    <button class="next-btn" onclick="nextQuiz()">${state.quizIndex===SCENARIOS.length-1?"See results":"Next scenario →"}</button>`:'';
+  return `<div class="scenario-wrap">
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <span class="score-chip">${state.quizIndex+1} / ${SCENARIOS.length} · score ${state.quizScore}</span>
+    </div>
+    <div class="scenario-card">
+      <div class="scenario-eyebrow">Scenario</div>
+      <p class="scenario-text">${s.q}</p>
+      <div class="options">${options}</div>
+      ${feedback}
+    </div></div>`;
+}
+function answerQuiz(i){
+  if(state.quizAnswered!==null) return;
+  const s=SCENARIOS[state.quizOrder[state.quizIndex]];
+  const correct=i===s.correct;
+  state.quizAnswered=i;
+  if(correct) state.quizScore++;
+  state.quizHistory.push({q:s.q, why:s.why, correct, correctLabel:s.options[s.correct], cat:s.cat});
+  render();
+}
+function nextQuiz(){ if(state.quizIndex===SCENARIOS.length-1){ state.quizDone=true; } else { state.quizIndex++; state.quizAnswered=null; } render(); }
+function restartQuiz(){ resetQuiz(); render(); }
+
+/* ---------- DECISION HELPER: CBO vs ABO / structure ---------- */
+const DH_QUESTIONS = [
+  {key:"goal", eyebrow:"Goal",
+   q:"What are you mainly trying to do right now?",
+   opts:[
+     {v:"test",  label:"Test new creatives or audiences", sub:"You want clean, comparable data on what works."},
+     {v:"scale", label:"Scale a proven winner", sub:"You already know what works and want to spend more on it."},
+     {v:"steady",label:"Maintain steady performance", sub:"An account that's working; you just want it to keep delivering."},
+   ]},
+  {key:"sets", eyebrow:"Structure",
+   q:"How many ad sets / audiences are in play?",
+   opts:[
+     {v:"one",  label:"Just one", sub:"A single ad set / audience."},
+     {v:"few",  label:"Two or three", sub:"A small number of distinct ad sets."},
+     {v:"many", label:"Four or more", sub:"Several ad sets running together."},
+   ]},
+  {key:"control", eyebrow:"Control",
+   q:"How much do you need to guarantee spend per audience?",
+   opts:[
+     {v:"critical", label:"Critical — each must get its budget", sub:"You can't let one audience starve another."},
+     {v:"helpful",  label:"Helpful, but not essential", sub:"Some control is nice; you're flexible."},
+     {v:"dontcare", label:"I only care about the total result", sub:"Happy to let Meta move budget to whatever wins."},
+   ]},
+  {key:"budget", eyebrow:"Budget",
+   q:"Can each ad set realistically hit ~50 optimization events a week?",
+   opts:[
+     {v:"tight",     label:"No — budget is tight", sub:"Events are rare/expensive relative to spend."},
+     {v:"comfort",   label:"Yes — comfortably per ad set", sub:"Each ad set can clear ~50 events/week."},
+     {v:"large",     label:"Easily, across many ad sets", sub:"Plenty of budget and event volume."},
+   ]},
+  {key:"learn", eyebrow:"Status",
+   q:"Where are these ad sets in their lifecycle?",
+   opts:[
+     {v:"fresh",  label:"Fresh launch / still learning", sub:"Just launched or recently edited."},
+     {v:"stable", label:"Stable, past the learning phase", sub:"Delivery has settled and stabilised."},
+   ]},
+];
+
+function decideStructure(a){
+  const goal=a.goal, sets=a.sets, control=a.control, budget=a.budget, learn=a.learn;
+  const universalCaveats = [
+    "Exact feature names drift — 'CBO' is now surfaced as Advantage+ campaign budget, and labels change. Verify the current UI wording before acting (as of Jul 2026).",
+    "Material edits (big budget jumps, creative/audience swaps) can restart the learning phase — batch changes rather than dripping them.",
+    "Whatever the structure, each ad set still needs roughly 50 optimization events in 7 days to exit learning; budget and event choice must support that."
+  ];
+
+  // Special case 1: single ad set — budget optimization is largely moot
+  if(sets==="one"){
+    return {
+      cls:"neutral", kicker:"With one ad set, the choice barely matters",
+      rec:"Use a simple ad-set budget (ABO) — CBO has nothing to distribute",
+      why:[
+        "Campaign budget optimization exists to move money between ad sets. With a single ad set there's nothing to move, so CBO and ABO behave almost identically.",
+        "An ad-set budget keeps the setup simple and your spend predictable while you build signal.",
+        goal==="test" ? "Since you're testing, put your competing creatives inside this one ad set and let delivery allocate — or split them out later once you have a reason to." :
+        goal==="scale" ? "To scale from one ad set, you'll soon add ad sets (horizontal) or raise this budget in steps (vertical) — revisit CBO once you have multiple ad sets." :
+        "For steady-state, a single well-funded ad set past learning is a perfectly stable place to sit."
+      ],
+      caveats:universalCaveats
+    };
+  }
+
+  // Special case 2: tight budget spread across many ad sets — structure problem first
+  if(budget==="tight" && sets==="many"){
+    return {
+      cls:"consolidate", kicker:"Fix the structure before picking a budget mode",
+      rec:"Consolidate first — merge into fewer ad sets, then use Advantage+ campaign budget",
+      why:[
+        "Four-plus ad sets on a tight budget means none can reliably clear ~50 events/week — they'll all sit in Learning Limited whether you use CBO or ABO.",
+        "The lever here isn't CBO-vs-ABO; it's consolidation. Merge overlapping/weak ad sets so the pooled events let the survivors exit learning.",
+        "Once consolidated, campaign-level (Advantage+) budgeting lets Meta concentrate the limited spend on whatever's working, which is what a thin budget needs.",
+        control==="critical" ? "You flagged needing guaranteed per-audience spend — but on this budget that guarantee is what's starving every ad set. Something has to give: fewer audiences, or more budget." : "With control not being critical, letting Meta pool and allocate is the efficient move on a limited budget."
+      ],
+      caveats:universalCaveats
+    };
+  }
+
+  // Special case 3: need guaranteed per-audience spend -> ABO
+  if(control==="critical"){
+    return {
+      cls:"abo", kicker:"You need guaranteed spend per audience",
+      rec:"ABO (ad set budgets) — you keep control, Meta can't starve a set",
+      why:[
+        "You said guaranteeing each audience's spend is critical. That's exactly what campaign budget optimization won't promise — CBO chases the campaign total and will divert budget away from a set you wanted funded.",
+        "ABO assigns each ad set a fixed budget, so nothing gets starved and each audience produces a readable result.",
+        goal==="test" ? "For testing, that guaranteed, equal spend per variant is the whole point — it's what makes the comparison clean." :
+        goal==="scale" ? "For scaling, ABO lets you protect a proven set's budget while you experiment elsewhere; just watch that you're not manually funding a loser." :
+        "For steady-state, ABO gives you predictable, protected spend per audience."
+      ],
+      caveats:universalCaveats.concat([
+        "ABO's control cuts both ways: it will keep funding a losing ad set because you told it to. You — not the algorithm — must cut the losers.",
+        goal==="scale" ? "For pure scaling without per-audience needs, many teams eventually move winners to Advantage+ campaign budget to let Meta concentrate spend." : ""
+      ].filter(Boolean))
+    };
+  }
+
+  // Testing (control not critical) -> ABO, but surface the 2026 debate
+  if(goal==="test"){
+    return {
+      cls:"abo", kicker:"You're testing and want readable data",
+      rec:"ABO (ad set budgets) for a clean read — but see the 2026 caveat",
+      why:[
+        "Guaranteed, equal per-ad-set budgets stop Meta from starving a variant before it produces signal, which is what makes a test interpretable.",
+        "For a defensible A/B comparison, Meta's A/B Test (split test) tool with mutually exclusive audiences avoids the overlap that contaminates naive duplication.",
+        budget==="tight" ? "On a tight budget, isolate fewer variables at once so each still clears enough events to be readable." : "With adequate budget, each test ad set can reach ~50 events/week and give you a real result."
+      ],
+      caveats:universalCaveats.concat([
+        "Genuinely unsettled in 2026: many practitioners now put several concepts inside ONE ad set and let delivery allocate, arguing isolation 'starves' the algorithm. Isolated ABO buys cleaner causality; single-ad-set testing leans on Meta's allocation but muddies why one won. Pick per how much you value a clean causal read."
+      ])
+    };
+  }
+
+  // Scaling with flexible/no control need -> Advantage+ campaign budget (CBO)
+  if(goal==="scale"){
+    return {
+      cls:"cbo", kicker:"You're scaling a winner and can let Meta allocate",
+      rec:"Advantage+ campaign budget (CBO) — let Meta pour spend into winners",
+      why:[
+        "You're scaling something proven and don't need to guarantee per-audience spend — that's the ideal case for campaign-level budgeting, which shifts money to whichever ad set wins the auction most efficiently.",
+        control==="dontcare" ? "Since you only care about the total result, CBO's whole-campaign optimization is aligned with your goal." : "With control merely 'helpful,' you can accept CBO moving budget around in exchange for its efficiency.",
+        (budget==="large"||budget==="comfort") ? "Adequate budget means CBO's chosen ad sets can still clear learning, so the optimization has real signal to work with." : "Keep an eye on learning: even under CBO, an ad set needs enough events to stabilise.",
+        learn==="fresh" ? "You're still learning, so scale in steps — big budget jumps can restart the learning phase even under CBO." : "Being past learning, you can raise the campaign budget more confidently, still in increments."
+      ],
+      caveats:universalCaveats.concat([
+        "CBO will starve an ad set you might have wanted data on — that's the trade for its efficiency. If a specific audience needs protected spend, carve it into its own ABO campaign.",
+        "Scale on marginal (incremental) return, not the flattering account-wide average — a blended ROAS can look fine while the last chunk of spend loses money."
+      ])
+    };
+  }
+
+  // Steady-state maintenance -> Advantage+ campaign budget default
+  return {
+    cls:"cbo", kicker:"Steady-state, control flexible",
+    rec:"Advantage+ campaign budget (CBO) as the low-maintenance default",
+    why:[
+      "For a working account where you don't need guaranteed per-audience spend, campaign-level budgeting is the lower-effort default — Meta keeps money flowing to whatever performs without daily hand-tuning.",
+      (budget==="large"||budget==="comfort") ? "Your budget supports enough events for the optimization to stay well-fed." : "Watch for Learning Limited; if events are thin, consolidate ad sets so delivery has signal.",
+      learn==="stable" ? "Past learning and stable — a good place to let CBO run and just monitor." : "Still settling — give it time to exit learning before judging, and avoid churning edits."
+    ],
+    caveats:universalCaveats.concat([
+      "If you later need a clean read on a specific audience or to protect its spend, break that piece out into ABO — steady-state defaults don't have to be account-wide."
+    ])
+  };
+}
+
+function renderDecision(){
+  // Result screen
+  if(state.dhStep >= DH_QUESTIONS.length){
+    const ans={};
+    DH_QUESTIONS.forEach((qd,i)=>{ ans[qd.key]=state.dhAnswers[i]; });
+    const r=decideStructure(ans);
+    const recapChips=DH_QUESTIONS.map((qd,i)=>{
+      const opt=qd.opts.find(o=>o.v===state.dhAnswers[i]);
+      return `<span class="chip">${qd.eyebrow}: ${opt?opt.label:''}</span>`;
+    }).join('');
+    const whys=r.why.map(w=>`<li>${w}</li>`).join('');
+    const cavs=r.caveats.map(c=>`<li>${c}</li>`).join('');
+    return `
+      <p class="dh-intro">Based on your answers, here's the structure that fits — and, just as important, why and what to watch. Every recommendation is principle-based, so it survives Meta's UI relabelling.</p>
+      <div class="dh-result">
+        <div class="dh-result-head ${r.cls}">
+          <div class="kicker">${r.kicker}</div>
+          <h2>${r.rec}</h2>
+        </div>
+        <div class="dh-result-body">
+          <div class="dh-recap">${recapChips}</div>
+          <div class="dh-block-label">✅ Why this fits you</div>
+          <ul class="dh-list">${whys}</ul>
+          <div class="dh-block-label">⚠️ Caveats to hold in mind</div>
+          <ul class="dh-list dh-caveats">${cavs}</ul>
+          <button class="dh-restart" onclick="restartDecision()">↺ Start over</button>
+          <p class="dh-note">A diagnostic, not a directive. Meta's controls, defaults, and feature names change constantly — confirm the current setup in Ads Manager and the Meta Business Help Center before acting (as of Jul 2026).</p>
+        </div>
+      </div>`;
+  }
+
+  // Question screen
+  const qd=DH_QUESTIONS[state.dhStep];
+  const dots=DH_QUESTIONS.map((_,i)=>{
+    const cls = i<state.dhStep ? "done" : (i===state.dhStep ? "current" : "");
+    return `<div class="dh-dot ${cls}"></div>`;
+  }).join('');
+  const opts=qd.opts.map(o=>`
+    <button class="dh-opt" onclick="answerDecision('${o.v}')">
+      <span>${o.label}</span>
+      <span class="sub">${o.sub}</span>
+    </button>`).join('');
+  const back = state.dhStep>0 ? `<button class="dh-back" onclick="backDecision()">← Back</button>` : '';
+  return `
+    <p class="dh-intro"><strong>CBO vs ABO — and how to structure it.</strong> Answer a few questions about your goal, structure, and constraints. You'll get a recommended budget structure (Advantage+ campaign budget / CBO vs ABO), the reasoning, and the caveats. No benchmarks, no exact UI labels — just the logic that outlasts Meta's relabelling.</p>
+    <div class="dh-tagline mono">structure = f(goal, # ad sets, control needed, budget, learning status)</div>
+    <div class="dh-stepdots">${dots}<span class="dh-stepcount">Q${state.dhStep+1} / ${DH_QUESTIONS.length}</span></div>
+    <div class="dh-card">
+      <div class="dh-q-eyebrow">${qd.eyebrow}</div>
+      <p class="dh-q">${qd.q}</p>
+      <div class="dh-opts">${opts}</div>
+      ${back}
+    </div>`;
+}
+function answerDecision(v){ state.dhAnswers[state.dhStep]=v; state.dhStep++; render(); }
+function backDecision(){ if(state.dhStep>0){ state.dhStep--; } render(); }
+function restartDecision(){ state.dhStep=0; state.dhAnswers=[]; render(); }
+
+function render(keepFocus){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===state.view));
+  const main=document.getElementById('main');
+  main.innerHTML = state.view==='library'?renderLibrary() : state.view==='scenarios'?renderScenarios() : renderDecision();
+  if(keepFocus){ const inp=document.getElementById('searchInput'); if(inp){ inp.focus(); inp.selectionStart=inp.selectionEnd=inp.value.length; } }
+}
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{ state.view=t.dataset.view; state.openIdx=null; renderModal(); render(); });
+});
+render();
+</script>
+</body>
+</html>
