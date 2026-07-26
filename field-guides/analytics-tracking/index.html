@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytics &amp; Tracking Architecture — Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0E14; --panel:#0F151E; --panel-2:#121A25; --ink:#E4EBF2; --ink-soft:#93A1B3; --ink-dim:#63728A;
+    --line:#1E2A38; --line-soft:#182230;
+
+    --found:#22D3EE;  --found-tint:rgba(34,211,238,.11);  --found-line:rgba(34,211,238,.34);
+    --pixel:#A78BFA;  --pixel-tint:rgba(167,139,250,.12); --pixel-line:rgba(167,139,250,.36);
+    --attr:#FBBF24;   --attr-tint:rgba(251,191,36,.11);   --attr-line:rgba(251,191,36,.34);
+    --privacy:#FB7185;--privacy-tint:rgba(251,113,133,.12);--privacy-line:rgba(251,113,133,.36);
+    --taxo:#34D399;   --taxo-tint:rgba(52,211,153,.11);   --taxo-line:rgba(52,211,153,.34);
+
+    --primary:#38BDF8; --primary-dim:rgba(56,189,248,.16);
+    --warn:#FBBF24; --danger:#FB7185; --ok:#34D399;
+    --shadow: 0 1px 0 rgba(255,255,255,.02) inset, 0 18px 40px -24px rgba(0,0,0,.9);
+    --lift: 0 1px 0 rgba(255,255,255,.03) inset, 0 26px 54px -22px rgba(0,0,0,.95);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 6% 0%, rgba(56,189,248,.08) 0, transparent 34%),
+      radial-gradient(circle at 96% 4%, rgba(167,139,250,.06) 0, transparent 36%),
+      linear-gradient(var(--bg), var(--bg));
+    color:var(--ink); font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh; padding-bottom:60px; -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:linear-gradient(rgba(120,150,180,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(120,150,180,.045) 1px, transparent 1px);
+    background-size:38px 38px; opacity:.6; mask-image:radial-gradient(circle at 50% 0%, #000 0, transparent 78%);
+  }
+  header,.tabbar,main,footer{position:relative; z-index:1;}
+  h1,h2,h3,.display{font-family:'Space Grotesk',sans-serif; font-weight:600; letter-spacing:-0.015em;}
+  .mono{font-family:'JetBrains Mono',monospace; font-variant-numeric:tabular-nums;}
+  button{font-family:inherit;}
+
+  header{max-width:1120px; margin:0 auto; padding:34px 24px 12px;}
+  .brand{display:flex; align-items:flex-start; gap:15px;}
+  .brand .mark{flex-shrink:0; margin-top:2px;}
+  .kicker{font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--primary); margin:0 0 4px;}
+  .brand-text h1{font-size:29px; margin:0; line-height:1.12;}
+  .brand-text .sub{margin:7px 0 0; color:var(--ink-soft); font-size:14px; max-width:60ch; line-height:1.55;}
+  .stale-chip{display:inline-flex; align-items:flex-start; gap:9px; margin-top:14px; font-size:12px; color:#FCD9A0; background:linear-gradient(180deg,rgba(251,191,36,.10),rgba(251,191,36,.05)); border:1px solid rgba(251,191,36,.34); border-radius:9px; padding:9px 13px; line-height:1.5; max-width:70ch;}
+  .stale-chip .dot{font-size:13px; line-height:1.4; flex-shrink:0;}
+  .stale-chip .mono{color:#FBBF24; font-weight:600;}
+
+  .tabbar{max-width:1120px; margin:22px auto 0; padding:0 24px; display:flex; gap:8px; flex-wrap:wrap;}
+  .tab{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13.5px; padding:11px 17px; border-radius:9px; border:1px solid var(--line); background:var(--panel); color:var(--ink-soft); cursor:pointer; display:flex; align-items:center; gap:8px; transition:all .15s ease;}
+  .tab .tmono{font-family:'JetBrains Mono',monospace; font-size:11px; opacity:.6;}
+  .tab:hover{color:var(--ink); border-color:var(--ink-dim); transform:translateY(-1px);}
+  .tab.active{background:linear-gradient(180deg,var(--panel-2),var(--panel)); color:var(--ink); border-color:var(--primary); box-shadow:0 0 0 1px rgba(56,189,248,.25), 0 10px 30px -18px rgba(56,189,248,.6);}
+  .tab.active .tmono{color:var(--primary); opacity:1;}
+
+  main{max-width:1120px; margin:18px auto 0; padding:26px 24px 30px; background:linear-gradient(180deg,var(--panel),#0C1119); border:1px solid var(--line); border-radius:16px; min-height:440px; box-shadow:var(--shadow);}
+
+  .lib-controls{display:flex; align-items:center; margin-bottom:10px;}
+  .lib-controls.pill-row{gap:8px; overflow-x:auto; flex-wrap:nowrap; padding-bottom:6px; scrollbar-width:thin;}
+  .search-wrap{position:relative; flex:1 1 260px;}
+  .search-wrap input{width:100%; padding:13px 15px 13px 44px; border-radius:10px; border:1px solid var(--line); font-size:14.5px; font-family:'JetBrains Mono',monospace; background:#0A0F16; color:var(--ink);}
+  .search-wrap input::placeholder{color:var(--ink-dim); font-family:'JetBrains Mono',monospace;}
+  .search-wrap input:focus{outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(56,189,248,.16);}
+  .search-wrap svg{position:absolute; left:15px; top:50%; transform:translateY(-50%);}
+
+  .pill{display:flex; align-items:center; gap:7px; flex-shrink:0; border:1px solid var(--line); border-radius:999px; padding:8px 13px; font-size:12px; font-weight:600; cursor:pointer; background:var(--panel); color:var(--ink-soft); font-family:'JetBrains Mono',monospace; white-space:nowrap; transition:all .13s ease;}
+  .pill:hover{transform:translateY(-1px); color:var(--ink); border-color:var(--ink-dim);}
+  .pill .count{font-weight:700; font-size:10.5px; opacity:.6;}
+  .pill[data-active="true"]{color:#06121A; border-color:transparent;}
+  .pill[data-active="true"] .count{opacity:.75;}
+  .pill[data-cat="found"][data-active="true"]{background:var(--found);}
+  .pill[data-cat="pixel"][data-active="true"]{background:var(--pixel);}
+  .pill[data-cat="attr"][data-active="true"]{background:var(--attr);}
+  .pill[data-cat="privacy"][data-active="true"]{background:var(--privacy);}
+  .pill[data-cat="taxo"][data-active="true"]{background:var(--taxo);}
+
+  .result-count{font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--ink-dim); margin:13px 0 14px; letter-spacing:.02em;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(262px,1fr)); gap:15px; padding-bottom:6px;}
+  .card{border-radius:12px; border:1px solid var(--line); padding:17px; display:flex; flex-direction:column; gap:9px; background:linear-gradient(180deg,var(--panel-2),var(--panel)); box-shadow:var(--shadow); cursor:pointer; min-height:176px; transition:transform .14s ease, box-shadow .14s ease, border-color .14s ease; position:relative; overflow:hidden;}
+  .card::before{content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--line);}
+  .card:hover{transform:translateY(-3px); box-shadow:var(--lift); border-color:var(--ink-dim);}
+  .card:focus-visible{outline:2px solid var(--primary); outline-offset:2px;}
+  .card[data-cat="found"]::before{background:var(--found);}
+  .card[data-cat="pixel"]::before{background:var(--pixel);}
+  .card[data-cat="attr"]::before{background:var(--attr);}
+  .card[data-cat="privacy"]::before{background:var(--privacy);}
+  .card[data-cat="taxo"]::before{background:var(--taxo);}
+
+  .cat-tag{font-family:'JetBrains Mono',monospace; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; padding:4px 8px; border-radius:5px; display:inline-flex; align-items:center; gap:5px; align-self:flex-start;}
+  .cat-tag[data-cat="found"]{color:var(--found); background:var(--found-tint); border:1px solid var(--found-line);}
+  .cat-tag[data-cat="pixel"]{color:var(--pixel); background:var(--pixel-tint); border:1px solid var(--pixel-line);}
+  .cat-tag[data-cat="attr"]{color:var(--attr); background:var(--attr-tint); border:1px solid var(--attr-line);}
+  .cat-tag[data-cat="privacy"]{color:var(--privacy); background:var(--privacy-tint); border:1px solid var(--privacy-line);}
+  .cat-tag[data-cat="taxo"]{color:var(--taxo); background:var(--taxo-tint); border:1px solid var(--taxo-line);}
+
+  .card h3{font-size:16.5px; margin:0; line-height:1.3; color:var(--ink);}
+  .card .hook{font-size:12.5px; color:var(--ink-soft); line-height:1.5; margin:0; flex-grow:1;}
+  .explore-row{display:flex; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; color:var(--ink-dim); margin-top:auto; text-transform:uppercase; letter-spacing:.05em;}
+  .explore-row svg{transition:transform .15s ease;}
+  .card:hover .explore-row svg{transform:translateX(3px);}
+  .card:hover .explore-row{color:var(--primary);}
+  .empty-state{grid-column:1/-1; text-align:center; padding:50px 20px; color:var(--ink-soft); font-family:'JetBrains Mono',monospace; font-size:13px;}
+
+  .modal-overlay{position:fixed; inset:0; background:rgba(4,7,11,.72); backdrop-filter:blur(4px); display:flex; align-items:flex-start; justify-content:center; padding:5vh 20px; z-index:100; overflow-y:auto; animation:fadeIn .15s ease;}
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  .modal{background:linear-gradient(180deg,var(--panel-2),var(--panel)); border:1px solid var(--line); border-radius:15px; max-width:640px; width:100%; padding:26px 28px 24px; box-shadow:0 40px 80px -24px rgba(0,0,0,.9); animation:popIn .2s cubic-bezier(.3,.5,.3,1.2);}
+  @keyframes popIn{from{transform:translateY(12px) scale(.98); opacity:0;}to{transform:none; opacity:1;}}
+  .modal-top{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:6px;}
+  .modal-close{background:#0A0F16; border:1px solid var(--line); border-radius:8px; width:34px; height:34px; font-size:14px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--ink-soft);}
+  .modal-close:hover{background:var(--danger); color:#0A0F16; border-color:var(--danger);}
+  .modal h2{font-size:23px; margin:8px 0 5px; line-height:1.2; color:var(--ink);}
+  .modal .modal-hook{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--primary); margin:0 0 18px; line-height:1.5;}
+  .section-label{display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace; font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.09em; margin:20px 0 9px; color:var(--ink-dim);}
+  .section-label::before{content:"//"; color:var(--ink-dim); opacity:.6;}
+  .modal p.body-text{font-size:14.5px; line-height:1.66; margin:0; color:var(--ink);}
+  .example-list{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px;}
+  .example-list li{font-size:13.3px; line-height:1.55; padding:11px 13px 11px 34px; border-radius:9px; background:#0A0F16; border:1px solid var(--line-soft); position:relative; color:var(--ink);}
+  .example-list li::before{content:"›_"; font-family:'JetBrains Mono',monospace; position:absolute; left:11px; top:11px; font-size:12px; color:var(--primary); font-weight:700;}
+  .watch-box{background:var(--privacy-tint); border:1px solid var(--privacy-line); border-radius:9px; padding:12px 14px; font-size:13.3px; line-height:1.58; color:var(--ink);}
+  .watch-box strong{color:var(--danger); font-family:'JetBrains Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.05em;}
+
+  .scenario-wrap{padding-bottom:20px;}
+  .progress-row{display:flex; align-items:center; gap:14px; margin-bottom:22px;}
+  .progress-track{flex:1; height:8px; background:var(--line); border-radius:6px; overflow:hidden;}
+  .progress-fill{height:100%; background:linear-gradient(90deg,var(--primary),var(--found)); transition:width .35s ease; border-radius:6px;}
+  .score-chip{font-family:'JetBrains Mono',monospace; font-weight:600; font-size:12px; border:1px solid var(--line); border-radius:7px; padding:6px 11px; white-space:nowrap; color:var(--ink-soft); background:var(--panel);}
+  .scenario-card{border:1px solid var(--line); border-radius:14px; padding:25px; background:linear-gradient(180deg,var(--panel-2),#0B1017); box-shadow:var(--shadow);}
+  .scenario-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:700; color:var(--primary); text-transform:uppercase; letter-spacing:.1em; margin-bottom:11px;}
+  .scenario-text{font-size:17px; line-height:1.5; margin:0 0 22px; font-weight:500; color:var(--ink);}
+  .options{display:grid; gap:10px;}
+  .option-btn{text-align:left; padding:13px 15px; border-radius:10px; border:1px solid var(--line); background:#0A0F16; font-family:'Inter',sans-serif; font-weight:500; font-size:14px; cursor:pointer; transition:all .12s ease; color:var(--ink); display:flex; gap:10px; align-items:baseline;}
+  .option-btn .opt-key{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ink-dim); font-weight:700;}
+  .option-btn:hover:not([disabled]){border-color:var(--primary); transform:translateX(3px);}
+  .option-btn[disabled]{cursor:default;}
+  .option-btn.incorrect{background:var(--privacy-tint); border-color:var(--danger); color:#FDB4C0;}
+  .option-btn.reveal-correct{background:var(--taxo-tint); border-color:var(--ok); color:#8DEBC4;}
+  .option-btn.reveal-correct .opt-key,.option-btn.incorrect .opt-key{color:inherit;}
+  .feedback-box{margin-top:18px; padding:14px 16px; border-radius:10px; border:1px solid var(--line); border-left:3px solid var(--primary); font-size:13.5px; line-height:1.58; background:#0A0F16; color:var(--ink);}
+  .feedback-box strong{font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:.03em;}
+  .next-btn{margin-top:18px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px; background:var(--primary); color:#06121A; border:1px solid var(--primary); border-radius:10px; padding:11px 22px; cursor:pointer;}
+  .next-btn:hover{filter:brightness(1.08);}
+  .results{text-align:center; padding:22px 10px 10px;}
+  .results h2{font-size:24px; margin-bottom:4px; color:var(--ink);}
+  .big-score{font-family:'Space Grotesk',sans-serif; font-size:52px; margin:10px 0; color:var(--primary); font-variant-numeric:tabular-nums;}
+  .breakdown{display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:11px; margin:22px 0; text-align:left;}
+  .bd-item{border:1px solid var(--line); border-radius:10px; padding:12px 14px; background:var(--panel);}
+  .bd-item .lbl{font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--ink-soft); font-weight:600; line-height:1.4;}
+  .bd-item .n{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:16px; margin-top:4px; color:var(--ink);}
+  .restart-btn{font-family:'Space Grotesk',sans-serif; font-weight:600; background:var(--primary); color:#06121A; border:none; border-radius:10px; padding:12px 26px; cursor:pointer; font-size:14.5px;}
+  .restart-btn:hover{filter:brightness(1.08);}
+  .missed-list{text-align:left; margin-top:22px;}
+  .missed-list h3{font-size:15px; color:var(--ink); font-family:'Space Grotesk',sans-serif;}
+  .missed-item{border-left:3px solid var(--danger); background:var(--privacy-tint); border-radius:8px; padding:11px 14px; margin-bottom:8px; font-size:12.8px; line-height:1.52; color:var(--ink);}
+
+  /* diagnoser */
+  .diag-intro{font-size:14px; color:var(--ink-soft); line-height:1.62; margin:0 0 8px; max-width:70ch;}
+  .diag-console{border:1px solid var(--line); border-radius:14px; background:linear-gradient(180deg,#0B1017,#090D13); margin-top:20px; overflow:hidden; box-shadow:var(--shadow);}
+  .diag-bar{display:flex; align-items:center; gap:8px; padding:11px 15px; border-bottom:1px solid var(--line); background:#0A0F16;}
+  .diag-bar .dots{display:flex; gap:6px;}
+  .diag-bar .dots span{width:10px; height:10px; border-radius:50%; display:inline-block;}
+  .diag-bar .dots span:nth-child(1){background:#FB7185;}
+  .diag-bar .dots span:nth-child(2){background:#FBBF24;}
+  .diag-bar .dots span:nth-child(3){background:#34D399;}
+  .diag-bar .title{font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--ink-soft); letter-spacing:.04em;}
+  .diag-body{padding:22px 22px 24px;}
+  .diag-breadcrumb{display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-bottom:16px; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--ink-dim);}
+  .diag-breadcrumb .crumb{background:var(--panel); border:1px solid var(--line-soft); border-radius:5px; padding:3px 8px; color:var(--ink-soft);}
+  .diag-breadcrumb .sep{opacity:.5;}
+  .diag-prompt{display:flex; gap:10px; align-items:baseline; margin-bottom:5px;}
+  .diag-prompt .caret{font-family:'JetBrains Mono',monospace; color:var(--primary); font-weight:700; font-size:15px;}
+  .diag-q{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:18.5px; line-height:1.34; color:var(--ink); margin:0;}
+  .diag-help{font-size:13px; color:var(--ink-soft); line-height:1.55; margin:8px 0 18px 22px; padding-left:12px; border-left:1px solid var(--line);}
+  .diag-opts{display:grid; gap:9px; margin-top:16px;}
+  .diag-opt{text-align:left; padding:14px 16px; border-radius:10px; border:1px solid var(--line); background:#0A0F16; color:var(--ink); font-family:'Inter',sans-serif; font-size:13.8px; font-weight:500; line-height:1.45; cursor:pointer; transition:all .13s ease; display:flex; gap:11px; align-items:center;}
+  .diag-opt .arrow{font-family:'JetBrains Mono',monospace; color:var(--ink-dim); font-weight:700; flex-shrink:0; transition:all .13s ease;}
+  .diag-opt:hover{border-color:var(--primary); transform:translateX(4px); background:var(--primary-dim);}
+  .diag-opt:hover .arrow{color:var(--primary);}
+  .diag-opt:focus-visible{outline:2px solid var(--primary); outline-offset:2px;}
+
+  .diag-answer{border:1px solid var(--taxo-line); border-radius:12px; background:linear-gradient(180deg,rgba(52,211,153,.06),transparent); padding:20px 22px; margin-top:6px;}
+  .diag-answer .verdict-tag{font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--ok); display:flex; align-items:center; gap:8px; margin-bottom:12px;}
+  .diag-answer h3{font-family:'Space Grotesk',sans-serif; font-size:19px; margin:0 0 14px; color:var(--ink); line-height:1.3;}
+  .diag-field{margin-bottom:14px;}
+  .diag-field:last-child{margin-bottom:0;}
+  .diag-field .fl{font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-dim); margin-bottom:5px; display:flex; align-items:center; gap:7px;}
+  .diag-field .ft{font-size:13.8px; line-height:1.62; color:var(--ink); margin:0;}
+  .diag-field.cause .fl{color:var(--warn);}
+  .diag-field.look .fl{color:var(--found);}
+  .diag-field.fix .fl{color:var(--ok);}
+  .diag-actions{display:flex; gap:9px; flex-wrap:wrap; margin-top:20px;}
+  .diag-btn{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13px; border-radius:9px; padding:10px 18px; cursor:pointer; border:1px solid var(--line);}
+  .diag-btn.primary{background:var(--primary); color:#06121A; border-color:var(--primary);}
+  .diag-btn.ghost{background:transparent; color:var(--ink-soft);}
+  .diag-btn.ghost:hover{color:var(--ink); border-color:var(--ink-dim);}
+  .diag-btn.primary:hover{filter:brightness(1.08);}
+
+  footer{max-width:1120px; margin:34px auto 0; padding:22px 24px 0; color:var(--ink-dim); font-size:12px; line-height:1.65; border-top:1px solid var(--line);}
+  footer .foot-warn{color:#FCD9A0; background:rgba(251,191,36,.06); border:1px solid rgba(251,191,36,.24); border-radius:9px; padding:11px 14px; margin-bottom:14px; font-size:12px; line-height:1.55;}
+  footer .foot-warn strong{color:var(--warn);}
+  footer .src-title{font-family:'JetBrains Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.09em; color:var(--ink-soft); margin:0 0 8px;}
+  footer ul{margin:0 0 14px; padding-left:18px; display:grid; gap:5px;}
+  footer li{font-size:11.8px; line-height:1.5;}
+  footer a{color:var(--primary); text-decoration:none; word-break:break-word;}
+  footer a:hover{text-decoration:underline;}
+  footer .built{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ink-dim); margin-top:6px;}
+
+  @media (max-width:600px){
+    .brand-text h1{font-size:23px;}
+    .modal{padding:22px 18px 20px;}
+    main{padding:22px 15px 26px;}
+    .diag-q{font-size:16.5px;}
+    .diag-body{padding:18px 16px 20px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <svg class="mark" width="52" height="52" viewBox="0 0 52 52" fill="none">
+      <rect x="3" y="3" width="46" height="46" rx="11" fill="#0F151E" stroke="#1E2A38" stroke-width="2"/>
+      <path d="M11 34l7-9 6 5 5-11 6 8h5" stroke="#38BDF8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <circle cx="18" cy="25" r="2.4" fill="#22D3EE"/>
+      <circle cx="24" cy="30" r="2.4" fill="#A78BFA"/>
+      <circle cx="29" cy="19" r="2.4" fill="#FBBF24"/>
+      <circle cx="35" cy="27" r="2.4" fill="#34D399"/>
+    </svg>
+    <div class="brand-text">
+      <p class="kicker">Field Guide · Instrumentation</p>
+      <h1>Analytics &amp; Tracking Architecture</h1>
+      <p class="sub">Why your numbers never agree, and how to spec a setup that measures the truth — GA4 events, Meta Pixel + Conversions API, attribution, and the privacy layer, for the marketer or PM who has to diagnose the discrepancy, not write the tag.</p>
+      <span class="stale-chip">
+        <span class="dot">⚠️</span>
+        <span><strong class="mono">PERISHABLE</strong> — platform mechanics shift fast. Verified <span class="mono">Jul 2026</span>; re-check current GA4 / Meta docs. Review by <span class="mono">Jan 2027</span>.</span>
+      </span>
+    </div>
+  </div>
+</header>
+
+<div class="tabbar">
+  <div class="tab active" data-view="library">📡 Concept Library <span class="tmono">[28]</span></div>
+  <div class="tab" data-view="scenarios">🎯 Scenario Drills <span class="tmono">[14]</span></div>
+  <div class="tab" data-view="diagnoser">🩺 Discrepancy Diagnoser</div>
+</div>
+
+<main id="main"></main>
+
+<footer>
+  <div class="foot-warn">
+    <strong>Staleness warning:</strong> Every version-dependent claim here is stamped <span class="mono">(as of Jul 2026)</span>. Attribution defaults, consent-mode behavior, ATT modeling, and GA4 naming (e.g. "key events") change without notice. Treat specific windows, percentages, and product names as starting points and confirm against the live official docs below before you spec, budget, or reconcile on them. Content pre-GA4 (Universal Analytics) and pre-iOS-14.5 ATT is stale and excluded by design.
+  </div>
+  <p class="src-title">// Source-pinned to official platform documentation</p>
+  <ul>
+    <li>Google — <a href="https://developers.google.com/analytics/devguides/collection/ga4/reference/events" target="_blank" rel="noopener">GA4 recommended events &amp; event/parameter model</a> + <a href="https://support.google.com/analytics/answer/9267735" target="_blank" rel="noopener">Analytics Help: Recommended events</a> (developer + help docs, living pages)</li>
+    <li>Meta — <a href="https://developers.facebook.com/documentation/ads-commerce/conversions-api/deduplicate-pixel-and-server-events" target="_blank" rel="noopener">Handling duplicate Pixel &amp; Conversions API events (event_id dedup)</a> + <a href="https://www.facebook.com/business/help/823677331451951" target="_blank" rel="noopener">About deduplication for Pixel &amp; CAPI</a></li>
+    <li>Google — <a href="https://support.google.com/analytics/answer/10597962" target="_blank" rel="noopener">GA4 attribution settings, models &amp; lookback windows</a> (acquisition 30/7d; other key events 90/60/30d, as of Jul 2026)</li>
+    <li>Google — <a href="https://developers.google.com/tag-platform/security/concepts/consent-mode" target="_blank" rel="noopener">Consent Mode overview (basic vs advanced)</a> + <a href="https://support.google.com/analytics/answer/11161109" target="_blank" rel="noopener">Behavioral modeling for consent mode</a></li>
+    <li>Meta — <a href="https://www.facebook.com/business/help/721422165168355" target="_blank" rel="noopener">About Aggregated Event Measurement</a> + <a href="https://www.facebook.com/business/help/387440828988900" target="_blank" rel="noopener">Key concepts for AEM (iOS 14.5 ATT + modeled conversions)</a></li>
+    <li>Google — <a href="https://support.google.com/analytics/answer/10917952" target="_blank" rel="noopener">URL builders: collecting campaign data (UTM taxonomy)</a> + <a href="https://ga-dev-tools.google/campaign-url-builder/" target="_blank" rel="noopener">Campaign URL Builder tool</a></li>
+  </ul>
+  <p class="built">Built with the field-guide-builder skill · sources curated via signal-in-noise (official docs prioritized over marketing blogs) · AI-assembled primer, cross-check before relying on specifics.</p>
+</footer>
+
+<div id="modalRoot"></div>
+
+<script>
+const CATS = {
+  found:   { label:"Measurement Foundations", icon:"🧱" },
+  pixel:   { label:"Pixels & Server-Side",    icon:"📡" },
+  attr:    { label:"Attribution",             icon:"🎯" },
+  privacy: { label:"Privacy Layer",           icon:"🔒" },
+  taxo:    { label:"Taxonomy & Diagnostics",  icon:"🧭" },
+};
+
+const ENTRIES = [
+  // ---------- FOUNDATIONS ----------
+  {cat:"found", name:"The GA4 Event Model", hook:"In GA4 everything is an event — pageviews included.",
+   def:"Universal Analytics was built on pageviews, sessions, and a rigid category/action/label structure. GA4 threw that out: every interaction — a page view, a scroll, a click, a purchase — is an 'event' with a name and a bag of parameters. This matters because it means you can no longer assume a 'hit' is a pageview, and any custom behavior you want to measure has to be defined as an event first. If it isn't fired as an event, it does not exist in GA4 (as of Jul 2026).",
+   example:["A product view arrives as a 'view_item' event carrying item_id, item_name, and price parameters — not as a labeled pageview.","A newsletter signup you never defined as an event simply won't appear in reports, no matter how many people did it."],
+   watch:"Teams migrating from Universal Analytics expect their old goals and metrics to map over one-to-one. They don't. A 'session' and a 'conversion' are redefined, so historical UA numbers and GA4 numbers are not comparable — do not put them on the same trend line."},
+
+  {cat:"found", name:"Events vs Parameters", hook:"The event is the verb; parameters are the adjectives.",
+   def:"An event name (like 'add_to_cart') tells you WHAT happened; parameters (currency, value, item_id) tell you the DETAIL. GA4 collects some parameters automatically, but the rich business detail you care about — order value, coupon used, shipping tier — only exists if it was attached as a parameter when the event fired. For reporting, some parameters also have to be registered as custom dimensions/metrics or they stay invisible in the UI.",
+   example:["'purchase' with value=1499 and currency='INR' lets you report revenue; without the value parameter you get a purchase count but no money.","A 'search' event with a 'search_term' parameter is useless in reports until search_term is registered as a custom dimension."],
+   watch:"Marketers assume 'it's being tracked' means the detail is usable. Collection and reportability are two different steps — a parameter can be flowing in and still be un-queryable in the UI because nobody registered it as a custom dimension (as of Jul 2026)."},
+
+  {cat:"found", name:"Sessions, Redefined", hook:"A GA4 session is not a UA session.",
+   def:"GA4 still has sessions, but the rules changed. A session starts with a 'session_start' event and, by default, times out after 30 minutes of inactivity. Crucially, GA4 does NOT start a new session at midnight or when the campaign source changes mid-session — two behaviors that inflated Universal Analytics session counts. So GA4 usually reports fewer sessions than UA did for the same traffic, and that gap is expected, not a bug.",
+   example:["A user active for 45 minutes straight with no 30-minute idle gap counts as one GA4 session, even across midnight.","A visitor who arrives from an email, then clicks a Google ad in the same sitting, stays in one GA4 session instead of splitting into two like UA did."],
+   watch:"When GA4 session counts come in lower than the old UA numbers, people file a 'tracking is broken' ticket. It usually isn't — it's the session definition change. Reconcile the definitions before you reconcile the numbers."},
+
+  {cat:"found", name:"Automatic & Enhanced Measurement", hook:"GA4 tracks a lot before you configure anything.",
+   def:"GA4 auto-collects a baseline of events (first_visit, session_start, user_engagement) and, with Enhanced Measurement toggled on, adds scrolls, outbound clicks, site search, video engagement, and file downloads without any custom setup. This is convenient but it also means your event list has activity you didn't explicitly design, and default event names can collide with or duplicate events you add manually.",
+   example:["Enhanced Measurement fires a 'view_search_results' event automatically when a query parameter appears in the URL — no tagging needed.","'click' events for outbound links appear on their own once Enhanced Measurement is enabled."],
+   watch:"Enhanced Measurement can double-count if you also manually tag the same interaction, and its automatic site-search detection breaks if your search uses a non-standard URL structure. Audit what's auto-collected before adding custom events on top (as of Jul 2026)."},
+
+  {cat:"found", name:"Recommended vs Custom Events", hook:"Use Google's names, or lose Google's features.",
+   def:"GA4 defines 'recommended events' — a published vocabulary like purchase, add_to_cart, begin_checkout, generate_lead — with prescribed parameters. Using these exact names unlocks current and future reporting features and predictive metrics. You can also invent 'custom events' with any name, but custom events don't get the built-in ecommerce reports and can't power certain automated features. Naming is therefore a strategic decision, not a cosmetic one.",
+   example:["Firing the standard 'purchase' event (not a custom 'order_complete') is what populates GA4's Monetization reports out of the box.","A retail site uses the recommended 'view_item_list' and 'select_item' names so the funnel reports assemble themselves."],
+   watch:"Once analytics is live with non-standard event names, renaming them is painful because historical data keeps the old names and reports fragment. Lock the naming taxonomy to Google's recommended events before launch, not after (as of Jul 2026)."},
+
+  {cat:"found", name:"Key Events (formerly Conversions)", hook:"GA4 renamed 'conversions' — and the word now means two things.",
+   def:"In 2024 GA4 renamed what it used to call 'conversions' to 'key events' — the meaningful actions you mark as important (purchase, signup). The word 'conversion' is now reserved for the metric that flows to Google Ads. This split exists precisely because GA4's counted key event and Google Ads' counted conversion are measured differently and will not match. Knowing they are two distinct metrics is the first step to stopping the 'why don't these agree' panic.",
+   example:["You mark 'purchase' as a key event in GA4; the same action shows as a 'conversion' in the linked Google Ads account, counted on Ads' own rules.","GA4 counts every key event occurrence; Google Ads may count one conversion per click within its window — same action, different totals."],
+   watch:"People still say 'conversions' and mean different things depending on which tool they're looking at. Always ask 'a GA4 key event or a Google Ads conversion?' before comparing two numbers that use the same word (as of Jul 2026)."},
+
+  // ---------- PIXELS & SERVER-SIDE ----------
+  {cat:"pixel", name:"The Meta Pixel (Browser-Side)", hook:"A script in the browser that reports to Meta.",
+   def:"The Meta Pixel is JavaScript that runs in the visitor's browser and sends events (PageView, ViewContent, AddToCart, Purchase) to Meta, so Meta can attribute conversions to ads and build audiences. Because it runs client-side, it depends on the browser actually executing it and being allowed to set/read cookies — which is exactly what ad blockers, ITP, and privacy settings increasingly prevent. The Pixel is necessary but no longer sufficient on its own.",
+   example:["The Pixel fires a 'Purchase' event with value and currency when the thank-you page loads, letting Meta credit the sale to an ad.","A 'ViewContent' Pixel event on a product page feeds Meta's retargeting audience of product-viewers."],
+   watch:"Browser-side signal loss is silent. The Pixel doesn't error when a browser blocks it — the event just never arrives, so your Meta-reported conversions quietly undercount without any alarm. This is the core reason server-side tracking exists (as of Jul 2026)."},
+
+  {cat:"pixel", name:"Conversions API (Server-Side)", hook:"Your server tells Meta directly, no browser required.",
+   def:"The Conversions API (CAPI) sends events to Meta from your server instead of the visitor's browser. Because it bypasses ad blockers, browser privacy restrictions, and connection drops, it recovers events the Pixel loses. Meta's official guidance is to run CAPI alongside the Pixel — not instead of it — so the two sources cover each other's gaps. CAPI is the single biggest lever a marketer has to fix under-reported conversions on Meta.",
+   example:["A completed order triggers a server-side 'Purchase' event to CAPI even if the buyer's browser blocked the Pixel entirely.","Server-sent events can include richer, hashed customer data (email, phone) that improves Meta's ability to match the event to a person."],
+   watch:"CAPI without deduplication double-counts. If both the Pixel and the server report the same purchase and Meta can't tell they're the same event, you'll inflate conversions and mislead your bidding. Server-side is only safe when paired with event deduplication (as of Jul 2026)."},
+
+  {cat:"pixel", name:"Why Server-Side Matters", hook:"The browser stopped being a reliable narrator.",
+   def:"Every layer between the browser and the ad platform — ad blockers, Safari's Intelligent Tracking Prevention, iOS restrictions, third-party cookie deprecation — degrades client-side measurement. Server-side tracking moves the reporting to a place those restrictions don't reach, so it's now the default architecture for anyone who needs accurate conversion data. For a PM, this is the shift from 'add a tag' to 'own a data pipeline', with implications for engineering, cost, and privacy compliance.",
+   example:["A brand seeing Meta-reported purchases fall after an iOS update recovers most of the gap by adding CAPI server events.","Server-side Google Tag Manager routes event data through a container you control before forwarding it to GA4 and ad platforms."],
+   watch:"Server-side is not a privacy loophole. You still need consent to send user data, and sending more identifying data from the server without a lawful basis creates compliance risk. 'The browser can't block it' is a measurement fact, not a permission (as of Jul 2026)."},
+
+  {cat:"pixel", name:"Event Deduplication (event_id)", hook:"The same sale counted twice is worse than counted once.",
+   def:"When you run the Pixel and CAPI together, the same purchase can arrive at Meta twice — once from the browser, once from your server. Deduplication is how Meta collapses those into one. The mechanism: both sources send a shared event_id (and, ideally, the same event name), and Meta discards the duplicate. Per Meta's docs, event_id is the primary dedup key; the Pixel's fbp browser identifier can also help. Get this wrong and every metric downstream is inflated.",
+   example:["A browser Purchase with event_id 'ord_88213' and a server Purchase with the same event_id 'ord_88213' are recognized as one event and counted once.","Meta's Events Manager shows a deduplication rate so you can confirm the two channels are actually being matched."],
+   watch:"A mismatched or missing event_id is the classic silent failure: both events pass validation, Meta counts both, and your reported conversions balloon. Always verify the deduplication metric in Events Manager, not just that events are 'arriving' (as of Jul 2026)."},
+
+  {cat:"pixel", name:"Event Match Quality", hook:"An event Meta can't tie to a person barely counts.",
+   def:"Sending an event isn't enough — Meta has to match it to a user to attribute it to an ad. Event Match Quality (EMQ) is Meta's score for how well the customer-information parameters you send (hashed email, phone, name, IP, click IDs) let it identify the person. Higher EMQ means more conversions get attributed and better ad optimization. Post-privacy-changes, EMQ is often the difference between a campaign that looks like it works and one that looks dead.",
+   example:["Adding a hashed email and the fbc click-id parameter to server events lifts EMQ, and reported (attributed) conversions rise as a result.","A checkout that collects phone and email gives Meta more match signals than one that captures only an anonymous order ID."],
+   watch:"Low match quality looks identical to low performance. Before concluding a Meta campaign 'doesn't convert', check EMQ — you may be generating sales Meta simply can't credit because the matching signals are too thin (as of Jul 2026)."},
+
+  {cat:"pixel", name:"GA4 Measurement Protocol & Server GTM", hook:"GA4 has a server-side path too — with sharp edges.",
+   def:"Meta isn't the only platform with a server option. GA4's Measurement Protocol lets a server send events directly to GA4, and server-side Google Tag Manager routes browser data through a container you host before forwarding it. This can improve data quality and give you control over what's shared. But GA4's Measurement Protocol has real limits: it can't fully replicate client-side attribution, and events sent without the right client_id/session context can arrive unattributed.",
+   example:["A server sends a 'refund' event via the Measurement Protocol so GA4 revenue reflects returns the browser never saw.","Server-side GTM strips PII from an event before forwarding it to third parties, tightening compliance."],
+   watch:"Measurement Protocol events that lack a valid client_id or session_id land in GA4 as orphaned data — present in totals but detached from the user journey and attribution. Server-side GA4 is powerful but easy to implement in a way that quietly corrupts your reports (as of Jul 2026)."},
+
+  // ---------- ATTRIBUTION ----------
+  {cat:"attr", name:"Attribution Windows", hook:"How long after a touch does a sale still 'count'?",
+   def:"An attribution (or lookback) window is the period after an ad interaction during which a resulting conversion is credited to it. Every platform sets its own. GA4's key-event lookback defaults to 90 days for most events and 30 days for acquisition events, with other options selectable. Meta's default is 7-day click and 1-day view (as of Jul 2026). Because the windows differ, the same purchase can be 'in window' for one tool and 'out of window' for another — a built-in reason two reports disagree.",
+   example:["A user clicks a Meta ad, buys 10 days later: outside Meta's default 7-day click window, so Meta doesn't credit it, but GA4 (90-day) still might.","Shortening a window to 7-day click makes a channel look worse simply because fewer late conversions qualify — the traffic didn't change."],
+   watch:"People compare platform totals without checking whether the windows even match. A 'discrepancy' is often just two different lookback periods measuring the same reality — align the windows before you call anything wrong (as of Jul 2026)."},
+
+  {cat:"attr", name:"Attribution Models", hook:"Which touch gets the credit — first, last, or shared?",
+   def:"An attribution model is the rule for splitting credit across the touchpoints in a journey. Last-click gives all credit to the final touch; first-click to the first; data-driven attribution (DDA) uses machine learning to distribute fractional credit across touches based on observed contribution. GA4's default is cross-channel data-driven attribution (as of Jul 2026). The model you pick reshapes which channels look valuable, so it's a budgeting decision disguised as a settings toggle.",
+   example:["Under last-click, a brand-name search that closed the sale gets 100% credit; under DDA, the earlier Meta ad that created demand shares in it.","Switching to DDA makes upper-funnel channels (display, social) look more valuable than last-click ever showed."],
+   watch:"Data-driven attribution introduces fractional credit — you'll see decimals like 0.4 of a conversion, which confuses stakeholders expecting whole numbers. It's correct, not a bug; the credit is being split across the path (as of Jul 2026)."},
+
+  {cat:"attr", name:"Why Platforms Over-Report", hook:"Every ad platform grades its own homework.",
+   def:"Ad platforms (Meta, Google Ads, TikTok) each count conversions using their own pixel, their own window, and their own attribution rules — and each claims credit for conversions it touched. Add them up and the total often exceeds your actual order count, because multiple platforms claim the SAME sale. GA4, sitting in the middle with cross-channel de-duplicated attribution, typically reports fewer conversions per channel than the platforms self-report. Neither is 'lying'; they're answering different questions.",
+   example:["Meta claims 100 purchases and Google claims 80, but your store had 140 orders — the 40 overlap were claimed by both platforms.","A single buyer who saw a Meta ad and clicked a Google ad becomes one conversion in each platform's silo, double-counted across them."],
+   watch:"Summing platform-reported conversions to judge total performance always overstates results. Use a neutral source (GA4 or your backend) for the denominator and treat each platform's self-report as an over-claim, not ground truth (as of Jul 2026)."},
+
+  {cat:"attr", name:"Click-Through vs View-Through", hook:"Meta may credit a sale nobody clicked for.",
+   def:"Click-through attribution credits a conversion to an ad the user actually clicked. View-through credits an ad the user merely SAW (an impression) and didn't click, if they convert within the view window (Meta default: 1 day). View-through conversions are a major reason Meta reports more purchases than GA4, which by default attributes on clicked sessions. Neither view is wrong, but they measure fundamentally different claims about influence.",
+   example:["A shopper scrolls past your Meta ad without clicking, then buys via a Google search an hour later — Meta may claim a 1-day view-through conversion.","Turning off view-through reporting drops Meta's conversion count and brings it closer to GA4's click-based numbers."],
+   watch:"View-through conversions can make a purely awareness campaign look like a direct-response winner. When Meta's number dwarfs GA4's, check how much is view-through before you shift budget on it (as of Jul 2026)."},
+
+  {cat:"attr", name:"Blended Metrics & MER", hook:"When per-channel attribution breaks, zoom out.",
+   def:"Because per-channel attribution has become noisy and self-serving, many teams now anchor on blended metrics: total revenue divided by total ad spend across all channels (Marketing Efficiency Ratio, MER), or blended CAC = all marketing spend / all new customers. These sidestep the attribution wars entirely — they can't be double-counted because they never try to assign credit to a specific channel. The tradeoff is you lose channel-level precision for directional truth.",
+   example:["A brand tracks MER weekly: total revenue ÷ total ad spend, and treats a falling MER as a real problem regardless of what each platform claims.","Blended CAC rising while platform ROAS stays flat is a classic signal that platforms are over-claiming."],
+   watch:"Blended metrics are honest but blunt — they tell you the machine is slowing down, not which gear is stuck. Use blended numbers to judge total health and per-channel data (skeptically) to allocate, not the other way around (as of Jul 2026)."},
+
+  {cat:"attr", name:"The (direct) / (not set) Trap", hook:"Attribution's junk drawer is where credit goes to die.",
+   def:"When GA4 can't determine where a session came from, it files it under '(direct)' or the source as '(not set)'. This is not a real channel — it's the absence of data. Untagged campaign links, stripped referrers, redirect chains that drop parameters, and privacy tools all dump traffic here. A large '(direct)' share usually means real, attributable traffic is being mislabeled, which starves your true channels of the credit they earned.",
+   example:["An email link without UTM parameters lands its clicks in '(direct)', making the email channel look weaker than it is.","A payment redirect that drops the referrer sends returning buyers into '(direct)', inflating it artificially."],
+   watch:"'(direct)' quietly grows as a share of traffic when tagging discipline slips, and every point it gains is a point stolen from a channel you're trying to evaluate. Treat a rising (direct)/(not set) as a tagging bug, not organic loyalty (as of Jul 2026)."},
+
+  // ---------- PRIVACY LAYER ----------
+  {cat:"privacy", name:"iOS App Tracking Transparency (ATT)", hook:"The prompt that broke mobile ad measurement.",
+   def:"Starting with iOS 14.5, Apple's App Tracking Transparency requires apps to show a prompt asking permission to 'track' the user across other companies' apps and websites. Most users decline. For ad platforms like Meta that relied on cross-app identifiers, this cut off a large share of the signal used to attribute conversions and target ads. ATT is the single event that reshaped the entire tracking landscape — everything about server-side and modeling downstream is a response to it.",
+   example:["A user who taps 'Ask App Not to Track' in the Meta app can no longer be followed with the device identifier Meta used for attribution.","Reported conversions for iOS audiences dropped sharply after 14.5 rolled out, especially for longer attribution windows."],
+   watch:"Anything written before iOS 14.5 (April 2021) about pixel-based mobile attribution is stale. If a tactic or metric assumes reliable cross-app tracking on iOS, discard it — that world is gone (as of Jul 2026)."},
+
+  {cat:"privacy", name:"Modeled Conversions", hook:"Some of your 'measured' conversions are statistical estimates.",
+   def:"When ATT and privacy rules make a conversion unobservable, platforms fill the gap with modeling: they estimate how many conversions likely happened based on observed patterns from consenting users. Meta's Aggregated Event Measurement and Google's consent-mode modeling both do this. The practical consequence for a marketer: a chunk of the conversions in your dashboard were never directly seen — they're modeled — so precision at small scale is limited and short-term wobble is expected.",
+   example:["Meta reports iOS conversions partly through Aggregated Event Measurement modeling because direct measurement is restricted post-ATT.","Google Ads shows modeled conversions to estimate the sales it couldn't observe when users declined cookies."],
+   watch:"Modeled numbers are estimates, not counts, and they're least reliable at low volume. Don't over-optimize a small campaign on day-to-day modeled swings — you're chasing noise in a statistical estimate (as of Jul 2026)."},
+
+  {cat:"privacy", name:"Aggregated Event Measurement (AEM)", hook:"Meta's post-ATT rulebook — and its 8-event limit.",
+   def:"Aggregated Event Measurement is Meta's protocol for measuring web and app events from iOS 14.5+ users in an ATT-constrained world. It reports events in a privacy-preserving, aggregated way and — critically for setup — historically limited each domain to a prioritized list of 8 conversion events. You rank which events matter most; only the top-priority one for a given user is used for optimization. This forces a real prioritization decision on which conversions you'll actually measure.",
+   example:["A store ranks 'Purchase' above 'AddToCart' above 'ViewContent' in Events Manager so purchase optimization survives the 8-event cap.","Verifying your domain and configuring the prioritized event list is a prerequisite for optimizing iOS campaigns on Meta."],
+   watch:"If a business-critical event isn't in your prioritized 8, or your domain isn't verified, iOS optimization for it silently degrades. The event limit and domain verification are setup gotchas that break measurement before a single ad runs (as of Jul 2026)."},
+
+  {cat:"privacy", name:"Consent Mode: Basic vs Advanced", hook:"How Google tags behave when a user says no.",
+   def:"Google Consent Mode adjusts how Google tags fire based on a user's consent choices. In BASIC mode, tags are blocked entirely until the user consents — if they decline, Google receives nothing, so modeling relies on a general model. In ADVANCED mode, tags still load and send cookieless, anonymized pings even without consent, giving Google an advertiser-specific model and better conversion recovery. The choice is a real tradeoff between data volume and a stricter privacy posture.",
+   example:["Under Advanced consent mode, a user who declines cookies still triggers a cookieless signal, which Google uses to model the lost conversion.","Under Basic consent mode, a declining user sends no data at all, so recovery leans on Google's generic model, not your own."],
+   watch:"'We have a cookie banner' says nothing about which consent-mode implementation is wired behind it. Basic and Advanced produce materially different data volumes and modeling quality — confirm which one is actually deployed (as of Jul 2026)."},
+
+  {cat:"privacy", name:"Behavioral Modeling in GA4", hook:"GA4 estimates the users who declined cookies.",
+   def:"When consent mode is active and users decline analytics cookies, GA4 loses the ability to observe those journeys directly. Behavioral modeling uses machine learning to estimate the behavior of consent-declining users based on similar users who DID consent, filling the gap in metrics like users and conversions. It requires consent mode to be implemented and enough traffic to train on, so smaller properties may not get modeled data at all.",
+   example:["A site with consent mode sees modeled users added back into GA4 reports to approximate visitors who refused analytics cookies.","Below a data threshold, GA4 shows no modeled data and the declined users simply go uncounted."],
+   watch:"Modeled and observed data mixed in one report means your totals include estimates you can't drill into at the user level. And below Google's traffic thresholds, modeling doesn't kick in — so small sites under-count consent-decliners entirely (as of Jul 2026)."},
+
+  {cat:"privacy", name:"Cookie Restrictions & ITP", hook:"Third-party cookies are dying; first-party ones are shrinking.",
+   def:"Browser privacy features actively degrade cookie-based tracking. Safari's Intelligent Tracking Prevention (ITP) caps how long client-set cookies survive (often to 7 days or less), and third-party cookies are broadly blocked or deprecated across major browsers. The effect: returning-visitor recognition, cross-site attribution, and long lookback windows all erode. This is the slow-moving structural reason server-side tracking and first-party data strategies keep gaining importance.",
+   example:["A Safari user who returns after two weeks may be seen as brand-new because ITP already expired the client-side cookie.","Attribution over a 28-day window degrades on browsers that expire tracking cookies in 7 days."],
+   watch:"Cookie lifetime limits quietly inflate 'new user' counts and deflate long-window attribution, and it varies by browser. A rising new-vs-returning ratio can be a measurement artifact of cookie expiry, not real acquisition (as of Jul 2026)."},
+
+  // ---------- TAXONOMY & DIAGNOSTICS ----------
+  {cat:"taxo", name:"UTM Taxonomy Discipline", hook:"Tooling can't fix messy tags; discipline can.",
+   def:"UTM parameters (utm_source, utm_medium, utm_campaign, plus utm_term and utm_content) are tags you append to campaign links so analytics knows where a click came from. They're only as good as your consistency: 'facebook' and 'Facebook' and 'fb' become three different sources in reports. A documented, enforced naming convention — a taxonomy everyone uses — does more for attribution accuracy than any tool, because analytics groups on the exact string you send.",
+   example:["A shared spec mandates utm_source=facebook, utm_medium=paid_social, utm_campaign=summer_sale-2026 so every link rolls up cleanly.","A campaign URL builder generates tagged links from the spec so no one hand-types 'FB' by accident."],
+   watch:"UTM values are case-sensitive and free-text, so 'Email' and 'email' split one channel into two and quietly fragment your reports. The failure is human, not technical — enforce the taxonomy with templates, don't trust memory (as of Jul 2026)."},
+
+  {cat:"taxo", name:"Source vs Medium vs Campaign", hook:"Get the three core UTMs' jobs straight.",
+   def:"The three UTMs you should always set: utm_source is WHERE the traffic came from (google, newsletter, partner-site); utm_medium is the marketing channel TYPE (cpc, email, paid_social, affiliate); utm_campaign is WHICH initiative (spring_sale). Google's guidance is to always set source, medium, and campaign together. Mixing up source and medium — putting 'email' in source, or a campaign name in medium — is the most common tagging error and it scrambles the channel groupings analytics builds automatically.",
+   example:["utm_source=summer-mailer, utm_medium=email, utm_campaign=summer-sale correctly rolls up under the Email channel.","Putting utm_medium=facebook (a source, not a medium) misfiles the traffic and breaks the default channel grouping."],
+   watch:"GA4 assigns default channel groupings by reading utm_medium against known patterns (cpc, email, organic). A non-standard medium value lands the traffic in 'Unassigned', not the channel you meant — medium is the one UTM you must keep to convention (as of Jul 2026)."},
+
+  {cat:"taxo", name:"Auto-Tagging vs Manual Tagging", hook:"Google Ads tags itself; don't tag over it.",
+   def:"Google Ads uses auto-tagging (the gclid parameter) to pass rich click data to GA4 automatically — you don't add UTMs to Google Ads links. Everywhere else (Meta, email, affiliates, offline), you tag manually with UTMs. The trap: manually adding UTMs on top of Google Ads auto-tagging can override the richer gclid data and degrade the integration. Knowing which channels self-tag and which need manual tags prevents you from breaking the one that works best.",
+   example:["Google Ads passes gclid automatically, so GA4 gets keyword and cost data no UTM could carry.","A Meta ad link, which has no auto-tagging, gets manual utm_source=facebook and utm_medium=paid_social."],
+   watch:"Slapping UTMs on Google Ads links to 'be consistent' can clobber auto-tagging and lose cost/keyword data. Auto-tag Google, manual-tag everything else — mixing them on the same link is the mistake (as of Jul 2026)."},
+
+  {cat:"taxo", name:"The Reconciliation Sequence", hook:"When two sources disagree, debug in order — not at random.",
+   def:"When Meta, GA4, and your store's backend all show different numbers, resist guessing. Work a fixed sequence: (1) establish ground truth from the backend/order system — that's the real count; (2) confirm each tool measures the same THING (key event vs conversion vs order) and the same TIME (window, timezone); (3) check the attribution model and lookback for each; (4) inspect data collection health (dedup rate, tag firing, consent state); (5) only then judge channel performance. Most 'discrepancies' resolve at step 2 or 3.",
+   example:["Backend says 140 orders; GA4 says 128 purchases — check timezone and whether refunds/test orders are filtered before assuming tracking loss.","Meta says 100, GA4 says 70 for one channel — check view-through and window differences before touching the pixel."],
+   watch:"The instinct is to jump straight to 'the pixel is broken' — the rarest cause. Definition and window mismatches explain the vast majority of discrepancies, and they're free to check. Exhaust cheap explanations before expensive ones (as of Jul 2026)."},
+];
+
+const SCENARIOS = [
+  {q:"Your new GA4 property reports 30% fewer sessions than the old Universal Analytics view for the same traffic. The most likely explanation is:",
+   options:["The tracking code is broken","GA4 redefined what a session is (no midnight/campaign-change resets)","You lost 30% of your traffic","A billing issue throttled data"], correct:1,
+   why:"GA4's session definition changed — it doesn't restart sessions at midnight or on a new campaign source like UA did, so lower counts are expected, not a bug. Reconcile definitions before filing a tracking ticket.", cat:"found"},
+
+  {q:"A 'search' event is firing correctly with a 'search_term' parameter, but the term never appears in any GA4 report. What's missing?",
+   options:["A second pixel","search_term must be registered as a custom dimension to be reportable","A longer attribution window","Consent mode"], correct:1,
+   why:"Collection and reportability are two steps. A parameter can flow in and still be un-queryable in the UI until it's registered as a custom dimension. The data exists; the report can't see it yet.", cat:"found"},
+
+  {q:"You run the Meta Pixel and Conversions API together. Purchases in Meta suddenly look inflated. The most likely cause is:",
+   options:["View-through attribution","Missing or mismatched event_id causing no deduplication","The Pixel stopped firing","Low Event Match Quality"], correct:1,
+   why:"Without a shared event_id, Meta can't tell the browser Purchase and the server Purchase are the same event, so it counts both. Deduplication via event_id is what collapses them into one — check the dedup rate in Events Manager.", cat:"pixel"},
+
+  {q:"Since an iOS update, your Meta-reported conversions dropped but your store's actual orders held steady. The fix that recovers the most signal is:",
+   options:["Raise ad budgets","Add the Conversions API (server-side) alongside the Pixel","Widen the attribution window","Switch to last-click"], correct:1,
+   why:"iOS/ATT and browser restrictions break browser-side Pixel signal. CAPI sends events from your server, bypassing those blocks, and recovers the conversions the Pixel can no longer see. Meta recommends running both together.", cat:"pixel"},
+
+  {q:"A Meta campaign shows sales but your team thinks it 'doesn't convert'. Before killing it, you should check:",
+   options:["The theme code","Event Match Quality — Meta may not be able to attribute real sales","Your SEO","The refund rate"], correct:1,
+   why:"Low match quality looks identical to low performance. If the customer-info signals (hashed email, click IDs) are thin, Meta can't credit sales it's actually driving. Check EMQ before concluding the campaign is dead.", cat:"pixel"},
+
+  {q:"Meta claims 100 purchases, Google Ads claims 80, but your backend recorded 140 orders total. What happened?",
+   options:["Tracking is broken across all tools","Multiple platforms claimed the same overlapping sales","Your backend is wrong","GA4 needs reconfiguring"], correct:1,
+   why:"Each platform counts with its own pixel, window, and rules, and each claims credit for sales it touched — so the same buyer gets counted by both. Summing platform self-reports always overstates. Use the backend as ground truth.", cat:"attr"},
+
+  {q:"Meta reports far more purchases than GA4 for the same period. A major structural reason (not a bug) is:",
+   options:["GA4 is under-licensed","Meta counts view-through conversions; GA4 attributes on clicks","Meta has more traffic","GA4 uses first-click"], correct:1,
+   why:"Meta credits conversions where the user only SAW the ad (view-through, default 1-day), while GA4 by default attributes on clicked sessions. That gap is definitional. Check how much of Meta's number is view-through before reallocating budget.", cat:"attr"},
+
+  {q:"A user clicks your Meta ad, then buys 10 days later. Meta doesn't credit the sale but GA4 might. Why?",
+   options:["The Pixel failed","Meta's default click window is 7 days; GA4's key-event window is longer","The user cleared cookies","Consent was denied"], correct:1,
+   why:"Attribution windows differ by platform. Meta's default is 7-day click (as of Jul 2026), so a day-10 purchase falls outside it, while GA4's longer lookback may still include it. Align windows before calling it a discrepancy.", cat:"attr"},
+
+  {q:"You switch GA4 to data-driven attribution and stakeholders panic about seeing '0.4' of a conversion. What do you tell them?",
+   options:["It's a rounding bug","DDA splits credit fractionally across touchpoints — decimals are correct","Data is corrupted","Revenue was halved"], correct:1,
+   why:"Data-driven attribution distributes fractional credit across the touches in a path, so partial conversions are expected and correct, not an error. It's the model working as designed.", cat:"attr"},
+
+  {q:"After iOS 14.5, some of the conversions in your Meta dashboard were never directly observed. What are they?",
+   options:["Fraudulent","Modeled (statistically estimated) conversions","Duplicate events","Refunds"], correct:1,
+   why:"When ATT makes conversions unobservable, Meta's Aggregated Event Measurement fills the gap with modeling — statistical estimates based on consenting users. They're estimates, least reliable at low volume, so don't over-optimize small campaigns on their daily swings.", cat:"privacy"},
+
+  {q:"Your cookie banner is live, but you're unsure how much data Google recovers from users who decline. The deciding factor is:",
+   options:["The banner's color","Whether consent mode is Basic or Advanced","Your ad budget","The number of pages"], correct:1,
+   why:"Basic consent mode blocks tags entirely on decline (general model only); Advanced sends cookieless pings that enable an advertiser-specific model and better recovery. 'We have a banner' says nothing about which is wired behind it — confirm the implementation.", cat:"privacy"},
+
+  {q:"A business-critical Meta conversion event isn't optimizing well on iOS. A setup cause worth checking first is:",
+   options:["The event isn't in your prioritized 8 events / domain isn't verified","Your CPMs are high","The creative is weak","GA4 is disconnected"], correct:0,
+   why:"Aggregated Event Measurement historically caps each domain at 8 prioritized events and requires domain verification. If the event isn't prioritized or the domain is unverified, iOS optimization silently degrades before a single ad runs.", cat:"privacy"},
+
+  {q:"Your GA4 '(direct)' traffic share has been climbing for weeks. The most probable cause is:",
+   options:["Customers got more loyal","Tagging discipline slipped — real traffic is landing in the junk drawer","A GA4 outage","Better SEO"], correct:1,
+   why:"'(direct)' / '(not set)' is the absence of source data — untagged links, stripped referrers, redirects that drop parameters. A rising share usually means attributable traffic is being mislabeled, not genuine direct loyalty. Treat it as a tagging bug.", cat:"taxo"},
+
+  {q:"Meta, GA4, and your backend all show different order counts. What's the disciplined first move?",
+   options:["Assume the pixel is broken and re-implement it","Establish ground truth from the backend, then check same-thing / same-window","Average the three numbers","Trust whichever is highest"], correct:1,
+   why:"Work the sequence: backend is ground truth, then confirm each tool measures the same event and the same time period (window, timezone), then models, then collection health. Most discrepancies resolve at the definition/window step — the pixel is the rarest cause.", cat:"taxo"},
+];
+
+let state = {
+  view:"library", search:"", activeCat:"all", openIdx:null,
+  quizOrder:[], quizIndex:0, quizScore:0, quizAnswered:null, quizHistory:[], quizDone:false,
+  diagNode:"root", diagStack:[],
+};
+
+function shuffledIndices(n){ const a=Array.from({length:n},(_,i)=>i); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+function resetQuiz(){ state.quizOrder=shuffledIndices(SCENARIOS.length); state.quizIndex=0; state.quizScore=0; state.quizAnswered=null; state.quizHistory=[]; state.quizDone=false; }
+resetQuiz();
+
+function catCounts(){ const c={}; ENTRIES.forEach(p=>{c[p.cat]=(c[p.cat]||0)+1;}); return c; }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderLibrary(){
+  const counts=catCounts();
+  const pills=Object.keys(CATS).map(c=>{
+    const active=state.activeCat===c;
+    return `<button class="pill" data-cat="${c}" data-active="${active}" onclick="setCat('${c}')">${CATS[c].icon} ${CATS[c].label} <span class="count">${counts[c]}</span></button>`;
+  }).join('');
+  const q=state.search.trim().toLowerCase();
+  const filtered=ENTRIES.filter(p=>{
+    const mc=state.activeCat==='all'||p.cat===state.activeCat;
+    const ms=!q||p.name.toLowerCase().includes(q)||p.hook.toLowerCase().includes(q)||p.def.toLowerCase().includes(q);
+    return mc&&ms;
+  });
+  const cards=filtered.map(p=>{
+    const idx=ENTRIES.indexOf(p);
+    return `<div class="card" data-cat="${p.cat}" tabindex="0" role="button" aria-label="Open details for ${esc(p.name)}"
+      onclick="openEntry(${idx})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEntry(${idx});}">
+      <span class="cat-tag" data-cat="${p.cat}">${CATS[p.cat].icon} ${CATS[p.cat].label}</span>
+      <h3>${p.name}</h3>
+      <p class="hook">${p.hook}</p>
+      <span class="explore-row">inspect <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </div>`;
+  }).join('');
+  return `
+    <div class="lib-controls">
+      <div class="search-wrap">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#63728A" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="searchInput" type="text" placeholder="search 28 concepts — try 'event_id', 'attribution window', 'consent'..." value="${esc(state.search).replace(/"/g,'&quot;')}" oninput="setSearch(this.value)"/>
+      </div>
+    </div>
+    <div class="lib-controls pill-row">${pills}</div>
+    <p class="result-count">&gt; ${filtered.length} concept${filtered.length===1?'':'s'} matched</p>
+    <div class="grid">${cards||'<div class="empty-state">// no concepts match that query. clear the filter or try another keyword.</div>'}</div>`;
+}
+function setCat(c){ state.activeCat=(state.activeCat===c)?'all':c; render(); }
+function setSearch(v){ state.search=v; render(true); }
+
+function openEntry(i){ state.openIdx=i; renderModal(); }
+function closeEntry(){ state.openIdx=null; renderModal(); }
+function renderModal(){
+  const root=document.getElementById('modalRoot');
+  if(state.openIdx===null){ root.innerHTML=''; return; }
+  const p=ENTRIES[state.openIdx];
+  const examples=p.example.map(e=>`<li>${e}</li>`).join('');
+  root.innerHTML=`
+    <div class="modal-overlay" onclick="if(event.target===this) closeEntry();">
+      <div class="modal" role="dialog" aria-modal="true" aria-label="${esc(p.name)} details">
+        <div class="modal-top">
+          <span class="cat-tag" data-cat="${p.cat}">${CATS[p.cat].icon} ${CATS[p.cat].label}</span>
+          <button class="modal-close" onclick="closeEntry()" aria-label="Close">✕</button>
+        </div>
+        <h2>${p.name}</h2>
+        <p class="modal-hook">${p.hook}</p>
+        <div class="section-label">What it means</div>
+        <p class="body-text">${p.def}</p>
+        <div class="section-label">In practice</div>
+        <ul class="example-list">${examples}</ul>
+        <div class="section-label">Watch out for</div>
+        <div class="watch-box"><strong>Trap &gt;</strong> ${p.watch}</div>
+      </div>
+    </div>`;
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&state.openIdx!==null) closeEntry(); });
+
+function renderScenarios(){
+  if(state.quizDone){
+    const byCat={};
+    state.quizHistory.forEach(h=>{ byCat[h.cat]=byCat[h.cat]||{c:0,t:0}; byCat[h.cat].t++; if(h.correct)byCat[h.cat].c++; });
+    const breakdown=Object.keys(byCat).map(c=>`
+      <div class="bd-item"><div class="lbl">${CATS[c].icon} ${CATS[c].label}</div><div class="n">${byCat[c].c} / ${byCat[c].t}</div></div>`).join('');
+    const missed=state.quizHistory.filter(h=>!h.correct).map(h=>`
+      <div class="missed-item"><strong>${h.q}</strong><br/>&rarr; Correct: ${h.correctLabel}. ${h.why}</div>`).join('');
+    return `<div class="results">
+      <h2>Drill complete</h2>
+      <div class="big-score">${state.quizScore} / ${SCENARIOS.length}</div>
+      <p style="color:var(--ink-soft); font-family:'JetBrains Mono',monospace; font-size:12px;">accuracy by domain:</p>
+      <div class="breakdown">${breakdown}</div>
+      <button class="restart-btn" onclick="restartQuiz()">Run again (reshuffle)</button>
+      ${missed.length?`<div class="missed-list"><h3>Review what you missed</h3>${missed}</div>`:`<p style="margin-top:20px;font-weight:600;color:var(--ok);">Clean run — you can defend every discrepancy. 🔥</p>`}
+    </div>`;
+  }
+  const s=SCENARIOS[state.quizOrder[state.quizIndex]];
+  const pct=Math.round((state.quizIndex/SCENARIOS.length)*100);
+  const keys=['A','B','C','D'];
+  const options=s.options.map((opt,i)=>{
+    let cls="option-btn",dis="";
+    if(state.quizAnswered!==null){ dis="disabled"; if(i===s.correct)cls+=" reveal-correct"; else if(i===state.quizAnswered)cls+=" incorrect"; }
+    return `<button class="${cls}" ${dis} onclick="answerQuiz(${i})"><span class="opt-key">${keys[i]}</span><span>${opt}</span></button>`;
+  }).join('');
+  const feedback=state.quizAnswered!==null?`
+    <div class="feedback-box"><strong>${state.quizAnswered===s.correct?"✅ CORRECT — ":"✕ NOT QUITE — "}</strong>${s.why}</div>
+    <button class="next-btn" onclick="nextQuiz()">${state.quizIndex===SCENARIOS.length-1?"See results":"Next drill →"}</button>`:'';
+  return `<div class="scenario-wrap">
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <span class="score-chip">${state.quizIndex+1} / ${SCENARIOS.length} · score ${state.quizScore}</span>
+    </div>
+    <div class="scenario-card">
+      <div class="scenario-eyebrow">Diagnostic drill</div>
+      <p class="scenario-text">${s.q}</p>
+      <div class="options">${options}</div>
+      ${feedback}
+    </div></div>`;
+}
+function answerQuiz(i){
+  if(state.quizAnswered!==null) return;
+  const s=SCENARIOS[state.quizOrder[state.quizIndex]];
+  const correct=i===s.correct;
+  state.quizAnswered=i;
+  if(correct) state.quizScore++;
+  state.quizHistory.push({q:s.q, why:s.why, correct, correctLabel:s.options[s.correct], cat:s.cat});
+  render();
+}
+function nextQuiz(){ if(state.quizIndex===SCENARIOS.length-1){ state.quizDone=true; } else { state.quizIndex++; state.quizAnswered=null; } render(); }
+function restartQuiz(){ resetQuiz(); render(); }
+
+/* ---------------- DISCREPANCY DIAGNOSER ---------------- */
+const DIAG = {
+  root:{
+    q:"What symptom are you seeing?",
+    help:"Pick the discrepancy you're actually staring at. Each path ends in a likely cause, where to look, and the fix — for the person reconciling the numbers, not writing the tag.",
+    opts:[
+      {label:"📈 Meta reports MORE purchases than GA4", to:"meta_gt_ga4"},
+      {label:"🛒 GA4 shows MORE than my store backend / Shopify", to:"ga4_gt_backend"},
+      {label:"📉 Conversions dropped right after an iOS update", to:"ios_drop"},
+      {label:"🔗 Two channels both claim the SAME sale", to:"double_claim"},
+      {label:"💸 Ad spend / conversions don't match what the platform shows", to:"spend_mismatch"},
+      {label:"🕳️ Too much traffic landing in (direct) / (not set)", to:"direct_bloat"},
+    ]
+  },
+
+  // ---- SYMPTOM 1: Meta > GA4 ----
+  meta_gt_ga4:{
+    q:"First, are the Pixel and Conversions API both firing for purchases?",
+    help:"Meta > GA4 is usually one of three things: double-counting from missing dedup, view-through credit GA4 doesn't count, or a plain window/model mismatch. This narrows it.",
+    opts:[
+      {label:"Both fire, but I've never checked the deduplication rate", to:"ans_dedup"},
+      {label:"Only the Pixel fires — no server events", to:"meta_window_or_view"},
+      {label:"Dedup looks healthy; the gap is still large", to:"meta_window_or_view"},
+    ]
+  },
+  meta_window_or_view:{
+    q:"Is a big share of Meta's conversions coming from view-through (ad seen, not clicked)?",
+    help:"In Events Manager / Ads Manager, compare click-through vs view-through conversions and check the attribution window in the report.",
+    opts:[
+      {label:"Yes — a lot are view-through (1-day view)", to:"ans_viewthrough"},
+      {label:"No / mostly click-through, but windows differ between tools", to:"ans_window"},
+      {label:"Not sure how to tell", to:"ans_viewthrough"},
+    ]
+  },
+
+  // ---- SYMPTOM 2: GA4 > backend ----
+  ga4_gt_backend:{
+    q:"Your backend is ground truth. What's inflating GA4 above it?",
+    help:"GA4 counting MORE than real orders almost always means it's counting things that aren't clean, single orders — not that you sold more.",
+    opts:[
+      {label:"The purchase event might be firing more than once per order", to:"ans_double_fire"},
+      {label:"Test orders, internal traffic, or bots aren't filtered out", to:"ans_unfiltered"},
+      {label:"Timezone / date boundaries differ between GA4 and the backend", to:"ans_timezone"},
+    ]
+  },
+
+  // ---- SYMPTOM 3: iOS drop ----
+  ios_drop:{
+    q:"Did your actual orders (backend) also drop, or just the reported conversions?",
+    help:"This is the key fork. If real orders held steady but reported conversions fell, it's a measurement loss, not a sales loss.",
+    opts:[
+      {label:"Real orders held steady — only REPORTED conversions fell", to:"ans_ios_measure"},
+      {label:"I only track browser-side (Pixel), no server events yet", to:"ans_capi"},
+      {label:"The drop is worst on long attribution windows (e.g. 28-day)", to:"ans_ios_window"},
+    ]
+  },
+
+  // ---- SYMPTOM 4: double claim ----
+  double_claim:{
+    q:"Are the two claimants two ad PLATFORMS, or the Pixel and server of one platform?",
+    help:"'Same sale, two claims' means either cross-platform over-claiming (each grades its own homework) or intra-platform duplication (no dedup key).",
+    opts:[
+      {label:"Two different platforms (e.g. Meta AND Google both claim it)", to:"ans_cross_platform"},
+      {label:"One platform's Pixel and its server both counted it", to:"ans_dedup"},
+      {label:"I'm summing platform totals to get a grand total", to:"ans_sum_trap"},
+    ]
+  },
+
+  // ---- SYMPTOM 5: spend / conversion mismatch ----
+  spend_mismatch:{
+    q:"Is the mismatch in CONVERSIONS attributed, or in the SPEND/cost figures?",
+    help:"Cost data and conversion data break for different reasons — separate them before debugging.",
+    opts:[
+      {label:"Conversions: the platform claims more than GA4 credits it", to:"ans_selfreport"},
+      {label:"Cost/keyword data missing in GA4 for Google Ads", to:"ans_autotag"},
+      {label:"Numbers swing day to day and won't settle", to:"ans_modeled"},
+    ]
+  },
+
+  // ---- SYMPTOM 6: direct bloat ----
+  direct_bloat:{
+    q:"Which of these is most likely true of your campaign links?",
+    help:"(direct)/(not set) is the absence of source data. Something is stripping or omitting the source signal.",
+    opts:[
+      {label:"Some campaign links (email, SMS, partners) have no UTMs", to:"ans_untagged"},
+      {label:"utm_medium values are inconsistent (Email vs email vs newsletter)", to:"ans_medium"},
+      {label:"A payment/redirect step sits between the ad and the site", to:"ans_referrer"},
+    ]
+  },
+
+  // ================= TERMINAL ANSWERS =================
+  ans_dedup:{ answer:true, cat:"pixel", title:"Missing event deduplication is double-counting purchases",
+    cause:"The Pixel (browser) and Conversions API (server) are both reporting the same purchase, and Meta can't tell they're one event — so it counts both, inflating your totals above GA4 and reality.",
+    look:"Meta Events Manager → your dataset → check the deduplication rate and the 'received from browser + server' overlap. A low dedup rate with high overlap confirms it.",
+    fix:"Send a shared event_id (and matching event name) from both the Pixel and the server for every event. event_id is Meta's primary dedup key; the fbp browser identifier helps as a backup. Re-check the dedup rate after deploying." },
+
+  ans_viewthrough:{ answer:true, cat:"attr", title:"Meta is claiming view-through conversions GA4 never counts",
+    cause:"Meta credits conversions where the user only SAW the ad (view-through, default 1-day view) and didn't click. GA4 by default attributes on clicked sessions, so it structurally reports fewer. This is a definitional gap, not a bug.",
+    look:"In Ads Manager, split conversions by click-through vs view-through and note the attribution-window setting. Quantify how much of the gap is view-through.",
+    fix:"Decide whether view-through influence is real for your business. For apples-to-apples comparison, view Meta on click-only attribution, or judge total performance with a blended metric (revenue ÷ total spend) instead of stacking platform claims." },
+
+  ans_window:{ answer:true, cat:"attr", title:"The two tools use different attribution windows",
+    cause:"Meta's default is 7-day click / 1-day view; GA4's key-event lookback defaults to 90 days (30 for acquisition), each configurable (as of Jul 2026). A purchase can be 'in window' for one and 'out' for the other, so totals diverge with no real difference in sales.",
+    look:"Compare the attribution window set in each tool's reporting side by side. Also confirm both are on the same timezone.",
+    fix:"Align the windows before comparing — set a common lookback where possible, or accept the two answer different questions and reconcile against backend orders as the neutral truth." },
+
+  ans_double_fire:{ answer:true, cat:"found", title:"The purchase event is firing more than once per order",
+    cause:"A duplicate or re-firing 'purchase' event — thank-you page reloads, back-button revisits, or the tag placed where it can fire twice — makes GA4 count more purchases than real orders.",
+    look:"GA4 DebugView or Realtime: complete a test order and watch how many 'purchase' events fire for one transaction. Check whether the count inflates on page refresh.",
+    fix:"Ensure 'purchase' fires exactly once per unique transaction_id. Use the transaction_id parameter so GA4 can dedupe repeat fires, and move the trigger somewhere a refresh won't re-fire it." },
+
+  ans_unfiltered:{ answer:true, cat:"found", title:"Test orders, internal traffic, or bots are inflating GA4",
+    cause:"GA4 is counting activity your backend excludes — staff test purchases, internal/office traffic, QA runs, or bot hits — so its total runs above real customer orders.",
+    look:"Compare a sample of GA4 purchases against backend order IDs to spot ones with no matching real order. Check whether internal traffic filters and known test transactions are being excluded.",
+    fix:"Configure GA4 internal-traffic filters and exclude known test transaction IDs. Reconcile on transaction_id against the backend so only genuine orders are compared." },
+
+  ans_timezone:{ answer:true, cat:"taxo", title:"Timezone or date-boundary mismatch, not a tracking loss",
+    cause:"GA4's reporting timezone and your backend's timezone cut the day at different moments, so orders near midnight land on different dates. Compared day-by-day the totals look off even when the underlying data agrees.",
+    look:"Check the reporting timezone in GA4 admin vs your store/backend timezone. Re-run the comparison over a full week or month rather than a single day.",
+    fix:"Align timezones where you can, and always reconcile over a longer window (week/month) so edge-of-day orders wash out. Match on transaction_id, not on daily counts." },
+
+  ans_capi:{ answer:true, cat:"pixel", title:"Browser-only tracking is losing iOS signal — add CAPI",
+    cause:"You rely on the browser-side Pixel, which iOS/ATT, ITP, and ad blockers degrade. When those users can't be tracked in-browser, the events simply never reach Meta, so reported conversions fall while real orders don't.",
+    look:"Compare backend orders vs Meta-reported conversions for iOS audiences specifically. A gap concentrated on iOS points straight at browser-side signal loss.",
+    fix:"Implement the Conversions API to send purchase events from your server, and deduplicate against the Pixel with a shared event_id. Meta recommends running both — server-side recovers what the browser loses." },
+
+  ans_ios_measure:{ answer:true, cat:"privacy", title:"Measurement loss from ATT — not a sales loss",
+    cause:"Real orders held steady, so you didn't lose customers — you lost the ability to MEASURE them. iOS 14.5 ATT cut off the cross-app signal Meta used to attribute conversions, so reported numbers dropped while sales did not.",
+    look:"Confirm backend orders are flat over the same period. Check how much of Meta's remaining reporting is modeled (Aggregated Event Measurement) vs directly observed.",
+    fix:"Add the Conversions API to recover server-side signal, verify your domain and configure the prioritized 8 events in AEM, and lean on blended metrics (revenue ÷ spend) for total-performance decisions instead of raw platform conversion counts." },
+
+  ans_ios_window:{ answer:true, cat:"attr", title:"Long attribution windows took the biggest ATT hit",
+    cause:"Post-ATT, longer windows (like 28-day click) lost the most signal because the identifiers needed to connect a distant touch to a conversion are exactly what ATT removed. So your longest-window numbers fell hardest.",
+    look:"Compare the drop across window lengths (1-day vs 7-day vs 28-day). A steeper fall on longer windows confirms the ATT pattern.",
+    fix:"Standardize on Meta's supported default (7-day click / 1-day view) for decisioning, add CAPI to shore up signal, and treat pre-ATT long-window benchmarks as no longer comparable." },
+
+  ans_cross_platform:{ answer:true, cat:"attr", title:"Cross-platform over-claiming — each grades its own homework",
+    cause:"Meta and Google each count with their own pixel, window, and rules, and each claims any conversion it touched. A buyer who saw a Meta ad and clicked a Google ad gets counted once by each — the same sale, claimed twice across silos.",
+    look:"Sum the platform-reported conversions and compare to actual backend orders. If the sum exceeds real orders, you've quantified the over-claim overlap.",
+    fix:"Never sum platform self-reports for a grand total. Use GA4's cross-channel (de-duplicated) attribution or your backend as the single denominator, and treat each platform's number as an over-claim to be discounted." },
+
+  ans_sum_trap:{ answer:true, cat:"attr", title:"You're summing platform totals — that always overstates",
+    cause:"Adding Meta + Google + TikTok conversions to get a 'total' double-counts every sale more than one platform touched. The grand total will always exceed real orders because the platforms overlap by design.",
+    look:"Put the summed platform figure next to backend order count. The excess is your double-counted overlap.",
+    fix:"Stop stacking self-reported conversions. Anchor total performance on one neutral source (backend orders, or GA4 de-duplicated), and use per-platform numbers only for directional allocation — skeptically." },
+
+  ans_selfreport:{ answer:true, cat:"attr", title:"Platform self-report vs GA4 — different rules, not an error",
+    cause:"The ad platform counts conversions on its own pixel, window, model, and (for Meta) view-through and modeling. GA4 de-duplicates across channels and attributes differently, so it almost always credits a channel less than the platform claims for itself.",
+    look:"List, side by side, each tool's attribution model, lookback window, and whether view-through/modeling is included. The differences usually explain the whole gap.",
+    fix:"Expect platform numbers to run high; use them for in-platform optimization, and use GA4/backend for cross-channel truth. Reconcile definitions before concluding anything is broken." },
+
+  ans_autotag:{ answer:true, cat:"taxo", title:"Auto-tagging is missing or being overwritten",
+    cause:"Google Ads passes rich cost/keyword data to GA4 via auto-tagging (the gclid). If auto-tagging is off, or manual UTMs were added on top of Google Ads links, the gclid data gets clobbered and cost/keyword detail disappears from GA4.",
+    look:"Check that auto-tagging is enabled in Google Ads and that the Google Ads–GA4 link is active. Inspect Google Ads landing URLs for manually appended UTMs overriding the gclid.",
+    fix:"Enable auto-tagging and remove manual UTMs from Google Ads links. Auto-tag Google; manual-tag everything else (Meta, email, affiliates). Never mix both on the same link." },
+
+  ans_modeled:{ answer:true, cat:"privacy", title:"You're watching modeled estimates wobble",
+    cause:"Part of what you see is modeled — statistical estimates Meta (AEM) and Google (consent-mode modeling) produce for conversions they couldn't directly observe. Estimates are least stable at low volume, so small campaigns swing day to day.",
+    look:"Identify how much of the metric is modeled vs observed, and check the daily volume. Low volume + big swings = you're chasing model noise.",
+    fix:"Judge over longer periods, not day to day; raise measured signal with CAPI and higher Event Match Quality; and make budget calls on blended metrics that don't depend on fragile per-day modeled counts." },
+
+  ans_untagged:{ answer:true, cat:"taxo", title:"Untagged links are dumping traffic into (direct)",
+    cause:"Email, SMS, partner, and social links without UTM parameters give GA4 no source to read, so their clicks fall into (direct)/(not set). Your real channels look weaker and (direct) looks inflated.",
+    look:"Audit your outbound campaign links (email footers, SMS, partner placements) for missing utm_source/medium/campaign. Cross-reference spikes in (direct) with campaign sends.",
+    fix:"Tag every non-Google campaign link with utm_source, utm_medium, and utm_campaign using a documented taxonomy and a URL builder. Enforce it with templates so no link ships untagged." },
+
+  ans_medium:{ answer:true, cat:"taxo", title:"Inconsistent utm_medium is fragmenting your channels",
+    cause:"UTM values are case-sensitive free text. 'Email', 'email', and 'newsletter' become separate mediums, and any value GA4 doesn't recognize (e.g. utm_medium=facebook) lands in 'Unassigned' instead of the intended channel — scattering credit and swelling the junk buckets.",
+    look:"In GA4, review the distinct utm_medium values and the Unassigned channel. Look for casing variants and non-standard mediums that should map to a known channel.",
+    fix:"Standardize utm_medium to the conventions GA4's default channel grouping recognizes (cpc, email, paid_social, affiliate, organic_social). Document the exact strings and generate links from a builder — medium is the one UTM you must keep to convention." },
+
+  ans_referrer:{ answer:true, cat:"taxo", title:"A redirect or payment step is stripping the referrer",
+    cause:"A payment gateway or redirect between the ad and your site drops the original referrer/UTMs, so returning buyers arrive with no source and land in (direct). It looks like loyal direct traffic but it's lost attribution.",
+    look:"Trace the redirect chain from ad click to landing page and watch whether UTM parameters and referrer survive each hop. Check if (direct) spikes correlate with checkout/payment returns.",
+    fix:"Preserve UTM parameters through redirects, add the payment/gateway domains to GA4's referral-exclusion (unwanted referrals) list, and where possible move to first-party/server-side tracking so the source signal isn't dependent on the browser referrer." },
+};
+
+function renderDiagnoser(){
+  const node=DIAG[state.diagNode]||DIAG.root;
+  const crumbs=state.diagStack.map((id,i)=>{
+    const n=DIAG[id];
+    let lbl = id==='root' ? 'start' : (n && n.title ? n.title : (n && n.q ? n.q : id));
+    lbl = lbl.length>34 ? lbl.slice(0,32)+'…' : lbl;
+    return `<span class="crumb">${esc(lbl)}</span>${i<state.diagStack.length?'<span class="sep">/</span>':''}`;
+  }).join('');
+  const breadcrumb = state.diagStack.length ? `<div class="diag-breadcrumb"><span class="crumb">start</span><span class="sep">/</span>${crumbs}</div>` : '';
+
+  let inner;
+  if(node.answer){
+    inner=`
+      <div class="diag-answer">
+        <div class="verdict-tag">◆ Likely diagnosis · ${CATS[node.cat].label}</div>
+        <h3>${node.title}</h3>
+        <div class="diag-field cause"><div class="fl">▲ Likely cause</div><p class="ft">${node.cause}</p></div>
+        <div class="diag-field look"><div class="fl">⌕ Where to look</div><p class="ft">${node.look}</p></div>
+        <div class="diag-field fix"><div class="fl">✓ The fix</div><p class="ft">${node.fix}</p></div>
+        <div class="diag-actions">
+          <button class="diag-btn primary" onclick="diagReset()">↺ Diagnose another</button>
+          ${state.diagStack.length?`<button class="diag-btn ghost" onclick="diagBack()">← Back one step</button>`:''}
+        </div>
+      </div>`;
+  } else {
+    const opts=node.opts.map(o=>`<button class="diag-opt" onclick="diagGo('${o.to}')"><span class="arrow">→</span><span>${o.label}</span></button>`).join('');
+    inner=`
+      <div class="diag-prompt"><span class="caret">$</span><h2 class="diag-q">${node.q}</h2></div>
+      ${node.help?`<p class="diag-help">${node.help}</p>`:''}
+      <div class="diag-opts">${opts}</div>
+      ${state.diagStack.length?`<div class="diag-actions"><button class="diag-btn ghost" onclick="diagBack()">← Back</button><button class="diag-btn ghost" onclick="diagReset()">↺ Start over</button></div>`:''}`;
+  }
+
+  return `
+    <p class="diag-intro"><strong>Two sources disagree. Where's the bug?</strong> Pick the symptom you're seeing and this walks you — step by step — to the likely cause, where to look, and the fix. Every path ends in an answer. It's diagnostic reasoning, not a lookup.</p>
+    <div class="diag-console">
+      <div class="diag-bar"><div class="dots"><span></span><span></span><span></span></div><div class="title">reconcile — discrepancy_diagnoser.sh</div></div>
+      <div class="diag-body">
+        ${breadcrumb}
+        ${inner}
+      </div>
+    </div>`;
+}
+function diagGo(to){ state.diagStack.push(state.diagNode); state.diagNode=to; render(); }
+function diagBack(){ if(state.diagStack.length){ state.diagNode=state.diagStack.pop(); render(); } }
+function diagReset(){ state.diagNode='root'; state.diagStack=[]; render(); }
+
+function render(keepFocus){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===state.view));
+  const main=document.getElementById('main');
+  main.innerHTML = state.view==='library'?renderLibrary() : state.view==='scenarios'?renderScenarios() : renderDiagnoser();
+  if(keepFocus){ const inp=document.getElementById('searchInput'); if(inp){ inp.focus(); inp.selectionStart=inp.selectionEnd=inp.value.length; } }
+}
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{ state.view=t.dataset.view; state.openIdx=null; renderModal(); render(); });
+});
+render();
+</script>
+</body>
+</html>
