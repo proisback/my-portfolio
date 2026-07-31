@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commercial Lending Product Manager — Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F7F3E9; --ink:#123528; --ink-soft:#5B6A5F; --paper:#FFFDF8; --line:#E3DAC6;
+    --brass:#B0863B; --brass-dark:#8A6626;
+
+    --pmcore:#1B7A52;      --pmcore-tint:#E4F0E8;   --pmcore-dark:#12583A;
+    --agile:#0E7C86;       --agile-tint:#DEEFF0;    --agile-dark:#0A5A62;
+    --products:#B0863B;    --products-tint:#F3EAD6; --products-dark:#8A6626;
+    --process:#3F5C8C;     --process-tint:#E4E9F3;  --process-dark:#2C4269;
+    --stakeholders:#7A3B6B;--stakeholders-tint:#F1E3EE;--stakeholders-dark:#5C2B50;
+    --ai:#B4552F;          --ai-tint:#F6E4DB;       --ai-dark:#8A3E20;
+
+    --accent:#123528;
+    --soft-shadow: 0 1px 2px rgba(18,53,40,.05), 0 10px 24px -18px rgba(18,53,40,.30);
+    --lift-shadow: 0 2px 5px rgba(18,53,40,.07), 0 20px 40px -22px rgba(18,53,40,.38);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 3% 1%, rgba(176,134,59,0.07) 0, transparent 30%),
+      radial-gradient(circle at 99% 4%, rgba(27,122,82,0.05) 0, transparent 32%),
+      linear-gradient(var(--bg), var(--bg));
+    color:var(--ink); font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh; padding-bottom:56px; -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:repeating-linear-gradient(to bottom, transparent 0, transparent 27px, rgba(18,53,40,0.028) 27px, rgba(18,53,40,0.028) 28px);
+    opacity:.7;
+  }
+  header,.tabbar,main,footer{position:relative; z-index:1;}
+  h1,h2,h3,.display{font-family:'Spectral',Georgia,serif; font-weight:600; letter-spacing:-0.005em;}
+  .mono{font-family:'IBM Plex Mono',monospace; font-variant-numeric:tabular-nums;}
+  button{font-family:inherit;}
+
+  header{max-width:1080px; margin:0 auto; padding:34px 24px 12px;}
+  .brand{display:flex; align-items:flex-start; gap:16px;}
+  .brand .mark{flex-shrink:0;}
+  .brand-text h1{font-size:30px; margin:0; line-height:1.12;}
+  .brand-text p{margin:7px 0 0; color:var(--ink-soft); font-size:14px; max-width:62ch; line-height:1.55;}
+  .disclaimer{display:inline-flex; align-items:center; gap:7px; margin-top:12px; font-size:11.5px; color:var(--products-dark); background:var(--products-tint); border:1px solid rgba(176,134,59,.4); border-radius:7px; padding:6px 12px; font-weight:600; letter-spacing:.01em;}
+
+  .tabbar{max-width:1080px; margin:22px auto 0; padding:0 24px; display:flex; gap:8px; flex-wrap:wrap;}
+  .tab{font-family:'Spectral',serif; font-weight:600; font-size:14.5px; padding:11px 19px; border-radius:9px; border:1px solid var(--line); background:var(--paper); color:var(--ink-soft); cursor:pointer; display:flex; align-items:center; gap:8px; transition:all .15s ease; box-shadow:var(--soft-shadow);}
+  .tab:hover{color:var(--ink); transform:translateY(-1px);}
+  .tab.active{background:var(--ink); color:#F7F3E9; border-color:var(--ink);}
+
+  main{max-width:1080px; margin:18px auto 0; padding:28px 26px 30px; background:var(--paper); border:1px solid var(--line); border-radius:12px; min-height:420px; box-shadow:var(--soft-shadow);}
+
+  .lib-controls{display:flex; align-items:center; margin-bottom:10px;}
+  .lib-controls.pill-row{gap:8px; overflow-x:auto; flex-wrap:nowrap; padding-bottom:6px; scrollbar-width:thin;}
+  .search-wrap{position:relative; flex:1 1 260px;}
+  .search-wrap input{width:100%; padding:13px 16px 13px 44px; border-radius:9px; border:1px solid var(--line); font-size:15px; font-family:inherit; background:var(--bg); color:var(--ink);}
+  .search-wrap input:focus{outline:none; border-color:var(--brass); box-shadow:0 0 0 3px rgba(176,134,59,.16);}
+  .search-wrap svg{position:absolute; left:15px; top:50%; transform:translateY(-50%);}
+
+  .pill{display:flex; align-items:center; gap:7px; flex-shrink:0; border:1px solid var(--line); border-radius:999px; padding:8px 14px; font-size:12.5px; font-weight:600; cursor:pointer; background:var(--paper); color:var(--ink); font-family:'Inter',sans-serif; white-space:nowrap; transition:all .13s ease;}
+  .pill:hover{transform:translateY(-1px); border-color:var(--ink-soft);}
+  .pill .count{font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:11px; opacity:.55;}
+  .pill[data-active="true"]{color:#fff; border-color:transparent;}
+  .pill[data-active="true"] .count{opacity:.9;}
+  .pill[data-cat="pmcore"][data-active="true"]{background:var(--pmcore);}
+  .pill[data-cat="agile"][data-active="true"]{background:var(--agile);}
+  .pill[data-cat="products"][data-active="true"]{background:var(--products);}
+  .pill[data-cat="process"][data-active="true"]{background:var(--process);}
+  .pill[data-cat="stakeholders"][data-active="true"]{background:var(--stakeholders);}
+  .pill[data-cat="ai"][data-active="true"]{background:var(--ai);}
+
+  .result-count{font-size:12.5px; color:var(--ink-soft); margin:12px 0 14px; font-weight:600; font-family:'IBM Plex Mono',monospace;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(256px,1fr)); gap:16px; padding-bottom:6px;}
+  .card{border-radius:11px; border:1px solid var(--line); padding:18px; display:flex; flex-direction:column; gap:10px; background:var(--paper); box-shadow:var(--soft-shadow); cursor:pointer; min-height:174px; transition:transform .14s ease, box-shadow .14s ease, border-color .14s ease; border-top:3px solid var(--line);}
+  .card:hover{transform:translateY(-3px); box-shadow:var(--lift-shadow);}
+  .card:focus-visible{outline:2.5px solid var(--brass); outline-offset:2px;}
+  .card[data-cat="pmcore"]{border-top-color:var(--pmcore);}
+  .card[data-cat="agile"]{border-top-color:var(--agile);}
+  .card[data-cat="products"]{border-top-color:var(--products);}
+  .card[data-cat="process"]{border-top-color:var(--process);}
+  .card[data-cat="stakeholders"]{border-top-color:var(--stakeholders);}
+  .card[data-cat="ai"]{border-top-color:var(--ai);}
+
+  .cat-tag{font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:4px 9px; border-radius:5px; display:inline-flex; align-items:center; gap:5px; align-self:flex-start;}
+  .cat-tag[data-cat="pmcore"]{color:var(--pmcore-dark); background:var(--pmcore-tint);}
+  .cat-tag[data-cat="agile"]{color:var(--agile-dark); background:var(--agile-tint);}
+  .cat-tag[data-cat="products"]{color:var(--products-dark); background:var(--products-tint);}
+  .cat-tag[data-cat="process"]{color:var(--process-dark); background:var(--process-tint);}
+  .cat-tag[data-cat="stakeholders"]{color:var(--stakeholders-dark); background:var(--stakeholders-tint);}
+  .cat-tag[data-cat="ai"]{color:var(--ai-dark); background:var(--ai-tint);}
+
+  .card h3{font-size:18px; margin:0; line-height:1.26;}
+  .card .hook{font-size:13px; color:var(--ink-soft); line-height:1.5; margin:0; flex-grow:1;}
+  .explore-row{display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; font-family:'IBM Plex Mono',monospace; letter-spacing:.02em; text-transform:uppercase; color:var(--ink-soft); margin-top:auto;}
+  .explore-row svg{transition:transform .15s ease;}
+  .card:hover .explore-row svg{transform:translateX(3px);}
+  .card:hover .explore-row{color:var(--ink);}
+  .empty-state{grid-column:1/-1; text-align:center; padding:50px 20px; color:var(--ink-soft);}
+
+  .modal-overlay{position:fixed; inset:0; background:rgba(18,53,40,0.52); backdrop-filter:blur(3px); display:flex; align-items:flex-start; justify-content:center; padding:5vh 20px; z-index:100; overflow-y:auto; animation:fadeIn .15s ease;}
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  .modal{background:var(--paper); border:1px solid var(--line); border-radius:12px; max-width:630px; width:100%; padding:28px 30px 26px; box-shadow:0 30px 60px -20px rgba(18,53,40,.55); animation:popIn .2s cubic-bezier(.3,.5,.3,1.15);}
+  @keyframes popIn{from{transform:translateY(12px) scale(.985); opacity:0;}to{transform:none; opacity:1;}}
+  .modal-top{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:8px;}
+  .modal-close{background:var(--bg); border:1px solid var(--line); border-radius:8px; width:36px; height:36px; font-size:15px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--ink-soft);}
+  .modal-close:hover{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .modal h2{font-size:26px; margin:8px 0 5px; line-height:1.18;}
+  .modal .modal-hook{font-size:14.5px; color:var(--ink-soft); font-style:italic; margin:0 0 20px; font-family:'Spectral',serif;}
+  .section-label{display:flex; align-items:center; gap:7px; font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.06em; margin:20px 0 9px; color:var(--ink-soft);}
+  .modal p.body-text{font-size:15px; line-height:1.66; margin:0; color:var(--ink);}
+  .example-list{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px;}
+  .example-list li{font-size:13.8px; line-height:1.55; padding:12px 14px 12px 32px; border-radius:8px; background:var(--bg); border:1px solid var(--line); position:relative;}
+  .example-list li::before{content:"\25B8"; color:var(--brass); font-weight:700; position:absolute; left:13px; top:11px; font-size:13px;}
+  .watch-box{background:var(--ai-tint); border:1px solid rgba(180,85,47,.32); border-radius:8px; padding:12px 14px; font-size:13.5px; line-height:1.58;}
+  .watch-box strong{color:var(--ai-dark);}
+
+  .scenario-wrap{padding-bottom:20px;}
+  .progress-row{display:flex; align-items:center; gap:14px; margin-bottom:22px;}
+  .progress-track{flex:1; height:8px; background:var(--line); border-radius:6px; overflow:hidden;}
+  .progress-fill{height:100%; background:var(--brass); transition:width .35s ease; border-radius:6px;}
+  .score-chip{font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:12.5px; border:1px solid var(--line); border-radius:7px; padding:6px 11px; white-space:nowrap;}
+  .scenario-card{border:1px solid var(--line); border-radius:12px; padding:26px; background:linear-gradient(180deg,#FFFDF8,#FBF7ED); box-shadow:var(--soft-shadow);}
+  .scenario-eyebrow{font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.07em; margin-bottom:10px;}
+  .scenario-text{font-size:19px; line-height:1.5; margin:0 0 22px; font-weight:500; font-family:'Spectral',serif;}
+  .options{display:grid; gap:10px;}
+  .option-btn{text-align:left; padding:14px 16px; border-radius:9px; border:1px solid var(--line); background:var(--paper); font-family:'Inter',sans-serif; font-weight:500; font-size:14.5px; cursor:pointer; transition:all .12s ease; color:var(--ink);}
+  .option-btn:hover:not([disabled]){border-color:var(--ink-soft); transform:translateX(3px);}
+  .option-btn[disabled]{cursor:default;}
+  .option-btn.incorrect{background:#F7E1DA; border-color:#B4552F; color:#8A3E20;}
+  .option-btn.reveal-correct{background:var(--pmcore-tint); border-color:var(--pmcore); color:var(--pmcore-dark); font-weight:600;}
+  .feedback-box{margin-top:18px; padding:15px 18px; border-radius:9px; border:1px dashed var(--line); font-size:13.8px; line-height:1.58; background:var(--bg);}
+  .feedback-box strong{font-family:'Spectral',serif;}
+  .next-btn{margin-top:18px; font-family:'Spectral',serif; font-weight:600; font-size:14.5px; background:var(--ink); color:#F7F3E9; border:1px solid var(--ink); border-radius:9px; padding:12px 24px; cursor:pointer;}
+  .next-btn:hover{opacity:.92;}
+  .results{text-align:center; padding:24px 10px 10px;}
+  .results h2{font-size:27px; margin-bottom:4px;}
+  .big-score{font-family:'Spectral',serif; font-size:56px; margin:10px 0; color:var(--brass); font-variant-numeric:tabular-nums; font-weight:700;}
+  .breakdown{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin:22px 0; text-align:left;}
+  .bd-item{border:1px solid var(--line); border-radius:9px; padding:12px 14px;}
+  .bd-item .lbl{font-size:11.5px; color:var(--ink-soft); font-weight:600;}
+  .bd-item .n{font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:16px; margin-top:2px;}
+  .restart-btn{font-family:'Spectral',serif; font-weight:600; background:var(--brass); color:#fff; border:none; border-radius:9px; padding:13px 28px; cursor:pointer; font-size:15px; box-shadow:var(--soft-shadow);}
+  .restart-btn:hover{opacity:.93;}
+  .missed-list{text-align:left; margin-top:24px;}
+  .missed-list h3{font-size:17px;}
+  .missed-item{border-left:3px solid var(--ai); background:var(--ai-tint); border-radius:6px; padding:11px 14px; margin-bottom:8px; font-size:13px; line-height:1.5;}
+
+  /* studio */
+  .studio-intro{font-size:14.5px; color:var(--ink-soft); line-height:1.6; margin:0 0 18px; max-width:70ch;}
+  .studio-pills{display:flex; gap:8px; margin-bottom:22px; flex-wrap:wrap;}
+  .studio-pill{font-family:'Spectral',serif; font-weight:600; font-size:14px; padding:10px 18px; border-radius:9px; border:1px solid var(--line); background:var(--paper); color:var(--ink-soft); cursor:pointer; display:flex; align-items:center; gap:8px; transition:all .14s ease;}
+  .studio-pill:hover{color:var(--ink); border-color:var(--ink-soft);}
+  .studio-pill.active{background:var(--brass); color:#fff; border-color:var(--brass);}
+
+  .q-block{margin-bottom:22px;}
+  .q-block .q-label{font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); margin-bottom:11px; display:flex; align-items:center; gap:8px;}
+  .q-num{background:var(--ink); color:#F7F3E9; width:20px; height:20px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:11px;}
+  .opt-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(215px,1fr)); gap:10px;}
+  .m-opt{text-align:left; padding:13px 15px; border-radius:9px; border:1px solid var(--line); background:var(--paper); font-family:'Inter',sans-serif; font-weight:500; font-size:14px; cursor:pointer; transition:all .12s ease; color:var(--ink); display:flex; align-items:center; gap:9px; line-height:1.35;}
+  .m-opt:hover{border-color:var(--ink-soft); transform:translateY(-1px);}
+  .m-opt.sel{background:var(--pmcore-tint); border-color:var(--pmcore); color:var(--pmcore-dark); font-weight:600;}
+  .m-opt .ic{font-size:16px;}
+  .rec-actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;}
+  .primary-btn{font-family:'Spectral',serif; font-weight:600; font-size:14.5px; background:var(--ink); color:#F7F3E9; border:1px solid var(--ink); border-radius:9px; padding:12px 24px; cursor:pointer;}
+  .primary-btn[disabled]{opacity:.4; cursor:not-allowed;}
+  .ghost-btn{font-family:'Spectral',serif; font-weight:600; font-size:14.5px; background:transparent; color:var(--ink-soft); border:1px solid var(--line); border-radius:9px; padding:12px 22px; cursor:pointer;}
+  .ghost-btn:hover{color:var(--ink); border-color:var(--ink-soft);}
+  .rec-hint{font-size:12.5px; color:var(--ink-soft); font-style:italic; margin-top:12px;}
+
+  .rec-card{border:1px solid var(--brass); border-top:4px solid var(--brass); border-radius:12px; padding:24px 26px; background:linear-gradient(180deg,#FFFDF8,#FBF6EA); box-shadow:var(--soft-shadow); margin-top:6px;}
+  .rec-card .rec-eyebrow{font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--brass-dark);}
+  .rec-card h3{font-size:25px; margin:6px 0 4px;}
+  .rec-card .rec-why{font-size:15px; line-height:1.62; color:var(--ink); margin:12px 0 4px;}
+  .rec-caveats{margin:16px 0 0; padding:0; list-style:none; display:flex; flex-direction:column; gap:8px;}
+  .rec-caveats li{font-size:13.4px; line-height:1.55; padding:11px 13px 11px 30px; border-radius:8px; background:var(--bg); border:1px solid var(--line); position:relative;}
+  .rec-caveats li::before{content:"\26A0"; position:absolute; left:11px; top:10px; font-size:12px;}
+  .rec-chips{display:flex; flex-wrap:wrap; gap:7px; margin-top:14px;}
+  .rec-chip{font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600; padding:5px 10px; border-radius:6px; background:var(--paper); border:1px solid var(--line); color:var(--ink-soft);}
+
+  /* journey stepper */
+  .step-dots{display:flex; align-items:flex-start; gap:0; margin:6px 0 26px; overflow-x:auto; padding-bottom:6px;}
+  .step-dot{flex:1 1 0; min-width:96px; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; position:relative; padding:0 4px;}
+  .step-dot .circ{width:34px; height:34px; border-radius:50%; border:1.5px solid var(--line); background:var(--paper); display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:13px; color:var(--ink-soft); z-index:2; transition:all .15s ease;}
+  .step-dot .st-lbl{font-size:10.5px; text-align:center; color:var(--ink-soft); font-weight:600; line-height:1.25;}
+  .step-dot.active .circ{background:var(--process); border-color:var(--process); color:#fff;}
+  .step-dot.done .circ{background:var(--pmcore); border-color:var(--pmcore); color:#fff;}
+  .step-dot.active .st-lbl{color:var(--ink);}
+  .step-dot::after{content:""; position:absolute; top:17px; left:50%; width:100%; height:1.5px; background:var(--line); z-index:1;}
+  .step-dot:last-child::after{display:none;}
+  .step-dot.done::after{background:var(--pmcore);}
+
+  .stage-card{border:1px solid var(--line); border-top:4px solid var(--process); border-radius:12px; padding:24px 26px; background:linear-gradient(180deg,#FFFDF8,#FAFAF4); box-shadow:var(--soft-shadow);}
+  .stage-card .stage-eyebrow{font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--process-dark);}
+  .stage-card h3{font-size:25px; margin:6px 0 12px;}
+  .stage-block{margin-top:16px;}
+  .stage-block .sb-label{display:flex; align-items:center; gap:7px; font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); margin-bottom:7px;}
+  .stage-block p{font-size:14.2px; line-height:1.6; margin:0; color:var(--ink);}
+  .owner-chips{display:flex; flex-wrap:wrap; gap:7px;}
+  .owner-chip{font-size:12px; font-weight:600; padding:6px 11px; border-radius:999px; background:var(--stakeholders-tint); color:var(--stakeholders-dark); border:1px solid rgba(122,59,107,.25);}
+  .ai-note{font-size:13.6px; line-height:1.58; background:var(--ai-tint); border:1px solid rgba(180,85,47,.3); border-radius:8px; padding:12px 14px; color:var(--ink);}
+  .sys-note{font-size:13.6px; line-height:1.58; background:var(--process-tint); border:1px solid rgba(63,92,140,.28); border-radius:8px; padding:12px 14px; color:var(--ink);}
+  .step-nav{display:flex; justify-content:space-between; gap:10px; margin-top:22px;}
+
+  footer{text-align:center; color:var(--ink-soft); font-size:11.5px; margin-top:30px; padding:0 24px; line-height:1.7;}
+  footer .src{max-width:820px; margin:8px auto 0; font-size:11px;}
+  footer a{color:var(--brass-dark); text-decoration:none;}
+  footer a:hover{text-decoration:underline;}
+
+  @media (max-width:600px){
+    .brand-text h1{font-size:24px;}
+    .modal{padding:22px 20px 20px;}
+    main{padding:22px 16px 26px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <svg class="mark" width="52" height="52" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+      <rect x="4" y="4" width="44" height="44" rx="8" fill="#123528" stroke="#B0863B" stroke-width="1.5"/>
+      <path d="M26 12v28" stroke="#B0863B" stroke-width="2" stroke-linecap="round"/>
+      <path d="M16 20h20M16 20l-4 6h8l-4-6zM36 20l-4 6h8l-4-6z" stroke="#F7F3E9" stroke-width="1.8" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+      <path d="M20 40h12" stroke="#F7F3E9" stroke-width="2" stroke-linecap="round"/>
+      <path d="M26 12a2 2 0 1 0 0-.001" stroke="#B0863B" stroke-width="2"/>
+    </svg>
+    <div class="brand-text">
+      <h1>Commercial Lending Product Manager</h1>
+      <p>A field guide to the PM skill set for commercial and SME lending — the product core, agile delivery, the lending domain itself, the stakeholders around the deal, and where AI genuinely helps in banking. Built for interview prep and on-the-job reference.</p>
+      <span class="disclaimer">&#9878; Source-pinned &middot; India-context lending (RBI norms as of 2026) — verify current regulatory specifics before relying on any figure.</span>
+    </div>
+  </div>
+</header>
+
+<div class="tabbar">
+  <div class="tab active" data-view="library">&#128218; Concept Library</div>
+  <div class="tab" data-view="scenarios">&#127919; Scenario Practice</div>
+  <div class="tab" data-view="studio">&#129513; Lending Studio</div>
+</div>
+
+<main id="main"></main>
+
+<footer>
+  Built with the <strong>field-guide-builder</strong> + <strong>signal-in-noise</strong> skills. A study aid, not lending advice — cross-check every regulatory figure against current RBI directions before use.
+  <div class="src">Sources:
+    <a href="https://corporatefinanceinstitute.com/topic/commercial-lending/" target="_blank" rel="noopener">CFI — Commercial Lending / CBCA</a> &middot;
+    <a href="https://www.rbi.org.in/commonman/Upload/English/FAQs/PDFs/MICRO30072025E.pdf" target="_blank" rel="noopener">RBI — MSME &amp; Priority Sector Lending FAQs (2025)</a> &middot;
+    <a href="https://credable.in/insights-by-credable/what-is-a-loan-origination-system/" target="_blank" rel="noopener">CredAble — Loan Origination System</a> &middot;
+    <a href="https://www.tradefinanceglobal.com/letters-of-credit/difference-between-lcs-and-bank-guarantees/" target="_blank" rel="noopener">Trade Finance Global — LCs vs Bank Guarantees</a> &middot;
+    <a href="https://www.jpmorgan.com/insights/banking/commercial-loans-and-lines-of-credit/how-commercial-loans-and-lines-of-credit-work" target="_blank" rel="noopener">J.P. Morgan — Commercial Loans &amp; Lines of Credit</a>
+  </div>
+</footer>
+
+<div id="modalRoot"></div>
+
+<script>
+const CATS = {
+  pmcore:       { label:"Product Management Core", icon:"🧭" },
+  agile:        { label:"Agile & Delivery", icon:"🔁" },
+  products:     { label:"Commercial Lending Products", icon:"🏦" },
+  process:      { label:"Origination, Credit & Servicing", icon:"📄" },
+  stakeholders: { label:"Stakeholder Management", icon:"🤝" },
+  ai:           { label:"AI & Digital Banking", icon:"🤖" },
+};
+
+const ENTRIES = [
+  // ---------- PM CORE ----------
+  {cat:"pmcore", name:"Business Requirement Gathering", hook:"The PM's first job: turn a vague business ask into a documented, testable requirement.",
+   def:"Requirement gathering is the disciplined elicitation of what the business actually needs — through interviews with Relationship Managers, credit officers and ops, workshops, and reviewing how work is done today. In lending, the raw ask ('make sanctioning faster') hides real requirements about data, policy limits, approval authority and regulatory constraints. Documenting these in a BRD or functional spec matters because a mis-captured lending rule becomes a compliance defect, not just a UX bug. It matters most because in banking the cost of building the wrong thing is measured in regulatory risk and rework, not only wasted sprints.",
+   example:["A credit head asks for 'auto-approval'. Gathering reveals the real requirement: auto-approve only MSE loans up to a threshold that already clear a policy rules-engine, with everything else routed to a human — a very different build.","Interviewing RMs surfaces that they re-key the same borrower data into three screens, so the documented requirement becomes 'single-entry KYC that flows to the credit module', not a cosmetic redesign."],
+   watch:"Stakeholders describe solutions ('add a button'), not problems. Keep asking why until you reach the underlying job and the policy or regulatory rule behind it — the button is often the wrong fix for the real constraint."},
+
+  {cat:"pmcore", name:"User Stories, Specs & Acceptance Criteria", hook:"Requirements only ship cleanly when they're written as small, testable stories.",
+   def:"A user story frames a need from a user's perspective ('As a credit analyst, I want the drawing power auto-calculated from the latest stock statement so that I don't compute it by hand'). Acceptance criteria are the specific, testable conditions that define 'done' — the exact formula, the edge cases, the error states. In lending, precise acceptance criteria are how policy and math get encoded correctly: '75% of book debts plus 50% of stock, capped at the sanctioned limit' is testable; 'calculate drawing power' is not. Good specs are the contract between the PM, engineering and QA.",
+   example:["Story: 'As an underwriter, I want the system to flag any applicant already classified SMA-2 so I don't unknowingly lend to a stressed account.' Acceptance criteria name the exact overdue window (61–90 days) and the flag's placement.","A spec for a term-loan EMI schedule lists acceptance criteria for leap years, part-prepayment, and a moratorium period — the edge cases that break naive implementations."],
+   watch:"Vague acceptance criteria ('works correctly') pass everything and catch nothing. If QA can't derive a pass/fail test from your criterion, it isn't one yet — and in lending that gap ships a miscalculated limit."},
+
+  {cat:"pmcore", name:"Roadmap Planning & Prioritization", hook:"You can't build everything; the roadmap is where you defend what comes first.",
+   def:"A roadmap sequences what gets built over time against limited engineering capacity. Prioritization frameworks (impact vs effort, RICE, weighted scoring, or a regulatory-must-do lane) force explicit trade-offs. In a bank, prioritization has an extra axis most consumer PMs don't face: regulatory and audit commitments are non-negotiable and jump the queue regardless of ROI. The PM's craft is balancing those mandatory items against revenue features (faster onboarding) and risk-reduction features (better early-warning) without letting the roadmap become a wish-list.",
+   example:["A regulatory change to MSME classification thresholds (effective 1 April 2025) forces a rules update to the top of the roadmap ahead of a nice-to-have dashboard, because non-compliance carries penalties.","Scoring shows a straight-through digital journey for loans up to Rs 10 lakh has the best impact-to-effort ratio, so it ships before a rarely-used treasury feature."],
+   watch:"A roadmap that promises fixed dates for everything a year out is fiction in a regulated environment — regulatory changes and audit findings reshuffle it. Communicate a roadmap as intent and sequence, not a contract of dates."},
+
+  {cat:"pmcore", name:"Backlog Management", hook:"The backlog is the single, ranked, always-groomed list of what's next.",
+   def:"The product backlog is the ordered inventory of stories, bugs, tech debt and spikes. Managing it means keeping it ranked, keeping the top slice refined and ready, and ruthlessly pruning stale items so it reflects reality rather than an archive of every idea ever raised. A healthy backlog lets a lending team pull the next-most-valuable work each sprint without re-litigating priorities. The PM owns backlog order; the team owns estimates.",
+   example:["Before sprint planning, the PM refines the top ten items so the credit-module stories have clear acceptance criteria and the team can estimate them confidently.","A two-year-old request to support a discontinued loan product is archived rather than left to rot at the bottom, keeping the backlog honest."],
+   watch:"An infinite backlog is a graveyard, not a plan. If an item has sat untouched for months it is a signal, not an asset — either promote it with a real reason or delete it, because a bloated backlog hides the few things that matter."},
+
+  {cat:"pmcore", name:"Product Metrics & Customer Feedback", hook:"If you can't measure the lending journey, you're guessing at what to fix.",
+   def:"Tracking performance means instrumenting the product to answer 'is it working?' — turnaround time (TAT) from application to sanction, straight-through-processing rate, drop-off by stage, approval and rejection rates, and post-launch defect rates. Customer feedback (from RMs as internal users and borrowers as end users) tells you why the numbers move. In lending, TAT and drop-off are the metrics that connect directly to revenue and to regulatory service commitments, so the PM watches them the way a growth PM watches conversion.",
+   example:["A funnel report shows 40% of applicants drop at the document-upload step; RM feedback reveals the checklist is unclear, pointing to a fixable cause upstream of credit assessment.","Tracking sanction TAT against the RBI norm of a credit decision within 14 working days for MSE loans up to Rs 25 lakh turns a compliance target into a live product metric."],
+   watch:"Vanity metrics ('logins are up') flatter without informing. Anchor on metrics tied to a decision — a TAT you would act on if it worsened — and always pair the quantitative number with the qualitative reason from the people using the product."},
+
+  {cat:"pmcore", name:"UAT & Production Rollout", hook:"The last mile: business sign-off, then a controlled release — not a big-bang launch.",
+   def:"User Acceptance Testing is where business users (credit, ops, RMs) validate that the built product meets the documented requirements in realistic scenarios before it goes live. Production rollout is the controlled release — often phased (a pilot branch, a limited product, a small ticket-size band) with a rollback plan. In banking, UAT is a formal gate and rollout is deliberately cautious because a defect in a live lending system can mis-sanction real money or breach a control. The PM coordinates UAT scenarios, triages defects, and owns the go/no-go call with the business.",
+   example:["UAT for a new drawing-power engine runs 30 real historical cases; a mismatch on one seasonal-stock case is caught and fixed before a single live loan is affected.","Rollout starts with one region and loans under Rs 50 lakh, monitors defect and TAT metrics for two weeks, then widens — so any problem is contained and reversible."],
+   watch:"'The build succeeded' is not 'the business accepts it'. Skipping structured UAT to hit a date in a lending system is how a mis-computed limit reaches production — the phased rollback plan is the seatbelt, not the ceremony."},
+
+  // ---------- AGILE ----------
+  {cat:"agile", name:"Agile Ceremonies", hook:"The recurring meetings that keep a delivery team aligned and unblocked.",
+   def:"Agile ceremonies are the structured events of a sprint: sprint planning (agreeing what the team will commit to), daily stand-up (a short sync on progress and blockers), backlog grooming or refinement (clarifying and estimating upcoming items), the sprint review (demoing what shipped to stakeholders), and the retrospective (improving how the team works). Each exists to reduce a specific risk — misalignment, hidden blockers, unclear requirements, or repeated mistakes. The PM shows up to planning, grooming and review most actively, bringing a refined, prioritized backlog.",
+   example:["In grooming, the PM walks credit and engineering through a covenant-monitoring story so it's estimated accurately before planning, avoiding a mid-sprint surprise.","At the sprint review, the team demos the new KYC auto-extraction to RMs and compliance, who catch a missing document type early enough to fix cheaply."],
+   watch:"Ceremonies become theatre when they run without purpose — a stand-up that's a status report to the manager, a retro with no actions. Protect the intent behind each meeting; if a ceremony stops reducing a real risk, fix it rather than performing it."},
+
+  {cat:"agile", name:"The Sprint Cycle", hook:"A fixed, short timebox that turns a slice of backlog into working software.",
+   def:"A sprint is a fixed iteration (commonly two weeks) in which the team commits to a set of backlog items, builds and tests them, and produces a potentially shippable increment. The cadence creates predictability, forces work into small pieces, and gives regular checkpoints to inspect and adapt. In lending, the sprint discipline matters because it lets a team ship and validate a narrow slice — say, one origination stage — and get it in front of credit users before building the next, rather than disappearing for six months on a monolith.",
+   example:["The team commits to the 'KYC & documentation' stage this sprint, ships it to a pilot, and gathers feedback before planning the 'credit assessment' stage next sprint.","A regulatory rule change is scoped small enough to fit one sprint, so compliance can verify it in the very next review rather than waiting a quarter."],
+   watch:"Scope creep mid-sprint quietly breaks the commitment — a 'small' added requirement pushes out what was promised. New asks go to the backlog for the next sprint, not into the current one, or the timebox stops meaning anything."},
+
+  {cat:"agile", name:"Cross-Functional Collaboration", hook:"A PM ships nothing alone — the work happens across engineering, UX, QA and the business.",
+   def:"Cross-functional collaboration is the PM's core operating mode: aligning engineering (feasibility, architecture), UX (the RM and borrower experience), QA (test coverage and edge cases), and the business (credit, risk, compliance, ops) around a shared goal. The PM is the connective tissue — translating between these groups, surfacing conflicts early, and keeping everyone pointed at the same outcome. In lending this is unusually demanding because the 'business' is itself several functions (credit, risk, compliance) with different mandates that must all be satisfied for a feature to be legal to ship.",
+   example:["A faster-onboarding feature needs UX for the flow, engineering for the integrations, credit for the rules, and compliance for KYC — the PM runs the thread that keeps them synced rather than working in sequence.","When QA finds an edge case (a borrower with two GST registrations), the PM convenes credit and engineering together to decide the rule rather than guessing."],
+   watch:"Working with each function in isolation creates late, expensive collisions — engineering builds to one interpretation while compliance expected another. Get the conflicting functions in the same conversation early; the disagreement you surface in week one is cheap, the one you discover in UAT is not."},
+
+  // ---------- PRODUCTS ----------
+  {cat:"products", name:"Business / Term Loans", hook:"A lump sum, borrowed now and repaid over a fixed schedule — the classic financing instrument.",
+   def:"A term loan is a fixed amount disbursed upfront and repaid over a set tenure through scheduled instalments (EMIs) of principal and interest, at a fixed or floating rate. Businesses use term loans for long-gestation needs — buying machinery, expanding a plant, acquiring premises — where the asset generates returns over years and repayment should stretch over its useful life. It is distinct from revolving credit: you borrow once, and as you repay you don't get the money back to redraw. Tenure and repayment structure are matched to the purpose and cash flows.",
+   example:["A manufacturer borrows Rs 2 crore over 7 years to install a new production line, repaying fixed monthly EMIs as the line generates output.","A term loan for a warehouse purchase includes a 12-month moratorium so repayment starts once the facility is operational and earning."],
+   watch:"Funding a long-lived asset with a short-tenure facility (or a working-capital line) creates a repayment cliff — the asset earns over years but the loan is due in one. Match tenure to the asset's cash-flow life, not to whatever facility is quickest to get."},
+
+  {cat:"products", name:"Working Capital Finance", hook:"Money to fund the day-to-day gap between paying suppliers and getting paid by customers.",
+   def:"Working capital finance funds a business's operating cycle — the cash tied up in inventory and receivables before customers pay. The working-capital cycle is the time from paying for raw materials, to holding stock, to selling on credit, to finally collecting cash; the longer the cycle, the more financing the business needs to keep running. Unlike a term loan for assets, working-capital facilities (cash credit, overdraft, bill discounting) fund recurring operations and are typically short-term and renewed annually. Assessing the need is a core credit exercise, often benchmarked to projected turnover.",
+   example:["A textile trader buys yarn in bulk, holds it 60 days, sells on 45-day credit — that ~105-day cash gap is exactly what a working-capital limit funds so operations don't stall.","Under the widely-used Nayak committee norm, a bank may size the working-capital limit at 20% of a unit's projected annual turnover as a simple benchmark for smaller borrowers."],
+   watch:"Using working-capital money to buy fixed assets ('diversion of funds') is a classic red flag — it starves operations and mismatches tenure. Banks monitor end-use precisely because short-term operating money quietly funding long-term assets is how borrowers get into trouble."},
+
+  {cat:"products", name:"Cash Credit (CC)", hook:"A revolving working-capital limit drawn against your stock and receivables.",
+   def:"Cash Credit is a working-capital facility where the bank sanctions a limit and the borrower draws, repays and redraws within it as operations demand — a revolving line, typically renewed annually. The limit is secured by hypothecation of current assets (stock and book debts), and the amount you can actually draw at any time — the drawing power — is recomputed from periodic stock statements (a common formula being a percentage of book debts plus a percentage of stock, net of margin). Interest is charged only on the amount used, on a daily reducing balance. CC is the workhorse of Indian SME working-capital lending.",
+   example:["A trader with a Rs 1 crore CC limit submits a monthly stock statement; if stock and debtors fall, drawing power drops below the limit and available credit shrinks accordingly.","During a festive stock build-up the borrower draws close to the full limit, then repays as sales convert to cash — the line breathing with the operating cycle."],
+   watch:"Drawing power is not the sanctioned limit — it floats with your actual current assets. A borrower who assumes the full limit is always available gets caught when a lean stock statement cuts drawing power; stale or inflated stock statements are exactly what monitoring exists to catch."},
+
+  {cat:"products", name:"Overdraft (OD) & CC-vs-OD", hook:"Flexible credit on your current account — similar to CC, but not the same thing.",
+   def:"An overdraft lets an account holder withdraw more than the balance in their current account, up to a sanctioned limit, with interest only on the amount overdrawn. The key distinctions from cash credit: an OD sits on an existing current/savings account (CC opens a dedicated loan account); an OD limit is usually assessed against security or financials (a fixed deposit, property) rather than recomputed from stock statements; and an OD can be used for general or even personal purposes, while CC is specifically working-capital finance tied to current assets. Both are revolving and charge interest only on utilisation.",
+   example:["A business keeps a Rs 20 lakh OD against a fixed deposit to smooth unpredictable short-term shortfalls, dipping in only when a large payment lands before receivables clear.","Where CC requires monthly stock statements to justify drawing power, the same borrower's OD against an FD needs no such statement — the security value governs the limit."],
+   watch:"Treating CC and OD as interchangeable misreads how the limit is controlled and priced. If the need is structured working capital against stock and debtors, CC fits; if it's flexible cover against a specific security, OD fits — and ODs are often costlier for the same exposure."},
+
+  {cat:"products", name:"Trade Finance Overview", hook:"The instruments that let businesses buy and sell — especially across borders — with less risk.",
+   def:"Trade finance is the set of products that facilitate domestic and international trade by bridging the trust gap between a buyer and a seller who may not know each other and sit in different jurisdictions. Its core problem: the exporter wants payment certainty before shipping; the importer wants delivery certainty before paying. Instruments like letters of credit, bank guarantees, and bill/invoice financing insert a bank's creditworthiness and financing between the parties, reducing counterparty and payment risk while unlocking working capital. For a lending PM, trade finance is a distinct, document-heavy domain with its own rules and stakeholders.",
+   example:["An importer and an overseas supplier who've never dealt before use a letter of credit so the bank, not the buyer's promise, backs payment on presentation of shipping documents.","An exporter discounts an accepted export bill to get cash immediately instead of waiting for the overseas buyer's 90-day payment term."],
+   watch:"Trade finance runs on documents, not goods — a bank pays against compliant paperwork, not against whether the shipment was actually good. That documentary nature is the whole point and the whole risk, and it's why these products need specialist handling rather than being bolted onto a generic loan flow."},
+
+  {cat:"products", name:"Letters of Credit (LC)", hook:"A bank's promise to pay the seller once shipping documents check out.",
+   def:"A letter of credit is a bank's undertaking to pay the seller (beneficiary) a specified amount once the seller presents documents that comply with the LC's terms — typically proof of shipment. It substitutes the bank's creditworthiness for the buyer's, giving the exporter payment assurance and the importer assurance that payment only releases against evidence of shipment. Crucially, an LC is a payment mechanism meant to be used in the normal course of trade: the bank expects to pay on a complying presentation. It is documentary — the bank examines documents, not the underlying goods.",
+   example:["An Indian importer opens an LC favouring a German machinery supplier; the supplier ships, presents compliant documents to its bank, and gets paid, with the importer's bank then recovering from the importer.","A discrepancy in the bill of lading (wrong port name) lets the bank refuse payment until the documents are corrected or the discrepancy is accepted — the documentary discipline in action."],
+   watch:"An LC is expected to be drawn on in ordinary trade — that is its purpose. Don't conflate it with a bank guarantee, which is a fallback triggered only if something goes wrong; mixing up the two mis-sells the product and misprices the risk."},
+
+  {cat:"products", name:"Bank Guarantees (BG) & SBLC", hook:"A bank's promise to pay only if the customer fails to perform — a safety net, not a payment rail.",
+   def:"A bank guarantee is the bank's commitment to pay the beneficiary if the bank's customer fails to meet a contractual obligation. Unlike a letter of credit, a BG is a fallback: it is triggered only on default or non-performance, and in normal circumstances it is never drawn. Common types include performance guarantees (backing a contractor's delivery), bid/tender guarantees, and advance-payment guarantees. A Standby Letter of Credit (SBLC) is functionally similar — a guarantee dressed in LC clothing, common in international/US contexts — paying the beneficiary only if the applicant defaults on the underlying obligation.",
+   example:["A construction firm gives its client a performance guarantee for Rs 50 lakh; the bank pays the client only if the firm fails to complete the project as contracted.","An exporter provides an SBLC to a foreign buyer as assurance — invoked solely if the exporter doesn't deliver, otherwise it simply expires unused."],
+   watch:"The mental model is the opposite of an LC: an LC is meant to be paid, a BG/SBLC is meant not to be. Sell a guarantee where the customer needs assured payment, or an LC where they need default protection, and you've handed them the wrong instrument for the risk they actually face."},
+
+  {cat:"products", name:"Bill Discounting & Invoice Financing", hook:"Turn an unpaid invoice into cash today instead of waiting 60 days.",
+   def:"Bill discounting (and invoice/receivable financing) advances a business cash against its receivables before the customer actually pays. In bill discounting, the bank advances funds against a bill of exchange or an accepted invoice at a discount to face value, and the business repays when the customer settles — collection responsibility typically staying with the business. This converts locked-up receivables into immediate working capital, easing the cash-flow strain of selling on credit. In India, RBI-regulated TReDS platforms let MSMEs discount approved invoices competitively from multiple financiers, tackling the delayed-payment problem directly.",
+   example:["A supplier to a large manufacturer discounts a Rs 30 lakh 60-day invoice to receive most of the cash now, repaying when the manufacturer pays on day 60.","An MSME uploads a buyer-approved invoice to a TReDS platform and receives competitive bids from several banks to finance it, improving on its single-bank rate."],
+   watch:"Discounting eases a cash-flow gap but doesn't remove the credit risk of the underlying buyer — if the buyer doesn't pay, the business (in with-recourse discounting) is still on the hook. It's a timing tool, not a way to offload a weak debtor."},
+
+  {cat:"products", name:"SME vs MSME Lending & the MSME Definition", hook:"In India, whether a borrower is 'MSME' changes the rules, the rates, and the regulator's priority.",
+   def:"MSME is a regulatory classification, not just a size label. Effective 1 April 2025, RBI/Government thresholds define a Micro enterprise as investment in plant & machinery up to Rs 2.5 crore and turnover up to Rs 10 crore; Small as up to Rs 25 crore investment and Rs 100 crore turnover; Medium as up to Rs 125 crore investment and Rs 500 crore turnover. The classification matters because MSME lending qualifies for Priority Sector Lending (PSL) targets, comes with borrower protections (collateral-free cover up to Rs 10 lakh for micro & small units, a credit decision within 14 working days for MSE loans up to Rs 25 lakh), and requires Udyam registration to access benefits. 'SME' is the looser business term; 'MSME' is the defined regulatory bucket.",
+   example:["A firm with Rs 8 crore turnover and Rs 2 crore in machinery is a Micro enterprise post-April-2025 and its loan can count toward the bank's priority-sector target.","Because a Rs 8 lakh loan to a micro unit qualifies as collateral-free under the norm, the product flow must not demand security — a rule the PM has to encode, not the RM to remember."],
+   watch:"MSME thresholds were revised upward in 2025 and can change again — hard-coding old limits (or the pre-2025 numbers) mis-classifies borrowers and breaches the norm. Treat the classification as a configurable rule tied to the current gazette, and confirm the live figures before relying on them."},
+
+  // ---------- PROCESS ----------
+  {cat:"process", name:"Loan Origination System (LOS)", hook:"The software backbone that carries a loan from application to disbursement.",
+   def:"A Loan Origination System is the platform that digitises and manages the entire loan application-to-disbursement journey. It orchestrates the stages — application capture, KYC and documentation, credit assessment, underwriting, approval/sanction, and disbursement — enforcing the workflow, business rules, and audit trail along the way. A good LOS reduces manual data entry, standardises the credit process, cuts turnaround time, and gives everyone one source of truth for a case. For a lending PM, the LOS is often the core product: most feature work is about making one of its stages faster, more accurate, or more compliant.",
+   example:["An LOS auto-routes a completed application to the right approval authority based on loan amount, enforcing the delegation matrix so nothing is sanctioned above someone's limit.","Because the LOS holds the full audit trail of who did what and when, an auditor can reconstruct any sanction decision months later — a control the business depends on."],
+   watch:"An LOS is only as good as the rules and data feeding it — automating a broken or non-compliant process just makes bad decisions faster. The PM's job is to fix the process and the rules first, then digitise; a slick LOS over a flawed credit policy is a liability."},
+
+  {cat:"process", name:"The Origination Lifecycle", hook:"The end-to-end journey every loan travels — the map the PM must know cold.",
+   def:"The origination lifecycle is the ordered path a loan takes: lead/application, KYC and documentation, credit assessment and underwriting, sanction/approval, disbursement, and then servicing and monitoring. Each stage has an owner, a system action, a set of inputs, and exit criteria that gate the next stage. Understanding it end-to-end is foundational for a lending PM because almost every requirement, metric and stakeholder maps to a specific stage — 'reduce TAT' means nothing until you know which stage the time is lost in, and 'improve accuracy' means nothing until you know which stage owns the decision.",
+   example:["A drop-off analysis pins delay to the gap between documentation and credit assessment, so the fix targets document readiness, not the credit model.","Mapping owners to stages shows compliance gates KYC while credit gates underwriting — clarifying who must sign off before a loan advances."],
+   watch:"Optimising one stage in isolation can just move the bottleneck downstream — speed up application capture and you flood a credit team that's now the constraint. Improve the lifecycle as a flow, watching where the queue actually forms, not stage by stage in a vacuum."},
+
+  {cat:"process", name:"Credit Assessment & Underwriting", hook:"The core judgement: can this borrower repay, and on what terms?",
+   def:"Credit assessment is the analysis of a borrower's ability and willingness to repay; underwriting is the decision that follows — approve, decline, or approve with conditions and a price. It combines financial-statement analysis (spreading the accounts, ratios, cash flows), the borrower's credit history (bureau pull), the purpose and structure of the loan, and the collateral. The output is usually a credit appraisal memo and a proposed limit, rate, and covenants. This is the intellectual heart of lending: it's where risk is priced and where a bank makes or loses money over the cycle.",
+   example:["An underwriter spreads three years of financials, notes a deteriorating current ratio, and approves a smaller working-capital limit with a tighter covenant than requested.","A strong bureau score and clean banking conduct let a well-run MSME clear a faster, lighter-touch assessment than a first-time borrower with thin history."],
+   watch:"Assessment is about repayment capacity first, collateral second — lending against security while ignoring cash flow ('collateral will cover it') is how banks end up owning assets they never wanted. Security is a fallback, not a substitute for a borrower who can actually service the loan."},
+
+  {cat:"process", name:"The 5 Cs of Credit", hook:"The timeless checklist underwriters run on every borrower.",
+   def:"The 5 Cs are the classic framework for evaluating creditworthiness. Character (the borrower's track record and integrity — credit history, reputation). Capacity (the ability to repay from cash flows — the single most important C). Capital (the borrower's own skin in the game). Collateral (security the bank can fall back on). Conditions (the purpose of the loan and the external environment — industry, economy, rates). Together they give a structured, holistic view rather than fixating on any one number. For a lending PM, the 5 Cs are the mental model behind what data the assessment stage must actually capture.",
+   example:["A borrower with excellent character and capacity but thin collateral might still be approved unsecured under the MSE collateral-free norm, because capacity carries the decision.","Strong financials (capacity) undercut by a downturn in the borrower's industry (conditions) leads the underwriter to trim the limit and shorten the tenure."],
+   watch:"The 5 Cs are weighted, not equal — capacity to repay from cash flow dominates, and a great score on the other four can't rescue a borrower who structurally can't generate the cash to service the loan. Underwriters who over-index on collateral or character miss the C that actually causes defaults."},
+
+  {cat:"process", name:"Working-Capital Assessment & the 20% Norm", hook:"How much working capital a borrower genuinely needs — sized, not guessed.",
+   def:"Working-capital assessment sizes the limit a borrower needs to fund its operating cycle, based on projected turnover, the length of the cash cycle, and the margin the borrower brings from its own funds. A widely-used simplification for smaller units is the Nayak committee (turnover) method: working-capital finance is assessed at 25% of projected annual turnover, of which the borrower contributes 5% as margin and the bank funds the balance — meaning the bank's working-capital limit works out to roughly 20% of projected turnover. Larger borrowers get more granular methods (maximum permissible bank finance), but the turnover benchmark remains a fast sanity check.",
+   example:["For a unit projecting Rs 5 crore turnover, the turnover method points to about Rs 1 crore of bank working-capital finance (20% of turnover), with the borrower bringing 5% margin.","An assessed limit far above 20% of turnover prompts the credit officer to question whether projections are inflated or the cash cycle is unusually long."],
+   watch:"The 20%-of-turnover figure is a benchmark for smaller borrowers, not a universal entitlement — inflated turnover projections quietly inflate the limit. The assessment must test the projections and the actual cash-cycle length, or the norm just launders an over-ask into a sanction."},
+
+  {cat:"process", name:"The Sanction / Approval Decision", hook:"The governed moment a bank formally commits to lend, and on what terms.",
+   def:"Sanction is the formal approval of the loan by the authority empowered to grant it, per the bank's delegation-of-powers matrix — a small loan may be sanctioned by a branch official, a large one by a committee. The sanction sets the limit, the interest rate/margin, the security, the covenants, and any conditions precedent. It's issued as a sanction letter the borrower accepts. This stage is deliberately governed: who can approve how much is a control, and the LOS enforces the routing so nothing is sanctioned beyond an individual's authority.",
+   example:["A Rs 3 crore proposal exceeds the branch head's Rs 1 crore authority, so the LOS routes it to a regional credit committee for sanction.","The sanction letter stipulates a condition precedent — the borrower must create a charge on stock before disbursement — which the next stage must verify."],
+   watch:"A sanction is a conditional commitment, not a disbursement — conditions precedent and security perfection still gate the actual money. Blurring sanction and disbursement in the product flow lets funds move before controls are satisfied, which is exactly the kind of gap audits and losses exploit."},
+
+  {cat:"process", name:"Loan Disbursement", hook:"Money actually moves — but only after every pre-condition is cleared.",
+   def:"Disbursement is the release of funds once the sanction is accepted and all conditions precedent (documentation, security creation/perfection, legal formalities, margin brought in) are satisfied. For a term loan it may be a lump sum or tranches tied to project milestones, sometimes paid directly to a supplier; for a working-capital limit, disbursement means the CC/OD limit is set live for the borrower to draw against. Operations executes it, legal confirms security is perfected, and compliance signs off. It is the point of no return, so the checklist discipline before it is heavy.",
+   example:["A term loan for machinery is disbursed directly to the equipment vendor against a proforma invoice, ensuring end-use and preventing diversion.","A working-capital sanction only goes live after the charge on current assets is registered and the borrower's margin contribution is verified."],
+   watch:"Disbursing before conditions precedent are genuinely met — 'we'll get the security paperwork later' — is a classic control failure that turns a secured loan into an unsecured one overnight. The pre-disbursement checklist exists precisely because money is hard to claw back once it's gone."},
+
+  {cat:"process", name:"Loan Servicing & Monitoring", hook:"The loan isn't 'done' at disbursement — the longest stage is watching it perform.",
+   def:"Servicing and monitoring is the post-disbursement management of the loan across its life: collecting repayments, tracking utilisation, reviewing periodic stock statements (for CC), checking covenant compliance, renewing working-capital limits annually, and watching for signs of stress. It's where most of a loan's life is spent and where problems are caught early or missed expensively. For a lending PM, this stage is a rich product surface — automating stock-statement analysis, covenant tracking, renewal reminders, and early-warning alerts turns a manual, easy-to-miss process into a systematic one.",
+   example:["The system flags a working-capital account whose limit is due for annual renewal in 30 days, prompting the RM to initiate the review before the limit lapses.","Monitoring catches a borrower's current ratio breaching a covenant threshold, triggering a review well before any payment is actually missed."],
+   watch:"Monitoring is where good loans quietly go bad unnoticed — a bank that assesses rigorously at origination but monitors loosely afterwards discovers stress only when a payment is missed, far too late. The value of early-warning is entirely in catching the drift before it becomes a default."},
+
+  {cat:"process", name:"Covenants, Early-Warning & NPA Basics", hook:"The tripwires that tell a bank a loan is heading for trouble.",
+   def:"Covenants are conditions in the loan agreement the borrower must maintain (financial ratios, submitting statements on time, not taking on more debt) — breaching one is an early signal of stress. Early-warning signals (EWS) are broader red flags: delayed payments, falling stock, diversion of funds, adverse news. RBI's SMA framework formalises the runway to default: an account overdue 1–30 days is SMA-0, 31–60 days SMA-1, 61–90 days SMA-2 — and if principal or interest stays overdue beyond 90 days, the account becomes a Non-Performing Asset (NPA) on the 91st day. The SMA ladder exists so banks intervene before the NPA cliff.",
+   example:["A covenant requiring the current ratio to stay above 1.2 is breached; the EWS system flags it and the RM engages the borrower before any instalment is missed.","An account slips from SMA-1 to SMA-2 as overdue days cross 60; collections escalates, because at 90 days it becomes an NPA with full provisioning consequences."],
+   watch:"NPA classification is objective and time-based — 90 days overdue and the account tips regardless of the RM's optimism about the relationship. The SMA stages are the actionable window; a bank that treats them as mere reporting rather than a prompt to act just documents its way to the NPA it could have prevented."},
+
+  // ---------- STAKEHOLDERS ----------
+  {cat:"stakeholders", name:"Coordinating Credit, Ops, Risk & Compliance", hook:"A lending product only ships when five functions with different mandates all agree.",
+   def:"A commercial-lending PM works across a web of functions, each with its own mandate: the Relationship Manager (owns the customer and the revenue), Credit/Underwriting (owns the lending decision), Operations (executes disbursement and servicing), Risk (owns portfolio and policy risk), and Compliance (owns regulatory and KYC/AML adherence). These groups often want different things — RM wants speed, Risk wants caution, Compliance wants controls — and a feature is only shippable when all their constraints are satisfied. The PM's job is to map who owns what, involve them at the right stage, and broker a design that works for all.",
+   example:["A faster-onboarding feature needs Compliance to sign off on the KYC shortcut, Risk on the auto-approval limit, and Ops on the disbursement change — the PM runs all three in parallel, not one after another.","When Credit and RM disagree on how much to automate an approval, the PM frames the trade-off (speed vs risk) with data so the decision is explicit, not a turf fight."],
+   watch:"Treating any of these functions as a late 'sign-off' rather than an early design partner guarantees rework — a build that Compliance rejects in UAT wastes a whole cycle. Map the owners at requirements time and bring the sceptical function (usually Risk or Compliance) in first, not last."},
+
+  {cat:"stakeholders", name:"Business-to-Tech Translation", hook:"The PM's signature skill: turning credit-speak into buildable requirements and back.",
+   def:"Translating business needs into functional requirements is the core of the role: taking what credit, risk and RMs express in banking language ('we need to tighten drawing-power monitoring') and converting it into precise, buildable specifications engineering can implement ('recompute DP nightly from the latest stock statement using this formula, flag any account where DP has fallen more than X% month-on-month'). It runs both ways — the PM also translates technical constraints and trade-offs back into business terms so credit and risk can make informed calls. This bilingual role is why the job needs someone fluent in both lending and product.",
+   example:["Credit says 'stop lending to stressed accounts'; the PM translates it into a concrete rule — block new disbursement to any borrower currently classified SMA-2 — that engineering can actually build and test.","Engineering flags that a real-time bureau call adds latency; the PM translates that into a business choice about acceptable TAT so credit decides the trade-off, not the developer."],
+   watch:"A requirement that's still in business language ('make it smarter') isn't a requirement — it's a wish, and engineering will fill the gap with guesses. The translation isn't done until every rule is specific and testable, and until the business has confirmed the PM's interpretation matches their intent."},
+
+  {cat:"stakeholders", name:"Managing Conflicting Priorities", hook:"Speed vs risk, revenue vs control — the PM's job is to make the trade-off explicit.",
+   def:"In lending, stakeholder priorities structurally conflict: the business wants faster approvals and more volume, Risk and Compliance want tighter controls and lower losses, engineering wants clean architecture and manageable scope. The PM can't make these tensions disappear, but can surface them, frame the trade-off with data, and drive an explicit decision rather than letting the loudest voice or the last email win. Good prioritisation here means naming what's being traded (a day of TAT for a control, or a control for a day of TAT) and getting the accountable owner to decide on the record.",
+   example:["Sales wants instant approval; Risk wants a manual check on every loan above Rs 1 crore. The PM proposes auto-approval below a data-justified threshold and manual review above it — satisfying both by segmenting.","Two teams both want the next sprint; the PM ranks by a shared measure (regulatory deadline first, then impact) so the choice is defensible, not political."],
+   watch:"Silently resolving a conflict by picking a side stores up trouble — the overruled stakeholder resurfaces it in UAT or in production. Make the trade-off visible and get the decision owned by the accountable person; the PM facilitates the call, but doesn't secretly make it and hope no one notices."},
+
+  {cat:"stakeholders", name:"The RM as Voice of the Customer", hook:"In commercial lending, the Relationship Manager is your closest proxy for the borrower.",
+   def:"Unlike consumer products where the PM can watch thousands of end users, commercial lending is intermediated: the Relationship Manager sits between the bank and the business borrower, owns the relationship, and is often the richest, fastest source of customer insight the PM has. RMs know where the journey frustrates borrowers, which documents cause friction, and why deals stall. Treating the RM as a primary user — and their pain as product signal — is how a lending PM does customer discovery. But the RM has their own incentives (speed, volume), so their voice is invaluable and needs triangulating against actual borrower and portfolio data.",
+   example:["RMs report that borrowers abandon at document upload because the checklist is unclear — a discovery insight the PM acts on to simplify the requirement list.","An RM's push for instant approval is triangulated against portfolio data showing rushed approvals correlate with higher early delinquency, tempering the ask."],
+   watch:"The RM is a proxy, not the customer, and carries a sales incentive — taking their word as the full truth biases the product toward speed and volume over portfolio health. Use the RM for rich qualitative signal, but validate against borrower behaviour and loan-performance data before building to their ask."},
+
+  // ---------- AI ----------
+  {cat:"ai", name:"Generative AI Concepts", hook:"Models that produce new text, summaries and drafts — useful, but not a decision engine.",
+   def:"Generative AI refers to models (typically large language models) that create new content — text, summaries, code, drafts — by predicting likely continuations from patterns learned in training data. In banking, its sweet spots are language-heavy, low-stakes-per-instance tasks: summarising a long credit file, drafting a first-cut credit memo, answering an RM's policy question, or explaining a rejection in plain language. It is a productivity layer over knowledge work, not an autonomous decision-maker. A lending PM needs to know what it's genuinely good at (drafting, summarising, retrieving) and what it must not be trusted to do alone (final credit decisions, anything requiring guaranteed factual accuracy).",
+   example:["A GenAI assistant summarises a 40-page borrower financial file into a one-page brief the underwriter reviews, saving reading time while the human keeps the decision.","An RM asks a policy chatbot 'what's the collateral-free limit for a micro unit?' and gets a drafted answer with a link to the source policy to verify."],
+   watch:"Generative models can produce confident, fluent, wrong answers (hallucinations) — deploying one to state a regulatory limit or make a credit call without a human check invites a costly error dressed as authority. Use it to draft and summarise for a human, never to decide or to be the sole source of a compliance-critical fact."},
+
+  {cat:"ai", name:"Machine Learning Fundamentals", hook:"Models that learn patterns from data to predict — the engine behind credit scoring.",
+   def:"Machine learning is the branch of AI where models learn patterns from historical data to make predictions on new cases, rather than following hand-coded rules. In lending its classic use is credit scoring and decisioning: a model trained on past borrowers and their repayment outcomes predicts the default risk of a new applicant. Related uses include propensity models (who's likely to want a loan) and early-warning models (who's likely to slip into stress). The key ideas a PM must hold: models are only as good as their training data, they predict correlation not guaranteed outcomes, and they can encode bias from historical lending patterns.",
+   example:["An ML scoring model ranks incoming MSME applications by predicted default risk, letting the bank fast-track low-risk cases and focus underwriters on the ambiguous middle.","An early-warning model trained on past stressed accounts flags a currently-performing borrower whose transaction pattern resembles pre-default behaviour."],
+   watch:"A model trained on historically biased lending can quietly perpetuate that bias against segments the bank underserved before — and 'the model said so' is not a defensible reason to deny credit under fair-lending scrutiny. Explainability and bias testing aren't optional niceties in regulated lending; they're conditions of deployment."},
+
+  {cat:"ai", name:"AI Document Processing (OCR/IDP)", hook:"Reading and extracting data from KYC and financial documents automatically.",
+   def:"Intelligent Document Processing combines OCR (optical character recognition — turning images of documents into text) with machine learning to extract, classify and validate structured data from the unstructured documents lending drowns in: PAN cards, GST returns, bank statements, financial statements, invoices. Instead of an ops person re-keying figures from a PDF, IDP reads them, populates the LOS, and can cross-check them (does the name on the PAN match the application?). It's one of the highest-ROI AI applications in lending because document handling is high-volume, manual, error-prone, and sits on the critical path to turnaround time.",
+   example:["IDP extracts turnover and profit figures directly from an uploaded financial statement into the credit module, removing a manual re-keying step and its transcription errors.","An OCR check reads a bank statement and auto-computes average balances and bounce counts, feeding the working-capital assessment without human data entry."],
+   watch:"Extraction accuracy varies with document quality — a blurry scan or a non-standard format can produce silently wrong figures that flow into a credit decision. IDP needs confidence thresholds and human review on low-confidence extractions; automating the easy 80% is the win, blindly trusting the hard 20% is the trap."},
+
+  {cat:"ai", name:"Chatbots & Virtual Assistants", hook:"Conversational interfaces for RMs and borrowers — great for FAQs, wrong for decisions.",
+   def:"Chatbots and virtual assistants are conversational interfaces that answer questions and guide users through tasks. In lending they serve two audiences: borrowers (application status, document checklists, basic product questions) and internal users like RMs (policy lookups, process guidance). Modern versions layer generative AI over the bank's own knowledge base to give natural-language answers. Done well, they deflect routine queries, are available 24/7, and free humans for judgement work. Their right scope is informational and transactional-guidance tasks — not making or communicating binding credit decisions.",
+   example:["A borrower-facing bot answers 'what documents do I need for a working-capital loan?' and shows application status, deflecting calls from RMs and branches.","An internal assistant lets an RM ask 'is a Rs 8 lakh micro-unit loan collateral-free?' and returns the policy answer with a citation to verify."],
+   watch:"A chatbot confidently answering outside its knowledge — quoting a rate that's changed, or implying an approval — creates real liability and erodes trust fast. Scope it tightly to informational and status tasks, ground it in verified sources, and hand off to a human the moment the query touches a binding decision."},
+
+  {cat:"ai", name:"Spotting Real AI Value in Lending", hook:"The PM's judgement: where AI genuinely improves CX or efficiency — and where it's just hype.",
+   def:"The most valuable AI skill for a lending PM isn't building models — it's judging where AI actually earns its place. Genuine value shows up where a task is high-volume, repetitive, language- or pattern-heavy, and currently a bottleneck or error source: document extraction, first-pass credit scoring, early-warning detection, query deflection, collections prioritisation. AI is a poor fit where the task is low-volume, demands guaranteed accuracy or full explainability, is the final binding decision, or where a simple rule would do the job more transparently. The discipline is asking 'what problem does this solve and is AI the cheapest reliable way to solve it?' before reaching for the model.",
+   example:["Automating KYC document extraction (high-volume, manual, on the critical path) is real value; adding an AI chatbot to a rarely-used treasury screen is hype with a maintenance cost.","Using an early-warning model to prioritise which of 10,000 accounts a monitoring team reviews first is high-leverage; using AI to make the final NPA classification — which is objective and time-based — solves a problem that doesn't exist."],
+   watch:"'Add AI' is a solution in search of a problem when it leads. Start from the operational bottleneck or the CX pain, and often the honest answer is a better rule, a cleaner integration, or fixing the data — not a model. The PM who can say 'AI doesn't help here' is more valuable than one who bolts it onto everything."},
+];
+
+const SCENARIOS = [
+  {q:"An importer has never dealt with a new overseas supplier and wants payment to release only once goods are proven shipped. Which product fits?",
+   options:["Bank Guarantee","Letter of Credit","Cash Credit","Term Loan"], correct:1,
+   why:"Letter of Credit — the bank pays the seller against compliant shipping documents, substituting the bank's creditworthiness for the buyer's. An LC is meant to be drawn in normal trade; a BG is a fallback for default.", cat:"products"},
+
+  {q:"A trader needs a revolving limit to fund seasonal stock, secured against inventory and receivables, with drawing power recomputed from monthly stock statements. This is:",
+   options:["Overdraft","Cash Credit","Bill Discounting","Bank Guarantee"], correct:1,
+   why:"Cash Credit — a revolving working-capital line secured by hypothecation of current assets, where drawing power floats with stock and book debts reported in periodic stock statements.", cat:"products"},
+
+  {q:"A credit head asks the PM for 'auto-approval'. What's the right first move?",
+   options:["Build a one-click approve button","Gather requirements to find the real constraint (which loans, what limits, what policy rules)","Add an AI model to decide","Ship it to a pilot immediately"], correct:1,
+   why:"Requirement gathering — 'auto-approval' is a solution, not a requirement. The real need is usually to auto-approve only low-risk cases within a policy threshold and route the rest to humans. Building the button first encodes the wrong thing.", cat:"pmcore"},
+
+  {q:"An MSME account's principal has been overdue for 75 days. How is it classified, and what should happen?",
+   options:["Already an NPA — write it off","SMA-2 — escalate, it becomes an NPA at 90+ days overdue","Perfectly healthy","SMA-0 — no action needed"], correct:1,
+   why:"SMA-2 (overdue 61–90 days). It becomes an NPA only if overdue beyond 90 days (on the 91st day). SMA-2 is the last actionable window before the NPA cliff, so collections should escalate now.", cat:"process"},
+
+  {q:"A unit projects Rs 5 crore annual turnover. Using the turnover (Nayak) method as a quick benchmark, the bank's working-capital limit is roughly:",
+   options:["Rs 5 crore","About Rs 1 crore (20% of turnover)","Rs 2.5 crore","Rs 25 lakh"], correct:1,
+   why:"About Rs 1 crore — the turnover method assesses working capital at 25% of projected turnover, with the borrower bringing 5% margin, leaving the bank funding roughly 20% of turnover.", cat:"process"},
+
+  {q:"A borrower wants Rs 2 crore to install a new production line that will generate returns over 7 years. The right facility is:",
+   options:["Cash Credit","Overdraft","Term Loan","Letter of Credit"], correct:2,
+   why:"Term Loan — a long-lived asset should be funded over its useful life with scheduled repayment. Funding it with a working-capital line creates a repayment cliff and mismatches tenure to cash flows.", cat:"products"},
+
+  {q:"A contractor must assure a client it will complete a project, with the bank paying the client only if the contractor fails. Which instrument?",
+   options:["Letter of Credit","Performance Bank Guarantee","Cash Credit","Bill Discounting"], correct:1,
+   why:"Performance Bank Guarantee — a BG pays the beneficiary only on the customer's default or non-performance. It's a safety net meant not to be drawn, the opposite of an LC which is meant to be paid in normal trade.", cat:"products"},
+
+  {q:"During assessment, a borrower has weak collateral but strong cash flows and clean credit history. Which 'C' should carry the most weight?",
+   options:["Collateral","Capacity","Conditions","Capital"], correct:1,
+   why:"Capacity — the ability to repay from cash flow is the dominant C. Collateral is a fallback, not a substitute; lending on security while ignoring cash flow is how banks end up owning assets they never wanted.", cat:"process"},
+
+  {q:"A supplier has a Rs 30 lakh invoice due in 60 days but needs cash now, keeping collection responsibility itself. Best fit?",
+   options:["Term Loan","Bill Discounting","Bank Guarantee","Overdraft"], correct:1,
+   why:"Bill Discounting — the bank advances cash against the receivable at a discount, and the business repays when its customer pays. In India, TReDS platforms let MSMEs discount approved invoices competitively.", cat:"products"},
+
+  {q:"A team wants to add an AI chatbot to a rarely-used treasury screen. As PM, your read is:",
+   options:["Great — always add AI","Likely hype: low volume, maintenance cost, no real bottleneck solved","Ship it to look innovative","AI is never useful in banking"], correct:1,
+   why:"Likely hype — genuine AI value appears where tasks are high-volume, repetitive and on the critical path (like KYC extraction). A rarely-used screen isn't a bottleneck; 'add AI' as the lead is a solution hunting for a problem.", cat:"ai"},
+
+  {q:"A faster-onboarding feature touches a KYC shortcut, an auto-approval limit, and a disbursement change. The PM should involve Compliance and Risk:",
+   options:["At UAT sign-off","Early, as design partners at requirements time","Only if the build fails","Never — that's engineering's job"], correct:1,
+   why:"Early as design partners — treating Risk and Compliance as late sign-offs guarantees rework when they reject the build in UAT. Bring the sceptical functions in first so their constraints shape the design.", cat:"stakeholders"},
+
+  {q:"IDP is extracting figures from uploaded financial statements. A scan comes in blurry and non-standard. The safe design is:",
+   options:["Trust every extraction equally","Route low-confidence extractions to a human for review","Reject all AI extraction","Disburse without checking"], correct:1,
+   why:"Human review on low-confidence extractions — IDP accuracy varies with document quality, and a silently wrong figure can flow into a credit decision. Automate the confident majority; gate the low-confidence cases with a human.", cat:"ai"},
+
+  {q:"Credit says 'stop lending to stressed accounts.' The PM's job is to turn this into:",
+   options:["A vague goal for engineering to interpret","A specific, testable rule (e.g. block new disbursement to any borrower currently SMA-2)","An AI model that decides on its own","A slide for the next review"], correct:1,
+   why:"A specific testable rule — business-to-tech translation isn't done until the ask is precise enough for engineering to build and QA to test, and the business has confirmed it matches their intent. 'Stressed' must become a defined classification.", cat:"stakeholders"},
+
+  {q:"A new drawing-power engine passes all unit tests and the build succeeds. Before going live to real loans, the PM insists on:",
+   options:["Immediate full launch","Structured UAT with real historical cases, then a phased rollout","Skipping UAT to hit the date","Letting engineering decide go-live"], correct:1,
+   why:"UAT plus phased rollout — 'the build succeeded' isn't 'the business accepts it'. In lending a mis-computed limit reaches real money, so business validation on real cases and a reversible, phased release are the seatbelt.", cat:"pmcore"},
+
+  {q:"Mid-sprint, an RM requests a 'small' extra rule be added to the current sprint. The right response is:",
+   options:["Add it immediately, it's small","Add it to the backlog for the next sprint to protect the commitment","Cancel the sprint","Ignore the RM"], correct:1,
+   why:"Backlog for next sprint — scope creep quietly breaks the sprint commitment and pushes out what was promised. The timebox only means something if new asks are queued, not injected mid-sprint.", cat:"agile"},
+
+  {q:"A firm has Rs 8 crore turnover and Rs 2 crore in plant & machinery (post-April-2025). It is classified as:",
+   options:["Not an MSME","A Micro enterprise","A Medium enterprise","A large corporate"], correct:1,
+   why:"Micro — under the thresholds effective 1 April 2025, Micro is investment up to Rs 2.5 crore and turnover up to Rs 10 crore. This matters because its loan qualifies for Priority Sector Lending and borrower protections.", cat:"products"},
+];
+
+let state = {
+  view:"library", search:"", activeCat:"all", openIdx:null,
+  quizOrder:[], quizIndex:0, quizScore:0, quizAnswered:null, quizHistory:[], quizDone:false,
+  studioTool:"matcher",
+  mPurpose:null, mTenure:null, mSecured:null, mResult:false,
+  journeyStep:0,
+};
+
+function shuffledIndices(n){ const a=Array.from({length:n},(_,i)=>i); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+function resetQuiz(){ state.quizOrder=shuffledIndices(SCENARIOS.length); state.quizIndex=0; state.quizScore=0; state.quizAnswered=null; state.quizHistory=[]; state.quizDone=false; }
+resetQuiz();
+
+function catCounts(){ const c={}; ENTRIES.forEach(p=>{c[p.cat]=(c[p.cat]||0)+1;}); return c; }
+
+/* ---------------- LIBRARY ---------------- */
+function renderLibrary(){
+  const counts=catCounts();
+  const pills=Object.keys(CATS).map(c=>{
+    const active=state.activeCat===c;
+    return `<button class="pill" data-cat="${c}" data-active="${active}" onclick="setCat('${c}')">${CATS[c].icon} ${CATS[c].label} <span class="count">${counts[c]}</span></button>`;
+  }).join('');
+  const q=state.search.trim().toLowerCase();
+  const filtered=ENTRIES.filter(p=>{
+    const mc=state.activeCat==='all'||p.cat===state.activeCat;
+    const ms=!q||p.name.toLowerCase().includes(q)||p.hook.toLowerCase().includes(q)||p.def.toLowerCase().includes(q);
+    return mc&&ms;
+  });
+  const cards=filtered.map(p=>{
+    const idx=ENTRIES.indexOf(p);
+    return `<div class="card" data-cat="${p.cat}" tabindex="0" role="button" aria-label="Open details for ${p.name}"
+      onclick="openEntry(${idx})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEntry(${idx});}">
+      <span class="cat-tag" data-cat="${p.cat}">${CATS[p.cat].icon} ${CATS[p.cat].label}</span>
+      <h3>${p.name}</h3>
+      <p class="hook">${p.hook}</p>
+      <span class="explore-row">Open entry <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </div>`;
+  }).join('');
+  return `
+    <div class="lib-controls">
+      <div class="search-wrap">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8b9089" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="searchInput" type="text" placeholder="Search 36 concepts — try 'cash credit', '5 Cs', 'NPA', 'IDP'..." value="${state.search.replace(/"/g,'&quot;')}" oninput="setSearch(this.value)"/>
+      </div>
+    </div>
+    <div class="lib-controls pill-row">${pills}</div>
+    <p class="result-count">${filtered.length} concept${filtered.length===1?'':'s'} shown</p>
+    <div class="grid">${cards||'<div class="empty-state">No concepts match that search. Try a different keyword or clear the category filter.</div>'}</div>`;
+}
+function setCat(c){ state.activeCat=(state.activeCat===c)?'all':c; render(); }
+function setSearch(v){ state.search=v; render(true); }
+
+function openEntry(i){ state.openIdx=i; renderModal(); }
+function closeEntry(){ state.openIdx=null; renderModal(); }
+function renderModal(){
+  const root=document.getElementById('modalRoot');
+  if(state.openIdx===null){ root.innerHTML=''; return; }
+  const p=ENTRIES[state.openIdx];
+  const examples=p.example.map(e=>`<li>${e}</li>`).join('');
+  root.innerHTML=`
+    <div class="modal-overlay" onclick="if(event.target===this) closeEntry();">
+      <div class="modal" role="dialog" aria-modal="true" aria-label="${p.name} details">
+        <div class="modal-top">
+          <span class="cat-tag" data-cat="${p.cat}">${CATS[p.cat].icon} ${CATS[p.cat].label}</span>
+          <button class="modal-close" onclick="closeEntry()" aria-label="Close">&#10005;</button>
+        </div>
+        <h2>${p.name}</h2>
+        <p class="modal-hook">${p.hook}</p>
+        <div class="section-label">&#128214; What it means</div>
+        <p class="body-text">${p.def}</p>
+        <div class="section-label">&#9878; In practice</div>
+        <ul class="example-list">${examples}</ul>
+        <div class="section-label">&#9888; Watch out for</div>
+        <div class="watch-box"><strong>The trap:</strong> ${p.watch}</div>
+      </div>
+    </div>`;
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&state.openIdx!==null) closeEntry(); });
+
+/* ---------------- SCENARIOS ---------------- */
+function renderScenarios(){
+  if(state.quizDone){
+    const byCat={};
+    state.quizHistory.forEach(h=>{ byCat[h.cat]=byCat[h.cat]||{c:0,t:0}; byCat[h.cat].t++; if(h.correct)byCat[h.cat].c++; });
+    const breakdown=Object.keys(byCat).map(c=>`
+      <div class="bd-item"><div class="lbl">${CATS[c].icon} ${CATS[c].label}</div><div class="n">${byCat[c].c} / ${byCat[c].t}</div></div>`).join('');
+    const missed=state.quizHistory.filter(h=>!h.correct).map(h=>`
+      <div class="missed-item"><strong>${h.q}</strong><br/>&rarr; Correct: ${h.correctLabel}. ${h.why}</div>`).join('');
+    return `<div class="results">
+      <h2>Practice complete</h2>
+      <div class="big-score">${state.quizScore} / ${SCENARIOS.length}</div>
+      <p style="color:var(--ink-soft);">How you did across each area:</p>
+      <div class="breakdown">${breakdown}</div>
+      <button class="restart-btn" onclick="restartQuiz()">Practice again (new shuffle)</button>
+      ${missed.length?`<div class="missed-list"><h3>Review what you missed</h3>${missed}</div>`:`<p style="margin-top:20px;font-weight:600;">Perfect score — you can defend every one of these across the table. &#9878;</p>`}
+    </div>`;
+  }
+  const s=SCENARIOS[state.quizOrder[state.quizIndex]];
+  const pct=Math.round((state.quizIndex/SCENARIOS.length)*100);
+  const options=s.options.map((opt,i)=>{
+    let cls="option-btn",dis="";
+    if(state.quizAnswered!==null){ dis="disabled"; if(i===s.correct)cls+=" reveal-correct"; else if(i===state.quizAnswered)cls+=" incorrect"; }
+    return `<button class="${cls}" ${dis} onclick="answerQuiz(${i})">${opt}</button>`;
+  }).join('');
+  const feedback=state.quizAnswered!==null?`
+    <div class="feedback-box"><strong>${state.quizAnswered===s.correct?"✅ Correct — ":"❌ Not quite — "}</strong>${s.why}</div>
+    <button class="next-btn" onclick="nextQuiz()">${state.quizIndex===SCENARIOS.length-1?"See results":"Next scenario →"}</button>`:'';
+  return `<div class="scenario-wrap">
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <span class="score-chip">${state.quizIndex+1} / ${SCENARIOS.length} &middot; score ${state.quizScore}</span>
+    </div>
+    <div class="scenario-card">
+      <div class="scenario-eyebrow">Scenario &middot; ${CATS[s.cat].label}</div>
+      <p class="scenario-text">${s.q}</p>
+      <div class="options">${options}</div>
+      ${feedback}
+    </div></div>`;
+}
+function answerQuiz(i){
+  if(state.quizAnswered!==null) return;
+  const s=SCENARIOS[state.quizOrder[state.quizIndex]];
+  const correct=i===s.correct;
+  state.quizAnswered=i;
+  if(correct) state.quizScore++;
+  state.quizHistory.push({q:s.q, why:s.why, correct, correctLabel:s.options[s.correct], cat:s.cat});
+  render();
+}
+function nextQuiz(){ if(state.quizIndex===SCENARIOS.length-1){ state.quizDone=true; } else { state.quizIndex++; state.quizAnswered=null; } render(); }
+function restartQuiz(){ resetQuiz(); render(); }
+
+/* ---------------- STUDIO ---------------- */
+function renderStudio(){
+  const pills=`
+    <div class="studio-pills">
+      <button class="studio-pill ${state.studioTool==='matcher'?'active':''}" onclick="setStudio('matcher')">&#129518; Lending Product Matcher</button>
+      <button class="studio-pill ${state.studioTool==='journey'?'active':''}" onclick="setStudio('journey')">&#128736; Loan Origination Journey</button>
+    </div>`;
+  const body = state.studioTool==='matcher' ? renderMatcher() : renderJourney();
+  return pills + body;
+}
+function setStudio(t){ state.studioTool=t; render(); }
+
+const MATCH_PURPOSES=[
+  {id:'cashflow', ic:'🔄', label:'Bridge a recurring day-to-day cash-flow gap'},
+  {id:'inventory', ic:'📦', label:'Buy inventory / build up seasonal stock'},
+  {id:'import', ic:'🚢', label:'Import goods / pay an overseas supplier'},
+  {id:'capex', ic:'🏭', label:'Fund capex — machinery, plant, expansion'},
+  {id:'guarantee', ic:'🛡️', label:'Guarantee performance, a bid, or an advance'},
+  {id:'receivables', ic:'🧾', label:'Unlock cash stuck in unpaid invoices'},
+  {id:'flex', ic:'🌊', label:'Cover small, unpredictable shortfalls flexibly'},
+];
+const MATCH_TENURE=[
+  {id:'short', ic:'⏱️', label:'Short-term & revolving (renewed ~yearly)'},
+  {id:'long', ic:'📅', label:'Long-term & amortising (multi-year)'},
+];
+const MATCH_SECURED=[
+  {id:'secured', ic:'🔒', label:'Secured — collateral available'},
+  {id:'unsecured', ic:'🔓', label:'Prefer unsecured / limited collateral'},
+];
+
+function recommend(purpose, tenure, secured){
+  const map={
+    cashflow:{facility:'Cash Credit (CC)', chips:['Working capital','Revolving','Secured on current assets'],
+      why:'A recurring operating-cash gap is exactly what a Cash Credit line funds — a revolving working-capital limit secured by hypothecation of stock and receivables, where you draw and repay as the operating cycle demands and pay interest only on what you use.'},
+    inventory:{facility:'Cash Credit (CC)', chips:['Working capital','Drawing power on stock','Revolving'],
+      why:'Stocking up ties cash in inventory. Cash Credit funds that build-up against the stock itself — drawing power is recomputed from your stock statements, so the line breathes with the seasonal cycle and unwinds as stock converts to sales.'},
+    import:{facility:'Letter of Credit (LC)', chips:['Trade finance','Documentary','Payment assurance'],
+      why:'Paying an overseas supplier you may not fully trust is the classic Letter of Credit case — the bank pays the seller against compliant shipping documents, substituting its creditworthiness for yours and assuring both sides. Remember: an LC is meant to be drawn in normal trade.'},
+    capex:{facility:'Term Loan', chips:['Long-tenure','Scheduled EMIs','Asset-backed'],
+      why:'A long-lived asset should be funded over its useful life. A Term Loan disburses the amount upfront (often paid to the vendor for end-use control) and is repaid over a tenure matched to the cash flows the asset generates.'},
+    guarantee:{facility:'Bank Guarantee (BG) / SBLC', chips:['Contingent','Fallback only','Performance / bid'],
+      why:'You need to assure a counterparty you will perform, with the bank paying only if you default. That is a Bank Guarantee (or an SBLC internationally) — a contingent safety net meant not to be drawn, the mirror image of an LC which is meant to be paid.'},
+    receivables:{facility:'Bill Discounting / Invoice Financing', chips:['Receivables','Short-term','TReDS-eligible'],
+      why:'Cash locked in unpaid invoices can be unlocked by discounting them — the bank advances funds against the receivable at a discount and you repay when your customer pays. In India, RBI-regulated TReDS platforms let MSMEs discount approved invoices competitively.'},
+    flex:{facility:'Overdraft (OD)', chips:['Flexible','On current account','Interest on use'],
+      why:'Small, unpredictable shortfalls suit an Overdraft on your existing current account — you dip below zero up to a sanctioned limit only when needed, paying interest just on the amount overdrawn. Assessed against security or financials rather than stock statements.'},
+  };
+  const base=map[purpose];
+  const caveats=[];
+  if((purpose==='cashflow'||purpose==='inventory'||purpose==='flex') && tenure==='long'){
+    caveats.push('You chose a long tenure for a working-capital need. Working-capital facilities are short-term and renewed annually — if the requirement is genuinely structural and multi-year, consider a Working Capital Term Loan instead of, or alongside, the revolving line.');
+  }
+  if(purpose==='capex' && tenure==='short'){
+    caveats.push('You chose a short tenure for capex. Funding a multi-year asset with a ~1-year facility creates a repayment cliff — the asset earns over years but the money is due in one. Match tenure to the asset’s cash-flow life.');
+  }
+  if(purpose==='receivables' && tenure==='long'){
+    caveats.push('Discounting is inherently short-term (it matures when your customer pays). A long tenure suggests the underlying need might be structural working capital — revisit whether Cash Credit is the better fit.');
+  }
+  if(secured==='unsecured'){
+    if(purpose==='capex'||purpose==='cashflow'||purpose==='inventory'||purpose==='flex'){
+      caveats.push('You prefer unsecured. For Micro & Small enterprises, collateral-free cover under the RBI/CGTMSE norm reaches up to Rs 10 lakh; above that, banks typically want security or a guarantee. Confirm the current limit and the borrower’s MSE status.');
+    } else {
+      caveats.push('Trade-finance and guarantee facilities are usually backed by margin money or a charge even when “unsecured” in the collateral sense — clarify the margin and counter-guarantee the bank will require.');
+    }
+  }
+  if(secured==='secured' && (purpose==='cashflow'||purpose==='inventory')){
+    caveats.push('Since collateral is available, the CC will be secured by hypothecation of stock and book debts — drawing power is then recomputed from your periodic stock statements, so keep them current and honest.');
+  }
+  if(purpose==='guarantee'){
+    caveats.push('Do not confuse this with a Letter of Credit: a BG/SBLC pays only on default, an LC is expected to be paid in ordinary trade. Selling the wrong one misprices the risk.');
+  }
+  return {facility:base.facility, why:base.why, chips:base.chips, caveats};
+}
+
+function renderMatcher(){
+  const ready = state.mPurpose && state.mTenure && state.mSecured;
+  const optSet=(arr,sel,fn)=>arr.map(o=>`
+    <button class="m-opt ${sel===o.id?'sel':''}" onclick="${fn}('${o.id}')"><span class="ic">${o.ic}</span><span>${o.label}</span></button>`).join('');
+  let result='';
+  if(state.mResult && ready){
+    const r=recommend(state.mPurpose, state.mTenure, state.mSecured);
+    const chips=r.chips.map(c=>`<span class="rec-chip">${c}</span>`).join('');
+    const cav=r.caveats.map(c=>`<li>${c}</li>`).join('');
+    result=`
+      <div class="rec-card">
+        <div class="rec-eyebrow">Recommended facility</div>
+        <h3>${r.facility}</h3>
+        <div class="rec-chips">${chips}</div>
+        <p class="rec-why">${r.why}</p>
+        ${cav?`<ul class="rec-caveats">${cav}</ul>`:''}
+        <div class="rec-actions" style="margin-top:18px;">
+          <button class="ghost-btn" onclick="resetMatcher()">Start over</button>
+        </div>
+      </div>`;
+  }
+  return `
+    <p class="studio-intro"><strong>Lending Product Matcher.</strong> Answer three questions about the business need and get the facility that fits — with the reasoning and the caveats a credit officer would raise. This teaches the products block by doing: every path ends in a clear recommendation.</p>
+    <div class="q-block">
+      <div class="q-label"><span class="q-num">1</span> What is the money actually for?</div>
+      <div class="opt-grid">${optSet(MATCH_PURPOSES, state.mPurpose, 'setPurpose')}</div>
+    </div>
+    <div class="q-block">
+      <div class="q-label"><span class="q-num">2</span> What tenure and repayment shape?</div>
+      <div class="opt-grid">${optSet(MATCH_TENURE, state.mTenure, 'setTenure')}</div>
+    </div>
+    <div class="q-block">
+      <div class="q-label"><span class="q-num">3</span> Secured or unsecured?</div>
+      <div class="opt-grid">${optSet(MATCH_SECURED, state.mSecured, 'setSecured')}</div>
+    </div>
+    <div class="rec-actions">
+      <button class="primary-btn" ${ready?'':'disabled'} onclick="showRec()">Get recommendation</button>
+      <button class="ghost-btn" onclick="resetMatcher()">Clear</button>
+    </div>
+    ${!ready?`<p class="rec-hint">Pick one option in each of the three questions to unlock the recommendation.</p>`:''}
+    ${result}`;
+}
+function setPurpose(v){ state.mPurpose=v; state.mResult=false; render(); }
+function setTenure(v){ state.mTenure=v; state.mResult=false; render(); }
+function setSecured(v){ state.mSecured=v; state.mResult=false; render(); }
+function showRec(){ if(state.mPurpose&&state.mTenure&&state.mSecured){ state.mResult=true; render(); } }
+function resetMatcher(){ state.mPurpose=null; state.mTenure=null; state.mSecured=null; state.mResult=false; render(); }
+
+const JOURNEY=[
+  {stage:'Lead / Application', icon:'📝', short:'Application',
+   what:'A prospect is sourced or walks in. The Relationship Manager captures the borrower, the ask (amount, purpose, facility type) and basic business details, and a preliminary eligibility check opens a case. This is the top of the origination funnel.',
+   system:'The LOS captures the application, runs de-duplication and a preliminary eligibility check, and creates the case record with an audit trail from the very first touch.',
+   owners:['Relationship Manager','Sales / Front office'],
+   ai:'AI pre-fills applications from uploaded documents, runs an early eligibility / propensity model to flag likely-ineligible cases, and lets a chatbot answer the applicant’s document-checklist questions 24/7 — saving effort before a case even progresses.'},
+  {stage:'KYC & Documentation', icon:'📇', short:'KYC & Docs',
+   what:'Identity and business proof are collected and verified — KYC/KYB, Udyam and GST registration, PAN, bank statements, and financial statements. Documents are checked for completeness and authenticity before any credit work begins.',
+   system:'The LOS enforces a document checklist and validation rules, and integrates with KYC, bureau and verification APIs so nothing advances with a gap.',
+   owners:['Operations','Compliance','Relationship Manager'],
+   ai:'This is the highest-ROI AI stage: OCR/IDP extracts fields from PDFs and images, auto-validates PAN, GST and bank statements, and runs AML / name-screening — removing manual re-keying and its transcription errors, with low-confidence extractions routed to a human.'},
+  {stage:'Credit Assessment & Underwriting', icon:'📊', short:'Underwriting',
+   what:'The heart of lending: the credit team analyses repayment capacity — spreading financials, ratio analysis, working-capital assessment (including the ~20%-of-turnover benchmark), the 5 Cs, and a bureau pull. Drawing power and a proposed limit, rate and covenants emerge in a credit appraisal memo.',
+   system:'The LOS / credit module spreads financials, computes drawing power and limits, pulls the bureau score, and generates the appraisal memo for review.',
+   owners:['Credit / Underwriting','Risk'],
+   ai:'ML credit-scoring and decisioning models rank applications by predicted default risk, cash-flow analytics read bank statements, and anomaly detection surfaces risk faster — but the human underwriter still owns the call, and models must be explainable and bias-tested.'},
+  {stage:'Sanction / Approval', icon:'✅', short:'Sanction',
+   what:'The authority empowered per the delegation matrix approves, modifies or declines — setting the final limit, pricing, security, covenants and conditions precedent. A sanction letter is issued and the borrower accepts it. Who can approve how much is itself a control.',
+   system:'The LOS routes the proposal to the correct approval authority based on amount, records the terms, and generates the sanction letter and covenant schedule.',
+   owners:['Sanctioning Authority / Credit','Risk','Legal'],
+   ai:'AI can check policy compliance and covenant consistency and pre-draft the sanction letter, but the sanction itself is a governed human decision — not a place to hand the wheel to a model.'},
+  {stage:'Disbursement', icon:'💸', short:'Disbursement',
+   what:'On accepted terms and once every condition precedent is met — documentation, security perfection, margin brought in — funds are released. A term loan is credited or paid to the supplier; a working-capital limit is set live to draw against. This is the point of no return.',
+   system:'The LOS / LMS verifies the conditions-precedent checklist, sets up the account and limit, and triggers disbursement into core banking.',
+   owners:['Operations','Legal','Compliance'],
+   ai:'AI verifies conditions-precedent checklists and flags any missing security or legal step before money moves — a control check, since disbursing before conditions are genuinely met turns a secured loan unsecured overnight.'},
+  {stage:'Servicing & Monitoring', icon:'🔍', short:'Servicing',
+   what:'The longest stage: repayments are collected, utilisation and stock statements reviewed, covenants checked, limits renewed annually, and early-warning signals watched. The SMA ladder (overdue 30 / 60 / 90 days) runs toward NPA classification on the 91st day — the actionable window to intervene.',
+   system:'The LMS / servicing module tracks dues, covenant compliance and drawing power from stock statements, and generates EWS / SMA alerts.',
+   owners:['Relationship Manager','Credit','Risk','Collections'],
+   ai:'Early-warning models read transaction patterns, GST and bank feeds and adverse news to flag stress before it becomes an NPA, and AI prioritises which accounts a monitoring team reviews first — high-leverage because the value is entirely in catching drift early.'},
+];
+
+function renderJourney(){
+  const step=state.journeyStep;
+  const dots=JOURNEY.map((s,i)=>{
+    const cls = i===step?'active' : i<step?'done':'';
+    return `<div class="step-dot ${cls}" onclick="setJourney(${i})" tabindex="0" role="button" aria-label="Go to stage ${i+1}: ${s.stage}"
+      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setJourney(${i});}">
+      <div class="circ">${i<step?'✓':(i+1)}</div><div class="st-lbl">${s.short}</div></div>`;
+  }).join('');
+  const s=JOURNEY[step];
+  const owners=s.owners.map(o=>`<span class="owner-chip">${o}</span>`).join('');
+  return `
+    <p class="studio-intro"><strong>Loan Origination Journey.</strong> Walk one application through the LOS stage by stage. Each stage shows what happens, which system runs it, which stakeholders own it, and where AI genuinely helps — tying the products, process, stakeholder and AI blocks together.</p>
+    <div class="step-dots">${dots}</div>
+    <div class="stage-card">
+      <div class="stage-eyebrow">Stage ${step+1} of ${JOURNEY.length}</div>
+      <h3>${s.icon} ${s.stage}</h3>
+      <div class="stage-block">
+        <div class="sb-label">&#128221; What happens</div>
+        <p>${s.what}</p>
+      </div>
+      <div class="stage-block">
+        <div class="sb-label">&#128421; System (the LOS)</div>
+        <div class="sys-note">${s.system}</div>
+      </div>
+      <div class="stage-block">
+        <div class="sb-label">&#129309; Who owns it</div>
+        <div class="owner-chips">${owners}</div>
+      </div>
+      <div class="stage-block">
+        <div class="sb-label">&#129302; Where AI helps</div>
+        <div class="ai-note">${s.ai}</div>
+      </div>
+      <div class="step-nav">
+        <button class="ghost-btn" ${step===0?'disabled':''} onclick="setJourney(${step-1})">&larr; Previous</button>
+        ${step===JOURNEY.length-1
+          ? `<button class="primary-btn" onclick="setJourney(0)">&#8635; Start over</button>`
+          : `<button class="primary-btn" onclick="setJourney(${step+1})">Next stage &rarr;</button>`}
+      </div>
+    </div>`;
+}
+function setJourney(i){ if(i>=0 && i<JOURNEY.length){ state.journeyStep=i; render(); } }
+
+/* ---------------- ROUTER ---------------- */
+function render(keepFocus){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===state.view));
+  const main=document.getElementById('main');
+  main.innerHTML = state.view==='library'?renderLibrary() : state.view==='scenarios'?renderScenarios() : renderStudio();
+  if(keepFocus){ const inp=document.getElementById('searchInput'); if(inp){ inp.focus(); inp.selectionStart=inp.selectionEnd=inp.value.length; } }
+}
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{ state.view=t.dataset.view; state.openIdx=null; renderModal(); render(); });
+});
+render();
+</script>
+</body>
+</html>
