@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Answer Engine Optimization Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FBFBFE; --ink:#161329; --ink-soft:#615C7A; --paper:#FFFFFF; --line:#E9E7F5;
+
+    --how:#6D5EFC;    --how-tint:#ECEBFF;    --how-dark:#4B3FD6;
+    --research:#06B6D4; --research-tint:#DCF5FA; --research-dark:#0E7490;
+    --content:#10B981; --content-tint:#D7F5E9; --content-dark:#047857;
+    --offsite:#F59E0B; --offsite-tint:#FCF0D9; --offsite-dark:#B45309;
+    --youtube:#EF4444; --youtube-tint:#FCE4E4; --youtube-dark:#B91C1C;
+    --measure:#EC4899; --measure-tint:#FCE1EF; --measure-dark:#BE185D;
+
+    --accent:#6D5EFC;
+    --soft-shadow: 0 1px 2px rgba(22,19,41,.05), 0 12px 30px -18px rgba(109,94,252,.30);
+    --lift-shadow: 0 2px 6px rgba(22,19,41,.08), 0 24px 48px -22px rgba(109,94,252,.42);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 6% 0%, rgba(109,94,252,0.10) 0, transparent 34%),
+      radial-gradient(circle at 96% 4%, rgba(6,182,212,0.09) 0, transparent 34%),
+      radial-gradient(circle at 50% 100%, rgba(236,72,153,0.05) 0, transparent 42%),
+      linear-gradient(var(--bg), var(--bg));
+    color:var(--ink); font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh; padding-bottom:60px; -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:radial-gradient(rgba(22,19,41,0.04) 1px, transparent 1px);
+    background-size:24px 24px; opacity:.55;
+  }
+  header,.tabbar,main,footer{position:relative; z-index:1;}
+  h1,h2,h3,.display{font-family:'Space Grotesk',system-ui,sans-serif; font-weight:600; letter-spacing:-0.015em;}
+  .mono{font-family:'JetBrains Mono',monospace; font-variant-numeric:tabular-nums;}
+  button{font-family:inherit;}
+  mark{background:linear-gradient(180deg, transparent 55%, rgba(109,94,252,.30) 55%); color:inherit; padding:0 1px; border-radius:2px;}
+
+  header{max-width:1100px; margin:0 auto; padding:34px 24px 12px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap;}
+  .brand{display:flex; align-items:center; gap:14px;}
+  .brand .mark{flex-shrink:0; transition:transform .3s ease;}
+  .brand:hover .mark{transform:translateY(-2px) rotate(-3deg);}
+  .brand-text h1{font-size:28px; margin:0;}
+  .brand-text p{margin:5px 0 0; color:var(--ink-soft); font-size:13.5px; max-width:58ch; line-height:1.5;}
+  .disclaimer{display:inline-flex; align-items:center; gap:7px; margin-top:11px; font-size:11.5px; color:var(--research-dark); background:var(--research-tint); border:1px solid rgba(6,182,212,.32); border-radius:999px; padding:5px 11px; font-weight:600; line-height:1.4;}
+
+  .tabbar{max-width:1100px; margin:22px auto 0; padding:0 24px; display:flex; gap:8px; flex-wrap:wrap;}
+  .tab{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px; padding:11px 18px; border-radius:12px; border:1.5px solid var(--line); background:var(--paper); color:var(--ink-soft); cursor:pointer; display:flex; align-items:center; gap:7px; transition:all .15s ease; box-shadow:var(--soft-shadow);}
+  .tab:hover{color:var(--ink); transform:translateY(-1px);}
+  .tab.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+
+  main{max-width:1100px; margin:18px auto 0; padding:26px 24px 30px; background:var(--paper); border:1.5px solid var(--line); border-radius:22px; min-height:440px; box-shadow:var(--soft-shadow);}
+
+  .lib-controls{display:flex; align-items:center; margin-bottom:10px;}
+  .lib-controls.pill-row{gap:8px; overflow-x:auto; flex-wrap:nowrap; padding-bottom:6px; scrollbar-width:thin;}
+  .search-wrap{position:relative; flex:1 1 260px;}
+  .search-wrap input{width:100%; padding:13px 16px 13px 44px; border-radius:12px; border:1.5px solid var(--line); font-size:15px; font-family:inherit; background:var(--bg); color:var(--ink);}
+  .search-wrap input:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(109,94,252,.16);}
+  .search-wrap svg{position:absolute; left:15px; top:50%; transform:translateY(-50%);}
+
+  .pill{display:flex; align-items:center; gap:7px; flex-shrink:0; border:1.5px solid var(--line); border-radius:999px; padding:8px 14px; font-size:12.5px; font-weight:600; cursor:pointer; background:var(--paper); color:var(--ink); font-family:'Space Grotesk',sans-serif; white-space:nowrap; transition:all .13s ease;}
+  .pill:hover{transform:translateY(-1px); border-color:var(--ink-soft);}
+  .pill .count{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:11px; opacity:.55;}
+  .pill[data-active="true"]{color:#fff; border-color:transparent;}
+  .pill[data-active="true"] .count{opacity:.9;}
+  .pill[data-cat="how"][data-active="true"]{background:var(--how);}
+  .pill[data-cat="research"][data-active="true"]{background:var(--research);}
+  .pill[data-cat="content"][data-active="true"]{background:var(--content);}
+  .pill[data-cat="offsite"][data-active="true"]{background:var(--offsite);}
+  .pill[data-cat="youtube"][data-active="true"]{background:var(--youtube);}
+  .pill[data-cat="measure"][data-active="true"]{background:var(--measure);}
+
+  .result-count{font-size:12.5px; color:var(--ink-soft); margin:12px 0 14px; font-weight:600;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(256px,1fr)); gap:16px; padding-bottom:6px;}
+  .card{border-radius:16px; border:1.5px solid var(--line); padding:18px; display:flex; flex-direction:column; gap:10px; background:var(--paper); box-shadow:var(--soft-shadow); cursor:pointer; min-height:176px; transition:transform .14s ease, box-shadow .14s ease, border-color .14s ease; border-top:3px solid var(--line);}
+  .card:hover{transform:translateY(-3px); box-shadow:var(--lift-shadow);}
+  .card:focus-visible{outline:3px solid var(--accent); outline-offset:2px;}
+  .card[data-cat="how"]{border-top-color:var(--how);}
+  .card[data-cat="research"]{border-top-color:var(--research);}
+  .card[data-cat="content"]{border-top-color:var(--content);}
+  .card[data-cat="offsite"]{border-top-color:var(--offsite);}
+  .card[data-cat="youtube"]{border-top-color:var(--youtube);}
+  .card[data-cat="measure"]{border-top-color:var(--measure);}
+
+  .cat-tag{font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; padding:4px 9px; border-radius:6px; display:inline-flex; align-items:center; gap:5px; align-self:flex-start;}
+  .cat-tag[data-cat="how"]{color:var(--how-dark); background:var(--how-tint);}
+  .cat-tag[data-cat="research"]{color:var(--research-dark); background:var(--research-tint);}
+  .cat-tag[data-cat="content"]{color:var(--content-dark); background:var(--content-tint);}
+  .cat-tag[data-cat="offsite"]{color:var(--offsite-dark); background:var(--offsite-tint);}
+  .cat-tag[data-cat="youtube"]{color:var(--youtube-dark); background:var(--youtube-tint);}
+  .cat-tag[data-cat="measure"]{color:var(--measure-dark); background:var(--measure-tint);}
+
+  .card h3{font-size:17.5px; margin:0; line-height:1.28;}
+  .card .hook{font-size:13px; color:var(--ink-soft); line-height:1.48; margin:0; flex-grow:1;}
+  .explore-row{display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; font-family:'Space Grotesk',sans-serif; color:var(--ink-soft); margin-top:auto;}
+  .explore-row svg{transition:transform .15s ease;}
+  .card:hover .explore-row svg{transform:translateX(3px);}
+  .card:hover .explore-row{color:var(--ink);}
+  .empty-state{grid-column:1/-1; text-align:center; padding:50px 20px; color:var(--ink-soft);}
+
+  .modal-overlay{position:fixed; inset:0; background:rgba(22,19,41,0.52); backdrop-filter:blur(3px); display:flex; align-items:flex-start; justify-content:center; padding:5vh 20px; z-index:100; overflow-y:auto; animation:fadeIn .15s ease;}
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  .modal{background:var(--paper); border:1.5px solid var(--line); border-radius:20px; max-width:640px; width:100%; padding:28px 30px 26px; box-shadow:0 30px 60px -20px rgba(22,19,41,.5); animation:popIn .2s cubic-bezier(.3,.5,.3,1.2);}
+  @keyframes popIn{from{transform:translateY(12px) scale(.98); opacity:0;}to{transform:none; opacity:1;}}
+  .modal-top{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:8px;}
+  .modal-close{background:var(--bg); border:1.5px solid var(--line); border-radius:10px; width:36px; height:36px; font-size:15px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--ink-soft);}
+  .modal-close:hover{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .modal h2{font-size:25px; margin:6px 0 5px; line-height:1.2;}
+  .modal .modal-hook{font-size:14.5px; color:var(--ink-soft); font-style:italic; margin:0 0 20px;}
+  .section-label{display:flex; align-items:center; gap:7px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:12.5px; text-transform:uppercase; letter-spacing:.04em; margin:20px 0 9px; color:var(--ink-soft);}
+  .modal p.body-text{font-size:15px; line-height:1.65; margin:0; color:var(--ink);}
+  .example-list{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px;}
+  .example-list li{font-size:13.8px; line-height:1.55; padding:12px 14px 12px 36px; border-radius:10px; background:var(--bg); border:1px solid var(--line); position:relative;}
+  .example-list li::before{content:"❝"; position:absolute; left:12px; top:9px; font-size:15px; color:var(--accent); font-weight:700;}
+  .watch-box{background:var(--offsite-tint); border:1px solid rgba(245,158,11,.32); border-radius:10px; padding:12px 14px; font-size:13.5px; line-height:1.55;}
+  .watch-box strong{color:var(--offsite-dark);}
+
+  .scenario-wrap{padding-bottom:20px;}
+  .progress-row{display:flex; align-items:center; gap:14px; margin-bottom:22px;}
+  .progress-track{flex:1; height:9px; background:var(--line); border-radius:6px; overflow:hidden;}
+  .progress-fill{height:100%; background:var(--accent); transition:width .35s ease; border-radius:6px;}
+  .score-chip{font-family:'JetBrains Mono',monospace; font-weight:600; font-size:12.5px; border:1.5px solid var(--line); border-radius:8px; padding:6px 11px; white-space:nowrap;}
+  .scenario-card{border:1.5px solid var(--line); border-radius:18px; padding:26px; background:linear-gradient(180deg,#fff,#FAF9FE); box-shadow:var(--soft-shadow);}
+  .scenario-eyebrow{font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px;}
+  .scenario-text{font-size:18px; line-height:1.5; margin:0 0 22px; font-weight:500;}
+  .options{display:grid; gap:10px;}
+  .option-btn{text-align:left; padding:14px 16px; border-radius:12px; border:1.5px solid var(--line); background:var(--paper); font-family:'Inter',sans-serif; font-weight:600; font-size:14.5px; cursor:pointer; transition:all .12s ease; color:var(--ink);}
+  .option-btn:hover:not([disabled]){border-color:var(--ink-soft); transform:translateX(3px);}
+  .option-btn[disabled]{cursor:default;}
+  .option-btn.incorrect{background:var(--youtube-tint); border-color:var(--youtube); color:var(--youtube-dark);}
+  .option-btn.reveal-correct{background:var(--content-tint); border-color:var(--content); color:var(--content-dark);}
+  .feedback-box{margin-top:18px; padding:15px 18px; border-radius:12px; border:1.5px dashed var(--line); font-size:13.8px; line-height:1.55; background:var(--bg);}
+  .feedback-box strong{font-family:'Space Grotesk',sans-serif;}
+  .next-btn{margin-top:18px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14.5px; background:var(--ink); color:#fff; border:1.5px solid var(--ink); border-radius:12px; padding:12px 22px; cursor:pointer;}
+  .next-btn:hover{opacity:.9;}
+  .results{text-align:center; padding:24px 10px 10px;}
+  .results h2{font-size:25px; margin-bottom:4px;}
+  .big-score{font-family:'Space Grotesk',sans-serif; font-size:54px; margin:10px 0; color:var(--accent); font-variant-numeric:tabular-nums; font-weight:700;}
+  .breakdown{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin:22px 0; text-align:left;}
+  .bd-item{border:1.5px solid var(--line); border-radius:12px; padding:12px 14px;}
+  .bd-item .lbl{font-size:11.5px; color:var(--ink-soft); font-weight:600;}
+  .bd-item .n{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:16px; margin-top:2px;}
+  .restart-btn{font-family:'Space Grotesk',sans-serif; font-weight:600; background:var(--accent); color:#fff; border:none; border-radius:12px; padding:13px 26px; cursor:pointer; font-size:15px; box-shadow:var(--soft-shadow);}
+  .restart-btn:hover{opacity:.92;}
+  .missed-list{text-align:left; margin-top:20px;}
+  .missed-list h3{font-size:16px;}
+  .missed-item{border-left:3px solid var(--youtube); background:var(--youtube-tint); border-radius:8px; padding:11px 14px; margin-bottom:8px; font-size:13px; line-height:1.5;}
+
+  /* studio */
+  .subtabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px;}
+  .subtab{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13px; padding:9px 16px; border-radius:999px; border:1.5px solid var(--line); background:var(--paper); color:var(--ink-soft); cursor:pointer; transition:all .14s ease;}
+  .subtab:hover{color:var(--ink); border-color:var(--ink-soft);}
+  .subtab.active{background:var(--how-tint); color:var(--how-dark); border-color:var(--how);}
+  .studio-intro{font-size:14.5px; color:var(--ink-soft); line-height:1.6; margin:0 0 18px; max-width:72ch;}
+  .studio-intro strong{color:var(--ink);}
+
+  .fan-picker{display:flex; flex-wrap:wrap; gap:9px; margin-bottom:14px;}
+  .preset-btn{font-family:'Inter',sans-serif; font-weight:600; font-size:13px; padding:10px 14px; border-radius:11px; border:1.5px solid var(--line); background:var(--bg); color:var(--ink); cursor:pointer; transition:all .13s ease; text-align:left;}
+  .preset-btn:hover{border-color:var(--how); transform:translateY(-1px);}
+  .preset-btn.active{background:var(--how); color:#fff; border-color:var(--how);}
+  .fan-custom{display:flex; gap:10px; margin-bottom:18px; flex-wrap:wrap;}
+  .fan-custom input{flex:1 1 320px; padding:12px 15px; border-radius:11px; border:1.5px solid var(--line); font-size:14.5px; font-family:inherit; background:var(--bg); color:var(--ink);}
+  .fan-custom input:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(109,94,252,.16);}
+  .fan-btn{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px; background:var(--ink); color:#fff; border:none; border-radius:11px; padding:12px 20px; cursor:pointer; white-space:nowrap;}
+  .fan-btn:hover{opacity:.9;}
+  .fan-stage{border:1.5px solid var(--line); border-radius:16px; padding:22px; background:linear-gradient(180deg,#fff,#FAF9FE);}
+  .fan-prompt{display:flex; align-items:center; gap:12px; padding:14px 18px; border-radius:12px; background:var(--how-tint); border:1px solid rgba(109,94,252,.3); margin-bottom:6px;}
+  .fan-prompt .who{font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--how-dark); background:#fff; padding:4px 8px; border-radius:6px; flex-shrink:0;}
+  .fan-prompt .txt{font-size:15px; font-weight:600; line-height:1.4;}
+  .fan-connector{text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ink-soft); padding:8px 0 4px; font-weight:600;}
+  .fan-count{display:inline-flex; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; color:var(--how-dark); background:var(--how-tint); border:1px solid rgba(109,94,252,.3); border-radius:999px; padding:6px 14px; margin-bottom:14px;}
+  .subq-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:10px;}
+  .subq{font-size:13px; line-height:1.45; padding:12px 14px 12px 34px; border-radius:11px; background:var(--paper); border:1.5px solid var(--line); position:relative; animation:subqIn .32s ease both;}
+  .subq::before{content:"🔎"; position:absolute; left:11px; top:11px; font-size:12px;}
+  @keyframes subqIn{from{opacity:0; transform:translateY(6px);}to{opacity:1; transform:none;}}
+  .fan-takeaway{margin-top:18px; padding:15px 18px; border-radius:12px; background:var(--content-tint); border:1px solid rgba(16,185,129,.32); font-size:13.8px; line-height:1.58; color:var(--content-dark);}
+  .fan-takeaway strong{color:var(--content-dark);}
+
+  .score-layout{display:grid; grid-template-columns:1.4fr 1fr; gap:22px; align-items:start;}
+  @media (max-width:760px){ .score-layout{grid-template-columns:1fr;} }
+  .check-list{display:flex; flex-direction:column; gap:9px;}
+  .check-item{display:flex; gap:12px; align-items:flex-start; padding:13px 15px; border-radius:12px; border:1.5px solid var(--line); background:var(--paper); cursor:pointer; transition:all .13s ease;}
+  .check-item:hover{border-color:var(--ink-soft);}
+  .check-item[data-on="true"]{background:var(--content-tint); border-color:var(--content);}
+  .check-box{flex-shrink:0; width:22px; height:22px; border-radius:7px; border:2px solid var(--line); display:flex; align-items:center; justify-content:center; margin-top:1px; font-size:13px; color:#fff; transition:all .13s ease;}
+  .check-item[data-on="true"] .check-box{background:var(--content); border-color:var(--content);}
+  .check-body .ct{font-size:14px; font-weight:600; line-height:1.35;}
+  .check-body .cs{font-size:12px; color:var(--ink-soft); line-height:1.45; margin-top:3px;}
+  .score-panel{position:sticky; top:16px; border:1.5px solid var(--line); border-radius:16px; padding:22px; background:linear-gradient(180deg,#fff,#FAF9FE); box-shadow:var(--soft-shadow); text-align:center;}
+  .gauge{font-family:'Space Grotesk',sans-serif; font-size:52px; font-weight:700; font-variant-numeric:tabular-nums; line-height:1; margin:4px 0 2px;}
+  .gauge-lbl{font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); font-weight:700;}
+  .gauge-track{height:10px; border-radius:6px; background:var(--line); overflow:hidden; margin:16px 0 6px;}
+  .gauge-fill{height:100%; border-radius:6px; transition:width .4s ease, background .4s ease;}
+  .verdict{font-size:13px; font-weight:700; font-family:'Space Grotesk',sans-serif; margin:10px 0 16px;}
+  .next-fix{text-align:left; border-top:1.5px dashed var(--line); padding-top:14px; margin-top:6px;}
+  .next-fix .nf-lbl{font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); font-weight:700; margin-bottom:6px;}
+  .next-fix .nf-item{font-size:13.5px; font-weight:600; line-height:1.4;}
+  .next-fix .nf-rec{font-size:12.5px; color:var(--ink-soft); line-height:1.5; margin-top:5px;}
+  .score-reset{margin-top:16px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:12.5px; background:none; border:1.5px solid var(--line); border-radius:10px; padding:9px 16px; cursor:pointer; color:var(--ink-soft);}
+  .score-reset:hover{border-color:var(--ink-soft); color:var(--ink);}
+
+  /* learn & sell */
+  .learn-section-title{font-family:'Space Grotesk',sans-serif; font-size:20px; font-weight:600; margin:6px 0 4px; display:flex; align-items:center; gap:9px;}
+  .learn-lead{font-size:14px; color:var(--ink-soft); line-height:1.6; margin:0 0 20px; max-width:74ch;}
+  .learn-lead strong{color:var(--ink);}
+  .phase{display:flex; gap:16px; margin-bottom:14px; align-items:flex-start;}
+  .phase-num{flex-shrink:0; width:44px; height:44px; border-radius:12px; background:var(--how); color:#fff; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:var(--soft-shadow);}
+  .phase:nth-child(2) .phase-num{background:var(--research);}
+  .phase:nth-child(3) .phase-num{background:var(--content);}
+  .phase:nth-child(4) .phase-num{background:var(--offsite);}
+  .phase:nth-child(5) .phase-num{background:var(--youtube);}
+  .phase:nth-child(6) .phase-num{background:var(--measure);}
+  .phase-body{flex:1; border:1.5px solid var(--line); border-radius:14px; padding:16px 18px; background:var(--paper); box-shadow:var(--soft-shadow);}
+  .phase-body h4{font-family:'Space Grotesk',sans-serif; font-size:16px; margin:0 0 5px; font-weight:600;}
+  .phase-body p{font-size:13.5px; line-height:1.58; color:var(--ink); margin:0 0 9px;}
+  .phase-do{display:inline-flex; align-items:flex-start; gap:7px; font-size:12.8px; line-height:1.5; font-weight:600; color:var(--how-dark); background:var(--how-tint); border-radius:9px; padding:8px 12px;}
+  .phase-do b{font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:.05em; padding-top:2px;}
+
+  .divider{height:1.5px; background:var(--line); border:none; margin:30px 0 24px;}
+  .res-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px;}
+  .res-card{border:1.5px solid var(--line); border-radius:16px; padding:18px; background:var(--paper); box-shadow:var(--soft-shadow); display:flex; flex-direction:column; gap:10px;}
+  .res-top{display:flex; align-items:center; gap:9px; flex-wrap:wrap;}
+  .res-type{font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; padding:4px 9px; border-radius:6px; background:var(--research-tint); color:var(--research-dark);}
+  .res-card h4{font-family:'Space Grotesk',sans-serif; font-size:16px; margin:0; line-height:1.3;}
+  .res-card .why{font-size:13px; line-height:1.55; color:var(--ink); margin:0;}
+  .res-card .how{font-size:12.5px; line-height:1.5; color:var(--ink-soft); margin:0;}
+  .res-card .how b{color:var(--content-dark); font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:.04em;}
+  .res-link{margin-top:auto; display:inline-flex; align-items:center; gap:6px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13px; color:var(--how-dark); text-decoration:none; border:1.5px solid var(--how-tint); background:var(--how-tint); border-radius:10px; padding:9px 13px; align-self:flex-start;}
+  .res-link:hover{background:var(--how); color:#fff;}
+  .applied-chip{display:inline-flex; align-items:center; gap:7px; font-size:11.5px; color:var(--offsite-dark); background:var(--offsite-tint); border:1px solid rgba(245,158,11,.32); border-radius:999px; padding:5px 12px; font-weight:600; margin-bottom:18px; line-height:1.4;}
+
+  footer{text-align:center; color:var(--ink-soft); font-size:12px; margin-top:34px; padding:0 24px; line-height:1.7; max-width:900px; margin-left:auto; margin-right:auto;}
+  footer .src{font-family:'JetBrains Mono',monospace; font-size:11px;}
+
+  @media (max-width:600px){
+    .brand-text h1{font-size:22px;}
+    .modal{padding:22px 20px 20px;}
+    main{padding:22px 16px 26px;}
+    .phase-num{width:38px; height:38px; font-size:16px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <svg class="mark" width="52" height="52" viewBox="0 0 52 52" fill="none">
+      <rect x="4" y="4" width="44" height="44" rx="13" fill="#6D5EFC"/>
+      <path d="M17 33l4.4-16h3.4L29.2 33h-3.3l-.9-3.7h-4.8L19.3 33H17zm3.8-6.1h3.4l-1.7-6.9-1.7 6.9z" fill="#fff"/>
+      <circle cx="34.5" cy="30" r="6.2" fill="none" stroke="#06B6D4" stroke-width="2.6"/>
+      <path d="M39 34.5l3.4 3.4" stroke="#06B6D4" stroke-width="2.6" stroke-linecap="round"/>
+    </svg>
+    <div class="brand-text">
+      <h1>Answer Engine Optimization</h1>
+      <p>How to get your brand cited and recommended by AI assistants — and how to sell that as a service.</p>
+      <span class="disclaimer">⚡ Fast-moving field — data reflects 2025–26 studies (Ahrefs, Princeton GEO, AirOps); re-verify current stats.</span>
+    </div>
+  </div>
+</header>
+
+<div class="tabbar">
+  <div class="tab active" data-view="library">📚 Concept Library</div>
+  <div class="tab" data-view="scenarios">🎯 Scenario Practice</div>
+  <div class="tab" data-view="studio">🛠️ Studio</div>
+  <div class="tab" data-view="learn">🚀 Learn &amp; Sell</div>
+</div>
+
+<main id="main"></main>
+
+<footer>
+  Distilled from the Ahrefs <em>"Learn 80% of AEO in 19 Minutes"</em> video and a signal-in-noise resource pass; built with the field-guide-builder skill.<br>
+  <span class="src">Sources: Ahrefs AEO course &amp; AI-search research · Princeton GEO paper (Aggarwal et al., KDD 2024) · CXL AEO guide · AirOps 2026 State of AI Search · r/SEO.</span><br>
+  AEO facts are drawn from those sources; service packaging and pricing framing are standard freelance structure, marked as applied guidance. Re-verify fast-moving stats before quoting them to a client.
+</footer>
+
+<div id="modalRoot"></div>
+
+<script>
+const CATS = {
+  how:      { label:"How AI Search Works", icon:"🔍" },
+  research: { label:"Gap & Prompt Research", icon:"🎯" },
+  content:  { label:"Content That Gets Cited", icon:"✍️" },
+  offsite:  { label:"Mentions & Community", icon:"📣" },
+  youtube:  { label:"YouTube & Off-Platform", icon:"📺" },
+  measure:  { label:"Technical & Measurement", icon:"📊" },
+};
+
+const ENTRIES = [
+  // ---------- HOW (6) ----------
+  {cat:"how", name:"Query Fan-Out", hook:"One prompt becomes dozens of parallel searches.",
+   def:"When you ask an AI assistant something, it doesn't run your words as a single search. It fans the prompt out into dozens of smaller, more specific searches, runs them in parallel, then synthesizes one answer from the results. This matters because your page is competing to be a source for one of those sub-searches, not for the original prompt. ChatGPT deep research reportedly ran 420 searches for a single 'buy a red phone case' prompt.",
+   example:["'Plan a 5-day Japan trip in November' fans into sub-searches like 'best neighborhoods in Tokyo', 'November weather in Kyoto', and 'is the JR Pass worth it'.","Because the model queries the whole topic, a page that only nails one exact keyword can still be invisible to the sub-searches around it."],
+   watch:"Optimizing for a single head keyword misreads the mechanic — the model is asking many questions at once, so thin single-keyword pages get skipped in favor of sources that cover the surrounding sub-questions too."},
+
+  {cat:"how", name:"Topic Relevance, Not Keywords", hook:"Be relevant across a whole topic, not one phrase.",
+   def:"Because of query fan-out, citation goes to sources that are relevant across an entire topic rather than exact-matched to one keyword. The winning move is topical authority: covering the cluster of related questions a prompt fans into, so your site keeps surfacing as a source no matter which sub-search fires. Depth and coverage of the topic beat keyword-stuffing a single page.",
+   example:["A travel site that covers Tokyo neighborhoods, transit passes, seasonal weather, and day trips gets pulled into many sub-searches from one trip-planning prompt.","A page targeting only 'best CRM' loses to a site that also answers 'CRM for agencies', 'CRM with email built in', and 'cheapest CRM under 10 users'."],
+   watch:"Chasing one high-volume keyword is a pre-AEO habit — the model fans out, so coverage of the topic cluster is what keeps you in the answer, not a single perfectly-optimized page."},
+
+  {cat:"how", name:"Consensus", hook:"The more places say it, the more AI repeats it.",
+   def:"Consensus is the first of three drivers of citation probability in Ahrefs' research: the more independent places that say the same thing about you, the more likely an AI is to treat it as true and repeat it. LLMs synthesize across many sources, so a claim echoed on editorial sites, forums, and your own properties becomes the 'default' answer. Repetition across sources, not a single great page, builds the machine's confidence.",
+   example:["If ten review sites and forums all describe your tool as 'the cheapest CRM for agencies', the AI adopts that phrasing as fact.","A single self-published claim with no corroboration rarely survives synthesis against a competitor's widely-repeated positioning."],
+   watch:"You can't manufacture consensus with one press release — it comes from many independent mentions agreeing over time, which is why off-site presence matters as much as your own content."},
+
+  {cat:"how", name:"Freshness", hook:"AI-cited content is 25.7% fresher than Google's.",
+   def:"Freshness is the second citation driver: AI systems disproportionately pull from recently published or updated pages. Ahrefs found AI-cited content averages 25.7% fresher than the results Google ranks for the same queries. Assistants lean recent because they're synthesizing a 'current' answer, so a page's last-updated date is a real ranking signal for citation, not a cosmetic detail.",
+   example:["A guide refreshed this quarter gets cited over an evergreen-but-stale competitor page that hasn't moved in two years.","Adding updated 2026 figures and a visible 'last updated' date can pull a dormant page back into AI answers."],
+   watch:"'Set and forget' content quietly ages out of AI answers — freshness decays, so a page that was cited last year can vanish simply because a newer source now looks more current."},
+
+  {cat:"how", name:"Authority (SEO Is the Foundation)", hook:"76% of AI Overview citations come from Google's top 10.",
+   def:"Authority is the third driver, and it's the one that ties AEO to classic SEO: 76% of Google AI Overview citations come from pages already ranking in Google's top 10 for that query. AI systems trust sources that traditional search already trusts, so strong organic rankings are the foundation AEO is built on — not a separate game. If you can't rank, you're rarely cited.",
+   example:["A page that ranks #3 organically is a prime candidate to be quoted inside the AI Overview for the same query.","A brand invisible in classic search usually stays invisible in AI answers, because the model draws from what already ranks."],
+   watch:"Treating AEO as a replacement for SEO is the core mistake — the data says the opposite; without top-10 organic authority you forfeit three-quarters of AI Overview citations before you start."},
+
+  {cat:"how", name:"AI Overviews 101", hook:"Google answers on the page, above the blue links.",
+   def:"Google AI Overviews are the AI-generated answers that appear at the top of search results, synthesizing multiple sources with citations. They're where classic SEO and AEO overlap most directly, because they're triggered by the same Google queries you already track. AI Overviews appear on roughly 21% of all keywords but about 58% of question queries — and 99.9% of AIO-triggering keywords are informational.",
+   example:["A 'how do I…' search shows a synthesized answer box with 3–5 cited sources above the organic results.","A transactional query like 'buy running shoes' rarely triggers an AI Overview, because 99.9% of triggers are informational."],
+   watch:"AI Overviews concentrate on informational and question queries — so the pages most exposed to being answered-over (and to being cited) are your guides and explainers, not your product or checkout pages."},
+
+  // ---------- RESEARCH (5) ----------
+  {cat:"research", name:"Brand Gap Analysis", hook:"Where you should appear vs. where you actually do.",
+   def:"Brand gap analysis measures the distance between where your brand should show up and where it actually does across Google, AI answers, and the wider web. Tools like Ahrefs Brand Radar track your presence across these surfaces so you can see, concretely, which topics and queries mention you and which leave you out. It turns 'are we visible in AI?' from a guess into a measurable, filterable audit — the natural first step of any AEO engagement.",
+   example:["Brand Radar shows your brand is mentioned in AI answers for 'project management tips' but absent for 'project management tools' — a clear gap to close.","An audit reveals competitors appear in 40% of your category's AI answers while you appear in 8%."],
+   watch:"Without a baseline measurement you're optimizing blind — you can't prove a win to a client (or yourself) if you never captured where visibility started."},
+
+  {cat:"research", name:"The Missed-Citation Gap", hook:"You're mentioned — but your site isn't the source.",
+   def:"A missed-citation gap is where an AI answer mentions your brand but doesn't cite your website as the source, linking to a third party instead. It's the most fixable gap because the demand and the mention already exist — you just aren't the page the model pulls from. The fix is usually a content and authority problem: publish the definitive, fresh, well-structured page on that topic so you become the cited source, not a bystander in your own answer.",
+   example:["An AI answer names your product but cites a review site's page about it instead of yours — you own the brand, not the citation.","Filtering Brand Radar to 'mentioned, not cited' surfaces the exact queries where you're losing the link to someone else."],
+   watch:"A mention without a citation still sends the click and trust to whoever got cited — being talked about isn't the same as being the source, and only the source captures the traffic."},
+
+  {cat:"research", name:"The Competitor Gap", hook:"A rival is in the answer and you're not.",
+   def:"A competitor gap is a query where a competitor is mentioned or cited in the AI answer and your brand is absent entirely. These expose the topics where rivals have built the consensus, freshness, or authority you haven't, and they map directly to where you're losing consideration. Prioritizing the competitor gaps closest to purchase intent is how you turn a gap audit into a revenue argument.",
+   example:["For 'best CRM for agencies', two competitors are named in the AI answer and you don't appear — a direct consideration loss.","Brand Radar's competitor filter lists every query where a named rival is cited and you are not."],
+   watch:"Not every competitor gap is worth chasing — weight them by intent and volume, because closing a gap on a low-intent informational query matters far less than one where buyers are comparing options."},
+
+  {cat:"research", name:"The Topic Gap", hook:"AI associates a whole topic with someone else.",
+   def:"A topic gap is broader than a single query: it's a whole subject area the AI reliably associates with another brand instead of yours. These are the hardest and most strategic gaps, because closing one means building topical authority across a cluster of queries, not fixing one page. But owning a topic in the model's 'mind' is the most durable AEO asset — it's what makes you the default recommendation.",
+   example:["AI consistently names a competitor for anything about 'email deliverability', treating them as the category authority.","You appear for narrow product queries but never for the broad 'how to do X' topic that feeds them."],
+   watch:"Topic gaps don't close with one post — they need sustained cluster coverage plus off-site consensus, so scope them as multi-month plays, not quick wins, when you promise them to a client."},
+
+  {cat:"research", name:"Prompt Research & The AI Filter", hook:"People type prompts — but SEO fundamentals still apply.",
+   def:"Users increasingly search with full prompts, not keywords, yet keyword research fundamentals still hold, especially for Google AI Overviews. Start from seed keywords plus modifiers (ask an AI assistant to generate them, then run them through a keyword tool), and hunt brand-mention openings via Brand Radar's 'others only' view filtered to best / top / versus / review / alternative. Then apply the AI filter to every query: 'Can an AI fully satisfy this searcher with an AI Overview?' If yes, the click is eaten — so aim to be mentioned inside the answer instead of chasing the click.",
+   example:["Ask an AI for modifiers around 'CRM' → best, cheapest, for agencies, vs, alternative → then validate volume in a keyword tool.","A query an AI can fully answer ('what is a CRM?') is targeted for the mention, while a comparison query still worth a click gets a full page."],
+   watch:"Optimizing an AI-satisfiable query for the click wastes effort — if the Overview answers it completely, the traffic never leaves the results page, so your goal there is being the cited mention, not ranking for a click that won't happen."},
+
+  // ---------- CONTENT (7) ----------
+  {cat:"content", name:"The Length Myth", hook:"Word count barely predicts citation.",
+   def:"Long content is not the path to being cited. Ahrefs analyzed 174,000 cited pages and found essentially zero correlation between length and citation — over half of cited pages are under 1,000 words. What gets pulled is the page that answers the sub-question directly and cleanly, regardless of size. Padding a page to hit a word count does nothing for AEO and can bury the answer the model is looking for.",
+   example:["A tight 600-word comparison page gets cited over a rambling 3,000-word guide that hides its answer.","Half of the cited pages studied were under 1,000 words — brevity that answers the question wins."],
+   watch:"Chasing a '2,000-word minimum' is a legacy SEO myth for AEO — length with no correlation to citation just dilutes the clear, extractable answer the model actually needs."},
+
+  {cat:"content", name:"Freshness Wins Citations", hook:"For ChatGPT, 89.7% of cited pages were updated in 2025.",
+   def:"On your own site, freshness is one of the strongest content levers. For ChatGPT citations, 89.7% of top cited pages were updated in 2025, and 76% were refreshed within the last 30 days. Assistants build a 'current' answer, so a recent, visibly-updated page beats an older one on the same topic. Refreshing existing content — new data, updated examples, a real update date — is often the fastest AEO win available.",
+   example:["Updating a dormant guide with 2026 figures and republishing it can pull it back into ChatGPT citations within weeks.","Two near-identical pages compete; the one refreshed last month gets cited over the one last touched two years ago."],
+   watch:"A cosmetic date change without real updates fools no one for long — freshness means substantively current content, and the fastest, most defensible win is refreshing a genuinely stale but well-ranking page."},
+
+  {cat:"content", name:"Format: Lists & Comparisons", hook:"43.8% of ChatGPT-cited pages are lists or comparisons.",
+   def:"Format is a strong, controllable citation signal. 43.8% of ChatGPT-cited pages are lists, best-of / top-X roundups, comparisons, or reviews. These formats are easy for a model to extract and slot into a synthesized answer, because each item is a self-contained, quotable unit. Structuring content as a scannable list or head-to-head comparison makes it dramatically more citation-friendly than an undifferentiated wall of prose.",
+   example:["A 'Top 7 CRMs for agencies' listicle is trivially extractable — the model lifts three entries straight into its answer.","A structured 'Tool A vs Tool B' comparison table gets cited for versus queries where prose wouldn't, and reframing a prose guide as numbered steps raises its odds too."],
+   watch:"Not every topic should be forced into a listicle — but where the query invites a list, comparison, or ranking, prose is a self-inflicted disadvantage against the format the model prefers to cite."},
+
+  {cat:"content", name:"BLUF — Bottom Line Up Front", hook:"Start every section with the answer.",
+   def:"BLUF means putting the answer at the very top of every section, then explaining. Both humans and AI weight the beginning and end of a block over the middle, so a section that opens with its conclusion is far more likely to have that conclusion extracted and cited. Lead with the takeaway; support it after. Burying the answer in paragraph three is how good information goes uncited.",
+   example:["Open a section with 'The cheapest CRM for small agencies is X' before the reasoning, not after it.","A FAQ answer that states the verdict in sentence one gets pulled into the AI answer verbatim."],
+   watch:"Journalistic 'build-up to the point' structure is the enemy of citation — if the answer lives in the middle of the paragraph, the model may summarize past it and cite a competitor who led with theirs."},
+
+  {cat:"content", name:"Atomic Content", hook:"Every section must stand on its own.",
+   def:"Atomic content means each section is self-contained and makes sense in isolation, because AI chunks your page into pieces and you don't control where the chunk boundaries fall. If a section relies on context from three paragraphs earlier, it breaks when the model extracts it alone. Write each section so a reader — or a model — dropped into it cold still gets a complete, correct answer.",
+   example:["A section titled 'How much does X cost?' restates what X is, so it's coherent even when extracted alone.","Avoid 'As mentioned above…' — the model may never have the 'above', so the chunk reads as broken."],
+   watch:"Cross-references and 'see the previous section' handoffs assume a linear read the model doesn't do — every chunk that depends on unseen context is a chunk that can't be safely cited."},
+
+  {cat:"content", name:"Entity-Rich Writing", hook:"Name specific things and their relationships.",
+   def:"Entity-rich writing names specific entities — products, features, people, places — and states the relationships between them explicitly. Models reason over entities and connections, so precise naming makes your content legible and quotable. 'Ahrefs Keywords Explorer helps you find low-difficulty, high-traffic keywords' beats 'this tool helps with SEO', because the first sentence hands the model named entities and a clear relationship it can lift.",
+   example:["Write 'Ahrefs Keywords Explorer surfaces low-difficulty, high-traffic keywords' instead of 'our tool helps with SEO'.","Naming the specific integration ('syncs with Slack and Gmail') beats a vague 'connects with your favorite apps'."],
+   watch:"Vague pronouns and 'this tool / our platform' phrasing strip out the entities the model needs — generic writing is invisible writing, because there's nothing specific to attach a citation to."},
+
+  {cat:"content", name:"Simple & Declarative", hook:"One idea per sentence, subject-verb-object.",
+   def:"Simple, declarative writing — one idea per sentence, plain subject-verb-object structure — is the most extractable prose for AI. If a sentence takes two reads to parse, a model is likelier to misread or skip it. Short, direct sentences reduce ambiguity and make each claim cleanly quotable. Clarity isn't a style preference in AEO; it's a citation mechanic.",
+   example:["'Shop Pay stores card details for one-tap checkout' is cleaner and more quotable than a nested, clause-heavy version.","Splitting a 40-word sentence into three 12-word claims makes each one independently citable."],
+   watch:"Clever, clause-stacked sentences read as sophisticated to humans but as noise to a model — if it takes you two reads, simplify, because ambiguity is what gets your claim passed over."},
+
+  // ---------- OFFSITE (5) ----------
+  {cat:"offsite", name:"Branded Mentions: The #1 Signal", hook:"Mentions out-predict backlinks for AI visibility.",
+   def:"In a study of 75,000 brands, branded web mentions had the strongest correlation with AI Overview visibility — stronger than backlinks, domain rating, or referring domains. What people say about your brand across the web, even without a link, is the single biggest off-site AEO lever. This reframes link-building: the goal is being talked about widely and consistently, not just acquiring links.",
+   example:["A brand mentioned across dozens of industry articles and forums outranks a link-rich but rarely-discussed competitor in AI answers.","An unlinked mention in a respected roundup still feeds the consensus the model synthesizes from."],
+   watch:"Pouring everything into backlinks while ignoring unlinked mentions optimizes the weaker signal — the 75,000-brand data says conversation about you predicts AI visibility better than links do."},
+
+  {cat:"offsite", name:"Tier 1 — Editorial Mentions", hook:"Third-party press is the hardest, most valuable tier.",
+   def:"Tier 1 mentions are third-party editorial: industry publications, review sites like Wirecutter and TechRadar, and authoritative listicles and comparisons. They're the hardest to earn and the most valuable, because they carry independent authority the model trusts heavily. Getting named in a credible 'best X' roundup or review is among the strongest things you can do for AEO, precisely because you can't fully control it.",
+   example:["Being included in a Wirecutter or TechRadar 'best of' roundup lends independent authority the model weights highly.","A named mention in an industry publication's comparison feeds both consensus and authority at once."],
+   watch:"Tier 1 can't be gamed or bought cleanly — it's earned through genuine PR, product quality, and outreach, which is exactly why it carries the weight lower tiers can't."},
+
+  {cat:"offsite", name:"Tier 2 — UGC & Reddit", hook:"Reddit is one of ChatGPT's most-cited sources.",
+   def:"Tier 2 is user-generated content: Reddit, Quora, and niche forums. Reddit is one of ChatGPT's most-cited sources and a foundational LLM training source, which makes authentic community presence a real AEO channel. The rule is to contribute genuine, helpful answers where your product legitimately fits — not to spam or astroturf, which communities punish and which erodes the consensus you're trying to build.",
+   example:["A genuinely helpful Reddit answer in a relevant subreddit can become a source the model cites for that question.","Honest participation in a niche forum builds the kind of authentic mention LLMs weight, because Reddit is core training data."],
+   watch:"Gaming Reddit backfires twice — communities detect and nuke promotional accounts, and manufactured praise reads as inauthentic to the consensus signal, so contribute real value or stay out."},
+
+  {cat:"offsite", name:"Tier 3 — Own Properties", hook:"Your YouTube, podcast, and LinkedIn are crawlable too.",
+   def:"Tier 3 is your own off-site properties: YouTube, a podcast, LinkedIn, and similar channels you control that are still indexed and crawlable. They're the easiest tier to influence because you own them, and while they carry less independent authority than editorial mentions, they add to the consensus and give the model more surfaces on which to find you saying consistent things about your brand.",
+   example:["A LinkedIn article and a YouTube video that both describe your tool the same way reinforce the model's picture of you.","A podcast episode transcript, once indexed, becomes another crawlable surface repeating your positioning."],
+   watch:"Own properties are necessary but not sufficient — they're self-published, so leaning only on them leaves out the independent third-party consensus that carries the most weight."},
+
+  {cat:"offsite", name:"Consensus Compounds", hook:"Agreement across tiers stacks into the default answer.",
+   def:"The three mention tiers aren't alternatives — they compound. When editorial mentions, community answers, and your own properties all say the same thing about you, the model sees overwhelming agreement and adopts your positioning as the default. Consensus is the connective tissue of off-site AEO: each mention is a vote, and alignment across many independent sources is what turns 'a brand' into 'the recommended brand'.",
+   example:["A review site, a Reddit thread, and your YouTube channel all calling you 'the agency CRM' makes that the AI's default framing.","Contradictory or inconsistent positioning across sources dilutes the signal and leaves the model uncertain."],
+   watch:"Inconsistent messaging across your surfaces sabotages consensus — if editorial, community, and owned channels describe you differently, you split your own vote and no clear default forms."},
+
+  // ---------- YOUTUBE (4) ----------
+  {cat:"youtube", name:"YouTube's Citation Dominance", hook:"0.737 correlation with ChatGPT visibility — the strongest studied.",
+   def:"YouTube is a category of its own in AEO. It's the most-cited domain in Google's AI Overviews, and YouTube mentions show a 0.737 correlation with ChatGPT visibility — the single strongest factor in the research. Part of why: GPT-4 was trained on over 1 million hours of YouTube transcripts. Video isn't a nice-to-have channel for AI citation; it's arguably the highest-leverage off-platform surface there is.",
+   example:["A brand frequently mentioned in relevant YouTube videos shows markedly higher ChatGPT visibility, tracking that 0.737 correlation.","Because YouTube is the top-cited AI Overview domain, a strong video presence feeds Google's answers directly."],
+   watch:"Dismissing YouTube as 'not our channel' ignores the strongest correlation in the data — the transcripts are training and citation fuel, so absence there is a large, measurable AEO blind spot."},
+
+  {cat:"youtube", name:"Search Hits, Not Viral Spikes", hook:"Win evergreen search traffic, not a viral flash.",
+   def:"The YouTube win for AEO is 'search hits': evergreen videos that pull consistent Google and YouTube search traffic over time, not viral videos that spike and die. Search hits keep getting surfaced and mentioned, feeding citation continuously, while a viral moment fades from relevance fast. Find topics by running Ahrefs Site Explorer's organic-keywords report on the youtube.com/watch subfolder and targeting top-3, niche terms.",
+   example:["An evergreen 'how to set up X' video ranks in YouTube search for years, feeding steady mentions and citations.","Site Explorer on youtube.com/watch reveals niche search terms where a well-made video can rank top-3."],
+   watch:"Chasing virality is the wrong target for AEO — a spike that dies contributes little lasting citation value, while a boring evergreen search hit compounds quietly for years."},
+
+  {cat:"youtube", name:"The Video-SEO Checklist", hook:"Title, chapters, and say the keyword out loud.",
+   def:"Video SEO for AEO comes down to a short checklist: put the target keyword in the title and in the first lines of the description, add timestamp chapters, and actually say the keyword aloud in the video. Google understands audio, so spoken keywords are a real signal — the transcript is what feeds citation. Small, mechanical steps make a video far more discoverable and far more likely to be pulled into AI answers.",
+   example:["A video titled with its exact target term, chaptered by timestamp, that says the keyword in the first 20 seconds.","Front-loading the keyword in the description's opening lines helps both YouTube and Google index the topic."],
+   watch:"A great video with a vague title, no chapters, and the keyword never spoken hides itself — Google reads the audio and structure, so skipping the checklist forfeits the citation the content earned."},
+
+  {cat:"youtube", name:"Sponsorships & Outreach", hook:"Buy or earn your way into others' videos.",
+   def:"Beyond making your own videos, you can win YouTube presence through creator sponsorships and outreach — getting your brand mentioned in existing, already-ranking channels. This borrows the creator's authority and search traffic, and because YouTube mentions correlate so strongly with AI visibility, a placement in the right evergreen video can outperform months of your own uploads. Target creators whose videos already rank for your niche search terms.",
+   example:["Sponsoring a creator whose 'best tools for X' video ranks top-3 puts your brand into an answer-feeding source.","Outreach to a niche channel for an honest mention earns a crawlable, high-authority YouTube reference."],
+   watch:"Chasing big subscriber counts over search relevance wastes budget — a smaller channel with an evergreen video that actually ranks feeds citation better than a viral creator whose views don't persist."},
+
+  // ---------- MEASURE (5) ----------
+  {cat:"measure", name:"Don't Block AI Crawlers", hook:"~5.9% of sites accidentally block GPTBot.",
+   def:"The fastest way to lose at AEO is to block the crawlers that read your site. About 5.9% of 140 million sites block GPTBot (OpenAI's crawler), often inherited from an old robots.txt template or a default-on setting like Cloudflare's 'manage AI bot traffic'. If the bot can't read you, you can't be cited — full stop. Check yourdomain.com/robots.txt for Disallow rules on GPTBot, OAI-SearchBot, ClaudeBot, and Google-Extended.",
+   example:["A copied robots.txt template silently carries a 'Disallow: /' for GPTBot, quietly removing the site from ChatGPT's sources.","Cloudflare's AI-bot management, left default-on, blocks the crawlers before any content optimization can matter."],
+   watch:"This is a 30-second check that people skip for months — all the content and mention work in the world is wasted if a stray robots.txt line or a default Cloudflare toggle is blocking the crawler."},
+
+  {cat:"measure", name:"AI Referral Traffic", hook:"Real, but always undercounted.",
+   def:"AI referral traffic is the clicks arriving from ChatGPT, Perplexity, and Claude — a direct measure of AEO paying off. But tracking is lossy: ChatGPT source links track, while in-content links on paid accounts often don't, so the number is always an undercount. Measure it anyway with GA4 or free Ahrefs Web Analytics, treating the figure as a floor rather than the full picture of AI-driven interest.",
+   example:["GA4 shows sessions with a chatgpt.com or perplexity.ai referrer — real AEO traffic you can trend over time.","Ahrefs Web Analytics offers a free way to watch AI referral sources climb as your citations grow."],
+   watch:"Reading AI referral traffic as the complete number understates your true impact — in-content links on paid accounts don't pass a referrer, so what you see is a floor, not the ceiling."},
+
+  {cat:"measure", name:"AI Bot Activity", hook:"A bot hammering a page means it's a source.",
+   def:"Watching AI bot activity on your own pages is a leading indicator of citation. When a citation bot repeatedly hits a specific page, that page is likely being used as a source in AI answers — often before referral traffic shows up. Track this through a Cloudflare integration to see which URLs the assistants keep crawling, giving you an early read on what's working and where to double down.",
+   example:["Cloudflare logs show OAI-SearchBot repeatedly fetching one guide — a strong sign it's feeding ChatGPT answers.","A spike in ClaudeBot hits on a refreshed page confirms the refresh put it back into the source pool."],
+   watch:"Bot activity is a signal, not proof of a click — a heavily-crawled page is likely cited, but pair it with referral and attribution data before declaring victory on that page alone."},
+
+  {cat:"measure", name:"Self-Reported Attribution", hook:"'How did you hear about us?' — most impactful, least used.",
+   def:"The most impactful AEO measurement is also the least used: simply asking. Adding a 'How did you hear about us?' field to signup or checkout captures attribution analytics miss, because the real path is often AI recommends you → the user Googles your name → analytics miscredits it as organic. Self-reported data cuts through that. Ahrefs found AI search was just 0.5% of visits but drove 12.1% of signups — a 23× higher conversion rate than organic.",
+   example:["A checkout 'how did you hear about us?' dropdown surfaces 'ChatGPT recommended you' that GA4 filed under organic search.","Ahrefs' 0.5%-of-visits / 12.1%-of-signups split only became visible through self-reported attribution."],
+   watch:"Trusting analytics alone systematically undercredits AEO — the AI-to-Google-to-signup path launders itself into 'organic', so without asking users directly you'll conclude AI 'isn't working' when it's your best-converting channel."},
+
+  {cat:"measure", name:"Why Now — Market Timing", hook:"AI traffic grew 9.7× in a year; most haven't started.",
+   def:"The timing case for AEO is the pitch that sells it. AI traffic grew 9.7× in the past year, and ChatGPT is up 85% since January — it now sends more referral traffic than Reddit or LinkedIn. Meanwhile most businesses haven't started optimizing for it, so the competitive field is wide open. Combined with the 23× conversion advantage from self-reported data, that's a rare window: rising demand, low competition, high-converting traffic.",
+   example:["Framing a client pitch around 'AI traffic 9.7× YoY, ChatGPT +85%, and your competitors haven't started' creates urgency with data.","ChatGPT now out-referring Reddit and LinkedIn reframes AEO from experimental to a channel worth staffing."],
+   watch:"The window is the argument, not a permanent state — 'most businesses haven't started' is a first-mover pitch that weakens as adoption rises, so it's most persuasive now and should be used while it's true."},
+];
+
+const SCENARIOS = [
+  {q:"A user asks an AI to 'plan a 5-day trip to Japan in November.' Your travel site nails the exact phrase 'Japan November trip' but ignores Tokyo neighborhoods, the JR Pass, and Kyoto weather. Why might you still not get cited?",
+   options:["The prompt is too long for AI","Query fan-out means the model searches the sub-topics, not your one phrase","November is low season","AI can't read travel sites"], correct:1,
+   why:"Query fan-out — the prompt fans into dozens of sub-searches (Tokyo neighborhoods, JR Pass, Kyoto weather). Covering only the exact phrase leaves you invisible to the sub-searches that actually feed the answer.", cat:"how"},
+
+  {q:"You're deciding where to invest first for AI visibility. Which fact makes traditional SEO the foundation of AEO rather than a separate game?",
+   options:["AI ignores Google entirely","76% of AI Overview citations come from pages already in Google's top 10","Backlinks don't matter anymore","AI only reads paid ads"], correct:1,
+   why:"Authority — 76% of AI Overview citations come from Google top-10 pages. If you can't rank organically, you forfeit three-quarters of citations, which is why SEO is the base AEO builds on.", cat:"how"},
+
+  {q:"An AI answer names your product but links to a review site instead of your page. In a brand gap audit, this is a:",
+   options:["Competitor gap","Missed-citation gap","Topic gap","Freshness gap"], correct:1,
+   why:"Missed-citation gap — you're mentioned but not the cited source. It's the most fixable gap because demand already exists; you just need the definitive, fresh, well-structured page to become the source.", cat:"research"},
+
+  {q:"For 'best CRM for agencies,' the AI names two rivals and never mentions you at all. Which gap is this, and what does it signal?",
+   options:["Missed-citation gap — fix formatting","Competitor gap — rivals built the consensus/authority you haven't","Topic gap — unrelated","Technical gap — you're blocking crawlers"], correct:1,
+   why:"Competitor gap — a rival is in the answer and you're absent entirely. It maps to lost consideration; prioritize the competitor gaps closest to purchase intent.", cat:"research"},
+
+  {q:"You're auditing a query 'what is a CRM?' that an AI Overview answers completely. Applying the AI filter, what's the right play?",
+   options:["Build a long page to win the click","Aim to be mentioned inside the AI answer, since the click is eaten","Ignore the query entirely","Buy ads for it"], correct:1,
+   why:"The AI filter — if the Overview fully satisfies the searcher, the click never leaves the results page. Target the mention inside the answer, not a click that won't happen.", cat:"research"},
+
+  {q:"A client insists every AEO page must be 2,000+ words. What does the 174,000-cited-page analysis say?",
+   options:["Length strongly predicts citation","Essentially zero correlation — over half of cited pages are under 1,000 words","Only pages over 3,000 words get cited","Word count is the top factor"], correct:1,
+   why:"The length myth — near-zero correlation between length and citation, and over half of cited pages are under 1,000 words. A tight page that answers the sub-question cleanly beats padded length.", cat:"content"},
+
+  {q:"A well-ranking guide on your site hasn't been touched in two years and has quietly dropped out of ChatGPT answers. What's the fastest, most defensible win?",
+   options:["Delete it","Refresh it with current data and a real update date","Double its word count","Add more keywords to the title"], correct:1,
+   why:"Freshness — 89.7% of ChatGPT-cited pages were updated in 2025 and 76% within 30 days. Substantively refreshing a stale-but-ranking page is the fastest win in AEO.", cat:"content"},
+
+  {q:"You're rewriting a section so AI is more likely to extract its conclusion. Which structure follows BLUF?",
+   options:["Build suspense, reveal the answer in the last line","State the answer in the first sentence, then explain","Put the answer in the middle paragraph","Never state a conclusion"], correct:1,
+   why:"BLUF (bottom line up front) — humans and AI weight the beginning and end of a block over the middle, so leading with the answer makes it the part most likely to be extracted and cited.", cat:"content"},
+
+  {q:"A section on your page starts 'As mentioned above, this makes it ideal…'. Why is this an AEO problem?",
+   options:["It's too short","AI chunks content and may extract the section without the 'above' — it breaks atomicity","It uses too many entities","It's too declarative"], correct:1,
+   why:"Atomic content — the model chunks your page and you don't control the boundaries. A section that depends on unseen earlier context reads as broken when extracted alone and won't be safely cited.", cat:"content"},
+
+  {q:"Which sentence is written to be extracted and cited by an AI?",
+   options:["\"Our platform helps you get more done.\"","\"Ahrefs Keywords Explorer surfaces low-difficulty, high-traffic keywords.\"","\"This tool is great for lots of things.\"","\"It really depends on your needs.\""], correct:1,
+   why:"Entity-rich writing — naming the specific product and the exact relationship gives the model named entities and a clear, liftable claim. Vague 'our platform' phrasing has nothing citable to attach to.", cat:"content"},
+
+  {q:"In the 75,000-brand study, which signal correlated most strongly with AI Overview visibility?",
+   options:["Backlinks","Domain rating","Branded web mentions","Referring domains"], correct:2,
+   why:"Branded mentions — they out-predicted backlinks, domain rating, and referring domains. What people say about your brand across the web is the single biggest off-site AEO lever.", cat:"offsite"},
+
+  {q:"You want authentic community mentions because Reddit is one of ChatGPT's most-cited sources. What's the right approach?",
+   options:["Post promotional links in every thread","Create fake accounts praising yourself","Contribute genuinely helpful answers where your product legitimately fits","Buy upvotes"], correct:2,
+   why:"Tier 2 UGC — Reddit is core LLM training data and heavily cited, but communities punish gaming and manufactured praise dilutes the consensus signal. Contribute real value or stay out.", cat:"offsite"},
+
+  {q:"You have budget for one off-platform channel. Which has the strongest studied correlation with ChatGPT visibility?",
+   options:["A YouTube presence (0.737 correlation)","A Pinterest board","A press release wire","A paid banner network"], correct:0,
+   why:"YouTube — mentions show a 0.737 correlation with ChatGPT visibility, the strongest factor studied, partly because GPT-4 trained on 1M+ hours of YouTube transcripts.", cat:"youtube"},
+
+  {q:"For AEO, which YouTube strategy compounds citation value over time?",
+   options:["Chase a viral video that spikes then dies","Build evergreen 'search hit' videos that rank for niche terms","Post daily regardless of search demand","Only run paid pre-roll ads"], correct:1,
+   why:"Search hits — evergreen videos pulling consistent search traffic keep feeding mentions and citations for years, while a viral spike fades fast and contributes little lasting AEO value.", cat:"youtube"},
+
+  {q:"Before any content work, you run one 30-second check on a new client. What are you looking for?",
+   options:["Their word count average","Disallow rules for GPTBot, OAI-SearchBot, ClaudeBot, Google-Extended in robots.txt","Their font choices","Their ad spend"], correct:1,
+   why:"Don't block AI crawlers — ~5.9% of sites block GPTBot, often from an old template or a default-on Cloudflare setting. If the bot can't read you, you can't be cited, so this check comes first.", cat:"measure"},
+
+  {q:"Analytics shows AI referral traffic is a rounding error, so a client says AEO 'isn't working.' What single measurement most likely proves them wrong?",
+   options:["Bounce rate","A 'How did you hear about us?' field at signup/checkout","Page load speed","Total pageviews"], correct:1,
+   why:"Self-reported attribution — AI recommends you, the user Googles your name, and analytics miscredits it as organic. Ahrefs saw AI at 0.5% of visits but 12.1% of signups (23× conversion). Asking directly surfaces what analytics launders away.", cat:"measure"},
+];
+
+let state = {
+  view:"library", search:"", activeCat:"all", openIdx:null,
+  quizOrder:[], quizIndex:0, quizScore:0, quizAnswered:null, quizHistory:[], quizDone:false,
+  studioTool:"fanout",
+  fanPreset:0, fanCustom:"", fanReveal:0, fanActiveList:null, fanActivePrompt:"",
+  scorecard:{},
+};
+
+// ---------- shared quiz plumbing ----------
+function shuffledIndices(n){ const a=Array.from({length:n},(_,i)=>i); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+function resetQuiz(){ state.quizOrder=shuffledIndices(SCENARIOS.length); state.quizIndex=0; state.quizScore=0; state.quizAnswered=null; state.quizHistory=[]; state.quizDone=false; }
+resetQuiz();
+
+function catCounts(){ const c={}; ENTRIES.forEach(p=>{c[p.cat]=(c[p.cat]||0)+1;}); return c; }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ---------- LIBRARY ----------
+function renderLibrary(){
+  const counts=catCounts();
+  const pills=Object.keys(CATS).map(c=>{
+    const active=state.activeCat===c;
+    return `<button class="pill" data-cat="${c}" data-active="${active}" onclick="setCat('${c}')">${CATS[c].icon} ${CATS[c].label} <span class="count">${counts[c]}</span></button>`;
+  }).join('');
+  const q=state.search.trim().toLowerCase();
+  const filtered=ENTRIES.filter(p=>{
+    const mc=state.activeCat==='all'||p.cat===state.activeCat;
+    const ms=!q||p.name.toLowerCase().includes(q)||p.hook.toLowerCase().includes(q)||p.def.toLowerCase().includes(q);
+    return mc&&ms;
+  });
+  const cards=filtered.map(p=>{
+    const idx=ENTRIES.indexOf(p);
+    return `<div class="card" data-cat="${p.cat}" tabindex="0" role="button" aria-label="Open details for ${esc(p.name)}"
+      onclick="openEntry(${idx})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEntry(${idx});}">
+      <span class="cat-tag" data-cat="${p.cat}">${CATS[p.cat].icon} ${CATS[p.cat].label}</span>
+      <h3>${p.name}</h3>
+      <p class="hook">${p.hook}</p>
+      <span class="explore-row">Explore <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </div>`;
+  }).join('');
+  return `
+    <div class="lib-controls">
+      <div class="search-wrap">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8b87a6" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="searchInput" type="text" placeholder="Search ${ENTRIES.length} concepts — try 'fan-out', 'BLUF', 'Reddit', 'robots.txt'..." value="${state.search.replace(/"/g,'&quot;')}" oninput="setSearch(this.value)"/>
+      </div>
+    </div>
+    <div class="lib-controls pill-row">${pills}</div>
+    <p class="result-count">${filtered.length} concept${filtered.length===1?'':'s'} shown</p>
+    <div class="grid">${cards||'<div class="empty-state">No concepts match that search. Try a different keyword or clear the category filter.</div>'}</div>`;
+}
+function setCat(c){ state.activeCat=(state.activeCat===c)?'all':c; render(); }
+function setSearch(v){ state.search=v; render(true); }
+
+function openEntry(i){ state.openIdx=i; renderModal(); }
+function closeEntry(){ state.openIdx=null; renderModal(); }
+function renderModal(){
+  const root=document.getElementById('modalRoot');
+  if(state.openIdx===null){ root.innerHTML=''; return; }
+  const p=ENTRIES[state.openIdx];
+  const examples=p.example.map(e=>`<li>${e}</li>`).join('');
+  root.innerHTML=`
+    <div class="modal-overlay" onclick="if(event.target===this) closeEntry();">
+      <div class="modal" role="dialog" aria-modal="true" aria-label="${esc(p.name)} details">
+        <div class="modal-top">
+          <span class="cat-tag" data-cat="${p.cat}">${CATS[p.cat].icon} ${CATS[p.cat].label}</span>
+          <button class="modal-close" onclick="closeEntry()" aria-label="Close">✕</button>
+        </div>
+        <h2>${p.name}</h2>
+        <p class="modal-hook">${p.hook}</p>
+        <div class="section-label">📖 What it means</div>
+        <p class="body-text">${p.def}</p>
+        <div class="section-label">🎯 In practice</div>
+        <ul class="example-list">${examples}</ul>
+        <div class="section-label">⚠️ Watch out for</div>
+        <div class="watch-box"><strong>The trap:</strong> ${p.watch}</div>
+      </div>
+    </div>`;
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&state.openIdx!==null) closeEntry(); });
+
+// ---------- SCENARIOS ----------
+function renderScenarios(){
+  if(state.quizDone){
+    const byCat={};
+    state.quizHistory.forEach(h=>{ byCat[h.cat]=byCat[h.cat]||{c:0,t:0}; byCat[h.cat].t++; if(h.correct)byCat[h.cat].c++; });
+    const breakdown=Object.keys(byCat).map(c=>`
+      <div class="bd-item"><div class="lbl">${CATS[c].icon} ${CATS[c].label}</div><div class="n">${byCat[c].c} / ${byCat[c].t}</div></div>`).join('');
+    const missed=state.quizHistory.filter(h=>!h.correct).map(h=>`
+      <div class="missed-item"><strong>${h.q}</strong><br/>→ Correct: ${h.correctLabel}. ${h.why}</div>`).join('');
+    return `<div class="results">
+      <h2>Practice complete 🎉</h2>
+      <div class="big-score">${state.quizScore} / ${SCENARIOS.length}</div>
+      <p style="color:var(--ink-soft);">How you did across each area:</p>
+      <div class="breakdown">${breakdown}</div>
+      <button class="restart-btn" onclick="restartQuiz()">Practice again (new shuffle)</button>
+      ${missed.length?`<div class="missed-list"><h3>Review what you missed</h3>${missed}</div>`:`<p style="margin-top:20px;font-weight:600;">Perfect score — you're ready to sell this. 🔥</p>`}
+    </div>`;
+  }
+  const s=SCENARIOS[state.quizOrder[state.quizIndex]];
+  const pct=Math.round((state.quizIndex/SCENARIOS.length)*100);
+  const options=s.options.map((opt,i)=>{
+    let cls="option-btn",dis="";
+    if(state.quizAnswered!==null){ dis="disabled"; if(i===s.correct)cls+=" reveal-correct"; else if(i===state.quizAnswered)cls+=" incorrect"; }
+    return `<button class="${cls}" ${dis} onclick="answerQuiz(${i})">${opt}</button>`;
+  }).join('');
+  const feedback=state.quizAnswered!==null?`
+    <div class="feedback-box"><strong>${state.quizAnswered===s.correct?"✅ Correct — ":"❌ Not quite — "}</strong>${s.why}</div>
+    <button class="next-btn" onclick="nextQuiz()">${state.quizIndex===SCENARIOS.length-1?"See results":"Next scenario →"}</button>`:'';
+  return `<div class="scenario-wrap">
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <span class="score-chip">${state.quizIndex+1} / ${SCENARIOS.length} · score ${state.quizScore}</span>
+    </div>
+    <div class="scenario-card">
+      <div class="scenario-eyebrow">Scenario</div>
+      <p class="scenario-text">${s.q}</p>
+      <div class="options">${options}</div>
+      ${feedback}
+    </div></div>`;
+}
+function answerQuiz(i){
+  if(state.quizAnswered!==null) return;
+  const s=SCENARIOS[state.quizOrder[state.quizIndex]];
+  const correct=i===s.correct;
+  state.quizAnswered=i;
+  if(correct) state.quizScore++;
+  state.quizHistory.push({q:s.q, why:s.why, correct, correctLabel:s.options[s.correct], cat:s.cat});
+  render();
+}
+function nextQuiz(){ if(state.quizIndex===SCENARIOS.length-1){ state.quizDone=true; } else { state.quizIndex++; state.quizAnswered=null; } render(); }
+function restartQuiz(){ resetQuiz(); render(); }
+
+// ---------- STUDIO ----------
+const FAN_PRESETS = [
+  { prompt:"Plan a 5-day trip to Japan in November",
+    subs:["Best neighborhoods to stay in Tokyo","November weather in Kyoto and Tokyo","Is the JR Pass worth it in 2026","Top things to do in Osaka in 5 days","Do I need cash or cards in Japan","Best day trips from Tokyo in autumn","How many days in Tokyo vs Kyoto","Autumn leaves vs cherry blossom in November","Getting from Narita airport to central Tokyo","Booking a ryokan with an onsen"] },
+  { prompt:"Best CRM for a small marketing agency",
+    subs:["Cheapest CRM for agencies under 10 people","HubSpot vs Pipedrive for agencies","CRM with built-in email marketing","Best CRM for managing client pipelines","Does this CRM integrate with Slack and Gmail","CRM free plan limits compared","CRM with white-label client reporting","Easiest CRM to set up without an admin"] },
+  { prompt:"Is this project management tool worth it?",
+    subs:["This tool's pricing and hidden costs","This tool vs Asana vs Trello","Real user reviews of this tool on Reddit","This tool's free plan limitations","Does this tool have a mobile app","This tool pros and cons in 2026","Is this tool good for small teams","Cheaper alternatives to this tool"] },
+  { prompt:"Top project management tools for startups",
+    subs:["Best free project management tools for startups","Notion vs Linear vs ClickUp for startups","PM tools with a startup discount","Lightweight PM tools for a 5-person team","Best PM tool for remote startups","PM tools that scale as you grow","Which PM tool integrates with GitHub","Cheapest paid PM plan for startups"] },
+];
+
+function customFanOut(prompt){
+  const p=prompt.trim().replace(/[?.!]+$/,'');
+  return [
+    `Best ${p} in 2026`,
+    `${p} pricing and cost`,
+    `${p} vs the top alternatives`,
+    `${p} reviews from real users on Reddit`,
+    `Is ${p} worth it for small teams`,
+    `${p} pros and cons`,
+    `Cheapest option for ${p}`,
+    `How to get started with ${p}`,
+  ];
+}
+
+function renderStudio(){
+  const sub=`
+    <div class="subtabs">
+      <button class="subtab ${state.studioTool==='fanout'?'active':''}" onclick="setStudioTool('fanout')">🔀 Query Fan-Out Visualizer</button>
+      <button class="subtab ${state.studioTool==='scorecard'?'active':''}" onclick="setStudioTool('scorecard')">✅ Citation Readiness Scorecard</button>
+    </div>`;
+  return sub + (state.studioTool==='fanout'?renderFanout():renderScorecard());
+}
+function setStudioTool(t){ state.studioTool=t; render(); }
+
+function renderFanout(){
+  const presets=FAN_PRESETS.map((p,i)=>`<button class="preset-btn ${state.fanPreset===i&&state.fanActiveList===null?'':''}" onclick="pickPreset(${i})">${esc(p.prompt)}</button>`).join('');
+  let stage='';
+  if(state.fanActiveList){
+    const total=state.fanActiveList.length;
+    const shown=state.fanActiveList.slice(0,state.fanReveal);
+    const cards=shown.map((s,i)=>`<div class="subq" style="animation-delay:${(i%3)*0.04}s">${esc(s)}</div>`).join('');
+    const done=state.fanReveal>=total;
+    stage=`
+      <div class="fan-stage">
+        <div class="fan-prompt"><span class="who">User prompt</span><span class="txt">${esc(state.fanActivePrompt)}</span></div>
+        <div class="fan-connector">↓ the model fans this out into parallel sub-searches ↓</div>
+        <div class="fan-count"><span>🔎 ${state.fanReveal} / ${total} sub-searches</span>${done?'<span>— synthesized into one answer</span>':'<span>— fanning out…</span>'}</div>
+        <div class="subq-grid">${cards}</div>
+        ${done?`<div class="fan-takeaway"><strong>Takeaway:</strong> one prompt became <strong>${total} separate searches</strong>. To get cited, your site has to be relevant across this whole topic cluster — not just the one keyword in the original prompt. That is why topical coverage beats single-keyword optimization in AEO.</div>`:''}
+      </div>`;
+  } else {
+    stage=`<div class="fan-stage"><div class="fan-connector">Pick a sample prompt above or type your own, then watch it fan out.</div></div>`;
+  }
+  return `
+    <p class="studio-intro"><strong>Query Fan-Out Visualizer.</strong> AI assistants don't run your prompt as one search — they fan it into dozens of smaller ones, run them in parallel, and synthesize the answer. Pick a preset or type any prompt to see the sub-searches it really becomes.</p>
+    <div class="fan-picker">${presets}</div>
+    <div class="fan-custom">
+      <input id="fanInput" type="text" placeholder="Or type your own prompt — e.g. 'best running shoes for flat feet'" value="${state.fanCustom.replace(/"/g,'&quot;')}" oninput="setFanCustom(this.value)" onkeydown="if(event.key==='Enter'){runCustomFan();}"/>
+      <button class="fan-btn" onclick="runCustomFan()">Fan it out →</button>
+    </div>
+    ${stage}`;
+}
+function setFanCustom(v){ state.fanCustom=v; }
+function pickPreset(i){
+  state.fanPreset=i;
+  state.fanActivePrompt=FAN_PRESETS[i].prompt;
+  state.fanActiveList=FAN_PRESETS[i].subs.slice();
+  state.fanReveal=0;
+  render();
+  stepFanReveal();
+}
+function runCustomFan(){
+  const inp=document.getElementById('fanInput');
+  const v=(inp?inp.value:state.fanCustom).trim();
+  if(!v) return;
+  state.fanCustom=v;
+  state.fanActivePrompt=v;
+  state.fanActiveList=customFanOut(v);
+  state.fanReveal=0;
+  render();
+  stepFanReveal();
+}
+function stepFanReveal(){
+  if(!state.fanActiveList) return;
+  if(state.fanReveal>=state.fanActiveList.length) return;
+  state.fanReveal++;
+  render();
+  if(state.fanReveal<state.fanActiveList.length){
+    setTimeout(stepFanReveal, 340);
+  }
+}
+
+const SCORE_ITEMS = [
+  {id:"bluf", t:"Leads with the answer (BLUF)", s:"Every key section opens with its conclusion, not a build-up.",
+   rec:"Rewrite each section to state the answer in sentence one — AI weights the start of a block most."},
+  {id:"fresh", t:"Updated in the last 30 days", s:"Content is genuinely current with a real update date.",
+   rec:"Refresh your top pages with current data and a visible update date — 76% of ChatGPT-cited pages were refreshed within 30 days."},
+  {id:"format", t:"List / comparison / review format", s:"Structured as a listicle, comparison, or roundup where the topic allows.",
+   rec:"Reframe prose into a list or head-to-head comparison — 43.8% of ChatGPT-cited pages use these formats."},
+  {id:"entity", t:"Entity-rich writing", s:"Names specific products, features, and relationships — no vague 'our tool'.",
+   rec:"Replace vague phrasing with named entities and explicit relationships so the model has something concrete to cite."},
+  {id:"atomic", t:"Atomic, self-contained sections", s:"Each section makes sense extracted on its own, with no 'as above' references.",
+   rec:"Make every section stand alone — AI chunks the page and drops cross-references it can't see."},
+  {id:"editorial", t:"Branded mentions on editorial sites", s:"Named in third-party press, review sites, or authoritative roundups.",
+   rec:"Pursue Tier-1 editorial mentions via PR and outreach — branded mentions are the #1 correlated AI-visibility signal (75,000-brand study)."},
+  {id:"reddit", t:"Active on Reddit / niche forums", s:"Genuine, helpful presence in relevant communities.",
+   rec:"Contribute real answers in relevant subreddits — Reddit is one of ChatGPT's most-cited sources and core training data."},
+  {id:"youtube", t:"YouTube presence", s:"Owned or sponsored evergreen videos ranking for niche terms.",
+   rec:"Build or earn evergreen 'search hit' videos — YouTube mentions have the strongest studied correlation (0.737) with ChatGPT visibility."},
+  {id:"crawlers", t:"AI crawlers allowed (robots.txt clean)", s:"No Disallow on GPTBot, OAI-SearchBot, ClaudeBot, Google-Extended.",
+   rec:"Do the 30-second robots.txt check first — ~5.9% of sites accidentally block GPTBot and can't be cited at all."},
+  {id:"measure", t:"Measurement + 'how did you hear about us'", s:"AI referral tracking plus a self-reported attribution field at signup/checkout.",
+   rec:"Add a 'how did you hear about us?' field — the AI→Google→signup path hides in 'organic', and AEO converted 23× better in Ahrefs' data."},
+];
+// crawlers weighted first because it's a hard blocker
+const SCORE_PRIORITY = ["crawlers","fresh","bluf","format","entity","atomic","editorial","reddit","youtube","measure"];
+
+function renderScorecard(){
+  const items=SCORE_ITEMS.map(it=>{
+    const on=!!state.scorecard[it.id];
+    return `<div class="check-item" data-on="${on}" role="checkbox" aria-checked="${on}" tabindex="0"
+      onclick="toggleScore('${it.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleScore('${it.id}');}">
+      <div class="check-box">${on?'✓':''}</div>
+      <div class="check-body"><div class="ct">${it.t}</div><div class="cs">${it.s}</div></div>
+    </div>`;
+  }).join('');
+  const total=SCORE_ITEMS.length;
+  const checked=SCORE_ITEMS.filter(it=>state.scorecard[it.id]).length;
+  const pct=Math.round(checked/total*100);
+  let color=pct>=80?'var(--content)':pct>=50?'var(--offsite)':'var(--youtube)';
+  let verdict=pct>=80?'Citation-ready — strong AEO footing.':pct>=50?'Getting there — real gaps remain.':'High risk — you are hard to cite today.';
+  let verdictColor=pct>=80?'var(--content-dark)':pct>=50?'var(--offsite-dark)':'var(--youtube-dark)';
+  const firstGapId=SCORE_PRIORITY.find(id=>!state.scorecard[id]);
+  const gap=firstGapId?SCORE_ITEMS.find(it=>it.id===firstGapId):null;
+  const fixHtml=gap?`
+    <div class="next-fix">
+      <div class="nf-lbl">Biggest gap to fix first</div>
+      <div class="nf-item">${gap.t}</div>
+      <div class="nf-rec">${gap.rec}</div>
+    </div>`:`
+    <div class="next-fix">
+      <div class="nf-lbl">Nothing left to fix</div>
+      <div class="nf-item">All 10 checks pass ✅</div>
+      <div class="nf-rec">This page/brand is set up to be cited. Re-run periodically — freshness and mentions decay.</div>
+    </div>`;
+  return `
+    <p class="studio-intro"><strong>Citation Readiness Scorecard.</strong> The tool a freelancer runs on a client. Toggle each item that's true for the page or brand you're auditing. The score updates live and surfaces the single highest-priority gap to fix first.</p>
+    <div class="score-layout">
+      <div class="check-list">${items}</div>
+      <div class="score-panel">
+        <div class="gauge-lbl">Readiness score</div>
+        <div class="gauge" style="color:${color}">${pct}%</div>
+        <div class="gauge-track"><div class="gauge-fill" style="width:${pct}%; background:${color}"></div></div>
+        <div class="verdict" style="color:${verdictColor}">${checked} / ${total} checks · ${verdict}</div>
+        ${fixHtml}
+        <button class="score-reset" onclick="resetScore()">Reset checklist</button>
+      </div>
+    </div>`;
+}
+function toggleScore(id){ state.scorecard[id]=!state.scorecard[id]; render(); }
+function resetScore(){ state.scorecard={}; render(); }
+
+// ---------- LEARN & SELL ----------
+const PHASES = [
+  {n:"0", title:"Foundation — nail traditional SEO first",
+   body:"AEO is built on SEO, not instead of it. 76% of AI Overview citations come from pages already ranking in Google's top 10. If you can't rank organically, you forfeit three-quarters of citations before you touch anything AI-specific.",
+   doLabel:"Do this", doText:"Confirm the brand can rank: clean site structure, indexable pages, and real organic presence for its core topics."},
+  {n:"1", title:"Learn the mechanics",
+   body:"Get the model of how AI search actually works — query fan-out, the three citation drivers (consensus, freshness, authority), and the content, mentions, YouTube, and technical levers. Pair the practitioner course with the foundational research paper.",
+   doLabel:"Do this", doText:"Work through the free Ahrefs AEO course, then read the Princeton GEO paper for the underlying data (+41% visibility, +115% for lower-ranked content)."},
+  {n:"2", title:"Practice on your own site",
+   body:"You can't sell what you haven't done. Run the mechanics on a property you control so you learn the tools and produce a real before/after.",
+   doLabel:"Do this", doText:"Run the 30-second robots.txt check, set up measurement plus a 'how did you hear about us?' field, and refresh one stale-but-ranking page — the fastest win."},
+  {n:"3", title:"Build proof",
+   body:"Turn practice into evidence. Use the scorecard as your repeatable audit artifact and generate one measurable own-brand result you can point to in a pitch.",
+   doLabel:"Do this", doText:"Audit 3 brands with the Citation Readiness Scorecard, and land one measurable own-brand visibility win (a new citation, an AI referral, a self-reported 'found you via ChatGPT')."},
+  {n:"4", title:"Productize the service",
+   body:"Package the work into a repeatable offer with clear deliverables so it's easy to buy. Structure it as four phases a client can understand at a glance.",
+   doLabel:"Do this", doText:"Package: an AEO Audit (brand-gap + technical check + content/format review) → a prioritized Strategy → Implementation (content refresh, mentions/Reddit outreach, YouTube, technical fixes) → Reporting (AI referral + self-reported attribution)."},
+  {n:"5", title:"Sell on Upwork",
+   body:"Lead with a low-risk wedge, not a big retainer. A one-off 'AEO Audit' is easy to say yes to and naturally upsells into ongoing implementation once the client sees the gaps.",
+   doLabel:"Do this", doText:"Open with a fixed-price AEO Audit; frame urgency with the market data (AI traffic 9.7× YoY, ChatGPT +85%, most businesses haven't started); show a before/after visibility example; price the audit as the entry point that upsells to a retainer."},
+];
+
+const RESOURCES = [
+  {name:"Ahrefs — AEO Course + AI-search research", type:"Course + Data",
+   why:"A structured free course paired with Ahrefs' primary research — the source of most hard numbers in this guide (freshness, format, mention correlations).",
+   how:"Take the course end-to-end first, then bookmark the research blog to pull fresh stats for client pitches.",
+   url:"https://ahrefs.com/academy/aeo-course", extra:"Research: ahrefs.com/blog/geo-generative-engine-optimization"},
+  {name:"GEO: Generative Engine Optimization", type:"Research Paper",
+   why:"Aggarwal et al., Princeton (KDD 2024) — the foundational academic paper. Reports +41% visibility, +28% for quotations, and +115% citing-sources gains for lower-ranked content.",
+   how:"Read once for the underlying mechanics and to cite credible, peer-reviewed numbers when a client pushes back.",
+   url:"https://arxiv.org/pdf/2311.09735", extra:""},
+  {name:"CXL — Answer Engine Optimization: The Comprehensive Guide (2026)", type:"Reference",
+   why:"The most complete practitioner reference — deep, current, and broad. Your go-to when you need detail beyond the Ahrefs fundamentals.",
+   how:"Use as a lookup manual while doing client work, not a cover-to-cover read.",
+   url:"https://cxl.com/blog/answer-engine-optimization-aeo-the-comprehensive-guide/", extra:""},
+  {name:"AirOps — 2026 State of AI Search Report", type:"Report",
+   why:"Current citation and AI-search data you can quote directly in pitches to establish urgency and credibility with prospects.",
+   how:"Mine it for the freshest stats when building a proposal or a market-timing slide.",
+   url:"https://www.airops.com/blog/aeo-answer-engine-optimization", extra:""},
+  {name:"r/SEO (Reddit)", type:"Community",
+   why:"A live practitioner community — and a top-cited AI source itself, so participating is both learning and Tier-2 AEO practice.",
+   how:"Read weekly to track what's changing; contribute genuine answers to build your own citable presence.",
+   url:"https://www.reddit.com/r/SEO/", extra:""},
+];
+
+function renderLearn(){
+  const phases=PHASES.map(p=>`
+    <div class="phase">
+      <div class="phase-num">${p.n}</div>
+      <div class="phase-body">
+        <h4>Phase ${p.n} — ${p.title.replace(/^[^—]*—\s*/,'')}</h4>
+        <p>${p.body}</p>
+        <span class="phase-do"><b>${p.doLabel}:</b> <span>${p.doText}</span></span>
+      </div>
+    </div>`).join('');
+  const res=RESOURCES.map(r=>`
+    <div class="res-card">
+      <div class="res-top"><span class="res-type">${r.type}</span></div>
+      <h4>${r.name}</h4>
+      <p class="why">${r.why}</p>
+      <p class="how"><b>How to use:</b> ${r.how}</p>
+      ${r.extra?`<p class="how" style="font-size:11.5px;">${r.extra}</p>`:''}
+      <a class="res-link" href="${r.url}" target="_blank" rel="noopener">Open resource
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M7 17L17 7M9 7h8v8"/></svg></a>
+    </div>`).join('');
+  return `
+    <h3 class="learn-section-title">🚀 Roadmap: zero → AEO expert → selling on Upwork</h3>
+    <p class="learn-lead">A phased path from understanding AI search to running it as a paid service. Each phase has one concrete action. <strong>The AEO facts come from the sources; the productization and pricing framing (Phases 4–5) are standard freelance structure — applied guidance, not data.</strong></p>
+    <span class="applied-chip">🧭 Phases 4–5 are applied service-packaging guidance, not source-cited AEO facts.</span>
+    ${phases}
+    <hr class="divider"/>
+    <h3 class="learn-section-title">📚 Curated resources</h3>
+    <p class="learn-lead">Five resources that survived a signal-in-noise pass — enough to go from zero to selling, and nothing you don't need. Name, type, why it made the cut, and how to use it.</p>
+    <div class="res-grid">${res}</div>`;
+}
+
+// ---------- ROUTER ----------
+function render(keepFocus){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===state.view));
+  const main=document.getElementById('main');
+  main.innerHTML =
+    state.view==='library'   ? renderLibrary()   :
+    state.view==='scenarios' ? renderScenarios() :
+    state.view==='studio'    ? renderStudio()    :
+                               renderLearn();
+  if(keepFocus){ const inp=document.getElementById('searchInput'); if(inp){ inp.focus(); inp.selectionStart=inp.selectionEnd=inp.value.length; } }
+}
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{ state.view=t.dataset.view; state.openIdx=null; renderModal(); render(); });
+});
+render();
+</script>
+</body>
+</html>
