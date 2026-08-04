@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webflow — A Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3F6FB; --canvas:#FBFCFE; --ink:#141A22; --ink-soft:#5A6474; --paper:#FFFFFF; --line:#E3E9F2; --line-strong:#CFD8E6;
+
+    --primary:#2B6EF2; --primary-tint:#E9F0FE; --primary-dark:#1D4FBE;
+    --secondary:#12B981; --secondary-dark:#0B815A;
+
+    --designer:#2B6EF2; --designer-tint:#E9F0FE; --designer-dark:#1D4FBE;
+    --style:#8B5CF6;    --style-tint:#F1EBFE; --style-dark:#6D28D9;
+    --cms:#12B981;      --cms-tint:#DBF7EC;    --cms-dark:#0B815A;
+    --interactions:#F59E0B; --interactions-tint:#FDF1D7; --interactions-dark:#B45309;
+    --publish:#EF4444;  --publish-tint:#FCE3E3; --publish-dark:#B91C1C;
+    --manage:#EC4899;   --manage-tint:#FBE2EF; --manage-dark:#BE185D;
+
+    --soft-shadow: 0 1px 2px rgba(20,26,34,.05), 0 10px 24px -16px rgba(20,26,34,.22);
+    --lift-shadow: 0 2px 5px rgba(20,26,34,.07), 0 20px 42px -20px rgba(20,26,34,.30);
+    --radius:12px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink); font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh; padding-bottom:56px; -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:radial-gradient(rgba(43,110,242,0.14) 1px, transparent 1px);
+    background-size:24px 24px; opacity:.5;
+  }
+  header,.tabbar,main,footer{position:relative; z-index:1;}
+  h1,h2,h3,.display{font-family:'Space Grotesk',sans-serif; font-weight:600; letter-spacing:-0.015em;}
+  .mono{font-family:'JetBrains Mono',monospace; font-variant-numeric:tabular-nums;}
+  button,input,select{font-family:inherit;}
+
+  header{max-width:1100px; margin:0 auto; padding:34px 24px 10px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap;}
+  .brand{display:flex; align-items:center; gap:15px;}
+  .brand .mark{flex-shrink:0; transition:transform .3s ease;}
+  .brand:hover .mark{transform:translateY(-2px) rotate(-3deg);}
+  .brand-text h1{font-size:30px; margin:0; letter-spacing:-0.03em;}
+  .brand-text p{margin:5px 0 0; color:var(--ink-soft); font-size:13.5px; max-width:60ch; line-height:1.5;}
+  .disclaimer{display:inline-flex; align-items:center; gap:7px; margin-top:11px; font-size:11.5px; color:var(--primary-dark); background:var(--primary-tint); border:1px solid rgba(43,110,242,.28); border-radius:999px; padding:5px 12px; font-weight:600;}
+
+  .tabbar{max-width:1100px; margin:20px auto 0; padding:0 24px; display:flex; gap:8px; flex-wrap:wrap;}
+  .tab{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px; padding:10px 17px; border-radius:10px; border:1px solid var(--line-strong); background:var(--paper); color:var(--ink-soft); cursor:pointer; display:flex; align-items:center; gap:7px; transition:all .15s ease; box-shadow:var(--soft-shadow);}
+  .tab:hover{color:var(--ink); transform:translateY(-1px); border-color:var(--primary);}
+  .tab.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+
+  main{max-width:1100px; margin:16px auto 0; padding:24px 24px 28px; background:var(--paper); border:1px solid var(--line-strong); border-radius:16px; min-height:440px; box-shadow:var(--soft-shadow);}
+
+  /* Library */
+  .lib-controls{display:flex; align-items:center; margin-bottom:10px;}
+  .lib-controls.pill-row{gap:8px; overflow-x:auto; flex-wrap:nowrap; padding-bottom:6px; scrollbar-width:thin;}
+  .search-wrap{position:relative; flex:1 1 260px;}
+  .search-wrap input{width:100%; padding:12px 16px 12px 44px; border-radius:10px; border:1px solid var(--line-strong); font-size:15px; font-family:inherit; background:var(--canvas); color:var(--ink);}
+  .search-wrap input:focus{outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(43,110,242,.16);}
+  .search-wrap svg{position:absolute; left:15px; top:50%; transform:translateY(-50%);}
+
+  .pill{display:flex; align-items:center; gap:7px; flex-shrink:0; border:1px solid var(--line-strong); border-radius:999px; padding:8px 14px; font-size:12.5px; font-weight:600; cursor:pointer; background:var(--paper); color:var(--ink); font-family:'Space Grotesk',sans-serif; white-space:nowrap; transition:all .13s ease;}
+  .pill:hover{transform:translateY(-1px); border-color:var(--ink-soft);}
+  .pill .count{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:11px; opacity:.55;}
+  .pill[data-active="true"]{color:#fff; border-color:transparent;}
+  .pill[data-active="true"] .count{opacity:.9;}
+  .pill[data-cat="designer"][data-active="true"]{background:var(--designer);}
+  .pill[data-cat="style"][data-active="true"]{background:var(--style);}
+  .pill[data-cat="cms"][data-active="true"]{background:var(--cms);}
+  .pill[data-cat="interactions"][data-active="true"]{background:var(--interactions);}
+  .pill[data-cat="publish"][data-active="true"]{background:var(--publish);}
+  .pill[data-cat="manage"][data-active="true"]{background:var(--manage);}
+
+  .result-count{font-size:12.5px; color:var(--ink-soft); margin:12px 0 14px; font-weight:600;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:16px; padding-bottom:6px;}
+  .card{border-radius:13px; border:1px solid var(--line); padding:0; display:flex; flex-direction:column; background:var(--paper); box-shadow:var(--soft-shadow); cursor:pointer; min-height:176px; transition:transform .14s ease, box-shadow .14s ease, border-color .14s ease; overflow:hidden;}
+  .card:hover{transform:translateY(-3px); box-shadow:var(--lift-shadow); border-color:var(--line-strong);}
+  .card:focus-visible{outline:3px solid var(--primary); outline-offset:2px;}
+  .card .toolbar{height:8px; width:100%;}
+  .card[data-cat="designer"] .toolbar{background:var(--designer);}
+  .card[data-cat="style"] .toolbar{background:var(--style);}
+  .card[data-cat="cms"] .toolbar{background:var(--cms);}
+  .card[data-cat="interactions"] .toolbar{background:var(--interactions);}
+  .card[data-cat="publish"] .toolbar{background:var(--publish);}
+  .card[data-cat="manage"] .toolbar{background:var(--manage);}
+  .card-body{padding:16px 18px 18px; display:flex; flex-direction:column; gap:10px; flex-grow:1;}
+
+  .cat-tag{font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:4px 9px; border-radius:6px; display:inline-flex; align-items:center; gap:5px; align-self:flex-start;}
+  .cat-tag[data-cat="designer"]{color:var(--designer-dark); background:var(--designer-tint);}
+  .cat-tag[data-cat="style"]{color:var(--style-dark); background:var(--style-tint);}
+  .cat-tag[data-cat="cms"]{color:var(--cms-dark); background:var(--cms-tint);}
+  .cat-tag[data-cat="interactions"]{color:var(--interactions-dark); background:var(--interactions-tint);}
+  .cat-tag[data-cat="publish"]{color:var(--publish-dark); background:var(--publish-tint);}
+  .cat-tag[data-cat="manage"]{color:var(--manage-dark); background:var(--manage-tint);}
+
+  .card h3{font-size:17px; margin:0; line-height:1.28;}
+  .card .hook{font-size:12.8px; color:var(--ink-soft); line-height:1.48; margin:0; flex-grow:1;}
+  .explore-row{display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; font-family:'Space Grotesk',sans-serif; color:var(--ink-soft); margin-top:auto;}
+  .explore-row svg{transition:transform .15s ease;}
+  .card:hover .explore-row svg{transform:translateX(3px);}
+  .card:hover .explore-row{color:var(--primary);}
+  .empty-state{grid-column:1/-1; text-align:center; padding:50px 20px; color:var(--ink-soft);}
+
+  /* Modal */
+  .modal-overlay{position:fixed; inset:0; background:rgba(20,26,34,0.5); backdrop-filter:blur(3px); display:flex; align-items:flex-start; justify-content:center; padding:5vh 20px; z-index:100; overflow-y:auto; animation:fadeIn .15s ease;}
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  .modal{background:var(--paper); border:1px solid var(--line-strong); border-radius:16px; max-width:640px; width:100%; padding:0; box-shadow:0 30px 60px -20px rgba(20,26,34,.5); animation:popIn .2s cubic-bezier(.3,.5,.3,1.2); overflow:hidden;}
+  @keyframes popIn{from{transform:translateY(12px) scale(.98); opacity:0;}to{transform:none; opacity:1;}}
+  .modal .modal-strip{height:8px; width:100%;}
+  .modal[data-cat="designer"] .modal-strip{background:var(--designer);}
+  .modal[data-cat="style"] .modal-strip{background:var(--style);}
+  .modal[data-cat="cms"] .modal-strip{background:var(--cms);}
+  .modal[data-cat="interactions"] .modal-strip{background:var(--interactions);}
+  .modal[data-cat="publish"] .modal-strip{background:var(--publish);}
+  .modal[data-cat="manage"] .modal-strip{background:var(--manage);}
+  .modal-inner{padding:22px 30px 26px;}
+  .modal-top{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:8px;}
+  .modal-close{background:var(--canvas); border:1px solid var(--line-strong); border-radius:9px; width:36px; height:36px; font-size:15px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--ink-soft);}
+  .modal-close:hover{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .modal h2{font-size:24px; margin:6px 0 5px; line-height:1.2;}
+  .modal .modal-hook{font-size:14.5px; color:var(--ink-soft); font-style:italic; margin:0 0 18px;}
+  .section-label{display:flex; align-items:center; gap:7px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.04em; margin:20px 0 9px; color:var(--ink-soft);}
+  .modal p.body-text{font-size:14.5px; line-height:1.64; margin:0; color:var(--ink);}
+  .example-list{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px;}
+  .example-list li{font-size:13.6px; line-height:1.55; padding:12px 14px 12px 36px; border-radius:9px; background:var(--canvas); border:1px solid var(--line); position:relative;}
+  .example-list li::before{content:"▸"; position:absolute; left:14px; top:11px; font-size:13px; color:var(--primary); font-weight:700;}
+  .watch-box{background:var(--interactions-tint); border:1px solid rgba(245,158,11,.34); border-radius:9px; padding:12px 14px; font-size:13.4px; line-height:1.55;}
+  .watch-box strong{color:var(--interactions-dark);}
+
+  /* Scenario quiz */
+  .scenario-wrap{padding-bottom:20px;}
+  .progress-row{display:flex; align-items:center; gap:14px; margin-bottom:22px;}
+  .progress-track{flex:1; height:8px; background:var(--line); border-radius:6px; overflow:hidden;}
+  .progress-fill{height:100%; background:var(--primary); transition:width .35s ease; border-radius:6px;}
+  .score-chip{font-family:'JetBrains Mono',monospace; font-weight:600; font-size:12.5px; border:1px solid var(--line-strong); border-radius:8px; padding:6px 11px; white-space:nowrap;}
+  .scenario-card{border:1px solid var(--line-strong); border-radius:14px; padding:26px; background:linear-gradient(180deg,#fff,#F8FAFE); box-shadow:var(--soft-shadow);}
+  .scenario-eyebrow{font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px;}
+  .scenario-text{font-size:18px; line-height:1.5; margin:0 0 22px; font-weight:500;}
+  .options{display:grid; gap:10px;}
+  .option-btn{text-align:left; padding:14px 16px; border-radius:10px; border:1px solid var(--line-strong); background:var(--paper); font-family:'Inter',sans-serif; font-weight:600; font-size:14.5px; cursor:pointer; transition:all .12s ease; color:var(--ink);}
+  .option-btn:hover:not([disabled]){border-color:var(--primary); transform:translateX(3px);}
+  .option-btn[disabled]{cursor:default;}
+  .option-btn.incorrect{background:var(--publish-tint); border-color:var(--publish); color:var(--publish-dark);}
+  .option-btn.reveal-correct{background:var(--cms-tint); border-color:var(--cms); color:var(--cms-dark);}
+  .feedback-box{margin-top:18px; padding:15px 18px; border-radius:10px; border:1px dashed var(--line-strong); font-size:13.8px; line-height:1.55; background:var(--canvas);}
+  .feedback-box strong{font-family:'Space Grotesk',sans-serif;}
+  .next-btn{margin-top:18px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14.5px; background:var(--ink); color:#fff; border:1px solid var(--ink); border-radius:10px; padding:12px 22px; cursor:pointer;}
+  .next-btn:hover{opacity:.9;}
+  .results{text-align:center; padding:24px 10px 10px;}
+  .results h2{font-size:25px; margin-bottom:4px;}
+  .big-score{font-family:'Space Grotesk',sans-serif; font-size:52px; margin:10px 0; color:var(--primary); font-variant-numeric:tabular-nums;}
+  .breakdown{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin:22px 0; text-align:left;}
+  .bd-item{border:1px solid var(--line-strong); border-radius:11px; padding:12px 14px;}
+  .bd-item .lbl{font-size:11.5px; color:var(--ink-soft); font-weight:600;}
+  .bd-item .n{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:16px; margin-top:2px;}
+  .restart-btn{font-family:'Space Grotesk',sans-serif; font-weight:600; background:var(--primary); color:#fff; border:none; border-radius:10px; padding:13px 26px; cursor:pointer; font-size:15px; box-shadow:var(--soft-shadow);}
+  .restart-btn:hover{opacity:.92;}
+  .missed-list{text-align:left; margin-top:20px;}
+  .missed-list h3{font-size:16px;}
+  .missed-item{border-left:3px solid var(--publish); background:var(--publish-tint); border-radius:8px; padding:11px 14px; margin-bottom:8px; font-size:13px; line-height:1.5;}
+
+  /* Studio */
+  .studio-intro{font-size:14px; color:var(--ink-soft); line-height:1.6; margin:0 0 16px; max-width:74ch;}
+  .studio-pills{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px;}
+  .studio-pill{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13px; padding:9px 15px; border-radius:9px; border:1px solid var(--line-strong); background:var(--paper); color:var(--ink-soft); cursor:pointer; display:flex; align-items:center; gap:7px; transition:all .13s ease;}
+  .studio-pill:hover{border-color:var(--primary); color:var(--ink);}
+  .studio-pill.active{background:var(--primary); color:#fff; border-color:var(--primary);}
+  .panel{border:1px solid var(--line-strong); border-radius:13px; background:var(--paper); box-shadow:var(--soft-shadow); overflow:hidden; margin-bottom:16px;}
+  .panel-head{display:flex; align-items:center; gap:9px; padding:11px 16px; border-bottom:1px solid var(--line); background:var(--canvas);}
+  .panel-head .dots{display:flex; gap:5px;}
+  .panel-head .dots span{width:9px; height:9px; border-radius:50%; display:block;}
+  .panel-head .dots span:nth-child(1){background:#EF4444;}
+  .panel-head .dots span:nth-child(2){background:#F59E0B;}
+  .panel-head .dots span:nth-child(3){background:#12B981;}
+  .panel-head .ptitle{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13px; color:var(--ink);}
+  .panel-head .pmeta{margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ink-soft);}
+  .panel-body{padding:18px;}
+
+  /* Reviewer */
+  .rev-grid{display:grid; grid-template-columns:1.4fr 1fr; gap:16px; align-items:start;}
+  .check-row{display:flex; align-items:flex-start; gap:12px; padding:12px 13px; border:1px solid var(--line); border-radius:10px; margin-bottom:9px; cursor:pointer; transition:all .12s ease; background:var(--paper);}
+  .check-row:hover{border-color:var(--line-strong);}
+  .check-row[data-on="true"]{background:var(--cms-tint); border-color:rgba(18,185,129,.4);}
+  .toggle{flex-shrink:0; width:42px; height:24px; border-radius:999px; background:var(--line-strong); position:relative; transition:background .15s ease; margin-top:1px;}
+  .check-row[data-on="true"] .toggle{background:var(--cms);}
+  .toggle::after{content:""; position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:50%; background:#fff; transition:transform .15s ease; box-shadow:0 1px 2px rgba(0,0,0,.2);}
+  .check-row[data-on="true"] .toggle::after{transform:translateX(18px);}
+  .check-copy .ctitle{font-size:13.5px; font-weight:600; line-height:1.35;}
+  .check-copy .csub{font-size:11.8px; color:var(--ink-soft); line-height:1.4; margin-top:2px;}
+  .score-panel{border:1px solid var(--line-strong); border-radius:12px; padding:20px; text-align:center; background:linear-gradient(180deg,#fff,#F7FAFE); position:sticky; top:16px;}
+  .score-ring{font-family:'Space Grotesk',sans-serif; font-size:52px; font-weight:700; line-height:1; font-variant-numeric:tabular-nums;}
+  .score-label{font-size:12px; color:var(--ink-soft); font-weight:600; text-transform:uppercase; letter-spacing:.05em; margin-top:4px;}
+  .score-bar{height:9px; background:var(--line); border-radius:6px; overflow:hidden; margin:16px 0 14px;}
+  .score-bar-fill{height:100%; border-radius:6px; transition:width .3s ease, background .3s ease;}
+  .fix-box{text-align:left; border-radius:10px; padding:13px 14px; font-size:13px; line-height:1.5; margin-top:6px;}
+  .fix-box.warn{background:var(--publish-tint); border:1px solid rgba(239,68,68,.34);}
+  .fix-box.good{background:var(--cms-tint); border:1px solid rgba(18,185,129,.4);}
+  .fix-box .fh{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; display:block; margin-bottom:5px;}
+  .fix-box.warn .fh{color:var(--publish-dark);}
+  .fix-box.good .fh{color:var(--cms-dark);}
+  .rev-actions{display:flex; gap:8px; margin-top:14px; justify-content:center;}
+  .mini-btn{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:12px; padding:8px 13px; border-radius:8px; border:1px solid var(--line-strong); background:var(--paper); color:var(--ink); cursor:pointer;}
+  .mini-btn:hover{border-color:var(--primary); color:var(--primary);}
+
+  /* Playground */
+  .pg-grid{display:grid; grid-template-columns:250px 1fr; gap:18px; align-items:start;}
+  .pg-controls{display:flex; flex-direction:column; gap:14px;}
+  .ctrl label{font-size:11px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; font-family:'Space Grotesk',sans-serif; display:block; margin-bottom:6px;}
+  .seg{display:flex; gap:4px; flex-wrap:wrap;}
+  .seg button{font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:600; padding:6px 10px; border-radius:7px; border:1px solid var(--line-strong); background:var(--paper); color:var(--ink-soft); cursor:pointer; transition:all .1s ease;}
+  .seg button:hover:not(:disabled){border-color:var(--primary);}
+  .seg button.on{background:var(--primary); color:#fff; border-color:var(--primary);}
+  .seg button:disabled{opacity:.4; cursor:not-allowed;}
+  .ctrl.disabled{opacity:.45;}
+  .ctrl .rngval{font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; color:var(--ink); float:right;}
+  input[type=range]{width:100%; accent-color:var(--primary); height:6px;}
+  .pg-stage-wrap{display:flex; flex-direction:column; gap:12px;}
+  .pg-stage{border:1px dashed var(--line-strong); border-radius:10px; background:repeating-linear-gradient(45deg,#F7FAFE,#F7FAFE 10px,#EEF3FB 10px,#EEF3FB 20px); min-height:230px;}
+  .pg-box{background:var(--primary); background:linear-gradient(135deg,#2B6EF2,#4C8DFF); border-radius:8px; min-width:60px; min-height:52px; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; box-shadow:0 4px 10px -4px rgba(43,110,242,.6);}
+  .pg-box:nth-child(2){background:linear-gradient(135deg,#12B981,#34D399);}
+  .pg-box:nth-child(3){background:linear-gradient(135deg,#8B5CF6,#A78BFA);}
+  .css-readout{font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.7; background:#0F1720; color:#D7E3F4; border-radius:10px; padding:16px 18px; overflow-x:auto;}
+  .css-readout .sel{color:#7DD3FC;}
+  .css-readout .prop{color:#C4B5FD;}
+  .css-readout .val{color:#86EFAC;}
+  .css-readout .brace{color:#94A3B8;}
+
+  /* Mapper & Namer */
+  .goal-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; margin-bottom:6px;}
+  .goal-btn{text-align:left; padding:13px 15px; border-radius:10px; border:1px solid var(--line-strong); background:var(--paper); font-size:13.5px; font-weight:600; color:var(--ink); cursor:pointer; transition:all .12s ease; display:flex; align-items:center; gap:9px;}
+  .goal-btn:hover{border-color:var(--primary); transform:translateY(-1px);}
+  .goal-btn.on{background:var(--primary); color:#fff; border-color:var(--primary);}
+  .goal-btn .gi{font-size:16px;}
+  .answer-panel{margin-top:16px; border:1px solid var(--line-strong); border-radius:12px; overflow:hidden;}
+  .answer-head{padding:14px 18px; background:var(--primary-tint); border-bottom:1px solid rgba(43,110,242,.25); display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
+  .panel-chip{font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:700; padding:5px 11px; border-radius:7px; background:var(--primary); color:#fff;}
+  .answer-head .agoal{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:15px; color:var(--ink);}
+  .answer-body{padding:18px;}
+  .step-list{margin:0; padding:0; list-style:none; counter-reset:step; display:flex; flex-direction:column; gap:10px;}
+  .step-list li{position:relative; padding-left:38px; font-size:13.8px; line-height:1.55;}
+  .step-list li::before{counter-increment:step; content:counter(step); position:absolute; left:0; top:-1px; width:26px; height:26px; border-radius:50%; background:var(--primary); color:#fff; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12.5px; display:flex; align-items:center; justify-content:center;}
+  code, .clschip{font-family:'JetBrains Mono',monospace; font-size:12.5px; background:var(--style-tint); color:var(--style-dark); padding:2px 7px; border-radius:5px; font-weight:600;}
+
+  .namer-out{margin-top:16px; border:1px solid var(--line-strong); border-radius:12px; padding:20px; background:linear-gradient(180deg,#fff,#F8FAFE);}
+  .namer-class{font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700; color:var(--style-dark); background:var(--style-tint); border:1px solid rgba(139,92,246,.3); border-radius:9px; padding:12px 16px; display:inline-block; margin-bottom:6px; word-break:break-all;}
+  .namer-combo{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--ink-soft); margin-top:8px;}
+  .namer-combo b{color:var(--style-dark);}
+  .namer-where{font-size:13.5px; line-height:1.55; margin:14px 0 0; color:var(--ink);}
+  .namer-why{margin-top:12px; font-size:13px; line-height:1.55; color:var(--ink-soft); border-left:3px solid var(--style); padding-left:12px;}
+  .field-lbl{font-size:11px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; font-family:'Space Grotesk',sans-serif; margin-bottom:8px; display:block;}
+  select.picker{width:100%; max-width:420px; padding:12px 14px; border-radius:10px; border:1px solid var(--line-strong); font-size:14.5px; background:var(--canvas); color:var(--ink); cursor:pointer;}
+  select.picker:focus{outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(43,110,242,.16);}
+
+  /* Learn */
+  .learn-intro{font-size:14px; color:var(--ink-soft); line-height:1.6; margin:0 0 20px; max-width:76ch;}
+  .learn-h{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:19px; margin:26px 0 14px; display:flex; align-items:center; gap:9px;}
+  .roadmap{position:relative; margin-left:6px; padding-left:26px; border-left:2px solid var(--line-strong);}
+  .phase{position:relative; margin-bottom:18px;}
+  .phase::before{content:""; position:absolute; left:-33px; top:3px; width:14px; height:14px; border-radius:50%; background:var(--primary); border:3px solid var(--paper); box-shadow:0 0 0 2px var(--primary);}
+  .phase .pnum{font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--primary-dark); background:var(--primary-tint); padding:3px 9px; border-radius:6px; display:inline-block; margin-bottom:6px;}
+  .phase h4{font-family:'Space Grotesk',sans-serif; font-size:16px; margin:0 0 5px;}
+  .phase p{margin:0 0 7px; font-size:13.6px; line-height:1.55; color:var(--ink);}
+  .phase .do{font-size:13px; line-height:1.5; background:var(--cms-tint); border:1px solid rgba(18,185,129,.32); border-radius:8px; padding:9px 13px; color:var(--cms-dark);}
+  .phase .do b{color:var(--cms-dark);}
+
+  .res-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px;}
+  .res-card{border:1px solid var(--line-strong); border-radius:13px; background:var(--paper); box-shadow:var(--soft-shadow); overflow:hidden; display:flex; flex-direction:column;}
+  .res-card .rc-head{padding:14px 16px 10px; border-bottom:1px solid var(--line);}
+  .res-type{font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--primary-dark); background:var(--primary-tint); padding:3px 8px; border-radius:5px; display:inline-block; margin-bottom:8px;}
+  .res-card h4{font-family:'Space Grotesk',sans-serif; font-size:16px; margin:0;}
+  .res-card .rc-body{padding:13px 16px 16px; display:flex; flex-direction:column; gap:9px; flex-grow:1;}
+  .res-card .rc-body p{margin:0; font-size:13px; line-height:1.52;}
+  .res-card .why b, .res-card .how b{font-family:'Space Grotesk',sans-serif; font-weight:600; color:var(--ink);}
+  .res-caveat{font-size:11.8px; line-height:1.5; color:var(--interactions-dark); background:var(--interactions-tint); border:1px solid rgba(245,158,11,.32); border-radius:8px; padding:8px 11px;}
+  .res-link{margin-top:auto; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13px; color:var(--primary); text-decoration:none; display:inline-flex; align-items:center; gap:6px;}
+  .res-link:hover{text-decoration:underline;}
+
+  footer{max-width:1100px; margin:30px auto 0; padding:0 24px; color:var(--ink-soft); font-size:12px; line-height:1.6;}
+  footer .fnote{text-align:center; margin-bottom:10px;}
+  footer .fres{border-top:1px solid var(--line-strong); padding-top:14px; display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:8px 20px;}
+  footer .fres div{font-size:11.5px;}
+  footer a{color:var(--primary-dark);}
+
+  @media (max-width:820px){
+    .rev-grid{grid-template-columns:1fr;}
+    .pg-grid{grid-template-columns:1fr;}
+    .score-panel{position:static;}
+  }
+  @media (max-width:600px){
+    .brand-text h1{font-size:24px;}
+    .modal-inner{padding:20px 20px;}
+    main{padding:20px 16px 24px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <svg class="mark" width="52" height="52" viewBox="0 0 52 52" fill="none">
+      <rect x="3" y="3" width="46" height="46" rx="11" fill="#2B6EF2"/>
+      <path d="M12 19l4.6 14.5L21 19h4l4.4 14.5L34 19h5l-7 20h-5l-3.5-12L20 39h-5l-8-20h5z" fill="#fff"/>
+    </svg>
+    <div class="brand-text">
+      <h1>Webflow</h1>
+      <p>A field guide to Webflow — the Designer, the CMS, and how to read, review and manage a build, not just build one.</p>
+      <span class="disclaimer">⚠️ Product specifics &amp; certification details change — verify against Webflow University (as of 2026).</span>
+    </div>
+  </div>
+</header>
+
+<div class="tabbar">
+  <div class="tab active" data-view="library">📚 Concept Library</div>
+  <div class="tab" data-view="studio">🧪 Studio</div>
+  <div class="tab" data-view="practice">🎯 Practice</div>
+  <div class="tab" data-view="learn">🧭 Learn &amp; Get Certified</div>
+</div>
+
+<main id="main"></main>
+
+<footer>
+  <div class="fnote">An interactive field guide built with the field-guide-builder skill. Webflow specifics are a starting point — cross-check plan tiers, the current Designer, and certification cost/format against Webflow University before relying on them.</div>
+  <div class="fres">
+    <div><strong>Webflow University</strong> — free official video + docs; the only fully-current source.</div>
+    <div><strong>Finsweet Client-First</strong> — free CSS naming system; the "read a build in 60 seconds" unlock. (A Mar-2026 third-party post cites a "7-Day Learning Path" — not verified on Finsweet's own site.)</div>
+    <div><strong>Timothy Ricks (YouTube)</strong> — hands-on; his crash course 2026 (Jan 2026) is current, unlike most 2021–2023 Webflow tutorials.</div>
+    <div><strong>Webflow Practitioner Certification</strong> — official credential. (Cost sources conflict: ~$100 per 2025/Mar-2026 sources vs a free legacy exam in older articles — verify before paying.)</div>
+    <div><strong>Webflow Forum + community Discord</strong> — Forum for searchable answers; the ~12,000-member Discord is community-run, not affiliated with Webflow Inc.</div>
+  </div>
+</footer>
+
+<div id="modalRoot"></div>
+
+<script>
+const CATS = {
+  designer:     { label:"Designer & Layout", icon:"🎨" },
+  style:        { label:"Styling & Client-First", icon:"🧩" },
+  cms:          { label:"CMS & Content", icon:"🗂️" },
+  interactions: { label:"Interactions & Effects", icon:"✨" },
+  publish:      { label:"Publishing, SEO & Hosting", icon:"🚀" },
+  manage:       { label:"Managing & Reviewing Builds", icon:"🧭" },
+};
+
+const ENTRIES = [
+  // ---------- DESIGNER & LAYOUT ----------
+  {cat:"designer", name:"The Webflow Designer Canvas", hook:"A visual editor that writes real HTML & CSS for you.",
+   def:"The Designer is Webflow's visual canvas: you drag elements onto the page and style them in panels, and Webflow generates production HTML and CSS underneath. Unlike a template-only builder, nearly every CSS property is exposed, so what you build is real front-end code, not a locked-in widget. Understanding that the canvas maps one-to-one onto HTML/CSS is the whole mental model — the panels are just a GUI over the box model, flexbox, grid, and the cascade.",
+   example:["You drop a Section, add a Div inside, and set it to flex in the Style panel — Webflow writes the corresponding CSS class.","Selecting an element shows its tag, its classes, and every applied style in the right-hand Style panel."],
+   watch:"Because the Designer exposes real CSS, it also lets you make real CSS mistakes — the canvas won't stop you from nesting badly or naming classes carelessly. The tool is only as clean as the person driving it."},
+
+  {cat:"designer", name:"The Box Model", hook:"Every element is a box: content, padding, border, margin.",
+   def:"The box model is the foundation of all CSS layout, and Webflow is a visual skin over it. Every element is a rectangular box made of four layers: the content, the padding (space inside the border), the border, and the margin (space outside the border). The Style panel's spacing diagram is a direct picture of this. If you understand the box model, Webflow layout stops being mysterious; if you don't, you'll fight the canvas forever.",
+   example:["A button's inner breathing room is padding; the gap between it and the next element is margin.","Setting box-sizing so width includes padding and border prevents an element from unexpectedly overflowing its container."],
+   watch:"Padding and margin are not interchangeable — using margin where you meant padding (or vice versa) is the single most common beginner layout bug, and it looks fine until the element sits next to another one."},
+
+  {cat:"designer", name:"Flexbox", hook:"One-dimensional layout: line things up in a row or column.",
+   def:"Flexbox lays out children along a single axis — a row or a column — and controls how they align and distribute space. In Webflow you set a parent's display to Flex, pick a direction, then use justify-content (main axis) and align-items (cross axis) to position children. It's the workhorse for navbars, button groups, card rows, and most component-level layout. Most day-to-day Webflow layout is flexbox.",
+   example:["A navbar is a flex row with justify-content: space-between to push the logo left and links right.","A vertical stack of a heading, paragraph, and button is a flex column with a gap between them."],
+   watch:"justify-content and align-items swap meaning when you change flex-direction — in a row, justify is horizontal; in a column, justify is vertical. Beginners set the direction then wonder why the alignment control 'stopped working.'"},
+
+  {cat:"designer", name:"CSS Grid", hook:"Two-dimensional layout: rows and columns at once.",
+   def:"Grid lays elements out in two dimensions simultaneously — you define columns and rows, and place children into that structure. Where flexbox handles a single line, grid is for genuine grids: a gallery, a pricing table, a dashboard, a footer with aligned columns. Webflow gives grid a visual editor where you drag column and row lines and drop elements into cells.",
+   example:["A 3-column feature section is a grid with three equal columns and a gap, so cards align perfectly regardless of content length.","A footer with four aligned link columns is cleaner as a grid than as nested flex boxes."],
+   watch:"Reaching for grid when flexbox would do (or vice versa) creates fragile layouts — use flexbox for a single row/column of content, grid when you genuinely need both axes to align. Nesting many grids inside grids is usually a sign the structure is wrong."},
+
+  {cat:"designer", name:"Padding vs Margin (Spacing)", hook:"Space inside the box vs space between boxes.",
+   def:"Padding is space inside an element, between its content and its border; margin is space outside, between the element and its neighbours. This distinction drives all spacing decisions. A disciplined build uses a consistent spacing scale (a limited set of sizes) rather than arbitrary pixel values, so the whole site breathes evenly. Client-First formalizes this with named spacing classes instead of one-off margins.",
+   example:["Padding on a card gives its text room inside; margin below the card separates it from the next card.","Instead of typing '37px' margins by hand, a clean build uses a scale like small / medium / large so spacing stays consistent sitewide."],
+   watch:"Random one-off pixel margins are the tell of a messy build — when every element has its own bespoke spacing value, nothing lines up and future edits are a nightmare. Consistent spacing is a hallmark reviewers look for first."},
+
+  {cat:"designer", name:"Breakpoints & Responsive Design", hook:"One build, styled to work at every screen size.",
+   def:"Webflow builds are responsive: you design a base layout, then adjust styles at breakpoints (desktop, tablet, mobile-landscape, mobile-portrait) so the page reflows for each screen. Webflow's model is desktop-first by default — styles cascade down from larger breakpoints to smaller unless overridden — so changes at a smaller breakpoint only affect that size and below. Getting responsiveness right is non-negotiable, since most traffic is mobile.",
+   example:["A 3-column grid on desktop is set to a single column at the mobile breakpoint so it stacks cleanly.","Reducing a hero heading's font size at the tablet breakpoint keeps it from overflowing on smaller screens."],
+   watch:"Because Webflow cascades desktop styles downward, a change made at a smaller breakpoint won't push back up — but a change at desktop flows to all sizes. Editing at the wrong breakpoint is why 'I fixed mobile and it broke desktop' happens."},
+
+  {cat:"designer", name:"The Navigator & Semantic Structure", hook:"The element tree — and whether it's built with meaning.",
+   def:"The Navigator is Webflow's layer panel: a tree of every element on the page, showing nesting and hierarchy. Reading it tells you instantly whether a build is structured sanely. Good structure follows a semantic pattern — a Section wraps a Container, which wraps the content — and uses real semantic tags (header, nav, main, section, footer, h1–h6) rather than a pile of generic Divs. Clean structure is what makes a build accessible, SEO-friendly, and maintainable.",
+   example:["A healthy page reads Section → Container → content in the Navigator, repeated per section, easy to scan.","Setting a wrapper's tag to <section> and using proper heading levels helps screen readers and search engines understand the page."],
+   watch:"A Navigator full of nameless nested Divs ('div block' × 20) with no sections or semantic tags is a red flag — it usually means the builder ignored structure, which quietly hurts accessibility, SEO, and every future edit."},
+
+  // ---------- STYLING & CLIENT-FIRST ----------
+  {cat:"style", name:"Classes", hook:"A named bundle of styles you attach to elements.",
+   def:"In Webflow you style elements by giving them classes — named style rules that can be reused across many elements. Style one element with a class, and every element sharing that class updates together. This is the core of maintainable Webflow: classes are reusable styling, not decoration. A class named by function (like a button style) can be applied everywhere that function appears, so one edit updates the whole site.",
+   example:["Create a 'button' class once, apply it to every call-to-action, and changing its colour updates them all.","A 'card' class applied to each card guarantees they share identical padding, radius, and shadow."],
+   watch:"Styling an element without a class (or with a one-use class) forfeits reuse — you end up re-styling the same thing dozens of times. If a class is used on only one element by design, that's fine; if it's used once by accident, it's bloat."},
+
+  {cat:"style", name:"Combo Classes & the Cascade", hook:"A base class plus a modifier — variants without duplication.",
+   def:"A combo class is a second class stacked on top of a base class to create a variant. The base carries shared styles; the combo overrides only what differs. This leans on the CSS cascade: styles apply in order, so the combo wins where it sets a property. Client-First uses combos prefixed with 'is-' (like a secondary or small button) to express variants cleanly instead of duplicating a whole new class.",
+   example:["A base 'button' class plus an 'is-secondary' combo gives an outline button that still inherits the base sizing and radius.","'button' + 'is-small' reuses the button's look but shrinks its padding — no separate 'small-button' class needed."],
+   watch:"Combo classes only edit the base+combo combination, not the base alone — beginners edit a combo thinking they're changing the base class everywhere, then get confused when only some buttons change. Deeply stacked combos (three or four deep) get brittle fast."},
+
+  {cat:"style", name:"The Global Style Guide", hook:"One page that defines the whole design system.",
+   def:"A style guide is a dedicated page where you define every reusable style once — headings h1–h6, body text sizes, button variants, colours, spacing — so the rest of the site inherits from a single source of truth. It's the visual design system made real inside Webflow. Client-First ships a style guide as its backbone. Building the style guide first, then assembling pages from it, is what keeps a large site consistent.",
+   example:["The style guide page shows every heading and text size side by side, so any drift is instantly visible.","Defining button variants once on the style guide means every button across the site stays on-brand automatically."],
+   watch:"A build with no style guide — where each page reinvents its own headings and spacing — will drift into inconsistency as it grows. When reviewing, the presence and health of a style guide tells you how maintainable the whole site is."},
+
+  {cat:"style", name:"Variables / Custom Properties", hook:"Define a colour or size once, reference it everywhere.",
+   def:"Webflow Variables (CSS custom properties) let you define tokens — brand colours, font sizes, spacing, radii — once and reference them across the whole site. Change the token and everything using it updates. Variables support modes (like light/dark theming) and are the modern way to run a design system in Webflow, replacing the older approach of relying only on global swatches.",
+   example:["A 'brand/primary' colour variable is referenced by every button and link; rebrand by editing one value.","Spacing variables let a whole site shift its rhythm by changing one number instead of hundreds of margins."],
+   watch:"Variables are powerful but only if they're actually used — a build that defines variables then hard-codes hex values anyway gets the worst of both. Consistent token use is a sign of a mature, handoff-ready system."},
+
+  {cat:"style", name:"Client-First (Finsweet)", hook:"The naming convention that makes builds readable.",
+   def:"Client-First is Finsweet's free naming and structure system for Webflow. It standardizes how classes are named, how spacing works, and how pages are structured, so any Client-First build looks familiar to anyone who knows the system. Core ideas: name classes by function (not by style or colour), use global wrappers (page-wrapper, main-wrapper), structure sections as section_[identifier] with padding-global and container-large/medium/small, and handle spacing with named utility classes. It powers the Relume library and is the de facto agency standard.",
+   example:["A hero section is section_hero → padding-global → container-large → content, instantly recognizable to any Client-First developer.","Spacing is a spacer div with margin-bottom + margin-medium, never a hand-typed pixel margin."],
+   watch:"Client-First is a convention, not a plugin — nothing enforces it, so a build can claim to use it while breaking the rules. The manager's job is to recognize whether the naming is actually functional and consistent, not just present."},
+
+  {cat:"style", name:"Relume Component Library", hook:"Pre-built, Client-First sections you assemble like Lego.",
+   def:"Relume is a large library of pre-designed, responsive Webflow components and page sections built on Client-First conventions. You browse hundreds of section templates (heroes, feature grids, pricing, footers), copy them into your project, and restyle to the brand. Because they're already Client-First-structured, they slot into a clean build and dramatically speed up assembly without sacrificing maintainability.",
+   example:["A team assembles a landing page in an afternoon by dropping in Relume hero, features, testimonial, and CTA sections, then rebranding.","Relume's Client-First class names mean pasted sections match the rest of a Client-First project's structure."],
+   watch:"Relume speeds assembly but doesn't guarantee quality — pasted sections still need restyling to the brand and pruning of unused classes, or you inherit generic-looking pages and style bloat. Fast assembly is not the same as a finished, on-brand build."},
+
+  // ---------- CMS & CONTENT ----------
+  {cat:"cms", name:"CMS Collections", hook:"A content database that powers repeating pages.",
+   def:"A Collection is a structured content type in Webflow's CMS — like a database table. You define a Collection (say, Blog Posts) with fields, then add items to it. Webflow can then render those items dynamically: list them, template a page per item, filter and sort them. Collections are what let non-technical editors add content without touching layout, and what make a site scale past hand-built pages.",
+   example:["A 'Blog Posts' Collection holds every article; adding a post creates its page automatically from a template.","A 'Team Members' Collection powers an about page that grows as you add people, no new layout work."],
+   watch:"Webflow's CMS has plan-based limits on the number of Collections and items — a content-heavy site can hit them, so check current limits before designing a huge content model. The CMS is powerful but not unbounded."},
+
+  {cat:"cms", name:"CMS Field Types", hook:"Each piece of content has a defined shape.",
+   def:"Every Collection is made of typed fields — plain text, rich text, image, number, date, link, option (a fixed set of choices), switch (on/off), and reference fields. Choosing the right field type per piece of content is what makes the CMS reliable: a date field sorts chronologically, an option field constrains editors to valid choices, a rich text field holds formatted body content. The field model is the contract between editors and layout.",
+   example:["A blog post uses a plain-text title, a rich-text body, an image for the thumbnail, and a date for sorting.","An 'option' field for post category limits editors to a fixed list, preventing typos that break filtering."],
+   watch:"Choosing a loose field type (free text where an option or reference belongs) invites inconsistent data that breaks filtering and sorting later — the field model is easy to set up sloppily and painful to migrate. Get the shape right up front."},
+
+  {cat:"cms", name:"Collection Lists (Dynamic Lists)", hook:"One design, repeated automatically for every item.",
+   def:"A Collection List is an element that pulls items from a Collection and repeats a design for each one. You style a single item, and Webflow renders it once per item — so a blog index, a team grid, or a product list is built from one template, not hand-placed cards. Lists can be filtered, sorted, and limited, which is how you build 'latest 3 posts' or 'products in this category' dynamically.",
+   example:["A blog index is a Collection List showing every post as a card, sorted newest-first — add a post and it appears.","A homepage 'Featured' strip is a Collection List filtered to featured items and limited to three."],
+   watch:"Because the whole list is generated from one item's design, an editor changing content can't break the layout — but a builder styling the wrong nested element can break every card at once. The reuse cuts both ways."},
+
+  {cat:"cms", name:"Collection (Template) Pages", hook:"One page design that renders for every item.",
+   def:"A Collection Page is a single template that Webflow renders once per item in a Collection, pulling each field into the layout via dynamic bindings. Design the blog-post template once — title, date, body, author — and every post gets its own page at its own URL automatically. This is the core CMS payoff: infinite pages from one design, editable by content people who never see the layout.",
+   example:["The blog-post template binds the title to an h1, the date to a text element, and the rich-text field to the body — every post inherits it.","A product template renders a unique page per product, each with its own SEO settings from CMS fields."],
+   watch:"Everything on a template is shared, so a layout change hits every item's page at once — great for consistency, dangerous if untested. Always preview a template against several real items (long titles, missing images) before publishing."},
+
+  {cat:"cms", name:"Reference & Multi-Reference Fields", hook:"Link items together to model real relationships.",
+   def:"Reference fields connect Collections to each other. A single reference links an item to one item in another Collection (a blog post to its one author); a multi-reference links to many (a post to several tags). This models real relationships and unlocks dynamic filtering — show all posts by an author, or all posts with a tag — without duplicating data. It's how a flat content list becomes a connected content system.",
+   example:["A 'Blog Posts' Collection references an 'Authors' Collection, so each post shows its author and you can list all posts by them.","A multi-reference 'Tags' field lets one post carry several tags and powers tag-filtered lists."],
+   watch:"References power filtering but add modelling complexity, and Webflow limits how many you can filter a list by — over-modelling relationships early can make a simple site harder to edit than it needs to be. Model the relationships you actually need, not every one you can imagine."},
+
+  {cat:"cms", name:"The Editor vs the Designer", hook:"Two front doors: one edits content, one edits layout.",
+   def:"Webflow separates content editing from design. The Designer is the full canvas where structure and styling are built — powerful and easy to break. The Editor (and the newer edit-in-place experience) is a stripped-down interface where content people update CMS items and text without any ability to touch layout or classes. This separation is exactly what makes Webflow safe to hand to a client: they can publish a blog post but can't wreck the design.",
+   example:["A marketer logs into the Editor to publish a new blog post and swap a hero headline — no risk to the layout.","A client updates team bios themselves, freeing the agency from every small content change."],
+   watch:"The safety only holds if the build is structured well — if content and layout are tangled (text hard-coded into design elements instead of CMS fields), the Editor can't reach it and the client is stuck asking the agency for every change. Good structure is what makes self-service editing real."},
+
+  // ---------- INTERACTIONS & EFFECTS ----------
+  {cat:"interactions", name:"The Interactions Panel", hook:"Animate elements without writing JavaScript.",
+   def:"Webflow Interactions is a visual timeline editor for animation. You pick an element, choose a trigger, and define what animates — position, opacity, scale, colour — building motion that would otherwise need JavaScript. It's how Webflow sites get fades, parallax, hover effects, and scroll animations without code. Interactions are stored per-element or as reusable animations, and they run natively in the browser.",
+   example:["A card fades and lifts slightly on hover, set up entirely in the Interactions panel with no code.","A section's elements stagger into view as the user scrolls to them, built on a scroll trigger."],
+   watch:"Interactions are easy to overuse — a page where everything moves feels slow and gimmicky, and heavy interactions can hurt performance on lower-end phones. Motion should guide attention, not decorate every element."},
+
+  {cat:"interactions", name:"Triggers (Hover / Scroll / Click / Load)", hook:"What event kicks an animation off.",
+   def:"Every interaction starts with a trigger: hover (mouse over/out), click/tap, scroll into view, scroll progress (tied to scroll position), page load, or mouse movement. The trigger you choose defines when and how the animation plays. Understanding triggers is understanding interactions — the same animation feels completely different as a one-time load reveal versus a continuous scroll-linked effect.",
+   example:["A 'scroll into view' trigger fades a section up as it enters the viewport, playing once.","A 'while scrolling in view' trigger ties a parallax image's position directly to scroll progress, moving continuously."],
+   watch:"Hover triggers don't exist on touchscreens — a menu or reveal that only works on hover simply won't work on a phone. Any hover interaction needs a tap-friendly fallback, or it silently fails for mobile users."},
+
+  {cat:"interactions", name:"Timed vs Scroll-Based Animation", hook:"Plays on a clock, or plays as you scroll.",
+   def:"Interactions split into two families. Timed animations play on a fixed timeline once triggered (a load reveal, a hover transition) — duration and easing control the feel. Scroll-based animations tie their progress to the scroll position, so the user scrubs the animation by scrolling (parallax, progress-linked reveals). Knowing which family a effect needs is the difference between motion that feels intentional and motion that fights the user.",
+   example:["A hero headline that fades up once on page load is a timed animation with an ease-out curve.","A background that drifts as you scroll past it is scroll-based, its position mapped to scroll progress."],
+   watch:"Scroll-linked animations that do heavy work on every scroll frame are a common cause of janky, stuttering mobile pages — the effect that looks smooth on a desktop can tank the frame rate on a phone. Test scroll animations on a real device."},
+
+  {cat:"interactions", name:"Native Interactions vs Custom Code / GSAP", hook:"When the visual tool is enough, and when it isn't.",
+   def:"Webflow's native Interactions cover the vast majority of web animation needs without code. But for complex, tightly-sequenced, or physics-based motion — timeline choreography, advanced easing, SVG drawing, scroll-triggered sequences beyond the panel's reach — developers drop to custom JavaScript, often with GSAP (a professional animation library). The judgment call is native-first: reach for code only when the native tool genuinely can't express the effect.",
+   example:["A standard fade-and-slide reveal stays native — no reason to add a library.","A complex, precisely-timed multi-element sequence with custom easing is cleaner and more maintainable in GSAP than fought into the native panel."],
+   watch:"Jumping to custom code for effects the native tool handles adds a dependency, a maintenance burden, and something a content editor can't touch — 'we used GSAP' isn't a badge of quality if native interactions would have done the job. Custom code is a cost, not a default."},
+
+  // ---------- PUBLISHING, SEO & HOSTING ----------
+  {cat:"publish", name:"Publishing: Staging vs Production", hook:"Nothing goes live until you publish it.",
+   def:"Webflow separates your working build from what the public sees. Changes in the Designer aren't live until you Publish. Webflow gives every project a free staging domain (a .webflow.io URL) to preview the live build safely, and you publish to your custom production domain when ready. You can publish to staging alone to review, then to production. This staging/production split is how you QA a build before real users see it.",
+   example:["You publish to the .webflow.io staging URL to click through changes before pushing them to the live domain.","Publishing to production pushes the current build to the custom domain for all visitors at once."],
+   watch:"Publishing is all-or-nothing per publish — there's no partial deploy of half your changes, so unfinished work in the Designer goes live if you publish. Always review on staging first, and know exactly what's unpublished before you hit publish."},
+
+  {cat:"publish", name:"SEO Settings", hook:"The metadata that decides how a page shows up in search.",
+   def:"Each page in Webflow has SEO settings: the title tag (what shows as the clickable headline in search results), the meta description (the snippet beneath it), and Open Graph settings (the title, description, and image used when the page is shared on social). Site-wide, Webflow auto-generates a sitemap and lets you control indexing via robots settings. On CMS template pages, these fields can bind to Collection fields so every item gets unique SEO automatically.",
+   example:["A page's title tag and meta description are set per-page so search results show intentional, keyword-relevant copy.","A blog template binds its title tag to the post's title field, giving every post unique SEO without manual work."],
+   watch:"Empty or duplicate title tags and missing meta descriptions are among the most common — and most quietly damaging — build defects. When reviewing, checking that every page (and every CMS template) has real, unique SEO fields set is a core QA step."},
+
+  {cat:"publish", name:"301 Redirects", hook:"Send an old URL to its new home, permanently.",
+   def:"A 301 redirect permanently forwards one URL to another. When a page's URL changes — a redesign, a renamed CMS slug, a restructured site — the old URL will otherwise 404 and lose its search ranking and any inbound links. Webflow lets you add 301 redirects in the project's publishing settings so old links keep working and SEO value transfers to the new page. Managing redirects is a routine part of any site change.",
+   example:["Renaming /services to /what-we-do without a redirect breaks every existing link and bookmark — a 301 fixes it.","Migrating a site into Webflow, you add 301s mapping every old URL to its new equivalent to preserve rankings."],
+   watch:"Redesigns and CMS slug changes silently create dead URLs — the pages still 404 quietly while everyone admires the new design. Auditing and adding 301 redirects is a launch-day task that's easy to forget and expensive to skip."},
+
+  {cat:"publish", name:"Forms & Form Handling", hook:"Capture submissions — and make sure they go somewhere.",
+   def:"Webflow has native form elements that capture submissions and store them, with email notifications and success/error states built in. For anything beyond the basics — routing to a CRM, spam protection, complex logic — forms connect to external services via integrations or webhooks (often through tools like Zapier or Make). A form that looks fine but sends its submissions nowhere is a classic, costly oversight.",
+   example:["A contact form shows a success message on submit and emails the team; submissions are also stored in the project.","A form pipes leads into a CRM via a webhook or a Zapier/Make integration instead of just an email."],
+   watch:"The single most-missed form defect is a form that captures nothing useful — no notification set up, no integration, submissions piling up unseen. QA-ing a build means actually submitting every form and confirming the data lands somewhere a human will see it."},
+
+  {cat:"publish", name:"Performance Basics", hook:"A pretty site that loads slowly still loses.",
+   def:"Webflow hosts on a fast global CDN and handles a lot of optimization automatically (minification, responsive images, lazy loading). But performance is still a build responsibility: oversized images, too many heavy interactions, and bloated custom code or third-party scripts drag load times down. Since most traffic is mobile on variable connections, a fast-loading build directly protects engagement and conversion.",
+   example:["Uploading appropriately-sized images (and letting Webflow serve responsive variants) keeps a page fast on mobile.","Trimming unused apps and third-party scripts removes render-blocking weight from every page load."],
+   watch:"Performance rarely fails loudly — the site works, it's just slow, and slow quietly costs conversions and search ranking. Reviewing image weights, interaction load, and third-party scripts is a QA step that's easy to skip because nothing looks broken."},
+
+  {cat:"publish", name:"Custom Code Embeds & the Head/Body", hook:"Escape hatches for what the visual tool can't do.",
+   def:"Webflow lets you inject custom HTML, CSS, or JavaScript — inline via an Embed element, or globally in the page/site head and before-body-close sections. This is where analytics scripts, chat widgets, custom fonts, schema markup, and advanced behaviours live. It's a powerful escape hatch, but every embed is code the visual tool doesn't manage, so it's also where fragility and performance costs enter a clean build.",
+   example:["An analytics or pixel snippet goes in the site-wide head or before-</body> custom code section.","A small Embed adds a schema markup block or a third-party widget the native elements can't produce."],
+   watch:"Custom code bypasses Webflow's safeguards — a broken script in the head can slow or break every page, and it's invisible in the Navigator. When reviewing, treat custom code as the highest-risk part of a build and know exactly what each snippet does and why it's there."},
+
+  // ---------- MANAGING & REVIEWING BUILDS ----------
+  {cat:"manage", name:"Reading Build Quality", hook:"Tell a clean build from a messy one in 60 seconds.",
+   def:"The core manager skill is judging a build's quality by reading its structure, not just looking at the rendered page. A clean build has functional class names (named by purpose, not colour or style), a consistent spacing system, sane section→container→content structure, semantic tags, and no orphaned or duplicated classes. A messy build renders fine but is a maintenance trap. Learning to open a project and assess this fast — via the Navigator and Style panel — is what separates a reviewer from a viewer.",
+   example:["You open a file, scan the Navigator, and see clean section_/container structure with function-named classes — clean.","You see classes like 'blue-box-2', random pixel margins, and 30 nameless divs — messy, regardless of how the page looks.",],
+   watch:"A build can look perfect in the browser and be rotten underneath — visual polish tells you nothing about maintainability. The whole point of reading structure is that the expensive problems (unmaintainable classes, tangled content) are invisible on the rendered page."},
+
+  {cat:"manage", name:"Roles & Permissions", hook:"Who can touch what — design, content, or nothing.",
+   def:"Webflow supports team roles so different people get different access: designers/developers work in the full Designer, content editors are limited to the Editor (content only), and some collaborators get view or comment access. On team and enterprise plans you can control who publishes, who edits design, and who only edits content. Setting roles correctly is a manager's job — it protects the build from accidental damage and matches access to responsibility.",
+   example:["A client is given content-editor access so they can publish blog posts but cannot alter the design.","Only a lead developer holds publish rights, so nothing goes live without a review."],
+   watch:"Over-granting access is a silent risk — giving a content person full Designer access means one accidental drag can break the layout, and you won't know who or when. Access should match responsibility, and 'everyone's an admin' is how clean builds decay."},
+
+  {cat:"manage", name:"Team Workflow", hook:"How multiple people build without stepping on each other.",
+   def:"Webflow builds are collaborative, but the Designer isn't a multiplayer document in the way a codebase with branches is — historically only one person edits a page's design at a time, and coordination matters. A healthy workflow defines who owns what, uses staging to review before production, uses the CMS to separate content from design, and agrees on conventions (like Client-First) so everyone's work is legible to everyone else. The manager sets and enforces these norms.",
+   example:["The team agrees on Client-First naming so any member can open any page and understand it immediately.","Content is moved into the CMS so a marketer and a designer can work in parallel without colliding.",],
+   watch:"Without agreed conventions, every developer builds their own way and the project becomes a patchwork only its author understands — the cost shows up later when someone else has to maintain it. Shared conventions are the workflow, not paperwork around it."},
+
+  {cat:"manage", name:"Review & Feedback in Webflow", hook:"Comment on the build in context, not in a doc.",
+   def:"Reviewing a Webflow build well means giving feedback tied to specific elements and pages, not vague notes in a separate document. Webflow supports commenting so reviewers can pin feedback directly to parts of the design, and staging URLs let stakeholders click through the real build before launch. A good review process catches problems in context — this heading, this breakpoint, this page — and creates a trail the builder can act on precisely.",
+   example:["A reviewer pins a comment on a specific mis-aligned section at the tablet breakpoint, so the fix is unambiguous.","Stakeholders review the staging URL and leave in-context notes instead of a scattered email thread."],
+   watch:"Feedback detached from the build ('the spacing feels off somewhere') wastes everyone's time — precise, in-context, element-level feedback is what makes review fast. The manager's review skill is as much about how feedback is given as what's caught."},
+
+  {cat:"manage", name:"QA-ing a Build Before Launch", hook:"The pre-flight checklist that catches what demos hide.",
+   def:"Pre-launch QA is a systematic pass over a build before it goes to production. It covers responsiveness at every breakpoint, every link and form actually working, SEO fields (title, meta) set on every page and CMS template, 301 redirects for changed URLs, alt text and basic accessibility, performance (image weights, scripts), and CMS templates tested against real edge-case items. Skipping QA is how sites launch with broken mobile layouts, dead forms, and missing metadata that nobody noticed in the desktop demo.",
+   example:["Before launch you resize to every breakpoint, submit every form, and click every link to catch what the desktop demo hid.","You confirm every CMS template renders correctly against a long title and a missing image, not just the one nice sample item.",],
+   watch:"Demos happen on desktop with ideal content — QA exists precisely to test the conditions demos skip: mobile, real content, edge cases, and the boring settings (SEO, redirects, form handling) that are invisible until they fail in production."},
+
+  {cat:"manage", name:"Developer Handoff & Maintainability", hook:"Could someone else take this over tomorrow?",
+   def:"A build's real quality shows at handoff: can another developer — or the client's future agency — open the project and work in it without a guided tour? Maintainability comes from consistent conventions (Client-First), a working style guide, clean class names, documented custom code, and content properly in the CMS. The manager's job is to ensure a build is handoff-ready, because an unmaintainable site is a liability the moment its original builder leaves.",
+   example:["A handoff-ready project uses Client-First throughout, so a new developer is productive on day one.","Custom code is commented and centralized, so the next person knows what each snippet does and why."],
+   watch:"'It works and looks great' is not the same as 'someone else can maintain it' — the second is where real value and risk live. A build that only its author can safely edit is fragile no matter how good it looks, and that fragility is exactly what a manager is there to catch."},
+
+  {cat:"manage", name:"The Webflow Practitioner Certification", hook:"The official proof you can build to standard.",
+   def:"The Webflow Practitioner Certification is Webflow's official credential validating core Webflow competence. As documented for 2026 it's a 50-question exam, AI-proctored through Certiverse, valid for two years, with unlimited retakes (a 24-hour wait between attempts), and results are shareable on LinkedIn via Accredible. For someone reviewing and managing builds, it's a way to prove a shared baseline — though the credential proves knowledge of the tool, not taste or the judgment to read a messy build.",
+   example:["A practitioner books the exam after finishing Webflow University 101 and hands-on practice, then shares the badge on LinkedIn.","An agency uses the certification as a baseline competency check across its build team."],
+   watch:"Certification details change — cost sources conflict (a 2025/Mar-2026 figure of ~$100 vs an older free legacy exam) and format can shift, so verify on Webflow's certifications page before relying on specifics. And a credential proves tool knowledge, not the review judgment this guide is really about."},
+];
+
+const SCENARIOS = [
+  {q:"You open a handed-over build and every class is named by its colour — 'blue-box', 'green-button-2', 'red-text'. What's the core problem?",
+   options:["Nothing — colour names describe each element clearly","The palette itself is off and needs re-picking","Classes should be named by function, not colour","There are simply too few classes for the page"], correct:2,
+   why:"Function over appearance — Client-First names classes by purpose (button, card, section_hero), not colour. Rebrand 'blue-box' to orange and the name lies; a function name survives restyling and tells the next person what the element is for.", cat:"style"},
+
+  {q:"A client needs to publish and edit blog posts regularly without ever breaking the layout. What do you build this on?",
+   options:["The CMS — a Collection, template page, and Editor","A custom-coded HTML page built fresh for every post","Static pages cloned and hand-edited per article","Body copy hard-coded directly into page Divs"], correct:0,
+   why:"The CMS — a Blog Posts Collection with a template page renders each post automatically, and the Editor lets the client change content without touching design. Content and layout stay separated, which is exactly what makes self-service safe.", cat:"cms"},
+
+  {q:"A hover animation that reveals a menu looks great on your laptop but does nothing on a phone. Why?",
+   options:["The phone's processor is too slow to render it","The animation is timed rather than scroll-based","The CMS binding for the menu is misconfigured","Touchscreens have no hover event for the menu to use"], correct:3,
+   why:"No hover on touch — phones have no mouse-over event, so a hover-only reveal silently fails. Any hover interaction needs a tap-friendly fallback or it breaks for the majority of (mobile) traffic.", cat:"interactions"},
+
+  {q:"You're reviewing a build before launch. Which set of SEO settings should you confirm on every page AND every CMS template?",
+   options:["Base font family and brand colour tokens","Title tag, meta description, and Open Graph tags","Flexbox direction and alignment settings","The staging domain and publish target"], correct:1,
+   why:"Title + meta (+ Open Graph) — empty or duplicate title tags and missing meta descriptions are among the most common, most damaging defects. On CMS templates these should bind to Collection fields so every item gets unique SEO automatically.", cat:"publish"},
+
+  {q:"The Navigator shows twenty nested elements all named 'Div Block', no sections, no semantic tags. What does this tell you?",
+   options:["Poor structure that hurts SEO and accessibility","A lean hierarchy that renders quickly and cleanly","A standard Client-First section structure","Nothing meaningful worth flagging here"], correct:0,
+   why:"Poor structure — a wall of nameless divs with no section/container pattern or semantic tags hurts accessibility and SEO and makes every future edit painful. Clean structure (section → container → content, real tags) is the first thing to read in the Navigator.", cat:"designer"},
+
+  {q:"You edited a heading at the mobile breakpoint to fix an overflow, and now desktop looks wrong too. What most likely happened?",
+   options:["Webflow's breakpoint engine is glitching on you","A CMS binding quietly overrode the heading style","A 301 redirect fired during the page load","You edited the desktop base, which cascades"], correct:3,
+   why:"Cascade direction — Webflow is desktop-first: changes at desktop flow down to all sizes, while changes at a smaller breakpoint stay local. Editing at the wrong breakpoint is why 'I fixed mobile and broke desktop' happens.", cat:"designer"},
+
+  {q:"A build uses a base 'button' class plus an 'is-secondary' combo. The developer edits the combo expecting all buttons to change, but only the secondary ones do. Why?",
+   options:["Combo classes are fundamentally broken in Webflow","The base 'button' class was accidentally deleted","A combo edits only the base+combo pair, not the base","It's a browser cache bug that clears on reload"], correct:2,
+   why:"Combo scope — a combo class edits only the elements carrying both classes. To change all buttons you edit the base 'button' class; to change just secondaries you edit the combo. Confusing the two is a classic Client-First stumble.", cat:"style"},
+
+  {q:"You're assessing whether a build is ready to hand to another agency. What matters most?",
+   options:["How polished and pretty it looks in the browser","Whether another team can open and maintain it","The total page count across the whole project","That it relies on GSAP for its animations"], correct:1,
+   why:"Maintainability — 'it works and looks great' is not 'someone else can maintain it'. Consistent Client-First conventions, a working style guide, clean names, and content in the CMS are what make a build handoff-ready. The rest is invisible until the original builder leaves.", cat:"manage"},
+
+  {q:"A contact form on a live site looks fine and shows a success message, but the client says they never get leads. Most likely cause?",
+   options:["The submit button's colour is set wrong","The form submits far too fast to record","A hover trigger on the submit field silently failed","No notification or integration was ever set up"], correct:3,
+   why:"Form handling — a form that captures nothing useful is a classic costly defect. QA means actually submitting every form and confirming the data reaches a human, via notification or an integration to a CRM.", cat:"publish"},
+
+  {q:"During a redesign you rename several page URLs and change some CMS slugs. What must you do to protect SEO and existing links?",
+   options:["Add 301 redirects mapping every old URL to its new one","Nothing — Webflow remaps changed URLs for you","Delete the old pages so they can't 404","Just republish the sitemap and move on"], correct:0,
+   why:"301 redirects — changed URLs otherwise 404, losing rankings and breaking inbound links and bookmarks. 301s permanently forward old URLs to new ones and transfer SEO value. It's an easy launch-day step to forget and expensive to skip.", cat:"publish"},
+
+  {q:"A build is full of hand-typed one-off pixel margins — 37px here, 22px there, 51px elsewhere. Beyond looking untidy, what's the real cost?",
+   options:["Slightly faster page loads from the inline values","Marginally better SEO from precise spacing","Spacing that never aligns and is painful to edit","No real cost beyond a slightly untidy look"], correct:2,
+   why:"Spacing system — random pixel margins mean nothing aligns and every change is manual. A disciplined build uses a named spacing scale (Client-First margin-small/medium/large), so spacing stays consistent and editable. It's a top tell reviewers look for.", cat:"designer"},
+
+  {q:"A developer built a standard fade-and-slide reveal using a custom GSAP script instead of Webflow's native Interactions. As a reviewer, your concern is:",
+   options:["Needless code — native Interactions handle this","GSAP guarantees a smoother, higher-quality result","The reveal ends up looking far too smooth","Nothing — custom code always beats native"], correct:0,
+   why:"Native-first — reaching for custom code on effects the native tool handles adds a dependency and maintenance burden for no benefit. 'We used GSAP' isn't a quality badge when native interactions would have done the job. Save code for effects the panel genuinely can't express.", cat:"interactions"},
+
+  {q:"You want a client to update team bios themselves but never be able to alter the site's design. What's the right setup?",
+   options:["Full Designer access with a careful warning first","Content-editor access, limited to the Editor","Just send them the .webflow.io staging link","A custom-code login gated to the bio fields"], correct:1,
+   why:"Roles & permissions — content-editor access limits the client to the Editor (content only), so they can update bios but can't touch layout or classes. Access should match responsibility; over-granting Designer access is how clean builds get accidentally broken.", cat:"manage"},
+
+  {q:"A CMS blog template looks perfect against the one sample post, but you haven't tested others. What's the QA risk?",
+   options:["None — one passing item proves it works","The Collection could quietly delete its own items","SEO on the template improves automatically","Edge-case items can break the shared template"], correct:3,
+   why:"Shared templates — everything on a Collection page is shared across all items, so an untested edge case (a very long title, a missing image) breaks every post's page. Always preview a template against several real items before publishing.", cat:"cms"},
+
+  {q:"You're giving feedback on a staging build. Which approach makes the fix fastest and least ambiguous?",
+   options:["Email a note that the spacing feels off somewhere","Ask them to redo the whole page from scratch","Pin an in-context comment on the exact element","Wait until it's live, then flag problems"], correct:2,
+   why:"In-context review — feedback pinned to the specific element, page, and breakpoint is unambiguous and actionable, unlike vague notes detached from the build. How feedback is given is as much a manager skill as what gets caught.", cat:"manage"},
+
+  {q:"Before pushing changes from the Designer to the live custom domain, what's the safe practice?",
+   options:["Publish straight to production and check afterward","Publish to the .webflow.io staging URL, QA there","Avoid publishing until everything is finished","Delete the staging URL to avoid confusion"], correct:1,
+   why:"Staging first — publishing is all-or-nothing per publish, so unfinished work goes live if you publish to production. Publishing to the staging URL first lets you click through and QA the real build before real users see it.", cat:"publish"},
+
+  {q:"Which of the following is NOT true about the box model?",
+   options:["Boxes have fixed properties that can't be changed","Nearly everything on the web can be expressed as boxes","Boxes flow like a text document, top-left and wrapping","You can set properties for a box's size and spacing"], correct:0,
+   why:"Everything about a box is adjustable — its size, padding, and margin. 'Fixed and unchangeable' is the false statement; the other three all describe the box model correctly.", cat:"designer"},
+
+  {q:"Which of the following is NOT an HTML element?",
+   options:["A heading element","A paragraph of text","A clickable button","A color property"], correct:3,
+   why:"Headings, paragraphs, and buttons are HTML elements. Color is a CSS property applied to an element, not an element in its own right.", cat:"designer"},
+
+  {q:"What happens when you change the font style on the 'All H2 Headings' selector?",
+   options:["Only H2s on the current page update","Every H2 across the whole site updates","Only the single H2 you clicked updates","Nothing — heading fonts are locked here"], correct:1,
+   why:"The 'All H2' tag selector styles every H2 element site-wide. That reach is both its power and its risk — one edit changes every page at once.", cat:"style"},
+
+  {q:"What is the Pages panel in Webflow for?",
+   options:["Styling elements with CSS properties","Accessing pre-built elements and layouts","Organizing pages and their SEO settings","Designing the page layout on the canvas"], correct:2,
+   why:"The Pages panel manages pages and their settings — title, meta, SEO. Design happens on the canvas and in the Style panel, not here.", cat:"publish"},
+
+  {q:"Which order shows a common parent-to-child hierarchy in Webflow?",
+   options:["Section > container > paragraph","Section > paragraph > container","Container > section > paragraph","Paragraph > container > section"], correct:0,
+   why:"A section wraps a container, which wraps the content — the nesting runs outer to inner.", cat:"designer"},
+
+  {q:"What happens when you turn on flexbox for a container?",
+   options:["Its children all jump to the top-left corner","Its children stay locked in a fixed position","Its children must each be placed by hand","Its children lay out in rows or columns"], correct:3,
+   why:"Flexbox lays children along an axis with alignment control, as rows or columns — no manual positioning required.", cat:"designer"},
+
+  {q:"You want to tweak the style of a few of many already-styled links. Best move?",
+   options:["Create a brand-new class from scratch","Look for a built-in 'Links' selector","Add a combo class over the base class","Restyle each link one by one by hand"], correct:2,
+   why:"A combo class inherits the base 'links' class and layers on only the changes you want, leaving every other link untouched.", cat:"style"},
+
+  {q:"A good alternative to flexbox for laying out rows and columns is:",
+   options:["Manual CSS spacing tweaks","CSS grid layout","CSS block-level layout","Absolute positioning per element"], correct:1,
+   why:"CSS grid is the two-dimensional layout system, handling rows and columns together — the natural alternative to flexbox.", cat:"designer"},
+
+  {q:"Where do you add and organize images in Webflow?",
+   options:["The Assets panel","The Pages panel","The Style panel","The Add-elements panel"], correct:0,
+   why:"The Assets panel stores and organizes uploaded media — images, video, documents — for reuse anywhere across the site.", cat:"designer"},
+
+  {q:"A CSS grid cell holds one element. How do you put several elements in one cell?",
+   options:["Create a new CSS class for the grid items","Add more rows and columns to the grid area","Make an element group up in the Navigator","Nest the elements inside a div in that cell"], correct:3,
+   why:"Wrap the elements in a div — the div fills the single cell and holds the whole group inside it.", cat:"designer"},
+
+  {q:"Which states can you customize for a form in Webflow?",
+   options:["Normal, Submitted, and Not submitted","Normal, Correct, and Incorrect","Normal, Success, and Error","Normal, True, and False conditions"], correct:2,
+   why:"A Webflow form styles three states — Normal, Success, and Error — matching what actually happens on submit.", cat:"publish"},
+
+  {q:"What does it mean for a site to be responsive?",
+   options:["It has engaging animations and interactions","It adapts to any screen size or device","It offers users a built-in feedback form","Its content is personalized per audience"], correct:1,
+   why:"Responsive means the layout adapts to any screen size, looking and performing well across breakpoints and devices.", cat:"designer"},
+
+  {q:"Which is NOT true about working across breakpoints in Webflow?",
+   options:["A change on one breakpoint never affects any other","Style changes cascade down from desktop to smaller sizes","Style changes above desktop cascade up to larger sizes","Content and structure changes affect all breakpoints"], correct:0,
+   why:"Styles do cascade between breakpoints, so 'never affects any other' is the false statement — the other three are all true.", cat:"designer"},
+
+  {q:"You restyle the Nav bar on the Tablet breakpoint. Where else does the change show?",
+   options:["On desktop and the 1920px breakpoint above","Only on the tablet breakpoint itself, nowhere else","On every breakpoint on the page equally","On mobile portrait and landscape below it"], correct:3,
+   why:"Tablet edits cascade down to the smaller mobile breakpoints, not up. Desktop and larger sizes stay untouched.", cat:"designer"},
+
+  {q:"How do you create animated effects using CSS in Webflow?",
+   options:["Add the style changes to any class you like","Tie style changes to element states like hover","Build the effects in the Interactions panel","You can't animate with CSS in Webflow at all"], correct:1,
+   why:"CSS effects come from state changes — hover, pressed, focus. The Interactions panel is Webflow's separate timeline system, not CSS.", cat:"interactions"},
+
+  {q:"The two trigger types in the Interactions panel are:",
+   options:["Element and Class","Page and Style","Element and Page","Page and Transition"], correct:2,
+   why:"Interactions fire on an Element (hover, click, scroll-into-view) or on the Page (load, scroll position).", cat:"interactions"},
+
+  {q:"Alt text on images helps most with which two things?",
+   options:["SEO and accessibility","Visual flair and animation","Page speed and caching","Form validation and error states"], correct:0,
+   why:"Alt text describes an image for screen readers (accessibility) and for search engines (SEO) — the two things it most helps.", cat:"publish"},
+
+  {q:"Which setting controls how your page looks when shared on social platforms?",
+   options:["Meta description text","Page title tags","Image alt text","Open Graph settings"], correct:3,
+   why:"Open Graph (OG) tags define the title, description, and image that appear in a social share preview.", cat:"publish"},
+
+  {q:"How do staging and production publishing differ in Webflow?",
+   options:["Staging needs a custom domain; production is on webflow.io","Staging is for testing and review; production goes live","Production is for testing; staging is what goes live","They do the same thing, with no real difference at all"], correct:1,
+   why:"Publish to staging (a webflow.io subdomain) to test and review; publish to production to push the site live on your custom domain.", cat:"publish"},
+
+  {q:"What do V and H stand for in V Flex and H Flex?",
+   options:["Voluminous and Hollow","Visible and Hidden","Vertical and Horizontal","Vivid and Hue"], correct:2,
+   why:"V Flex is vertical (column) flex; H Flex is horizontal (row) flex — V and H simply mark the direction.", cat:"designer"},
+];
+
+let state = {
+  view:"library", search:"", activeCat:"all", openIdx:null,
+  quizOrder:[], quizIndex:0, quizScore:0, quizAnswered:null, quizHistory:[], quizDone:false,
+  studioTool:"reviewer",
+  // reviewer
+  checks:{},
+  // playground
+  pgDisplay:"flex", pgDir:"row", pgJustify:"flex-start", pgAlign:"stretch", pgGap:16, pgPadding:16, pgMargin:0,
+  // mapper
+  mapperGoal:null,
+  // namer
+  namerEl:"page-wrapper",
+};
+
+/* ---------- shared ---------- */
+function shuffledIndices(n){ const a=Array.from({length:n},(_,i)=>i); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+function resetQuiz(){ state.quizOrder=shuffledIndices(SCENARIOS.length); state.quizIndex=0; state.quizScore=0; state.quizAnswered=null; state.quizHistory=[]; state.quizDone=false; }
+resetQuiz();
+function catCounts(){ const c={}; ENTRIES.forEach(p=>{c[p.cat]=(c[p.cat]||0)+1;}); return c; }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ---------- LIBRARY ---------- */
+function renderLibrary(){
+  const counts=catCounts();
+  const pills=Object.keys(CATS).map(c=>{
+    const active=state.activeCat===c;
+    return `<button class="pill" data-cat="${c}" data-active="${active}" onclick="setCat('${c}')">${CATS[c].icon} ${CATS[c].label} <span class="count">${counts[c]||0}</span></button>`;
+  }).join('');
+  const q=state.search.trim().toLowerCase();
+  const filtered=ENTRIES.filter(p=>{
+    const mc=state.activeCat==='all'||p.cat===state.activeCat;
+    const ms=!q||p.name.toLowerCase().includes(q)||p.hook.toLowerCase().includes(q)||p.def.toLowerCase().includes(q);
+    return mc&&ms;
+  });
+  const cards=filtered.map(p=>{
+    const idx=ENTRIES.indexOf(p);
+    return `<div class="card" data-cat="${p.cat}" tabindex="0" role="button" aria-label="Open details for ${esc(p.name)}"
+      onclick="openEntry(${idx})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEntry(${idx});}">
+      <div class="toolbar"></div>
+      <div class="card-body">
+        <span class="cat-tag" data-cat="${p.cat}">${CATS[p.cat].icon} ${CATS[p.cat].label}</span>
+        <h3>${p.name}</h3>
+        <p class="hook">${p.hook}</p>
+        <span class="explore-row">Explore <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </div>
+    </div>`;
+  }).join('');
+  return `
+    <div class="lib-controls">
+      <div class="search-wrap">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8b93a1" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="searchInput" type="text" placeholder="Search ${ENTRIES.length} concepts — try 'Client-First', 'CMS', 'box model'..." value="${state.search.replace(/"/g,'&quot;')}" oninput="setSearch(this.value)"/>
+      </div>
+    </div>
+    <div class="lib-controls pill-row">${pills}</div>
+    <p class="result-count">${filtered.length} concept${filtered.length===1?'':'s'} shown</p>
+    <div class="grid">${cards||'<div class="empty-state">No concepts match that search. Try a different keyword or clear the category filter.</div>'}</div>`;
+}
+function setCat(c){ state.activeCat=(state.activeCat===c)?'all':c; render(); }
+function setSearch(v){ state.search=v; render(true); }
+
+function openEntry(i){ state.openIdx=i; renderModal(); }
+function closeEntry(){ state.openIdx=null; renderModal(); }
+function renderModal(){
+  const root=document.getElementById('modalRoot');
+  if(state.openIdx===null){ root.innerHTML=''; return; }
+  const p=ENTRIES[state.openIdx];
+  const examples=p.example.map(e=>`<li>${e}</li>`).join('');
+  root.innerHTML=`
+    <div class="modal-overlay" onclick="if(event.target===this) closeEntry();">
+      <div class="modal" data-cat="${p.cat}" role="dialog" aria-modal="true" aria-label="${esc(p.name)} details">
+        <div class="modal-strip"></div>
+        <div class="modal-inner">
+          <div class="modal-top">
+            <span class="cat-tag" data-cat="${p.cat}">${CATS[p.cat].icon} ${CATS[p.cat].label}</span>
+            <button class="modal-close" onclick="closeEntry()" aria-label="Close">✕</button>
+          </div>
+          <h2>${p.name}</h2>
+          <p class="modal-hook">${p.hook}</p>
+          <div class="section-label">📖 What it means</div>
+          <p class="body-text">${p.def}</p>
+          <div class="section-label">🛠️ In practice</div>
+          <ul class="example-list">${examples}</ul>
+          <div class="section-label">⚠️ Watch out for</div>
+          <div class="watch-box"><strong>Reviewer's trap:</strong> ${p.watch}</div>
+        </div>
+      </div>
+    </div>`;
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&state.openIdx!==null) closeEntry(); });
+
+/* ---------- PRACTICE ---------- */
+function renderScenarios(){
+  if(state.quizDone){
+    const byCat={};
+    state.quizHistory.forEach(h=>{ byCat[h.cat]=byCat[h.cat]||{c:0,t:0}; byCat[h.cat].t++; if(h.correct)byCat[h.cat].c++; });
+    const breakdown=Object.keys(byCat).map(c=>`
+      <div class="bd-item"><div class="lbl">${CATS[c].icon} ${CATS[c].label}</div><div class="n">${byCat[c].c} / ${byCat[c].t}</div></div>`).join('');
+    const missed=state.quizHistory.filter(h=>!h.correct).map(h=>`
+      <div class="missed-item"><strong>${h.q}</strong><br/>→ Correct: ${h.correctLabel}. ${h.why}</div>`).join('');
+    return `<div class="results">
+      <h2>Practice complete 🎉</h2>
+      <div class="big-score">${state.quizScore} / ${SCENARIOS.length}</div>
+      <p style="color:var(--ink-soft);">How you did across each area:</p>
+      <div class="breakdown">${breakdown}</div>
+      <button class="restart-btn" onclick="restartQuiz()">Practice again (new shuffle)</button>
+      ${missed.length?`<div class="missed-list"><h3>Review what you missed</h3>${missed}</div>`:`<p style="margin-top:20px;font-weight:600;">Perfect score — you can read a build. 🔥</p>`}
+    </div>`;
+  }
+  const s=SCENARIOS[state.quizOrder[state.quizIndex]];
+  const pct=Math.round((state.quizIndex/SCENARIOS.length)*100);
+  const options=s.options.map((opt,i)=>{
+    let cls="option-btn",dis="";
+    if(state.quizAnswered!==null){ dis="disabled"; if(i===s.correct)cls+=" reveal-correct"; else if(i===state.quizAnswered)cls+=" incorrect"; }
+    return `<button class="${cls}" ${dis} onclick="answerQuiz(${i})">${opt}</button>`;
+  }).join('');
+  const feedback=state.quizAnswered!==null?`
+    <div class="feedback-box"><strong>${state.quizAnswered===s.correct?"✅ Correct — ":"❌ Not quite — "}</strong>${s.why}</div>
+    <button class="next-btn" onclick="nextQuiz()">${state.quizIndex===SCENARIOS.length-1?"See results":"Next scenario →"}</button>`:'';
+  return `<div class="scenario-wrap">
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <span class="score-chip">${state.quizIndex+1} / ${SCENARIOS.length} · score ${state.quizScore}</span>
+    </div>
+    <div class="scenario-card">
+      <div class="scenario-eyebrow">Scenario · ${CATS[s.cat].icon} ${CATS[s.cat].label}</div>
+      <p class="scenario-text">${s.q}</p>
+      <div class="options">${options}</div>
+      ${feedback}
+    </div></div>`;
+}
+function answerQuiz(i){
+  if(state.quizAnswered!==null) return;
+  const s=SCENARIOS[state.quizOrder[state.quizIndex]];
+  const correct=i===s.correct;
+  state.quizAnswered=i;
+  if(correct) state.quizScore++;
+  state.quizHistory.push({q:s.q, why:s.why, correct, correctLabel:s.options[s.correct], cat:s.cat});
+  render();
+}
+function nextQuiz(){ if(state.quizIndex===SCENARIOS.length-1){ state.quizDone=true; } else { state.quizIndex++; state.quizAnswered=null; } render(); }
+function restartQuiz(){ resetQuiz(); render(); }
+
+/* ---------- STUDIO ---------- */
+const REV_CHECKS=[
+  {id:"naming", title:"Classes named by function, not style/colour", sub:"e.g. 'button', 'card', 'section_hero' — never 'blue-box'.",
+   fix:"Rename appearance-based classes to functional ones. A class called 'blue-box' lies the moment you rebrand; 'card' survives a restyle and tells the next person what it's for."},
+  {id:"spacing", title:"Consistent spacing system used", sub:"A named scale (small/medium/large), not random pixel margins.",
+   fix:"Replace one-off pixel margins with a consistent spacing scale (Client-First margin-small/medium/large). Random values mean nothing lines up and every future edit is manual."},
+  {id:"structure", title:"Proper section → container → content structure", sub:"Sensible nesting, semantic tags — not a pile of nameless divs.",
+   fix:"Rebuild the page on a section → container → content pattern with real semantic tags. A wall of nameless divs hurts accessibility, SEO, and every future edit."},
+  {id:"orphans", title:"No orphaned, loose, or duplicate classes", sub:"No accidental one-use classes or near-duplicate styles.",
+   fix:"Clean up orphaned and duplicate classes. Accidental one-use classes and near-duplicates are style bloat that slows the site and confuses the next editor."},
+  {id:"responsive", title:"Responsive verified at all breakpoints", sub:"Desktop, tablet, mobile-landscape, mobile-portrait all checked.",
+   fix:"Resize to every breakpoint and fix reflow issues. Most traffic is mobile, so an untested small-screen layout is untested for the majority of users."},
+  {id:"a11y", title:"Images have alt text / basic accessibility", sub:"Alt text set, semantic tags, sane heading order.",
+   fix:"Add alt text to images and confirm semantic tags and a sane heading order. Basic accessibility is both an ethical baseline and an SEO signal."},
+  {id:"seo", title:"SEO title + meta set on every page", sub:"Unique title tag + meta description, incl. CMS templates.",
+   fix:"Set a unique title tag and meta description on every page — and bind them to fields on CMS templates. Empty or duplicate metadata is a common, quietly damaging defect."},
+  {id:"unused", title:"No unused styles / dead custom code", sub:"Trim unused classes, apps, and stray embeds.",
+   fix:"Remove unused styles, apps, and stray custom-code embeds. Dead weight slows load times and hides risk — custom code especially can break pages invisibly."},
+];
+
+function renderStudio(){
+  const pill=(id,icon,label)=>`<button class="studio-pill ${state.studioTool===id?'active':''}" onclick="setStudio('${id}')">${icon} ${label}</button>`;
+  const pills=`<div class="studio-pills">
+    ${pill('reviewer','🔍','Build-Quality Reviewer')}
+    ${pill('playground','📐','Box-Model Playground')}
+    ${pill('mapper','🗺️','Panel Mapper')}
+    ${pill('namer','🏷️','Client-First Class Namer')}
+  </div>`;
+  let body='';
+  if(state.studioTool==='reviewer') body=renderReviewer();
+  else if(state.studioTool==='playground') body=renderPlayground();
+  else if(state.studioTool==='mapper') body=renderMapper();
+  else body=renderNamer();
+  return pills+body;
+}
+function setStudio(id){ state.studioTool=id; render(); }
+
+/* Tool 1: Build-Quality Reviewer */
+function renderReviewer(){
+  const rows=REV_CHECKS.map(c=>{
+    const on=!!state.checks[c.id];
+    return `<div class="check-row" data-on="${on}" role="button" tabindex="0" aria-pressed="${on}"
+      onclick="toggleCheck('${c.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCheck('${c.id}');}">
+      <div class="toggle"></div>
+      <div class="check-copy"><div class="ctitle">${c.title}</div><div class="csub">${c.sub}</div></div>
+    </div>`;
+  }).join('');
+  const total=REV_CHECKS.length;
+  const passed=REV_CHECKS.filter(c=>state.checks[c.id]).length;
+  const score=Math.round((passed/total)*100);
+  const firstFail=REV_CHECKS.find(c=>!state.checks[c.id]);
+  let barColor= score>=80?'var(--cms)': score>=50?'var(--interactions)':'var(--publish)';
+  const fixHtml = firstFail
+    ? `<div class="fix-box warn"><span class="fh">🚩 Fix this first</span><b>${firstFail.title}.</b> ${firstFail.fix}</div>`
+    : `<div class="fix-box good"><span class="fh">✅ Clean build</span>Every check passes — this build reads as maintainable, accessible, and handoff-ready. Ship it (after a final live click-through).</div>`;
+  return `
+  <p class="studio-intro"><strong>Build-Quality Reviewer.</strong> This is the real on-the-job checklist — a Client-First-based scorecard you run against a build you're reviewing. Toggle what the build actually does, and it computes a live quality score and surfaces the single biggest issue to fix first.</p>
+  <div class="panel">
+    <div class="panel-head"><span class="dots"><span></span><span></span><span></span></span><span class="ptitle">Build review · scorecard</span><span class="pmeta">${passed}/${total} checks pass</span></div>
+    <div class="panel-body">
+      <div class="rev-grid">
+        <div>${rows}
+          <div class="rev-actions">
+            <button class="mini-btn" onclick="allChecks(true)">Mark all pass</button>
+            <button class="mini-btn" onclick="allChecks(false)">Reset</button>
+          </div>
+        </div>
+        <div class="score-panel">
+          <div class="score-ring" style="color:${barColor}">${score}%</div>
+          <div class="score-label">Build quality</div>
+          <div class="score-bar"><div class="score-bar-fill" style="width:${score}%; background:${barColor}"></div></div>
+          ${fixHtml}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function toggleCheck(id){ state.checks[id]=!state.checks[id]; render(); }
+function allChecks(v){ REV_CHECKS.forEach(c=>state.checks[c.id]=v); render(); }
+
+/* Tool 2: Box-Model / Layout Playground */
+function renderPlayground(){
+  const isFlex=state.pgDisplay==='flex';
+  const isGrid=state.pgDisplay==='grid';
+  const flexActive=isFlex; // flex-only controls
+  const boxAlignActive=isFlex||isGrid;
+  const gap=clampInt(state.pgGap,0,64), pad=clampInt(state.pgPadding,0,64), mar=clampInt(state.pgMargin,0,64);
+
+  // container style
+  let containerStyle=`padding:${pad}px; margin:${mar}px;`;
+  if(isFlex){ containerStyle+=`display:flex; flex-direction:${state.pgDir}; justify-content:${state.pgJustify}; align-items:${state.pgAlign}; gap:${gap}px;`; }
+  else if(isGrid){ containerStyle+=`display:grid; grid-template-columns:repeat(3,1fr); justify-items:${mapJustifyItems(state.pgJustify)}; align-items:${state.pgAlign}; gap:${gap}px;`; }
+  else { containerStyle+=`display:block;`; }
+
+  const boxes=[1,2,3].map(n=>`<div class="pg-box">${n}</div>`).join('');
+
+  // CSS readout — only show properties that apply
+  let props=[`<div><span class="prop">display</span><span class="brace">: </span><span class="val">${state.pgDisplay}</span>;</div>`];
+  if(isFlex){
+    props.push(`<div><span class="prop">flex-direction</span><span class="brace">: </span><span class="val">${state.pgDir}</span>;</div>`);
+    props.push(`<div><span class="prop">justify-content</span><span class="brace">: </span><span class="val">${state.pgJustify}</span>;</div>`);
+    props.push(`<div><span class="prop">align-items</span><span class="brace">: </span><span class="val">${state.pgAlign}</span>;</div>`);
+    props.push(`<div><span class="prop">gap</span><span class="brace">: </span><span class="val">${gap}px</span>;</div>`);
+  } else if(isGrid){
+    props.push(`<div><span class="prop">grid-template-columns</span><span class="brace">: </span><span class="val">repeat(3, 1fr)</span>;</div>`);
+    props.push(`<div><span class="prop">align-items</span><span class="brace">: </span><span class="val">${state.pgAlign}</span>;</div>`);
+    props.push(`<div><span class="prop">gap</span><span class="brace">: </span><span class="val">${gap}px</span>;</div>`);
+  }
+  props.push(`<div><span class="prop">padding</span><span class="brace">: </span><span class="val">${pad}px</span>;</div>`);
+  props.push(`<div><span class="prop">margin</span><span class="brace">: </span><span class="val">${mar}px</span>;</div>`);
+  const css=`<div class="css-readout"><div><span class="sel">.container</span> <span class="brace">{</span></div>${props.map(p=>'&nbsp;&nbsp;'+p).join('')}<div><span class="brace">}</span></div></div>`;
+
+  const seg=(opts,cur,fn,disabled)=>opts.map(o=>`<button class="${cur===o.v?'on':''}" ${disabled?'disabled':''} onclick="${fn}('${o.v}')">${o.l}</button>`).join('');
+
+  return `
+  <p class="studio-intro"><strong>Box-Model / Layout Playground.</strong> The thing beginners fight most: how <code>display</code>, flexbox alignment, gap, padding and margin actually change a layout. Toggle the controls and watch the three boxes — and the generated CSS — update live.</p>
+  <div class="panel">
+    <div class="panel-head"><span class="dots"><span></span><span></span><span></span></span><span class="ptitle">Layout playground · .container + 3 children</span><span class="pmeta">${state.pgDisplay}</span></div>
+    <div class="panel-body">
+      <div class="pg-grid">
+        <div class="pg-controls">
+          <div class="ctrl"><label>display</label><div class="seg">${seg([{v:'block',l:'block'},{v:'flex',l:'flex'},{v:'grid',l:'grid'}],state.pgDisplay,'setPG_display',false)}</div></div>
+          <div class="ctrl ${flexActive?'':'disabled'}"><label>flex-direction</label><div class="seg">${seg([{v:'row',l:'row'},{v:'column',l:'column'}],state.pgDir,'setPG_dir',!flexActive)}</div></div>
+          <div class="ctrl ${boxAlignActive?'':'disabled'}"><label>justify-content ${isGrid?'(→ justify-items)':''}</label><div class="seg">${seg([{v:'flex-start',l:'start'},{v:'center',l:'center'},{v:'flex-end',l:'end'},{v:'space-between',l:'between'}],state.pgJustify,'setPG_justify',!boxAlignActive)}</div></div>
+          <div class="ctrl ${boxAlignActive?'':'disabled'}"><label>align-items</label><div class="seg">${seg([{v:'stretch',l:'stretch'},{v:'flex-start',l:'start'},{v:'center',l:'center'},{v:'flex-end',l:'end'}],state.pgAlign,'setPG_align',!boxAlignActive)}</div></div>
+          <div class="ctrl ${boxAlignActive?'':'disabled'}"><label>gap <span class="rngval">${gap}px</span></label><input type="range" min="0" max="64" step="2" value="${gap}" ${boxAlignActive?'':'disabled'} oninput="setPG_num('pgGap',this.value)" aria-label="gap"/></div>
+          <div class="ctrl"><label>padding <span class="rngval">${pad}px</span></label><input type="range" min="0" max="64" step="2" value="${pad}" oninput="setPG_num('pgPadding',this.value)" aria-label="padding"/></div>
+          <div class="ctrl"><label>margin <span class="rngval">${mar}px</span></label><input type="range" min="0" max="64" step="2" value="${mar}" oninput="setPG_num('pgMargin',this.value)" aria-label="margin"/></div>
+        </div>
+        <div class="pg-stage-wrap">
+          <div class="pg-stage"><div style="${containerStyle}">${boxes}</div></div>
+          ${css}
+          ${state.pgDisplay==='block'?`<p style="font-size:12px;color:var(--ink-soft);margin:2px 0 0;line-height:1.5;">In <code>block</code> layout the boxes just stack — flex alignment controls are inactive. Switch <b>display</b> to <code>flex</code> or <code>grid</code> to unlock them.</p>`:''}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function clampInt(v,min,max){ v=parseInt(v,10); if(isNaN(v))return min; return Math.max(min,Math.min(max,v)); }
+function mapJustifyItems(j){ return j==='flex-start'?'start': j==='flex-end'?'end': j==='center'?'center':'stretch'; }
+function setPG_display(v){ if(['block','flex','grid'].includes(v)) state.pgDisplay=v; render(); }
+function setPG_dir(v){ if(['row','column'].includes(v)) state.pgDir=v; render(); }
+function setPG_justify(v){ state.pgJustify=v; render(); }
+function setPG_align(v){ state.pgAlign=v; render(); }
+function setPG_num(key,v){ state[key]=clampInt(v,0,64); render(); }
+
+/* Tool 3: Concept → Webflow Panel Mapper */
+const GOALS=[
+  {id:"responsive", icon:"📱", label:"Make this responsive",
+   panel:"Style panel + Breakpoint switcher",
+   steps:["Select the element, then use the breakpoint switcher at the top of the canvas to move to Tablet, then Mobile.",
+     "Remember Webflow is desktop-first: style the base (desktop) first, then adjust smaller breakpoints — changes cascade down, not up.",
+     "At each smaller breakpoint, override only what needs to change (e.g. set a 3-column grid to 1 column, shrink an oversized heading).",
+     "Preview at every breakpoint and check nothing overflows before publishing."]},
+  {id:"hover", icon:"✨", label:"Add a hover animation",
+   panel:"Interactions panel",
+   steps:["Select the element, open the Interactions panel (right side).",
+     "Add an Element Trigger → 'Mouse hover / Hover'.",
+     "Define the 'on hover' action (e.g. move up, scale, change opacity) and the 'on hover out' action to reverse it.",
+     "Add a tap-friendly fallback or alternative — hover doesn't exist on touchscreens, so a hover-only effect fails on phones."]},
+  {id:"blog", icon:"🗂️", label:"Structure a blog with the CMS",
+   panel:"CMS panel",
+   steps:["Open the CMS panel and create a Collection called 'Blog Posts'.",
+     "Add fields: title (plain text), body (rich text), thumbnail (image), date (date), and a category (option or reference).",
+     "Design the Collection (template) page once, binding each field to an element.",
+     "Add a Collection List on your blog index to show all posts; the client edits and publishes posts via the Editor."]},
+  {id:"seo", icon:"🔎", label:"Set an SEO title & meta description",
+   panel:"Page Settings",
+   steps:["Open Pages, click the gear/settings icon on the page you want.",
+     "Fill in the SEO Title Tag and Meta Description fields.",
+     "Set the Open Graph title, description, and image for how the page looks when shared.",
+     "On a CMS template page, bind the title/meta to Collection fields so every item gets unique SEO automatically."]},
+  {id:"component", icon:"🧱", label:"Make a reusable component",
+   panel:"Navigator / Components",
+   steps:["Build the element once and clean up its structure and classes in the Navigator.",
+     "Select the wrapping element, right-click → 'Create Component' (or use the Components panel).",
+     "Optionally expose properties so instances can vary text/images while sharing one design.",
+     "Reuse the component across pages — editing the main component updates every instance."]},
+  {id:"form", icon:"✉️", label:"Add a contact form",
+   panel:"Add panel (Form block) + Forms settings",
+   steps:["Open the Add panel and drag in a Form Block (it includes the form, inputs, and a submit button).",
+     "Label each field and set required states; style the success and error states, not just the default.",
+     "Set up the email notification (Project Settings → Forms) and/or an integration (Zapier/Make/webhook) so submissions reach a human.",
+     "Actually submit the form on the staging site and confirm the data lands where it should."]},
+  {id:"redirect", icon:"↪️", label:"Add a 301 redirect",
+   panel:"Site Settings → Publishing",
+   steps:["Open Project/Site Settings → Publishing → 301 Redirects.",
+     "Enter the old path (e.g. /services) and the new path (e.g. /what-we-do).",
+     "Save, then publish for the redirect to take effect.",
+     "Do this whenever a URL or CMS slug changes, so old links keep working and SEO value transfers."]},
+];
+function renderMapper(){
+  const goals=GOALS.map(g=>`<button class="goal-btn ${state.mapperGoal===g.id?'on':''}" onclick="setMapper('${g.id}')"><span class="gi">${g.icon}</span>${g.label}</button>`).join('');
+  let answer='';
+  if(state.mapperGoal){
+    const g=GOALS.find(x=>x.id===state.mapperGoal);
+    answer=`<div class="answer-panel">
+      <div class="answer-head"><span class="panel-chip">${g.panel}</span><span class="agoal">${g.icon} ${g.label}</span></div>
+      <div class="answer-body"><ol class="step-list">${g.steps.map(s=>`<li>${s}</li>`).join('')}</ol></div>
+    </div>`;
+  } else {
+    answer=`<div class="answer-panel"><div class="answer-body" style="color:var(--ink-soft);font-size:13.5px;">Pick a goal above to see which Webflow panel to open and the concrete steps.</div></div>`;
+  }
+  return `
+  <p class="studio-intro"><strong>Concept → Webflow Panel Mapper.</strong> You know what you want to do — but which panel does it live in? Pick a goal and get the exact Webflow panel plus the steps.</p>
+  <div class="panel">
+    <div class="panel-head"><span class="dots"><span></span><span></span><span></span></span><span class="ptitle">I want to…</span></div>
+    <div class="panel-body">
+      <div class="goal-grid">${goals}</div>
+      ${answer}
+    </div>
+  </div>`;
+}
+function setMapper(id){ state.mapperGoal=(state.mapperGoal===id)?null:id; render(); }
+
+/* Tool 4: Client-First Class Namer */
+const NAMER=[
+  {v:"page-wrapper", cls:"page-wrapper", combo:"", where:"Sits directly inside &lt;body&gt; and wraps every section on the page. One per page.",
+   why:"A global wrapper. It gives you a single top-level element to control page-wide behaviour (e.g. hiding overflow). It's a fixed Client-First name — don't invent a variant."},
+  {v:"main-wrapper", cls:"main-wrapper", combo:"", where:"Inside page-wrapper, wrapping the main page content (typically below the nav). Often the &lt;main&gt; tag.",
+   why:"A global wrapper that marks the primary content region — useful for semantics and skip-to-content links. Like page-wrapper, it's a standard fixed name."},
+  {v:"section", cls:"section_hero", combo:"", where:"A top-level page section, direct child of main-wrapper. Replace 'hero' with the section's purpose (section_features, section_footer).",
+   why:"Sections are named section_[identifier] by FUNCTION — what the section is for, not its colour or order. The identifier makes the Navigator instantly readable."},
+  {v:"padding-global", cls:"padding-global", combo:"", where:"Inside a section, wrapping its content. Applies the site's consistent horizontal (left/right) page padding.",
+   why:"A global utility so every section shares the same horizontal breathing room. Change it once and the whole site's page padding updates — no per-section pixel guessing."},
+  {v:"padding-section", cls:"padding-section-large", combo:"", where:"Inside a section (often with padding-global), setting the section's vertical (top/bottom) spacing. Also -medium / -small.",
+   why:"Vertical section rhythm comes from a fixed set of named classes, not arbitrary margins — so every section's spacing is consistent and picked from a scale."},
+  {v:"container", cls:"container-large", combo:"", where:"Inside the section's padding, constraining content to a max-width and centering it. Also container-medium / container-small.",
+   why:"Containers cap how wide content gets on large screens. The three sizes cover most needs; naming by size keeps intent obvious to the next person."},
+  {v:"heading", cls:"heading-style-h2", combo:"", where:"On a heading element. Also h1–h6. Decouples the visual style from the HTML tag.",
+   why:"Client-First separates the look from the semantic tag — so an &lt;h2&gt; tag (correct for document outline/SEO) can carry heading-style-h1 to look bigger. Structure and style stay independent."},
+  {v:"text", cls:"text-size-regular", combo:"+ text-weight-medium", where:"On body text elements. Sizes: large / medium / regular / small / tiny. Combine with text-weight and colour utilities.",
+   why:"Typography is built from small, composable utility classes rather than bespoke styles — so text stays consistent and you mix size + weight + colour like Lego."},
+  {v:"spacer", cls:"margin-bottom", combo:"+ margin-medium", where:"An empty div used purely to create vertical space between blocks. Pair the direction class with a size class.",
+   why:"Spacing is a function-first utility (margin-bottom + margin-medium), never a hand-typed pixel margin. Sizes run xxsmall → xxhuge, plus margin-0. This is what keeps spacing consistent and edit-able sitewide."},
+  {v:"button", cls:"button", combo:"+ is-secondary / is-small", where:"On a link or button element. The base 'button' carries shared styling; variants are combo classes.",
+   why:"One base 'button' class, with variants as 'is-' combo classes (is-secondary, is-small). Editing the base updates all buttons; editing a combo updates only that variant."},
+  {v:"card", cls:"feature_item", combo:"", where:"A component wrapper, e.g. a card in a features grid. Pattern: [component]_[element] — feature_item, feature_image, feature_title.",
+   why:"Component pieces are custom classes scoped to the component and named by function ([identifier]_[element]), lowercase and hyphen/underscore — never by colour or look. It keeps related elements grouped and legible."},
+];
+function renderNamer(){
+  const opts=NAMER.map(n=>`<option value="${n.v}" ${state.namerEl===n.v?'selected':''}>${labelFor(n.v)}</option>`).join('');
+  const n=NAMER.find(x=>x.v===state.namerEl)||NAMER[0];
+  return `
+  <p class="studio-intro"><strong>Client-First Class Namer.</strong> Reflects the documented Finsweet Client-First core. Pick what an element is, and get the correct class name, where it sits in the structure, and why — so you can recognise (and enforce) clean naming, not memorise it.</p>
+  <div class="panel">
+    <div class="panel-head"><span class="dots"><span></span><span></span><span></span></span><span class="ptitle">Client-First class namer</span><span class="pmeta">Finsweet convention</span></div>
+    <div class="panel-body">
+      <span class="field-lbl">This element is a…</span>
+      <select class="picker" onchange="setNamer(this.value)" aria-label="Element type">${opts}</select>
+      <div class="namer-out">
+        <div class="namer-class">.${n.cls}</div>
+        ${n.combo?`<div class="namer-combo">variant / combo: <b>${n.combo.replace('+ ','')}</b></div>`:''}
+        <p class="namer-where"><b>Where it sits:</b> ${n.where}</p>
+        <p class="namer-why">${n.why}</p>
+      </div>
+    </div>
+  </div>`;
+}
+function labelFor(v){
+  const map={"page-wrapper":"Page wrapper (top of body)","main-wrapper":"Main content wrapper","section":"A section","padding-global":"Page padding (horizontal)","padding-section":"Section vertical spacing","container":"Container (max-width)","heading":"A heading (h1–h6)","text":"Body text","spacer":"A spacer / spacing block","button":"A button","card":"A card / component wrapper"};
+  return map[v]||v;
+}
+function setNamer(v){ state.namerEl=v; render(); }
+
+/* ---------- LEARN & GET CERTIFIED ---------- */
+const PHASES=[
+  {n:"Phase 0", h:"Foundation — the box model IS CSS", p:"Before touching Webflow, get the mental model: every element is a box (content, padding, border, margin), and layout is flexbox + grid over those boxes. Webflow is a visual skin over real CSS — if the CSS model is fuzzy, the canvas will feel like magic that randomly breaks.", do:"Play with the <b>Box-Model Playground</b> in this guide until display, flex alignment, gap, padding and margin feel obvious."},
+  {n:"Phase 1", h:"Learn the Designer", p:"Learn the actual tool: the canvas, the Style panel, classes, the Navigator, breakpoints. The fastest legit path is the official course, built along step by step rather than watched passively.", do:"Work through <b>Webflow University 101</b> fully and build along — don't just watch."},
+  {n:"Phase 2", h:"Build hands-on", p:"Reps beat theory. Rebuild a real layout end to end so the panels become muscle memory and you hit (and solve) real problems.", do:"Follow <b>Timothy Ricks' Webflow crash course 2026</b> and replicate every step in a free Webflow account — pause and rebuild, don't just watch."},
+  {n:"Phase 3", h:"Learn to READ builds", p:"The manage-first unlock. Once you can build, learn the convention that lets you open any file and judge it in 60 seconds — functional class names, consistent spacing, sane structure. This is what turns a builder into a reviewer.", do:"Read <b>Finsweet Client-First</b> — the intro and class-naming docs. Learn to recognise the system, not memorise every class."},
+  {n:"Phase 4", h:"The manage layer", p:"The manager's job is not the developer's. Reviewing feedback in context, and setting roles, permissions and team workflow, are distinct skills — how you run a build and a team, not how you build a page.", do:"Take <b>Webflow University's review/feedback course</b> and its <b>roles/permissions & team-workflow course</b>. These are your job, not the developer's."},
+  {n:"Phase 5", h:"Prove it", p:"Validate a shared baseline with the official credential. It proves tool competence (not taste or review judgment), which is a useful signal on a team.", do:"Target the <b>Webflow Practitioner Certification</b>. Book it once you've done University 101 + Timothy Ricks — don't rush it."},
+  {n:"Phase 6", h:"Plug in", p:"Nobody learns this alone. Two channels cover the two kinds of question: 'how do I do X' and 'is this normal?'.", do:"Use the <b>Webflow Forum</b> for searchable answers and the <b>community Discord</b> (independent, not run by Webflow) for gut-check questions."},
+];
+const RESOURCES=[
+  {name:"Webflow University", type:"Free · official", link:"https://university.webflow.com",
+   why:"Video lessons + docs; the only fully-current source. The 2026 catalogue covers Webflow MCP, AEO, AI guardrails — and, key for a manager, courses on review/feedback and on roles/permissions/team workflows.",
+   how:"Watch 101 fully; take notes on the review/feedback and roles/permissions courses.", caveat:""},
+  {name:"Finsweet Client-First", type:"Free · style system + docs", link:"https://finsweet.com/client-first",
+   why:"A CSS naming convention & build strategy that standardises class organisation, layout, spacing and typography so builds stay maintainable. Widely adopted; powers the Relume library. The 'read a build in 60 seconds' unlock.",
+   how:"Read the Intro + class-naming docs; learn to recognise, don't memorise.",
+   caveat:"A Mar-2026 third-party post references a 'Client-First 7-Day Learning Path' — referenced but NOT verified on Finsweet's own site."},
+  {name:"Timothy Ricks — YouTube", type:"Free · hands-on", link:"https://youtube.com/@timothyricks",
+   why:"Webflow tutorials from a working developer; his Webflow crash course 2026 is current (Jan 2026), unlike most Webflow YouTube which is 2021–2023 and predates the current Designer.",
+   how:"Build along in a free account, pause & replicate — watching without building teaches nothing.", caveat:""},
+  {name:"Webflow Practitioner Certification", type:"Paid · credential", link:"https://university.webflow.com/certifications",
+   why:"The official credential; 50-question exam, AI-proctored via Certiverse, valid 2 years, unlimited retakes with a 24-hour wait between attempts; results shareable on LinkedIn via Accredible.",
+   how:"Target it, don't rush; book once you've done University 101 + Timothy Ricks.",
+   caveat:"Cost sources CONFLICT — Webflow's 2025 announcement and a Mar-2026 source say ~$100 for the Practitioner exam; older articles describe a free 25-question legacy exam. Verify on the certifications page before paying."},
+  {name:"Webflow Forum + Community Discord", type:"Free · community", link:"https://forum.webflow.com",
+   why:"The official Forum has categories for layout, interactions, CMS, SEO, custom code, and the API; plus an independent, community-run Discord (~12,000 members).",
+   how:"Forum for searchable answers, Discord for 'is this normal?' questions.",
+   caveat:"The community Discord is NOT affiliated with Webflow Inc."},
+];
+function renderLearn(){
+  const phases=PHASES.map(ph=>`<div class="phase"><span class="pnum">${ph.n}</span><h4>${ph.h}</h4><p>${ph.p}</p><div class="do">✅ <b>Do this:</b> ${ph.do}</div></div>`).join('');
+  const cards=RESOURCES.map(r=>`
+    <div class="res-card">
+      <div class="rc-head"><span class="res-type">${r.type}</span><h4>${r.name}</h4></div>
+      <div class="rc-body">
+        <p class="why"><b>Why it made the cut:</b> ${r.why}</p>
+        <p class="how"><b>How to use:</b> ${r.how}</p>
+        ${r.caveat?`<div class="res-caveat">⚠️ ${r.caveat}</div>`:''}
+        <a class="res-link" href="${r.link}" target="_blank" rel="noopener">Open ${r.name.split(' ')[0]} ↗</a>
+      </div>
+    </div>`).join('');
+  return `
+  <p class="learn-intro"><strong>From zero → Webflow-capable → certified & agency-ready.</strong> A phased path built manage-first: you learn to build, then — the real unlock — you learn to <em>read, review and manage</em> builds. Then five hand-picked resources, with their honest caveats kept intact.</p>
+  <div class="learn-h">🗺️ The roadmap</div>
+  <div class="roadmap">${phases}</div>
+  <div class="learn-h">⭐ The 5 curated resources</div>
+  <div class="res-grid">${cards}</div>`;
+}
+
+/* ---------- ROOT RENDER ---------- */
+function render(keepFocus){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===state.view));
+  const main=document.getElementById('main');
+  if(state.view==='library') main.innerHTML=renderLibrary();
+  else if(state.view==='studio') main.innerHTML=renderStudio();
+  else if(state.view==='practice') main.innerHTML=renderScenarios();
+  else main.innerHTML=renderLearn();
+  if(keepFocus){ const inp=document.getElementById('searchInput'); if(inp){ inp.focus(); inp.selectionStart=inp.selectionEnd=inp.value.length; } }
+}
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{ state.view=t.dataset.view; state.openIdx=null; renderModal(); render(); });
+});
+render();
+</script>
+</body>
+</html>
