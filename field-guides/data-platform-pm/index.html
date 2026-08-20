@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Data &amp; AI Platform PM Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#070C18; --panel:#0E1526; --panel-2:#131C31; --ink:#E8EEF9; --ink-soft:#8DA0BF;
+    --ink-dim:#63789B; --line:#1E2A45; --line-2:#2A3A5C;
+
+    --arch:#38BDF8;  --arch-tint:rgba(56,189,248,.12);  --arch-soft:#9BDCFB;
+    --gov:#FB923C;   --gov-tint:rgba(251,146,60,.12);   --gov-soft:#FDC79B;
+    --cloud:#A78BFA; --cloud-tint:rgba(167,139,250,.12);--cloud-soft:#CDBEFC;
+    --ai:#34D399;    --ai-tint:rgba(52,211,153,.12);    --ai-soft:#98E9C6;
+    --pm:#FB7185;    --pm-tint:rgba(251,113,133,.12);   --pm-soft:#FDB0BC;
+    --alad:#E3B341;  --alad-tint:rgba(227,179,65,.12);  --alad-soft:#F0D493;
+
+    --accent:#38BDF8;
+    --radius:12px;
+    --glow: 0 0 0 1px rgba(56,189,248,.18), 0 18px 40px -22px rgba(0,0,0,.9);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse at 8% -5%, rgba(56,189,248,.13) 0, transparent 45%),
+      radial-gradient(ellipse at 95% 2%, rgba(167,139,250,.11) 0, transparent 42%),
+      radial-gradient(ellipse at 50% 105%, rgba(52,211,153,.08) 0, transparent 48%),
+      var(--bg);
+    background-attachment:fixed;
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh; padding-bottom:64px;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* blueprint grid */
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:
+      linear-gradient(rgba(141,160,191,.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(141,160,191,.055) 1px, transparent 1px);
+    background-size:44px 44px;
+    mask-image:radial-gradient(ellipse at 50% 0%, #000 0, transparent 78%);
+    -webkit-mask-image:radial-gradient(ellipse at 50% 0%, #000 0, transparent 78%);
+  }
+  header,.tabbar,main,footer{position:relative; z-index:1;}
+  h1,h2,h3,h4,.display{font-family:'Sora',sans-serif; font-weight:600; letter-spacing:-0.015em;}
+  .mono{font-family:'IBM Plex Mono',monospace; font-variant-numeric:tabular-nums;}
+  button{font-family:inherit;}
+  a{color:var(--accent);}
+
+  .kicker{
+    font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:600;
+    text-transform:uppercase; letter-spacing:.16em; color:var(--ink-soft);
+  }
+
+  header{max-width:1120px; margin:0 auto; padding:36px 24px 10px;}
+  .brand{display:flex; align-items:flex-start; gap:16px;}
+  .brand .mark{flex-shrink:0; transition:transform .35s cubic-bezier(.3,.6,.3,1.4);}
+  .brand:hover .mark{transform:translateY(-3px);}
+  .brand-text h1{font-size:29px; margin:6px 0 0; line-height:1.1;}
+  .brand-text h1 em{font-style:normal; color:var(--accent);}
+  .brand-text p{margin:8px 0 0; color:var(--ink-soft); font-size:14px; max-width:62ch; line-height:1.55;}
+  .badges{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;}
+  .badge{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600;
+    border-radius:999px; padding:5px 11px; border:1px solid var(--line-2);
+    background:var(--panel); color:var(--ink-soft);
+  }
+  .badge.warn{color:var(--gov); border-color:rgba(251,146,60,.35); background:var(--gov-tint);}
+
+  .tabbar{max-width:1120px; margin:22px auto 0; padding:0 24px; display:flex; gap:7px; flex-wrap:wrap;}
+  .tab{
+    font-family:'Sora',sans-serif; font-weight:600; font-size:13.5px;
+    padding:10px 16px; border-radius:10px; border:1px solid var(--line);
+    background:var(--panel); color:var(--ink-soft); cursor:pointer;
+    display:flex; align-items:center; gap:7px; transition:all .15s ease;
+  }
+  .tab:hover{color:var(--ink); border-color:var(--line-2); transform:translateY(-1px);}
+  .tab:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  .tab.active{background:var(--accent); color:#04121F; border-color:var(--accent); box-shadow:0 8px 26px -12px var(--accent);}
+
+  main{
+    max-width:1120px; margin:18px auto 0; padding:26px 26px 30px;
+    background:linear-gradient(180deg, var(--panel) 0, rgba(14,21,38,.86) 100%);
+    border:1px solid var(--line); border-radius:18px; min-height:460px;
+    box-shadow:0 30px 70px -40px #000;
+  }
+  footer{
+    max-width:1120px; margin:22px auto 0; padding:0 26px; color:var(--ink-soft);
+    font-size:12.5px; line-height:1.6; position:relative; z-index:1;
+  }
+
+  .view-head{margin:0 0 18px;}
+  .view-head h2{font-size:20px; margin:6px 0 0;}
+  .view-head p{margin:7px 0 0; color:var(--ink-soft); font-size:13.5px; max-width:76ch; line-height:1.6;}
+
+  /* ---------- library ---------- */
+  .search-wrap{position:relative; margin-bottom:12px;}
+  .search-wrap input{
+    width:100%; padding:13px 16px 13px 44px; border-radius:11px; border:1px solid var(--line-2);
+    font-size:15px; font-family:inherit; background:#0A1120; color:var(--ink);
+  }
+  .search-wrap input::placeholder{color:#54678A;}
+  .search-wrap input:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(56,189,248,.16);}
+  .search-wrap svg{position:absolute; left:15px; top:50%; transform:translateY(-50%);}
+
+  .pill-row{display:flex; gap:7px; overflow-x:auto; padding-bottom:7px; scrollbar-width:thin;}
+  .pill{
+    display:flex; align-items:center; gap:7px; flex-shrink:0;
+    border:1px solid var(--line-2); border-radius:999px; padding:7px 13px;
+    font-size:12.5px; font-weight:600; cursor:pointer; background:var(--panel-2); color:var(--ink-soft);
+    font-family:'Sora',sans-serif; white-space:nowrap; transition:all .13s ease;
+  }
+  .pill:hover{color:var(--ink); transform:translateY(-1px);}
+  .pill:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  .pill .count{font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:10.5px; opacity:.6;}
+  .pill[data-active="true"]{color:#05101E; border-color:transparent;}
+  .pill[data-active="true"] .count{opacity:.75;}
+  .pill[data-cat="all"][data-active="true"]{background:var(--ink);}
+  .pill[data-cat="arch"][data-active="true"]{background:var(--arch);}
+  .pill[data-cat="gov"][data-active="true"]{background:var(--gov);}
+  .pill[data-cat="cloud"][data-active="true"]{background:var(--cloud);}
+  .pill[data-cat="ai"][data-active="true"]{background:var(--ai);}
+  .pill[data-cat="pm"][data-active="true"]{background:var(--pm);}
+  .pill[data-cat="alad"][data-active="true"]{background:var(--alad);}
+
+  .result-count{font-size:12px; color:var(--ink-soft); margin:14px 0 14px; font-family:'IBM Plex Mono',monospace;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(258px,1fr)); gap:14px;}
+  .card{
+    position:relative; border-radius:var(--radius); border:1px solid var(--line);
+    padding:17px 16px 15px; display:flex; flex-direction:column; gap:9px;
+    background:var(--panel-2); cursor:pointer; min-height:178px; overflow:hidden;
+    transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+  }
+  .card::before{content:""; position:absolute; top:0; left:0; right:0; height:2px; background:var(--line-2);}
+  .card[data-cat="arch"]::before{background:var(--arch);}
+  .card[data-cat="gov"]::before{background:var(--gov);}
+  .card[data-cat="cloud"]::before{background:var(--cloud);}
+  .card[data-cat="ai"]::before{background:var(--ai);}
+  .card[data-cat="pm"]::before{background:var(--pm);}
+  .card[data-cat="alad"]::before{background:var(--alad);}
+  .card:hover{transform:translateY(-3px); border-color:var(--line-2); box-shadow:0 22px 44px -26px #000;}
+  .card:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  .card h3{font-size:16px; margin:0; line-height:1.3;}
+  .card .hook{font-size:12.5px; color:var(--ink-soft); line-height:1.5; margin:0; flex-grow:1;}
+  .cat-tag{
+    font-family:'IBM Plex Mono',monospace; font-size:9.5px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.09em; padding:4px 8px; border-radius:5px;
+    display:inline-flex; align-items:center; gap:5px; align-self:flex-start; border:1px solid transparent;
+  }
+  .cat-tag[data-cat="arch"]{color:var(--arch-soft); background:var(--arch-tint); border-color:rgba(56,189,248,.3);}
+  .cat-tag[data-cat="gov"]{color:var(--gov-soft); background:var(--gov-tint); border-color:rgba(251,146,60,.3);}
+  .cat-tag[data-cat="cloud"]{color:var(--cloud-soft); background:var(--cloud-tint); border-color:rgba(167,139,250,.3);}
+  .cat-tag[data-cat="ai"]{color:var(--ai-soft); background:var(--ai-tint); border-color:rgba(52,211,153,.3);}
+  .cat-tag[data-cat="pm"]{color:var(--pm-soft); background:var(--pm-tint); border-color:rgba(251,113,133,.3);}
+  .cat-tag[data-cat="alad"]{color:var(--alad-soft); background:var(--alad-tint); border-color:rgba(227,179,65,.3);}
+  .explore-row{
+    display:flex; align-items:center; gap:6px; font-size:11px; font-weight:700; margin-top:auto;
+    font-family:'IBM Plex Mono',monospace; color:#63789B; text-transform:uppercase; letter-spacing:.08em;
+  }
+  .explore-row{color:#63789B;}
+  .card:hover .explore-row{color:var(--ink);}
+  .card:hover .explore-row svg{transform:translateX(3px);}
+  .explore-row svg{transition:transform .15s ease;}
+  .empty-state{grid-column:1/-1; text-align:center; padding:56px 20px; color:var(--ink-soft);}
+  .empty-state .big{font-size:34px; display:block; margin-bottom:10px;}
+  .empty-state button{
+    margin-top:14px; background:var(--accent); color:#05101E; border:none; border-radius:9px;
+    padding:9px 16px; font-weight:700; font-size:13px; cursor:pointer;
+  }
+
+  /* ---------- modal ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(4,8,17,.72); backdrop-filter:blur(4px);
+    display:flex; align-items:flex-start; justify-content:center; padding:5vh 18px; z-index:100;
+    overflow-y:auto; animation:fadeIn .14s ease;
+  }
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  @keyframes popIn{from{opacity:0; transform:translateY(10px) scale(.985);}to{opacity:1; transform:none;}}
+  .modal{
+    background:var(--panel); border:1px solid var(--line-2); border-radius:18px;
+    max-width:660px; width:100%; padding:26px 28px 24px; animation:popIn .2s cubic-bezier(.3,.6,.3,1.15);
+    box-shadow:0 40px 90px -30px #000;
+  }
+  .modal-top{display:flex; justify-content:space-between; align-items:flex-start; gap:14px; margin-bottom:12px;}
+  .modal h3{font-size:23px; margin:10px 0 6px; line-height:1.2;}
+  .modal .m-hook{color:var(--ink-soft); font-size:14px; font-style:italic; margin:0 0 18px;}
+  .close-btn{
+    background:var(--panel-2); border:1px solid var(--line-2); color:var(--ink-soft); cursor:pointer;
+    width:32px; height:32px; border-radius:8px; font-size:16px; line-height:1; flex-shrink:0;
+  }
+  .close-btn:hover{color:var(--ink); border-color:var(--ink-soft);}
+  .sec{margin-bottom:17px;}
+  .sec .kicker{display:block; margin-bottom:7px;}
+  .sec p{margin:0; font-size:14.2px; line-height:1.66; color:#D3DEEE;}
+  .ex-list{list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:9px;}
+  .ex-list li{
+    background:#0A1120; border:1px solid var(--line); border-left:2px solid var(--accent);
+    border-radius:8px; padding:11px 13px; font-size:13.4px; line-height:1.55; color:#C6D4E8;
+  }
+  .watch{
+    background:var(--gov-tint); border:1px solid rgba(251,146,60,.28); border-radius:10px;
+    padding:13px 14px; font-size:13.4px; line-height:1.6; color:#F3D6B6;
+  }
+  .watch strong{color:var(--gov);}
+
+  /* ---------- quiz ---------- */
+  .quiz-wrap{max-width:720px; margin:0 auto;}
+  .quiz-bar{display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:16px; font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.1em;}
+  .prog{height:5px; background:var(--panel-2); border-radius:99px; overflow:hidden; margin-bottom:22px; border:1px solid var(--line);}
+  .prog span{display:block; height:100%; background:linear-gradient(90deg,var(--accent),var(--ai)); transition:width .3s ease;}
+  .q-text{font-family:'Sora',sans-serif; font-size:19px; font-weight:600; line-height:1.42; margin:0 0 20px;}
+  .opts{display:flex; flex-direction:column; gap:10px;}
+  .opt{
+    text-align:left; width:100%; background:var(--panel-2); border:1px solid var(--line-2);
+    border-radius:11px; padding:14px 15px; font-size:14.2px; color:var(--ink); cursor:pointer;
+    display:flex; gap:12px; align-items:flex-start; line-height:1.5; transition:all .13s ease;
+  }
+  .opt:hover:not(:disabled){border-color:var(--accent); transform:translateX(2px);}
+  .opt:disabled{cursor:default;}
+  .opt:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  .opt .letter{
+    font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:11px; flex-shrink:0;
+    width:22px; height:22px; border-radius:6px; background:#0A1120; border:1px solid var(--line-2);
+    display:flex; align-items:center; justify-content:center; color:var(--ink-soft); margin-top:1px;
+  }
+  .opt.correct{border-color:var(--ai); background:var(--ai-tint);}
+  .opt.correct .letter{background:var(--ai); color:#042115; border-color:var(--ai);}
+  .opt.wrong{border-color:var(--pm); background:var(--pm-tint);}
+  .opt.wrong .letter{background:var(--pm); color:#2A0710; border-color:var(--pm);}
+  .why{
+    margin-top:18px; background:#0A1120; border:1px solid var(--line-2); border-left:3px solid var(--accent);
+    border-radius:10px; padding:15px 16px; font-size:13.8px; line-height:1.62; color:#CBD9EC; animation:popIn .2s ease;
+  }
+  .why .kicker{display:block; margin-bottom:6px;}
+  .btn{
+    background:var(--accent); color:#05101E; border:none; border-radius:10px; padding:12px 20px;
+    font-weight:700; font-size:13.5px; cursor:pointer; font-family:'Sora',sans-serif;
+    display:inline-flex; align-items:center; gap:8px; transition:transform .13s ease, filter .13s ease;
+  }
+  .btn:hover{transform:translateY(-1px); filter:brightness(1.08);}
+  .btn:focus-visible{outline:2px solid #fff; outline-offset:2px;}
+  .btn.ghost{background:transparent; color:var(--ink-soft); border:1px solid var(--line-2);}
+  .btn.ghost:hover{color:var(--ink); border-color:var(--ink-soft);}
+  .btn-row{margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;}
+
+  .score-hero{text-align:center; padding:12px 0 26px;}
+  .score-hero .num{font-family:'Sora',sans-serif; font-size:58px; font-weight:700; line-height:1; letter-spacing:-.03em;}
+  .score-hero .sub{color:var(--ink-soft); font-size:14px; margin-top:9px;}
+  .bd-row{display:flex; align-items:center; gap:12px; margin-bottom:10px; font-size:13px;}
+  .bd-row .nm{width:190px; flex-shrink:0; color:var(--ink-soft); font-weight:600; font-size:12.5px;}
+  .bd-bar{flex:1; height:8px; background:var(--panel-2); border-radius:99px; overflow:hidden; border:1px solid var(--line);}
+  .bd-bar span{display:block; height:100%; border-radius:99px;}
+  .bd-row .sc{font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--ink-soft); width:44px; text-align:right;}
+  .miss{background:#0A1120; border:1px solid var(--line); border-radius:10px; padding:14px 15px; margin-bottom:10px;}
+  .miss .mq{font-size:13.5px; font-weight:600; margin:0 0 8px; line-height:1.45;}
+  .miss .ma{font-size:13px; color:var(--ai); margin:0 0 6px; font-family:'IBM Plex Mono',monospace;}
+  .miss .mw{font-size:13px; color:var(--ink-soft); margin:0; line-height:1.58;}
+
+  /* ---------- blueprint ---------- */
+  .bp-toggle{display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap;}
+  .bp-toggle button{
+    font-family:'Sora',sans-serif; font-size:13px; font-weight:600; padding:10px 16px; border-radius:10px;
+    border:1px solid var(--line-2); background:var(--panel-2); color:var(--ink-soft); cursor:pointer; transition:all .14s ease;
+  }
+  .bp-toggle button:hover{color:var(--ink);}
+  .bp-toggle button[data-on="true"]{background:var(--ink); color:#05101E; border-color:var(--ink);}
+  .bp-toggle button:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  .stack{position:relative; padding-left:30px;}
+  .stack::before{content:""; position:absolute; left:9px; top:14px; bottom:14px; width:2px; background:linear-gradient(180deg,var(--arch),var(--cloud),var(--ai),var(--pm));}
+  .layer{
+    position:relative; margin-bottom:10px; border:1px solid var(--line); border-radius:12px;
+    background:var(--panel-2); transition:border-color .15s ease, transform .15s ease, opacity .2s ease;
+  }
+  .stack[data-focus="true"] .layer:not(.open):not(:hover){opacity:.42;}
+  .layer:hover{border-color:var(--line-2);}
+  .layer.open{border-color:var(--accent); box-shadow:var(--glow);}
+  .layer::before{
+    content:""; position:absolute; left:-25px; top:20px; width:11px; height:11px; border-radius:50%;
+    background:var(--bg); border:2px solid var(--line-2); transition:all .18s ease;
+  }
+  .layer.open::before, .layer:hover::before{background:var(--accent); border-color:var(--accent); box-shadow:0 0 0 4px rgba(56,189,248,.18);}
+  .layer-head{
+    width:100%; display:flex; align-items:center; gap:13px; padding:15px 16px; cursor:pointer;
+    background:none; border:none; text-align:left; color:var(--ink);
+  }
+  .layer-head:focus-visible{outline:2px solid var(--accent); outline-offset:-2px; border-radius:12px;}
+  .layer-idx{font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:700; color:var(--accent); flex-shrink:0;}
+  .layer-title{font-family:'Sora',sans-serif; font-size:15px; font-weight:600; flex-shrink:0;}
+  .layer-sub{font-size:12.5px; color:var(--ink-soft); flex:1; line-height:1.45;}
+  .layer-chev{color:var(--ink-soft); flex-shrink:0; transition:transform .2s ease;}
+  .layer.open .layer-chev{transform:rotate(90deg);}
+  .layer-body{padding:0 16px 18px 16px; border-top:1px solid var(--line); margin-top:2px; animation:popIn .18s ease;}
+  .lb-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; margin-top:15px;}
+  .lb-box{background:#0A1120; border:1px solid var(--line); border-radius:10px; padding:13px 14px;}
+  .lb-box .kicker{display:block; margin-bottom:8px;}
+  .lb-box ul{margin:0; padding-left:17px; font-size:13px; line-height:1.62; color:#C6D4E8;}
+  .lb-box ul li{margin-bottom:5px;}
+  .lb-box.pmdec{border-left:2px solid var(--pm);}
+  .lb-box.fail{border-left:2px solid var(--gov);}
+  .lb-box.tech{border-left:2px solid var(--cloud);}
+  .lb-box.metric{border-left:2px solid var(--ai);}
+  .layer-what{font-size:13.8px; line-height:1.65; color:#D3DEEE; margin:15px 0 0;}
+  .chipline{display:flex; gap:6px; flex-wrap:wrap; margin-top:13px;}
+  .chip{
+    font-family:'IBM Plex Mono',monospace; font-size:10.5px; padding:4px 9px; border-radius:5px;
+    background:var(--cloud-tint); color:var(--cloud-soft); border:1px solid rgba(167,139,250,.28);
+  }
+
+  /* ---------- vault ---------- */
+  .vault-list{display:flex; flex-direction:column; gap:11px;}
+  .vq{border:1px solid var(--line); border-radius:12px; background:var(--panel-2); overflow:hidden; transition:border-color .15s ease;}
+  .vq:hover{border-color:var(--line-2);}
+  .vq.open{border-color:var(--line-2); box-shadow:0 20px 44px -30px #000;}
+  .vq-head{
+    width:100%; display:flex; align-items:flex-start; gap:12px; padding:15px 16px; cursor:pointer;
+    background:none; border:none; text-align:left; color:var(--ink); font-family:'Sora',sans-serif;
+    font-size:14.6px; font-weight:600; line-height:1.42;
+  }
+  .vq-head:focus-visible{outline:2px solid var(--accent); outline-offset:-2px;}
+  .vq-head .q-ico{flex-shrink:0; font-size:15px; margin-top:1px;}
+  .vq-head .plus{margin-left:auto; color:var(--ink-soft); font-size:18px; line-height:1; transition:transform .2s ease; flex-shrink:0;}
+  .vq.open .plus{transform:rotate(45deg);}
+  .vq-body{padding:0 16px 18px 16px; animation:popIn .18s ease;}
+  .vq-body .sec{margin-bottom:15px;}
+  .vq-body .sec:last-child{margin-bottom:0;}
+  .open-line{
+    background:var(--arch-tint); border:1px solid rgba(56,189,248,.28); border-radius:10px;
+    padding:13px 14px; font-size:13.8px; line-height:1.6; color:#CFE9FA; font-style:italic;
+  }
+  .frame-list{list-style:none; counter-reset:f; padding:0; margin:0; display:flex; flex-direction:column; gap:8px;}
+  .frame-list li{
+    counter-increment:f; position:relative; padding-left:32px; font-size:13.6px; line-height:1.58; color:#C6D4E8;
+  }
+  .frame-list li::before{
+    content:counter(f); position:absolute; left:0; top:0; width:21px; height:21px; border-radius:6px;
+    background:var(--panel); border:1px solid var(--line-2); color:var(--accent);
+    font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .say-list{list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px;}
+  .say-list li{
+    background:#0A1120; border:1px solid var(--line); border-left:2px solid var(--ai);
+    border-radius:8px; padding:11px 13px; font-size:13.3px; line-height:1.56; color:#C6D4E8;
+  }
+  .trap{
+    background:var(--pm-tint); border:1px solid rgba(251,113,133,.28); border-radius:10px;
+    padding:13px 14px; font-size:13.4px; line-height:1.6; color:#F8CBD3;
+  }
+  .trap strong{color:var(--pm);}
+  .yours{
+    background:var(--alad-tint); border:1px dashed rgba(227,179,65,.45); border-radius:10px;
+    padding:13px 14px; font-size:13.4px; line-height:1.6; color:#EFDCAA;
+  }
+  .yours strong{color:var(--alad);}
+
+  /* ---------- roadmap ---------- */
+  .month{margin-bottom:26px;}
+  .month-head{display:flex; align-items:baseline; gap:12px; margin-bottom:6px; flex-wrap:wrap;}
+  .month-head h3{font-size:17px; margin:0;}
+  .month-head .mtag{
+    font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:700; letter-spacing:.1em;
+    text-transform:uppercase; padding:4px 9px; border-radius:5px; background:var(--arch-tint);
+    color:var(--arch-soft); border:1px solid rgba(56,189,248,.3);
+  }
+  .month > p{margin:0 0 14px; color:var(--ink-soft); font-size:13.2px; line-height:1.6; max-width:80ch;}
+  .weeks{display:grid; grid-template-columns:repeat(auto-fill,minmax(268px,1fr)); gap:13px;}
+  .week{
+    border:1px solid var(--line); border-radius:12px; background:var(--panel-2); padding:15px 15px 14px;
+    display:flex; flex-direction:column; gap:10px; transition:border-color .15s ease, transform .15s ease;
+  }
+  .week:hover{border-color:var(--line-2); transform:translateY(-2px);}
+  .week .wk{font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--accent);}
+  .week h4{margin:0; font-size:14.5px; line-height:1.3;}
+  .week ul{margin:0; padding-left:16px; font-size:12.7px; line-height:1.6; color:#B8C7DE;}
+  .week ul li{margin-bottom:4px;}
+  .week .out{
+    margin-top:auto; padding-top:11px; border-top:1px dashed var(--line-2); font-size:12.2px;
+    line-height:1.5; color:var(--ai-soft);
+  }
+  .week .out b{font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ai); display:block; margin-bottom:4px;}
+
+  .project{
+    border:1px solid var(--line-2); border-radius:14px; padding:20px 20px 18px; margin-top:6px;
+    background:linear-gradient(140deg, rgba(56,189,248,.07), rgba(167,139,250,.05) 55%, transparent);
+  }
+  .project h3{margin:8px 0 8px; font-size:19px;}
+  .project > p{margin:0 0 16px; font-size:13.6px; line-height:1.65; color:#C6D4E8; max-width:82ch;}
+  .proj-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:13px;}
+
+  /* ---------- misc ---------- */
+  .note{
+    display:flex; gap:11px; align-items:flex-start; background:var(--panel-2); border:1px solid var(--line);
+    border-left:2px solid var(--alad); border-radius:10px; padding:13px 15px; margin-bottom:20px;
+    font-size:13px; line-height:1.62; color:#C6D4E8;
+  }
+  .note .ni{font-size:16px; flex-shrink:0; line-height:1.3;}
+
+  @media (max-width:640px){
+    header{padding:26px 18px 8px;}
+    .brand-text h1{font-size:23px;}
+    main{padding:20px 15px 24px; border-radius:14px; margin-top:14px;}
+    .tabbar{padding:0 18px; gap:6px;}
+    .tab{font-size:12.5px; padding:9px 12px;}
+    .modal{padding:20px 17px 18px; border-radius:14px;}
+    .modal h3{font-size:20px;}
+    .q-text{font-size:17px;}
+    .score-hero .num{font-size:46px;}
+    .bd-row .nm{width:120px; font-size:11.5px;}
+    .stack{padding-left:22px;}
+    .stack::before{left:5px;}
+    .layer::before{left:-21px;}
+    .layer-head{flex-wrap:wrap; gap:8px;}
+    .layer-sub{flex-basis:100%; font-size:12px;}
+    footer{padding:0 18px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <svg class="mark" width="54" height="54" viewBox="0 0 54 54" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="50" height="50" rx="13" fill="#0E1526" stroke="#2A3A5C" stroke-width="1.5"/>
+      <ellipse cx="27" cy="16" rx="13" ry="4.6" fill="none" stroke="#38BDF8" stroke-width="2"/>
+      <path d="M14 16v9c0 2.5 5.8 4.6 13 4.6s13-2.1 13-4.6v-9" fill="none" stroke="#38BDF8" stroke-width="2" stroke-linecap="round"/>
+      <path d="M14 25v9c0 2.5 5.8 4.6 13 4.6s13-2.1 13-4.6v-9" fill="none" stroke="#A78BFA" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="27" cy="44" r="4.2" fill="#34D399"/>
+      <path d="M27 39v-4M18 41l-3-3M36 41l3-3" stroke="#34D399" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <div class="brand-text">
+      <span class="kicker">Interview Field Guide &middot; VP / Senior Technical PM</span>
+      <h1>The Data &amp; AI <em>Platform PM</em> Field Guide</h1>
+      <p>What a business-analysis and enterprise-transformation background is missing when the job is <strong>cloud data platform, unstructured &amp; multimodal data, ML data preparation, and AI developer platforms</strong> &mdash; built as preparation for BlackRock Aladdin-class enterprise data roles.</p>
+      <div class="badges">
+        <span class="badge">📚 48 concepts</span>
+        <span class="badge">🎯 32 drills</span>
+        <span class="badge">🎤 16 answer skeletons</span>
+        <span class="badge">🗺️ 12-week plan</span>
+        <span class="badge warn">⚠️ Re-verify product specifics before quoting</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="tabbar" role="tablist">
+  <button class="tab active" data-view="library" role="tab">📚 Concept Library</button>
+  <button class="tab" data-view="blueprint" role="tab">🏗️ Platform Blueprint</button>
+  <button class="tab" data-view="drills" role="tab">🎯 Interview Drills</button>
+  <button class="tab" data-view="vault" role="tab">🎤 Answer Vault</button>
+  <button class="tab" data-view="roadmap" role="tab">🗺️ 12-Week Plan</button>
+</div>
+
+<main id="main"></main>
+<div id="modalRoot"></div>
+
+<footer>
+  Built with the field-guide-builder skill for interview preparation. The architecture, AI/ML and platform-PM concepts here are standard industry material and are defensible as written. <strong>BlackRock and Aladdin product specifics change</strong> &mdash; the Aladdin entries were checked against blackrock.com/aladdin in August 2026, so re-verify before you state them in a room. Leadership answers are deliberately left as skeletons: fill them with your own experience, never with invented specifics.
+</footer>
+
+<script>
+const CATS = {
+  arch:  { label:"Data Platform Architecture", icon:"🏗️" },
+  gov:   { label:"Metadata, Quality & Governance", icon:"🗂️" },
+  cloud: { label:"Cloud & Platform Engineering", icon:"☁️" },
+  ai:    { label:"AI/ML & Unstructured Data", icon:"🧠" },
+  pm:    { label:"Platform & Commercial PM", icon:"🎯" },
+  alad:  { label:"Aladdin & Investment Data", icon:"🏛️" },
+};
+
+const ENTRIES = [
+/* ---------------- ARCHITECTURE ---------------- */
+{cat:"arch", name:"Data Lake vs Warehouse vs Lakehouse", hook:"Three answers to where the data lives, and the trade-off is schema.",
+ def:"A data warehouse stores cleaned, modelled, schema-on-write data optimised for SQL analytics and BI — fast and trustworthy, expensive and rigid. A data lake stores raw files of any shape in cheap object storage with schema-on-read — infinitely flexible, and prone to becoming a swamp nobody can query. A lakehouse puts a transactional table layer (Delta, Iceberg, Hudi) over lake storage so you get warehouse guarantees — ACID transactions, schema enforcement, time travel — at lake storage prices. For a PM this is not a technology preference, it is a decision about who bears the cost of structure: you up front, or every consumer forever.",
+ example:["A risk team needs point-in-time reproducible positions for a regulator — warehouse or lakehouse territory, because 'what did we believe on 31 March' has to be answerable exactly.","A research team wants every raw broker PDF and earnings transcript kept in case a future model can use them — lake territory, because you cannot know the schema in advance."],
+ watch:"'We built a data lake' is often a confession rather than an achievement. Without a catalog and enforced contracts a lake is a folder of files with no owner, and the failure mode is not technical — it is that nobody can find or trust anything."},
+
+{cat:"arch", name:"ETL vs ELT", hook:"Transform before you land it, or land it and transform in place.",
+ def:"ETL extracts data, transforms it on an intermediate engine, then loads the finished shape into the target. ELT extracts, loads raw into a powerful cloud warehouse or lakehouse, and transforms with SQL inside that engine. ELT won most cloud workloads because storage got cheap and compute got elastic, so keeping a raw layer costs almost nothing and buys you the ability to re-derive everything when a definition changes. ETL still wins where you legally cannot land raw data — PII that must be masked or tokenised before it touches the platform, or data with hard residency constraints.",
+ example:["A modern stack lands raw vendor pricing files in object storage then models them with dbt — a definition change means a rerun, not a re-ingest.","A pipeline tokenising client account numbers in flight, before they ever land in the lake, is ETL by necessity rather than preference."],
+ watch:"The interesting question is not which acronym but reprocessing cost. If a business definition changes eighteen months out, can you rebuild history? ELT usually says yes; ETL that discards the raw extract says no."},
+
+{cat:"arch", name:"Batch, Streaming & CDC", hook:"How fresh does this actually need to be, and who is paying for it?",
+ def:"Batch processes bounded chunks on a schedule and is cheap, simple and easy to reason about. Streaming processes events continuously as they arrive, giving seconds-level freshness at the cost of much harder engineering: out-of-order events, exactly-once semantics, state management and 24/7 operations. Change Data Capture sits between them, tailing a source database transaction log to emit row-level changes so downstream systems stay near-real-time without hammering the source. The choice is driven by a decision-latency question: how stale can this be before somebody makes a wrong decision?",
+ example:["End-of-day accounting and regulatory reporting are batch by nature — the business cadence is the day itself.","An intraday risk view or a trading limit check needs streaming or CDC, because a position six hours stale is a control failure, not a freshness inconvenience."],
+ watch:"Streaming is roughly an order of magnitude more expensive to build and operate than batch. If nobody can name a decision that changes because data is minutes old rather than hours old, you are buying latency nobody will use."},
+
+{cat:"arch", name:"Pipelines & Orchestration", hook:"A DAG of steps, and the two properties that decide whether you sleep.",
+ def:"A pipeline is a directed acyclic graph of steps — extract, validate, transform, publish — run by an orchestrator (Airflow, Dagster, Azure Data Factory, Step Functions) that handles scheduling, dependencies, retries and alerting. The two properties that matter most in production are idempotency (running a step twice produces the same result rather than duplicating rows) and backfill (you can re-run a date range after fixing a bug or after a vendor reissues a file). Most painful data incidents trace back to one of these being absent.",
+ example:["A vendor reissues a corrected price file for last Tuesday; an idempotent, backfillable pipeline reprocesses that partition and everything downstream self-corrects.","A non-idempotent pipeline retried after a timeout double-counts a day of trades, and it surfaces a week later in a client report."],
+ watch:"Pipeline success rate is a weak metric alone. A job can finish green having written zero rows, or having silently dropped 30% of records after a schema change, which is why orchestration health is always paired with quality and freshness checks."},
+
+{cat:"arch", name:"Medallion Architecture", hook:"Bronze raw, silver conformed, gold consumable — one owner per layer.",
+ def:"Medallion is a convention for organising a lakehouse into progressive quality tiers. Bronze holds raw ingested data exactly as received, immutable and append-only, preserving the audit trail. Silver holds cleaned, deduplicated, conformed data with types enforced and entities resolved. Gold holds business-level aggregates shaped for a specific consumption use case. Its value to a PM is organisational as much as technical: it gives you clean places to draw ownership and SLA boundaries, and a defensible answer to 'why is my number different from theirs'.",
+ example:["Bronze keeps the vendor security file byte-for-byte; silver resolves each instrument to one internal identifier; gold serves an exposure table the risk team queries directly.","When two teams disagree on a number you walk gold back to silver back to bronze and find the exact layer where definitions diverged."],
+ watch:"Medallion is a naming convention, not a guarantee. Teams routinely publish gold straight off bronze under deadline pressure, and the layer names then actively mislead people about how trustworthy the data is."},
+
+{cat:"arch", name:"Open Table Formats & Storage/Compute Separation", hook:"Cheap immutable files plus a metadata layer that makes them behave like a database.",
+ def:"Modern platforms separate storage from compute: data sits in columnar files (Parquet, ORC) in object storage and any number of engines read it. Open table formats — Apache Iceberg, Delta Lake, Hudi — add a metadata layer providing ACID transactions, schema evolution, partition management and time travel over those files. The commercial consequence is the one to internalise: data is no longer trapped inside one vendor engine, compute scales up and down without moving a byte, and different teams run different engines against a single copy.",
+ example:["Time travel lets you query a table exactly as it stood at last quarter-end, which is how you reproduce a regulatory report without frozen snapshot copies.","Two teams query the same Iceberg tables from different engines, so there is one copy of the truth rather than a warehouse copy and a lake copy that quietly diverge."],
+ watch:"Open format does not mean open in practice. Governance, entitlements and the catalog often stay vendor-specific, and that is usually where the real lock-in lives — worth naming explicitly in any build-versus-buy discussion."},
+
+{cat:"arch", name:"Central Platform vs Data Mesh", hook:"One team owns all data, or every domain owns and publishes its own.",
+ def:"The centralised model puts one platform team in charge of ingesting, modelling and serving all data — consistent and controlled, but that team becomes a bottleneck and lacks domain knowledge. Data mesh decentralises ownership: each domain owns its data as a product with a named owner, documented interface, quality SLA and discoverability, while a central team provides the self-serve platform they build on. Mesh is an organisational design decision dressed as an architecture, and it works only when domain teams are genuinely staffed and held accountable.",
+ example:["A central team modelling every asset class becomes the queue everyone waits in, and its backlog becomes the company roadmap by accident.","Under mesh the trading domain publishes an executions dataset with documented schema, freshness SLA and an on-call owner, while the platform team supplies the pipelines, catalog and standards it publishes through."],
+ watch:"Mesh without a strong central platform and enforced global standards degrades into silos with a fashionable name. Federated governance is the hard part, and it is the part most 'we are doing mesh' claims have skipped."},
+
+/* ---------------- GOVERNANCE ---------------- */
+{cat:"gov", name:"Metadata & the Data Catalog", hook:"If nobody can find it, you did not build a platform.",
+ def:"Metadata is data about data: technical (schemas, types, partitions), business (what a field means, who owns it, how it is defined) and operational (when it last ran, how fresh it is, how often it is queried). A data catalog is the searchable index of all of it, and it is the highest-leverage adoption lever on an enterprise data platform because discovery is the first step of every user journey. A user who cannot find a dataset in two minutes rebuilds it themselves, and now there are two versions of the truth.",
+ example:["An analyst searches 'benchmark returns', sees the certified dataset with owner, freshness and definition, and uses it instead of emailing three teams.","Popularity metadata — this table is queried by 40 teams daily — is itself a trust signal, often more persuasive than a certification badge."],
+ watch:"Catalogs die from stale business metadata. Technical metadata harvests itself; descriptions and ownership rot unless publishing them is a requirement rather than a nice-to-have, which is a product decision rather than a tooling one."},
+
+{cat:"gov", name:"Data Lineage", hook:"Where did this number come from, and what breaks if I change it?",
+ def:"Lineage is the traced path of data from source through every transformation to every consuming report, model or API. Column-level lineage is materially more useful than table-level because it answers the two questions actually asked: root cause (this figure looks wrong, which upstream step produced it) and impact (I need to change this field, who breaks). In regulated finance it also carries a compliance function, since demonstrating provenance for a reported number to a regulator is not optional.",
+ example:["A risk number looks wrong; column-level lineage walks back through four transformations to a vendor file that arrived with a changed currency convention.","Before deprecating a field, impact analysis shows 60 downstream models depend on it, turning a two-week change into a migration programme."],
+ watch:"Lineage that stops at the platform boundary is half a map. The moment someone exports to a spreadsheet the trail goes dark, and that dark zone is exactly where most reported-number disputes originate."},
+
+{cat:"gov", name:"The Dimensions of Data Quality", hook:"Good data is not one thing, it is six measurable things.",
+ def:"Data quality decomposes into dimensions you can instrument: completeness (are expected records and fields present), accuracy (do values match reality), consistency (does it agree across systems), timeliness or freshness (did it arrive when promised), validity (does it conform to defined format and range) and uniqueness (are there duplicates). Keeping them separate matters because they have different owners and different fixes — completeness is usually an ingestion problem, accuracy a source problem, consistency a definitions problem.",
+ example:["A dataset can be 100% complete and perfectly formatted and still wrong: every price is valid but sourced from a stale vendor feed, an accuracy failure no validity check will catch.","A freshness SLA — 99% of days this lands by 06:00 — is measurable, reportable and enforceable, unlike 'the data is good'."],
+ watch:"Quality is only meaningful relative to a use case. Ninety-five percent accuracy is fine for a research screen and unacceptable for a regulatory filing, so a single platform-wide quality score is usually a vanity metric hiding the tiers that matter."},
+
+{cat:"gov", name:"Master & Reference Data (MDM)", hook:"One entity, many spellings, and a decade of reconciliation pain.",
+ def:"Master data is the core entities the enterprise shares — clients, counterparties, instruments, legal entities. Reference data is the shared lookup values that classify them — currencies, country codes, sectors, ratings. Master Data Management resolves source-system variants into one golden record with a durable identifier and an explicit survivorship rule for which source wins on which field. In financial services this is not back-office hygiene: a wrong instrument identifier means positions do not net, exposures do not aggregate, and risk is measured against the wrong thing.",
+ example:["The same bond arrives as a CUSIP from one vendor, an ISIN from another and a proprietary ticker from a third; the security master resolves all three to one internal identifier so positions aggregate.","One client appears as three legal entities across systems, and until they are mastered, aggregate exposure to that client is understated — a risk-limit problem, not a tidiness problem."],
+ watch:"Entity resolution is never fully automated. There is always a stewardship queue of ambiguous matches needing human judgement, and a platform with no product surface for that queue has simply moved the problem into somebody's inbox."},
+
+{cat:"gov", name:"Data Contracts & Data SLAs", hook:"Turn 'the pipeline broke' into 'the producer broke a commitment'.",
+ def:"A data contract is an explicit, versioned agreement between a data producer and its consumers covering schema, semantics, quality thresholds, freshness and a change process with deprecation notice. It converts data from a byproduct a team happens to emit into an interface with an owner, which is what makes a platform composable. The mechanism matters as much as the document: contracts are enforced in CI so a breaking schema change fails the producer build rather than silently breaking forty consumers at 3am.",
+ example:["Adding a nullable column is a compatible change; renaming or retyping one fails the contract check and requires a versioned migration with notice.","Pairing the contract with a freshness SLA gives consumers something real to design against and gives you something real to report on."],
+ watch:"Contracts without consequences are documentation. If a producer can break one with no build failure, no alert and no accountability, you have written a wish list — the enforcement point is the entire product."},
+
+{cat:"gov", name:"Governance, Entitlements & Residency", hook:"Who can see what, proven rather than asserted.",
+ def:"Data governance is the operating model of ownership, policy and accountability over data: classification, access control, retention, privacy and auditability. Technically it lands as RBAC (permissions by role) or the more expressive ABAC (permissions by attributes of user, data and context), with row-level and column-level filtering so one physical dataset serves many audiences. In a global enterprise, residency and localisation rules add a hard architectural constraint — some data physically cannot leave a jurisdiction, which shapes regional deployment topology before you write a line of code.",
+ example:["Analysts in one region query a shared client table but row-level policy silently restricts them to their own region — one dataset, many entitled views.","Vendor market data usually carries redistribution licences limiting who inside the firm may see it, a contractual constraint the platform must enforce technically."],
+ watch:"Governance is where platform PMs lose credibility in both directions. Too little and you fail an audit; too much and adoption collapses because the fastest path to insight becomes copying data out and working around you."},
+
+/* ---------------- CLOUD ---------------- */
+{cat:"cloud", name:"Object Storage", hook:"The cheap, infinite, deliberately dumb foundation.",
+ def:"Object storage — Amazon S3, Azure Data Lake Storage, Google Cloud Storage — holds immutable blobs addressed by key, with effectively unlimited capacity, very low cost per terabyte and extremely high durability. It is not a filesystem: there is no real directory structure (prefixes only), no in-place edit (you rewrite the object), and listing millions of small objects is slow. Nearly every modern data platform is object storage at the bottom with engines above it, and its economics — storage cheap, requests and egress not free — drive real design choices like partitioning and file sizing.",
+ example:["Storage tiers keep hot data instantly queryable while pushing seven-year retention into archive at a fraction of the cost, often the single biggest cost lever you hold.","Versioning plus object lock gives immutable, tamper-evident retention, which is how regulated firms satisfy write-once-read-many obligations."],
+ watch:"The small files problem is the classic own goal: millions of tiny objects make queries crawl and request costs balloon. Compaction into right-sized files is unglamorous platform work that belongs on the roadmap, not in an incident review."},
+
+{cat:"cloud", name:"Compute Models: Serverless, Containers, Clusters", hook:"Same work, three different cost and control curves.",
+ def:"Serverless functions run short event-driven tasks with no infrastructure to manage and per-invocation billing — excellent for glue and reactive ingestion, constrained on runtime and memory. Containers on an orchestrator give long-running services with dependency control and portability at the cost of operational overhead. Managed distributed engines (Spark, Databricks, Snowflake warehouses) handle large-scale processing where the engine rather than you handles distribution. Most real platforms use all three, and the PM question is where each workload sits between bursty-and-cheap and sustained-and-expensive.",
+ example:["A file landing in object storage triggers a serverless function that validates it and enqueues a job — reactive, cheap, no idle cost.","A nightly transform over billions of rows runs on an elastic cluster that scales to zero afterwards, so you pay for the window rather than the year."],
+ watch:"Serverless looks cheapest until the workload becomes constant, at which point per-invocation pricing quietly overtakes reserved capacity. Cost curves cross, and the crossover point is a legitimate roadmap input."},
+
+{cat:"cloud", name:"Event-Driven Architecture", hook:"Systems publish what happened instead of asking each other for it.",
+ def:"In an event-driven design, producers emit events to a queue or topic (Kafka, Kinesis, Event Hubs, Pub/Sub) and consumers subscribe independently. It decouples systems in time and in deployment: a slow or offline consumer does not block the producer, and adding a consumer requires no change to the producer at all. For a data platform this is what makes ingestion extensible — the day a new team needs the same trade events they subscribe, rather than asking you to build them a feed.",
+ example:["A trade capture system publishes execution events; risk, compliance, reporting and the data lake all consume the same stream at their own pace.","Replay from a retained log rebuilds a downstream store from scratch after a bug, without going back to the source system."],
+ watch:"Decoupling moves complexity rather than removing it. Ordering, duplicates, poison messages, topic schema evolution and consumer lag all become yours — and consumer lag in particular is a platform metric to instrument on day one."},
+
+{cat:"cloud", name:"Identity, Access & Service Principals", hook:"Every request answers who are you and what may you do.",
+ def:"Cloud IAM governs authentication (proving identity via SSO, OIDC or SAML, or workload identities) and authorization (what that identity may do, via policies attached to roles). Humans federate from the corporate directory; applications use service principals or workload identity rather than long-lived secrets. The operating principle is least privilege plus short-lived credentials, with every access decision logged for audit. On a multi-tenant platform, identity is the primary control plane rather than a checkbox at the edge.",
+ example:["A pipeline assumes a role scoped to exactly the buckets and tables it needs, so a compromised job cannot read the rest of the platform.","Service-to-service calls use short-lived tokens issued per request, which makes credential rotation a non-event rather than a project."],
+ watch:"Access sprawl is the slow killer — permissions granted during an incident and never revoked. Periodic access recertification is genuinely a product feature on an enterprise platform, and PMs who leave it to security end up with an audit finding on their roadmap."},
+
+{cat:"cloud", name:"Multi-Tenancy & Isolation", hook:"Many clients, one platform, and nobody ever sees anyone else.",
+ def:"Multi-tenancy is serving multiple customers or business units from shared infrastructure. The spectrum runs from pooled (shared compute and storage separated logically by tenant identifier and policy: cheapest, best utilisation, hardest to guarantee) to siloed (dedicated infrastructure per tenant: strongest isolation, easiest to explain to a regulator, far more expensive). Most enterprise platforms land on a hybrid — pooled by default, siloed for the largest or most sensitive tenants. The noisy neighbour problem, where one tenant's runaway query degrades everyone, is the practical reason quotas exist.",
+ example:["A shared query engine with per-tenant resource quotas stops one client's unbounded scan from starving the platform.","A tenant with strict regulatory isolation requirements gets a dedicated deployment, and the price reflects it — a packaging decision as much as an architectural one."],
+ watch:"Tenancy is a pricing decision disguised as an architecture decision. Pooled lets you price aggressively but you will fight isolation objections in every enterprise security review; siloed changes your margin structure and provisioning time permanently."},
+
+{cat:"cloud", name:"SLA, SLO, SLI & Error Budgets", hook:"The promise, the internal target, the measurement, and permission to ship.",
+ def:"An SLI is the measured signal (percentage of API calls under 200ms; percentage of days the dataset lands by 06:00). An SLO is the internal target for that signal. An SLA is the external, contractual promise with consequences, always set looser than the SLO so you keep headroom. The error budget is the inverse of the SLO — at 99.9% availability roughly 43 minutes of failure per month — and it converts reliability from an argument into arithmetic: budget remaining means ship features, budget exhausted means the next sprint is reliability work.",
+ example:["Availability, latency and freshness get separate SLOs because they fail independently and have different owners.","When the error budget burns out two weeks into the quarter the feature roadmap pauses by prior agreement, which is how you make the trade-off before the incident instead of during it."],
+ watch:"For a data platform, availability alone is a misleading SLO. The API can be up 100% of the time while serving stale or wrong data, which is why freshness and quality need first-class SLOs of their own."},
+
+{cat:"cloud", name:"Observability", hook:"Not is it up, but what exactly is happening and why.",
+ def:"Observability is understanding a system's internal state from its outputs: metrics (numeric time series), logs (discrete events) and traces (the path of one request across services). Data platforms need a fourth pillar, data observability, which monitors the payload rather than the plumbing — volume anomalies, schema drift, freshness breaches, distribution shifts and null-rate spikes. The distinction matters because a green pipeline serving silently wrong data is the most expensive failure mode a data platform has.",
+ example:["A distributed trace shows a 4-second response spent 3.6 seconds in one metadata lookup, turning a vague slowness complaint into a specific fix.","A volume anomaly fires because today's file has 60% of yesterday's rows — the job succeeded, the data did not, and you learn it before the client does."],
+ watch:"Alert fatigue destroys observability faster than having no alerts. Every alert should be actionable and owned; a channel full of ignored warnings trains the team to ignore the real one."},
+
+{cat:"cloud", name:"API Design, Versioning & Compatibility", hook:"On a platform the API is the product, and you can never quietly break it.",
+ def:"Platform APIs are usually REST for resource-oriented access, sometimes GraphQL where clients need flexible shapes, and increasingly bulk-first for data — a query endpoint or direct table share rather than paginating millions of rows over HTTP. The contract discipline is constant: additive changes are safe, removals and renames are breaking, breaking changes require a new version with an overlap period and a published deprecation timeline. Ergonomics are a real feature — consistent naming, cursor pagination, sensible errors, idempotency keys on writes, and rate limits that fail politely with a retry hint.",
+ example:["Adding an optional field is backward-compatible; changing a field type is not, and shipping it as v2 with a twelve-month v1 overlap is the difference between a migration and an outage.","Bulk export or direct data sharing beats paginated REST at analytical volumes — paginating ten million rows is an API design failure, not a client problem."],
+ watch:"Every version you keep alive is permanent operational cost. Ship the deprecation policy alongside v1, because retrofitting one onto clients who already built against an unversioned endpoint is a political problem rather than a technical one."},
+
+/* ---------------- AI / ML / UNSTRUCTURED ---------------- */
+{cat:"ai", name:"Structured, Semi-structured, Unstructured, Multimodal", hook:"The four data shapes, and why the last two break your pipeline.",
+ def:"Structured data has a fixed schema and fits rows and columns — positions, trades, prices. Semi-structured data carries its schema with it and nests — JSON, XML, FIX messages, logs. Unstructured data has no inherent schema — PDFs, contracts, emails, call transcripts, images, audio, video — and is estimated to be the large majority of enterprise data while being the least used. Multimodal means a single workflow spans several of these at once, for example a fund report where the number you need sits in a scanned table, the caveat sits in a footnote, and the context sits in a chart. Each step right on that spectrum removes a guarantee your pipeline used to rely on.",
+ example:["A capital call notice is a PDF: the amount, the due date and the fund are all in there, but no system can act on them until something extracts them into fields.","A multimodal fund factsheet mixes narrative text, a performance table and a chart image, and answering one question can require all three."],
+ watch:"The step people underestimate is not the model, it is that unstructured data has no schema to validate against, so 'data quality' has to be redefined as extraction confidence and coverage. If you cannot answer 'how do you know the extraction is right', you do not have a platform, you have a demo."},
+
+{cat:"ai", name:"Document Ingestion & Extraction", hook:"Before any AI is useful, the PDF has to become text with structure intact.",
+ def:"Turning documents into usable data means classification (what kind of document is this), OCR for scanned images, layout parsing to preserve reading order, tables and headings, and then targeted extraction of the fields you care about, each with a confidence score. Modern approaches use layout-aware models or vision-language models rather than plain OCR, because the structure carries meaning — a number in a table column means something different from the same number in a footnote. Confidence scores are what let you route low-confidence extractions to a human instead of publishing them silently.",
+ example:["A scanned side letter goes through OCR then layout parsing, so a three-column table survives as a table rather than collapsing into scrambled text.","Extraction returns commitment amount with 0.96 confidence and a fund name with 0.61, so the pipeline auto-publishes the first and queues the second for review."],
+ watch:"Extraction accuracy is wildly document-dependent, so a single headline number is meaningless. Report it per document type, and always design the human-in-the-loop review path as a first-class product surface rather than a fallback you bolt on later."},
+
+{cat:"ai", name:"Chunking", hook:"How you cut the document decides what the model can ever find.",
+ def:"Chunking splits long documents into retrievable pieces sized for an embedding model and a context window. Naive fixed-size splits cut mid-sentence and destroy meaning; better strategies split on structure (sections, headings, paragraphs, table boundaries) with a small overlap so context is not lost at the seam, and attach metadata to every chunk — source document, page, section, effective date, entitlement tags. Chunking is quietly one of the highest-leverage variables in retrieval quality, and it costs a reindex to change, which makes it a decision worth getting right early.",
+ example:["Splitting a contract at clause boundaries means a retrieved chunk is a complete obligation rather than half of two clauses.","Carrying page and section metadata on each chunk is what lets the final answer cite 'page 14, section 7.2' instead of asserting something unverifiable."],
+ watch:"Chunking strategy is not a set-and-forget engineering detail. Changing it invalidates every embedding you have stored, so treat reindexing cost and cadence as a platform capability you budget for, not an emergency."},
+
+{cat:"ai", name:"Embeddings", hook:"Meaning turned into coordinates, so similar things sit close together.",
+ def:"An embedding is a dense numeric vector representing a piece of text, an image or audio, produced by a model such that semantically similar inputs land near each other in vector space. This is what makes semantic search possible: a query about 'redemption restrictions' can retrieve a passage about 'lock-up provisions' with no shared keywords. Embeddings are model-specific and not interchangeable — vectors from two different models cannot be compared — which means the embedding model is a long-lived platform commitment, not a swappable component.",
+ example:["Semantic search surfaces a clause about gating investor withdrawals when the analyst searched for liquidity restrictions, despite zero word overlap.","Multimodal embedding models place an image and a text description of it in the same space, which is what allows searching a chart library in plain language."],
+ watch:"Upgrading your embedding model means re-embedding your entire corpus, and at enterprise scale that is a real cost and a real outage window. Ask what re-embedding a billion chunks costs before you commit to a model, not after."},
+
+{cat:"ai", name:"Vector Databases & ANN Search", hook:"Finding the nearest neighbours in a billion-dimensional haystack, fast.",
+ def:"A vector database stores embeddings and retrieves the most similar ones to a query vector. Exact nearest-neighbour search is too slow at scale, so these systems use approximate nearest neighbour indexes (HNSW, IVF) that trade a little recall for orders of magnitude of speed. The enterprise-relevant features are rarely the vector maths: they are metadata filtering (search only documents this user is entitled to see), hybrid search combining vector and keyword matching, and the ability to update and delete vectors as documents change.",
+ example:["A query filters to documents the requesting user is entitled to before the similarity search runs, so retrieval can never surface a restricted document.","Hybrid search rescues exact-match cases — a specific fund code or ISIN — where pure semantic similarity performs poorly."],
+ watch:"Whether you need a dedicated vector database at all is a live build-versus-buy question, since most established databases and warehouses now offer vector indexes. The deciding factors are usually scale, filtering sophistication and how much operational surface you want to own."},
+
+{cat:"ai", name:"RAG: Retrieval-Augmented Generation", hook:"Give the model the right passages first, then ask the question.",
+ def:"RAG grounds a language model in your own data by retrieving relevant passages at query time and passing them into the prompt, so answers cite your corpus rather than the model's memory. The full production pipeline is longer than most descriptions admit: query rewriting, hybrid retrieval, metadata filtering for entitlements, reranking the candidates with a cross-encoder, assembling a context window under budget, generating with a citation requirement, and post-checking that claims are supported. Most RAG quality failures are retrieval failures, not generation failures — if the right passage never arrives, no model can save the answer.",
+ example:["An analyst asks about redemption terms across 40 funds; retrieval pulls the relevant clauses and the answer cites document and page for each one.","Adding a reranking step typically lifts answer quality more than swapping to a larger generation model, because it fixes the actual bottleneck."],
+ watch:"Entitlements must be enforced inside retrieval, not on the generated answer. Filtering after generation means the model has already read documents the user was never allowed to see, and in a regulated firm that is a reportable incident."},
+
+{cat:"ai", name:"Feature Engineering & Feature Stores", hook:"Models do not learn from raw data, they learn from what you compute.",
+ def:"A feature is a computed input to a model — a 30-day rolling volatility, a client tenure, a normalised sector code. Feature engineering is the work of designing and computing these, and it usually determines model performance more than model choice does. A feature store centralises feature definitions and serves them consistently to training (historical, point-in-time correct) and to inference (fresh, low-latency), which is how you prevent training-serving skew: the model performing well offline and badly in production because the two paths computed the same feature differently.",
+ example:["A feature store guarantees that the 30-day volatility used in training was computed with only data available at that time, avoiding lookahead leakage.","Two teams reusing the same governed feature definition means their models are at least comparable rather than quietly measuring different things."],
+ watch:"Data leakage is the subtle killer: a feature that accidentally encodes the future gives you spectacular offline accuracy and a model that fails immediately in production. Point-in-time correctness is a platform guarantee, not a modelling detail."},
+
+{cat:"ai", name:"Training, Inference, Fine-Tuning vs RAG", hook:"Teach the model new behaviour, or hand it new facts.",
+ def:"Training fits model parameters to data; inference is running the trained model to get a prediction, and it is where ongoing cost lives. When adapting a foundation model to your enterprise there are three main levers, in ascending order of cost and commitment: prompting and context engineering, RAG for injecting facts, and fine-tuning for teaching form, tone, format or a specialised task. The rule of thumb worth internalising is that RAG is for knowledge that changes and must be cited, while fine-tuning is for behaviour that must be consistent — and a fine-tuned model still has a stale knowledge cutoff.",
+ example:["A model that must answer from current fund documents needs RAG, because retraining every time a document changes is absurd.","A model that must always return a strictly formatted extraction schema is a fine-tuning candidate, since that is behaviour rather than knowledge."],
+ watch:"Fine-tuning is frequently reached for too early because it feels more serious. It creates a model artifact you must version, evaluate, host and re-do at every base-model upgrade — real platform debt, and usually not the cheapest fix for a quality problem."},
+
+{cat:"ai", name:"Evaluating AI Products", hook:"You cannot ship what you cannot measure, and accuracy is not one number.",
+ def:"AI evaluation is a layered system, not a test. Offline you hold a golden set of representative inputs with known-good outputs and score against it on every change. For retrieval you measure recall and precision at k; for generation you measure groundedness (is every claim supported by a retrieved source), correctness, and citation validity, often with an LLM-as-judge calibrated against human labels. Online you watch thumbs, escalation rates, task completion and human override rate. Regression testing matters most: changing a prompt, a chunking rule or a model version can silently degrade quality, and without a golden set you find out from a client.",
+ example:["A golden set of 200 real analyst questions with verified answers runs in CI, so any prompt or model change shows its quality delta before release.","Human override rate is often the most honest production signal — how often does a user discard the AI output and do it manually anyway."],
+ watch:"LLM-as-judge is convenient and quietly biased; it must be calibrated against human-labelled samples periodically or your quality dashboard drifts away from reality while looking perfectly healthy."},
+
+{cat:"ai", name:"Hallucination, Grounding & Confidence", hook:"Fluent, confident, and wrong is the default failure mode.",
+ def:"A hallucination is output that is plausible and unsupported. Grounding constrains the model to retrieved source material and requires citations, which reduces but does not eliminate the problem — models still misread tables, over-generalise from partial context, and confidently answer questions the corpus does not cover. The product-level mitigations are the ones a PM owns: mandatory citations, an explicit 'not found in the sources' path, abstention thresholds, and human review gates on anything consequential.",
+ example:["A grounded assistant that cannot find support in retrieved documents says so and shows what it searched, instead of assembling a confident guess.","High-consequence outputs — anything feeding a client report or a regulatory filing — route through human sign-off regardless of model confidence."],
+ watch:"Model confidence is not calibrated probability of being right. Treating a high self-reported confidence as an accuracy guarantee is one of the most dangerous product decisions available in an enterprise AI system."},
+
+{cat:"ai", name:"Drift: Data, Model & Concept", hook:"Nothing broke, and the model got worse anyway.",
+ def:"Data drift is a change in the distribution of inputs — a new client segment, a redesigned vendor document. Concept drift is a change in the underlying relationship, so the same inputs now imply a different correct answer, as when a market regime shifts. Model drift or decay is the resulting performance decline. None of these throws an error, which is why they need explicit monitoring: input distribution checks, prediction distribution checks, and delayed ground-truth comparison once actual outcomes arrive. The product answer is a retraining and revalidation cadence agreed in advance, not a reaction.",
+ example:["A vendor changes its PDF template and extraction accuracy quietly falls from 94% to 70% while every pipeline stays green.","A model trained in a low-volatility regime keeps predicting confidently after the regime breaks, and the errors only appear in outcomes weeks later."],
+ watch:"Ground truth usually arrives late, so drift is often detectable in inputs long before it is provable in outcomes. Monitoring only the outcome metric means learning about the failure after it has already cost something."},
+
+{cat:"ai", name:"AI Developer Platform & the Cost Triangle", hook:"What you build so application teams stop building it fifteen times.",
+ def:"An AI developer platform is the shared substrate application teams build on: a model gateway giving one authenticated endpoint across model providers with routing, rate limits, quotas and chargeback; embedding and vector services; prompt and template management with versioning; an evaluation harness; guardrails and PII filtering; observability with token-level tracing; and connectors into governed enterprise data. Everything on it is governed by one trade-off triangle — accuracy, latency and cost — where a bigger model or more retrieved context buys quality and spends both of the others.",
+ example:["A gateway lets you switch a workload to a cheaper model, measure the quality delta against the golden set, and roll back in minutes without any application change.","Routing simple queries to a small model and hard ones to a large one is a straightforward way to cut cost materially with no measurable quality loss."],
+ watch:"Cost per successful task is the metric that matters, not cost per call. A cheaper model that fails a third of the time and forces retries or manual work is more expensive overall, and only the task-level metric exposes that."},
+
+/* ---------------- PLATFORM & COMMERCIAL PM ---------------- */
+{cat:"pm", name:"Platform vs Application", hook:"Your users are builders, and your success is other people's products.",
+ def:"An application serves an end user and owns a workflow. A platform serves builders and is judged by what gets built on it. That changes almost every PM instinct: your roadmap is driven by capability gaps rather than screens, your discovery interviews engineers and product teams rather than end users, your success metric is adoption and time-to-value rather than engagement, and every interface you expose becomes a permanent commitment. The hardest recurring judgement is where the line sits — what is a general capability that belongs in the platform, and what is a specific need that belongs in the application on top.",
+ example:["Authentication, entitlements, lineage and pipeline orchestration are platform: every team needs them, and each team building its own is pure waste.","A single desk's bespoke reconciliation screen is application: it serves one workflow, and generalising it prematurely bloats the platform for everyone."],
+ watch:"The default failure is building for the loudest tenant. The test worth applying is whether at least three consumers need it and whether it is a capability rather than a workflow — otherwise you are doing bespoke delivery with a platform budget."},
+
+{cat:"pm", name:"Platform Adoption & Time-to-First-Value", hook:"Internal platforms are not automatically used, they are chosen.",
+ def:"Adoption is the primary outcome metric of a platform, and it is best measured as a funnel: aware, evaluating, integrated, in production, expanding. The dominant lever early on is time-to-first-value — how long from a developer landing on your docs to a working call with their own data. Sandbox access, honest quickstarts, sample data and self-serve provisioning shorten it; ticket-based onboarding and a mandatory intake meeting lengthen it until teams route around you. Even where usage is mandated, forced adoption without value produces compliance and shadow systems rather than a platform.",
+ example:["Cutting time-to-first-successful-API-call from three weeks of access tickets to twenty minutes of self-serve sandbox changes the adoption curve more than any feature.","Tracking teams that integrated but never reached production usually reveals a specific missing capability rather than a lack of interest."],
+ watch:"Registered users is a vanity metric. Count teams in production, workloads migrated, and expansion within an already-onboarded team — those are the numbers that survive a hard question from a sceptical executive."},
+
+{cat:"pm", name:"The Paved Road & Developer Experience", hook:"Make the correct path the easiest path, and governance stops being a fight.",
+ def:"A paved road is the opinionated, supported default way to do something on your platform — a blessed pipeline template, a standard ingestion pattern, a preconfigured project scaffold — where security, entitlements, lineage, observability and cost controls are already wired in. Teams may leave the road, but they own the consequences. It is the single most effective governance mechanism available to a platform PM, because it converts compliance from a review gate into a default, and it is delivered through developer experience: docs, examples, CLI, templates, error messages that say what to do next.",
+ example:["A scaffolded new-dataset template arrives with schema validation, contract checks, lineage emission and a cost tag already configured.","A team taking the paved road inherits a compliant setup automatically; a team going custom must complete an architecture review, which is a reasonable and self-enforcing trade."],
+ watch:"Documentation quality is a real feature with real adoption impact, and it is chronically under-resourced because it never looks like a roadmap item. Budget it explicitly or it will not happen."},
+
+{cat:"pm", name:"Platform Metrics That Actually Land", hook:"DAU is the wrong instrument for a platform.",
+ def:"Platform metrics stack in four layers. Adoption: teams onboarded, workloads in production, active integrations, expansion rate. Experience: time-to-first-value, time-to-integrate, support ticket volume per team, documentation search failure rate. Reliability and quality: availability, API latency percentiles, data freshness SLA attainment, pipeline success rate, data quality scores by tier. Economics: cost per workload, cost per terabyte processed, infrastructure utilisation, and cost per successful AI task. Above all four sits the business outcome the platform is funded for, and a strong PM connects at least one platform metric to it explicitly.",
+ example:["Reporting p95 and p99 API latency rather than the mean, because the mean hides exactly the tail that generates complaints.","Framing a platform win as 'analyst time to answer a client data question fell from two days to two hours' rather than as a throughput statistic."],
+ watch:"Never present platform metrics without the business outcome attached. An executive audience does not fund pipeline success rate; they fund the decision speed, cost reduction or risk reduction it produces."},
+
+{cat:"pm", name:"Build vs Buy vs Partner", hook:"Build what differentiates you, buy what does not, and be honest about which is which.",
+ def:"The decision rests on four questions: is this capability a source of differentiation or table stakes; what is the true total cost of ownership including the engineers who maintain it for a decade; how severe is the lock-in and what is the exit path; and can we hire and retain the skills to run it. Buy typically wins for commodity infrastructure where vendors have more scale than you do. Build wins where the capability is genuinely proprietary — your data model, your analytics, your domain logic. Partner or hybrid wins where you want vendor infrastructure underneath but your own governance, semantics and interface on top.",
+ example:["Buying a managed warehouse engine while building the proprietary data model and analytics on top of it is the common enterprise pattern, and it is the right one.","A vendor with a strong product but a weak security posture or no roadmap alignment can lose on non-functional grounds alone, and that has to be scored explicitly."],
+ watch:"Build-versus-buy is a total-cost-of-ownership argument, not a build-cost argument. Teams routinely compare a licence fee to a build estimate while omitting the permanent maintenance, on-call and upgrade cost, which is where most 'we built it cheaper' claims fall apart."},
+
+{cat:"pm", name:"Prioritising Across Competing Tenants", hook:"Three internal customers, one team, and none of them are wrong.",
+ def:"Platform prioritisation is harder than application prioritisation because every requester is legitimate and internal politics substitute for market signal. What works is making the criteria explicit before the arguments start: reach across tenants, strategic alignment, risk or regulatory forcing function, effort, and whether the request is a reusable capability or a bespoke workflow. Then hold a visible allocation between capability work, reliability and technical debt, and tenant-specific asks, so that a yes to one thing is visibly a no to another rather than an invisible one.",
+ example:["A published allocation — roughly 50% platform capability, 25% reliability and debt, 25% tenant-specific — turns each individual request into a trade against a known budget.","Two teams wanting the same capability differently is usually a signal to build the general primitive rather than either specific request."],
+ watch:"Saying no without a reason and a path is what destroys platform relationships. 'Not this quarter, here is the workaround, here is when we would revisit and what would change my mind' preserves the relationship that no alone burns."},
+
+{cat:"pm", name:"Migration, Deprecation & Backward Compatibility", hook:"Killing the old thing is most of the work of shipping the new one.",
+ def:"On a platform you rarely get a clean launch; you get a migration. The pattern that works is dual-run — new capability alongside the old, with parity validation comparing outputs — then incremental cohort migration, then a published deprecation timeline with real dates, then enforcement. It needs migration tooling and hands-on support rather than an announcement, and it needs an executive-backed end date, because voluntary migrations stall at roughly 80% and the remaining tenants are the hardest and most expensive ones to carry.",
+ example:["Running old and new pipelines in parallel and diffing outputs daily is what earns permission to switch, because it converts trust into evidence.","Publishing a deprecation date twelve months out with quarterly reminders and named migration owners is the difference between a plan and a hope."],
+ watch:"The last 20% of a migration consumes most of the effort and all of the political capital. Budget it explicitly in the plan, and secure the executive mandate for the end date before you start rather than when you are stuck."},
+
+{cat:"pm", name:"Commercial Product: Pricing & Packaging", hook:"How you charge shapes behaviour more than what you charge.",
+ def:"Packaging decides what is bundled into which tier and what is sold separately; pricing decides the metric and the level. For data and AI products the usual models are subscription or platform fee, consumption-based (per query, per terabyte, per token), per-seat, and hybrid platform-fee-plus-consumption which is the dominant enterprise pattern because it gives the vendor a revenue floor and the client a predictable base. The critical property is that the pricing metric should track the value the customer receives and should be predictable enough that they are not afraid to use the product — unpredictable consumption pricing actively suppresses adoption in large enterprises.",
+ example:["A platform fee covering entitlement to the core data plus consumption charges for compute aligns cost to usage without exposing the client to an unbounded bill.","Charging per query on an analytics product teaches analysts to query less, which is the exact opposite of what a data platform wants."],
+ watch:"Enterprise buyers will trade a higher total price for a predictable one. Procurement cannot approve a number it cannot forecast, so caps, commitments and tiered floors often close deals that raw usage pricing loses."},
+
+{cat:"pm", name:"GTM: Segmentation, Positioning & Launch", hook:"Who is it for, what does it replace, and why now.",
+ def:"Go-to-market for an enterprise data product starts with segmentation — which client types have this problem acutely — and positioning, which is fundamentally a statement about the alternative you displace: the status quo, an internal build, or a named competitor. From there flow the value proposition and proof points, pricing and packaging, the sales enablement kit (battlecards, ROI model, reference architecture, security and compliance answers), a design-partner or pilot phase, and a launch with adoption targets. Sizing is TAM, SAM and SOM built bottom-up from segment counts and realistic pricing, not top-down from an analyst's market number.",
+ example:["Positioning against 'the client's own internal build' means the proof points are total cost of ownership, time to value and the maintenance burden they avoid — a completely different story from a feature comparison.","Two or three design partners who co-build and then act as references de-risk a launch more than any amount of marketing collateral."],
+ watch:"In enterprise financial services the buying committee is not just the user. Security, compliance, procurement and legal can each veto, so the GTM plan needs artifacts aimed at them or the deal stalls after a successful pilot."},
+
+{cat:"pm", name:"Influence, Operating Model & Leadership", hook:"At VP level the product is partly the way the organisation works.",
+ def:"Senior platform PMs are measured on outcomes they cannot command. That makes influence a mechanical skill rather than a personality trait: understand what each stakeholder is measured on and frame in their terms, bring evidence rather than opinion, pre-socialise decisions individually before the forum so the meeting confirms rather than debates, disagree explicitly and commit visibly once a decision is made, and write things down so decisions persist beyond the room. The operating model itself — intake, prioritisation forums, published roadmaps, architecture review, deprecation policy — is a product you design, and it scales your judgement further than any individual decision does.",
+ example:["Framing a data quality investment to a risk leader as reduced control breaches and to a COO as reduced reconciliation headcount is the same programme told in two currencies.","Publishing a visible intake and prioritisation process converts a stream of escalations into a queue people can see themselves in, which removes most of the escalations."],
+ watch:"Escalating to authority wins the decision and costs the relationship you will need next quarter. Escalate rarely, jointly with the person you disagree with wherever possible, and never as the first move."},
+
+/* ---------------- ALADDIN / INVESTMENT DATA ---------------- */
+{cat:"alad", name:"What Aladdin Is", hook:"One platform and one common data language across the investment process.",
+ def:"Aladdin is BlackRock's investment technology platform, used internally and licensed to institutional clients including asset managers, insurers, pension funds, banks and wealth managers. BlackRock positions it as unifying the investment management process — risk analytics, portfolio management, trading and operations — on a single platform with a common data language across investments, operations and data. The strategic idea worth internalising is that the value is not any one module; it is that everyone from portfolio manager to operations to client reporting is looking at the same data with the same definitions, which is exactly the enterprise data platform thesis expressed as a business.",
+ example:["A position, a risk exposure and a client report all resolve to the same underlying data model, so a discussion between a portfolio manager and a risk officer does not begin with reconciling numbers.","Aladdin Enterprise is the core portfolio and operations offering, with Aladdin Risk as the risk analytics engine across asset classes."],
+ watch:"Do not describe Aladdin as a risk system or as portfolio software. Its whole positioning is the unification, and describing one module signals you read a headline rather than understood the platform. Verify current module naming on blackrock.com/aladdin before an interview, since the product family evolves."},
+
+{cat:"alad", name:"Aladdin Studio & the API Surface", hook:"The proof that Aladdin is a platform and not an application.",
+ def:"Aladdin Studio is the developer-facing layer of the platform. BlackRock describes it as helping clients unlock data to uncover insights, automate workflows and accelerate innovation, with Studio APIs that let clients build their own solutions and retrieve, write and modify data across the Aladdin ecosystem to power proprietary applications and custom tools. For a platform PM this is the single most instructive thing about the ecosystem: the client is not only an end user, the client is a builder, and a large part of the product's value is what gets built on top by people you never meet.",
+ example:["A client builds a proprietary internal tool on Studio APIs rather than waiting for it to appear in the core product roadmap.","Exposing read and write access across the ecosystem means versioning, entitlements and backward compatibility become first-class product commitments rather than engineering details."],
+ watch:"Reference this as evidence of a platform mindset rather than as a feature you have memorised. The interview-relevant point is what an API surface obliges you to do — deprecation policy, developer experience, adoption measurement — not that the product exists."},
+
+{cat:"alad", name:"Aladdin Data Cloud & ADX", hook:"Data-as-a-service replacing flat files and FTP.",
+ def:"Aladdin Data Cloud is BlackRock's managed data-as-a-service offering, built with Snowflake, that lets clients integrate and analyse their Aladdin and non-Aladdin data on a single platform while keeping Aladdin's security and controls. Alongside it, Aladdin Data eXchange addresses data delivery and exchange. The direction of travel is the important part and it is a textbook modern data platform arc: away from generated flat files pushed over file transfer, toward governed, queryable, shared data where the client brings their own analytics engine to the data instead of the vendor shipping extracts.",
+ example:["Instead of receiving nightly interface files and rebuilding them into a warehouse, a client queries governed Aladdin data directly alongside their own data.","Because the platform retains the entitlement and control model, sharing data does not mean surrendering the governance around it."],
+ watch:"This is precisely where a candidate can be credible: it is the same migration from file-based delivery to data-as-a-service that data platforms everywhere are making. Prepare the trade-offs — reprocessing, contracts, entitlement enforcement, client migration — rather than the marketing description."},
+
+{cat:"alad", name:"eFront, Preqin & Private Markets Data", hook:"The hardest data problem in the firm, and the fastest-growing one.",
+ def:"eFront is BlackRock's alternative investment management technology, covering private markets across fundraising, fund administration, reporting, data services and analytics. BlackRock completed its acquisition of Preqin, a private markets data provider, in March 2025 and has been integrating Preqin's data and research with Aladdin and eFront. Private markets are the strategically interesting case for a data platform PM because the data is fundamentally unstructured and unstandardised — capital account statements, capital call notices, limited partnership agreements, quarterly reports — arriving as documents in inconsistent formats, with no equivalent of a public market data feed.",
+ example:["Extracting a capital account statement into structured fields is exactly the unstructured-data ingestion problem, at institutional scale and with audit requirements.","Standardising private markets data is what makes public and private holdings comparable in a single whole-portfolio view, which is the stated strategic goal."],
+ watch:"This is the strongest bridge between an unstructured-data platform case study and BlackRock's actual strategy. Verify the current state of Preqin and eFront integration before an interview, because the integration has been progressing and specifics change."},
+
+{cat:"alad", name:"Security Master & Investment Reference Data", hook:"Get the instrument identity wrong and everything downstream is wrong.",
+ def:"A security master is the golden source for instrument reference data: identifiers (ISIN, CUSIP, SEDOL, internal), terms and conditions, issuer, asset class, currency, and the corporate action history that changes them. It is the canonical master data problem in investment technology, because every position, trade, valuation, exposure and risk calculation joins through it. Corporate actions — splits, mergers, name changes, restructurings — mean instrument identity is not even stable over time, which is why point-in-time correctness in reference data is a hard requirement rather than a refinement.",
+ example:["A merger changes an instrument identifier, and every historical position must remain correctly linked or historical performance breaks.","Two vendors classify the same issuer into different sectors, and until that is mastered, sector exposure reports disagree and nobody can say which is right."],
+ watch:"This is where your enterprise reconciliation and process-control background translates directly. The reason reference data quality is existential is that errors do not stay local — one bad identifier propagates silently into risk, reporting and client statements."},
+
+{cat:"alad", name:"IBOR vs ABOR", hook:"What the portfolio manager needs to see versus what the books say.",
+ def:"An Investment Book of Record is the near-real-time view of positions and cash a portfolio manager and trader need to make decisions during the day, reflecting pending trades and expected flows. An Accounting Book of Record is the official accounting view — settled, valued, reconciled — used for NAV, financial reporting and audit. They legitimately differ because they answer different questions at different points in the trade lifecycle, and a platform serving both must keep them reconciled and be able to explain any difference. BlackRock has described integrating Aladdin's ABOR and IBOR with third-party data as enhancing the reporting experience.",
+ example:["A portfolio manager sizing a trade needs the IBOR view including this morning's unsettled executions, not the previous night's settled accounting position.","Month-end NAV and client statements come from ABOR, because only the reconciled, settled view is defensible to an auditor."],
+ watch:"Knowing this distinction is a strong domain signal in an investment-technology interview, because it demonstrates you understand that 'one source of truth' is naive — the real requirement is multiple reconciled views with explainable differences."},
+
+{cat:"alad", name:"The Investment Workflow, End to End", hook:"Research, construct, risk, trade, settle, account, report — data at every step.",
+ def:"The institutional investment lifecycle runs roughly: research and idea generation, portfolio construction and modelling, pre-trade compliance and risk checks, order management and execution, post-trade confirmation and settlement, accounting and valuation, performance and attribution, and client and regulatory reporting. Each stage consumes and emits data, and each has its own latency and accuracy requirements. You do not need to be an investment analyst to interview well, but you do need to be able to point at any stage and say what data it needs, how fresh, and what goes wrong when it is late or wrong.",
+ example:["Pre-trade compliance needs current positions plus mandate rules within seconds, because a check that returns after the order is sent is not a control.","Performance attribution needs point-in-time-correct historical positions, prices and benchmarks, which is why time travel and reproducibility are not academic concerns here."],
+ watch:"Map your prep to this workflow rather than to a product list. An interviewer probing domain knowledge is usually testing whether you understand why the data matters, not whether you can name modules."},
+
+{cat:"alad", name:"Why Data Quality Is Existential Here", hook:"In investment technology a data defect is a financial and regulatory event.",
+ def:"In most industries a data quality problem produces a wrong dashboard. In investment management it produces a mispriced portfolio, a breached mandate, an incorrect client statement or a failed regulatory filing — each with financial and regulatory consequence. This is why controls that look heavy elsewhere are proportionate here: four-eyes review on reference data changes, immutable audit trails, point-in-time reproducibility, lineage to source for every reported number, and the ability to demonstrate to a regulator not merely what the number is but how it was derived.",
+ example:["A stale FX rate applied at valuation misstates a portfolio's value, and the error reaches a client statement before anyone notices.","A regulator asking how a reported exposure was calculated needs lineage back to source, and 'the system produced it' is not an acceptable answer."],
+ watch:"This is the argument that lets you connect controls and process-transformation experience to a technical data platform role. Frame data quality as risk management rather than as hygiene, because that is the language the business side of this firm actually uses."},
+];
+
+/* =============== PLATFORM BLUEPRINT =============== */
+const BLUEPRINT = {
+  structured: {
+    label: "Structured path",
+    sub: "Market data, positions, trades, reference data — the classic enterprise data platform.",
+    layers: [
+      {t:"Sources & Acquisition", s:"Where the data comes from and what you are contractually allowed to do with it",
+       what:"Everything upstream of you: internal systems of record, market data vendors, custodians and administrators, exchanges, and client-submitted files. Each source has its own delivery mechanism, cadence, format and — critically in financial services — a licence that constrains who inside the firm may see the data and whether it may be redistributed.",
+       tech:["SFTP / managed file transfer","Vendor APIs and direct data feeds","CDC off source databases","Message queues from internal systems"],
+       pmdec:["Which sources are strategic enough to invest in versus tactically wrapped","Buy the vendor feed or normalise a cheaper one yourself","How you handle a source that changes format without notice","Whether licence terms are enforced technically or by policy alone"],
+       fail:["Vendor changes a schema or file layout silently","Licence breach because entitlements were never modelled","Source system owner treats your feed as best-effort with no SLA"],
+       metric:["Source uptime and on-time arrival rate","Number of sources with a signed data contract","Time to onboard a new source"]},
+
+      {t:"Ingestion & Landing", s:"Get it in, unchanged, with the audit trail intact",
+       what:"Land raw data exactly as received into immutable bronze storage before anything touches it, capturing arrival metadata: source, timestamp, file hash, row count, schema version. This layer is deliberately dumb — its job is fidelity and auditability, not intelligence. Everything downstream can be rebuilt from here, which is precisely why it must never be lossy.",
+       tech:["Object storage landing zone","Serverless triggers on file arrival","Streaming ingest and CDC connectors","Schema registry"],
+       pmdec:["Push or pull, and who owns the failure when it does not arrive","Retention on the raw layer versus its storage cost","Whether schema drift blocks ingestion or lands and quarantines","Self-serve onboarding versus a platform-team ticket"],
+       fail:["Non-idempotent loads duplicating a day of records","Silent partial loads that finish green","Small files problem from high-frequency micro-batches"],
+       metric:["On-time arrival versus SLA","Ingestion success rate and rows rejected","Time from source signed off to first successful load"]},
+
+      {t:"Storage & Table Layer", s:"Cheap immutable files plus a metadata layer that behaves like a database",
+       what:"Columnar files in object storage, organised by an open table format that adds ACID transactions, schema evolution, partitioning and time travel. This is what makes reproducibility possible — querying a table as it stood at a past instant — and what decouples your data from any single compute engine.",
+       tech:["Parquet / ORC","Apache Iceberg, Delta Lake or Hudi","Partitioning and clustering strategy","Tiered storage for archival"],
+       pmdec:["Open format versus a proprietary engine, and what the exit path costs","How long time travel is retained, and who pays for it","Partitioning scheme, because changing it later is a rewrite","Hot, warm and archive tiering policy"],
+       fail:["Skewed or over-granular partitions destroying query performance","Uncompacted small files inflating cost and latency","Time travel retention too short to reproduce a regulatory report"],
+       metric:["Storage cost per terabyte by tier","Query scan efficiency","Compaction lag"]},
+
+      {t:"Processing & Transformation", s:"Raw becomes conformed becomes consumable, with tests at every step",
+       what:"Where bronze becomes silver becomes gold: cleaning, deduplication, entity resolution against master data, type enforcement, business logic and aggregation. Orchestrated as a DAG with retries, dependency management and backfill, and instrumented with data quality tests that run as part of the job rather than as an afterthought.",
+       tech:["Spark / Databricks / Snowflake compute","dbt or equivalent transformation framework","Airflow, Dagster or Data Factory","Data quality test frameworks"],
+       pmdec:["Batch cadence versus streaming, justified by decision latency","Who owns business logic — platform team or domain team","What a failing quality test does: block, quarantine or warn","Reprocessing and backfill policy"],
+       fail:["Non-idempotent transforms producing duplicates on retry","Logic forked into multiple places so numbers diverge","A quality test that only warns, so bad data ships anyway"],
+       metric:["Pipeline success rate and mean time to recovery","Data quality pass rate by dataset tier","Compute cost per workload"]},
+
+      {t:"Metadata, Catalog & Lineage", s:"Discovery, meaning and provenance — the adoption layer",
+       what:"The searchable index of everything the platform holds, combining technical metadata harvested automatically, business metadata supplied by owners, operational metadata from pipeline runs, and column-level lineage. This is the layer that decides whether people use the platform or quietly rebuild their own copy of it.",
+       tech:["Catalog tooling with automated harvesting","Column-level lineage capture","Business glossary and certification workflow","Usage and popularity telemetry"],
+       pmdec:["Is publishing business metadata mandatory to release a dataset","Certification tiers and who is allowed to certify","How far lineage must extend beyond the platform boundary","Search relevance ranking — popularity, certification or recency"],
+       fail:["Stale descriptions and orphaned datasets with no owner","Lineage that goes dark at the spreadsheet boundary","Search that returns forty near-identical tables with no signal about which to trust"],
+       metric:["Percentage of datasets with an owner and definition","Catalog search success rate and zero-result rate","Time to find a dataset, measured with real users"]},
+
+      {t:"Governance & Entitlements", s:"Who may see what, enforced once and inherited everywhere",
+       what:"Classification, access policy, retention, privacy and audit, enforced centrally so that every engine and API inherits the same rules rather than each re-implementing them. Row-level and column-level policy lets one physical dataset serve many audiences, and residency constraints shape where the data may physically sit.",
+       tech:["RBAC and ABAC policy engines","Row and column-level security","Masking and tokenisation","Access audit logging and recertification"],
+       pmdec:["Central policy enforcement versus per-engine implementation","Default deny or default open inside the firm","How access requests are approved, and how fast","Regional topology driven by residency law"],
+       fail:["Policy enforced in the API but not on direct table access","Access sprawl from never-revoked temporary grants","Governance so heavy that teams export data to escape it"],
+       metric:["Access request turnaround time","Percentage of data classified","Failed recertification and stale-grant counts"]},
+
+      {t:"Serving: APIs, Query & Sharing", s:"How consumers actually get the data, in the shape they need",
+       what:"Multiple access patterns for genuinely different consumers: SQL for analysts, REST or GraphQL APIs for applications, bulk export or direct data sharing for analytical volumes, and streaming subscriptions for event consumers. Each carries versioning, rate limiting, authentication and its own latency profile.",
+       tech:["Query engine and SQL endpoints","REST / GraphQL APIs with an API gateway","Zero-copy data sharing","Event topic subscriptions","SDKs and client libraries"],
+       pmdec:["Which access patterns you commit to support and version forever","Rate limits and quotas per tenant","Deprecation policy published with v1","Whether SDKs are a supported product or a sample"],
+       fail:["Paginating analytical volumes over REST","A breaking change shipped without a version","Rate limits that fail opaquely rather than telling the client what to do"],
+       metric:["API latency p95 and p99","Error rate by endpoint and by tenant","Active integrations and time-to-integrate"]},
+
+      {t:"Consumption & Feedback", s:"BI, models, applications, clients — and the signal that shapes the roadmap",
+       what:"Where value is actually realised: dashboards, risk and analytics engines, ML feature pipelines, client reporting, and applications built by other teams on your APIs. Instrumenting this layer is how you learn which datasets matter, which are abandoned, and where the platform is being worked around.",
+       tech:["BI and notebook access","Feature pipelines into ML","Client-facing reporting","Usage telemetry back into the catalog"],
+       pmdec:["Which consumption patterns get first-class support","How you sunset a dataset nobody uses","How usage evidence feeds prioritisation","What business outcome each major consumer is tied to"],
+       fail:["Shadow copies and extracts nobody governs","Heavy investment in datasets with three users","No line drawn from platform metrics to business outcomes"],
+       metric:["Workloads in production and teams onboarded","Dataset usage concentration and abandonment rate","Business outcome measures: decision cycle time, cost avoided, breaches reduced"]},
+    ]
+  },
+  unstructured: {
+    label: "Unstructured / AI path",
+    sub: "Documents, contracts, transcripts, images — ingestion through RAG to an AI application.",
+    layers: [
+      {t:"Document Sources & Capture", s:"Where the documents live, and what you are allowed to do with them",
+       what:"Contracts, side letters, capital account statements, prospectuses, broker research, emails, call transcripts, scanned images. They arrive from shared drives, document management systems, email, portals and client uploads — with wildly inconsistent formats, no schema, and often the tightest confidentiality classification in the firm.",
+       tech:["Connectors to document stores and mail","Client upload portal","Virus scanning and content type detection","Immutable raw document store"],
+       pmdec:["Which document types to support first, ranked by volume times value","Whether confidential classes may be processed by external model APIs at all","Consent, licensing and redistribution rights on third-party research","Retention of the original alongside the extraction"],
+       fail:["Password-protected or corrupt files with no handling path","Duplicate documents inflating the corpus and skewing retrieval","Restricted documents entering a shared index"],
+       metric:["Documents ingested by type","Capture failure rate","Corpus duplication rate"]},
+
+      {t:"Classification, OCR & Layout Parsing", s:"Turn a picture of a page into text that still knows it was a table",
+       what:"Identify what kind of document this is, run OCR where it is a scan, and parse layout so that reading order, headings, tables, columns and footnotes survive as structure rather than collapsing into a wall of text. Structure carries meaning — a number in a table column means something different from the same number in a footnote.",
+       tech:["Layout-aware document models","OCR engines for scans","Table detection and extraction","Document classifiers"],
+       pmdec:["Buy a document AI service or build the pipeline","Quality bar per document type before it is allowed downstream","Language and jurisdiction coverage","Where the human review threshold sits"],
+       fail:["Multi-column layouts scrambling into unreadable order","Tables flattened into text so figures lose their row and column meaning","Handwriting and poor scans silently producing plausible garbage"],
+       metric:["Parse success rate by document type","Table extraction accuracy on a labelled sample","Percentage routed to human review"]},
+
+      {t:"Extraction & Normalisation", s:"From text to fields, with a confidence score attached to every one",
+       what:"Pull the specific values that matter — amounts, dates, parties, fund names, obligations — and normalise them into the enterprise data model: currencies standardised, dates parsed, entities resolved against the master data you already maintain. Every extracted field carries a confidence score, which is what makes selective human review possible.",
+       tech:["Schema-constrained extraction models","Entity resolution against master data","Validation and business rules","Human-in-the-loop review queue"],
+       pmdec:["Confidence threshold for auto-publish versus review","Who owns the review queue and what its SLA is","Whether extraction writes into the same governed tables as structured data","How corrections feed back into model improvement"],
+       fail:["Silent low-confidence values published as fact","Extractions that never reconcile to the structured system of record","Reviewer capacity becoming the bottleneck at scale"],
+       metric:["Extraction accuracy per field per document type","Straight-through processing rate","Reviewer throughput and correction rate"]},
+
+      {t:"Chunking & Enrichment", s:"Cut the document so a retrieved piece is still meaningful on its own",
+       what:"Split documents into retrievable units along structural boundaries with a small overlap, and attach the metadata that everything downstream depends on: source document, page, section, effective date, document type, and entitlement tags. Entitlement tags at chunk level are what let retrieval enforce permissions rather than hoping the answer layer does.",
+       tech:["Structure-aware splitters","Metadata enrichment pipeline","Entitlement tagging","Deduplication"],
+       pmdec:["Chunk size and overlap strategy, knowing a change forces a reindex","Which metadata is mandatory versus best-effort","How document versions and supersessions are represented","Reindexing cadence and its cost"],
+       fail:["Chunks cut mid-clause so retrieval returns half an obligation","Missing page metadata making citation impossible","Superseded document versions retrieved as if current"],
+       metric:["Chunks per document and size distribution","Metadata completeness rate","Reindex duration and cost"]},
+
+      {t:"Embedding & Vector Index", s:"Meaning as coordinates, indexed for fast approximate search",
+       what:"Generate vectors for every chunk with a chosen embedding model and store them in an index that supports approximate nearest neighbour search with metadata filtering. The embedding model choice is a long-lived commitment, because vectors from different models are not comparable and switching means re-embedding the entire corpus.",
+       tech:["Embedding model (text and multimodal)","Vector index: HNSW or IVF","Dedicated vector database or warehouse vector support","Batch and incremental embedding jobs"],
+       pmdec:["Dedicated vector store versus vector support in an existing database","Embedding model choice, and the cost of ever changing it","Whether embeddings may be computed by an external API","Freshness: how fast a new document becomes searchable"],
+       fail:["Model upgrade requiring a full re-embed with no budget for it","Index growth outpacing memory and cost assumptions","Deleted or restricted documents left in the index"],
+       metric:["Index freshness lag","Embedding cost per million chunks","Recall at k against a labelled set"]},
+
+      {t:"Retrieval & Grounding", s:"Fetch the right passages, filtered to what this user may see",
+       what:"The step that determines answer quality more than the model does: rewrite the query, retrieve with hybrid semantic and keyword search, filter to the requesting user's entitlements before ranking, rerank candidates with a cross-encoder, and assemble a context window under budget. Entitlement filtering happens here, inside retrieval, never after generation.",
+       tech:["Hybrid search: vector plus keyword","Metadata and entitlement pre-filters","Cross-encoder reranking","Context assembly and budgeting"],
+       pmdec:["How many candidates to retrieve and rerank against latency budget","Whether reranking justifies its latency and cost","How entitlements propagate from identity into the query","Behaviour when nothing relevant is retrieved"],
+       fail:["Entitlements applied after generation, so the model already read restricted text","Pure semantic search failing on exact identifiers like an ISIN","Context window stuffed with near-duplicates, crowding out the real answer"],
+       metric:["Recall and precision at k","Retrieval latency p95","Rate of queries returning nothing relevant"]},
+
+      {t:"Generation, Guardrails & Evaluation", s:"Answer with citations, refuse when unsupported, and measure every change",
+       what:"Generate the response constrained to retrieved context, require citations for every claim, and pass output through guardrails — PII filtering, refusal policies, groundedness checks. Wrap the whole thing in an evaluation harness: a golden set running in CI, groundedness and citation-validity scoring, and production signals like override and escalation rates.",
+       tech:["Model gateway with routing and quotas","Prompt and template versioning","Groundedness and citation checks","Golden-set evaluation harness","Token-level tracing"],
+       pmdec:["Abstention threshold: when the product says it does not know","Which outputs require human sign-off regardless of confidence","Accuracy, latency and cost trade-off per use case","How prompt and model changes are released and rolled back"],
+       fail:["Fluent unsupported answers with fabricated citations","A prompt change silently regressing quality with no golden set to catch it","LLM-as-judge drifting away from human judgement"],
+       metric:["Groundedness and citation validity rate","Golden-set score per release","Cost per successful task","Human override rate"]},
+
+      {t:"AI Application & Feedback Loop", s:"The surface people use, and the signal that makes it better",
+       what:"The delivered experience — search, an assistant, an extraction review workbench, or an API other teams build on — plus the instrumentation that closes the loop. Every correction a reviewer makes, every thumbs-down, every abandoned query is training and prioritisation signal, and capturing it is a product decision rather than an analytics afterthought.",
+       tech:["Application or API surface","Feedback capture and labelling","Analytics on queries and failures","Correction data flowing back to evaluation sets"],
+       pmdec:["Whether this ships as an application, an API, or both","How feedback is captured without adding user friction","What corrections are allowed to change automatically","Which business outcome the product is accountable for"],
+       fail:["Feedback collected and never used","Users silently working around the product with no signal emitted","Quality measured only at launch and never again"],
+       metric:["Task completion and time saved per task","Answers accepted without edit","Weekly active builders on the API","Business outcome: analyst hours saved, coverage expanded"]},
+    ]
+  }
+};
+
+/* =============== INTERVIEW DRILLS =============== */
+const SCENARIOS = [
+{q:"An analyst asks why the exposure figure in her report differs from the one in the risk system. Which capability answers this fastest?", options:["Finer partitioning on the table","A streaming ingestion pipeline","Column-level lineage to source","Stricter upstream data contracts"], correct:2, cat:"gov",
+ why:"Column-level lineage traces each figure back through every transformation to source, which is exactly how you locate the step where two definitions diverged."},
+{q:"A team wants a dataset refreshed every 30 seconds instead of hourly. What should you establish before agreeing?", options:["Which decision changes as a result","Whether the vendor can deliver it","How much extra storage it consumes","Whether the catalog can index it"], correct:0, cat:"arch",
+ why:"Freshness is justified by decision latency. If no decision changes when data is seconds old rather than hours old, you are funding latency nobody will use."},
+{q:"Your RAG assistant surfaced a passage from a document the user was not entitled to see. Where did the design fail?", options:["The chunking window was set too large","The reranker was misconfigured here","The embedding index was out of date","Entitlements applied after retrieval"], correct:3, cat:"ai",
+ why:"Entitlement filtering must happen inside retrieval, before ranking. Filtering the answer afterwards means the model already read restricted content, which is a reportable incident in a regulated firm."},
+{q:"A nightly job reports success every day, but a downstream team says a third of their records vanished last week. What was missing?", options:["Retry logic on the orchestrator","Volume and completeness checks","A larger elastic compute cluster","Schema registry version pinning"], correct:1, cat:"cloud",
+ why:"Orchestration health tells you the job ran; data observability tells you what it wrote. Volume anomaly and completeness checks catch a green job that silently dropped records."},
+{q:"Three business units each ask for a different bespoke transformation of the same source. What is the platform-minded response?", options:["Deliver all three as requested","Build the general primitive beneath","Serve the largest unit first","Decline all three as out of scope"], correct:1, cat:"pm",
+ why:"Multiple teams wanting the same thing shaped differently is the clearest signal to build the reusable capability underneath rather than three bespoke workflows."},
+{q:"Your team wants to swap to a newer embedding model that scores better on benchmarks. What is the dominant cost?", options:["Rewriting prompts in every app","Retraining the reranker model","Re-embedding the whole corpus","Migrating the chunking rules"], correct:2, cat:"ai",
+ why:"Vectors from different models are not comparable, so a model change invalidates every stored embedding and forces a full re-embed of the corpus."},
+{q:"An executive asks how you would know the enterprise data platform is succeeding. Which answer lands best?", options:["Time to answer a client question fell from days to hours","Pipeline success rate now sits comfortably above 99 percent","Registered platform users grew by 40 percent this quarter","We now ingest more than twelve terabytes every single day"], correct:0, cat:"pm",
+ why:"Platform metrics only persuade when tied to a business outcome. Throughput and registration counts are inputs; decision speed is the thing the platform is funded to change."},
+{q:"A vendor quietly changes a PDF template and extraction accuracy drops from 94% to 70%, with every pipeline still green. This is:", options:["Concept drift","Model overfitting","Input data drift","Schema violation"], correct:2, cat:"ai",
+ why:"The input distribution changed while the underlying task did not. That is data drift, and it is invisible to pipeline health monitoring by design."},
+{q:"You must reproduce exactly what a portfolio report said at last quarter-end. Which capability makes that possible?", options:["Streaming event replay","A synchronous read replica","Longer log retention windows","Table format time travel"], correct:3, cat:"arch",
+ why:"Open table formats retain snapshots, so you can query a table as it stood at a past instant instead of maintaining frozen copies of every reporting date."},
+{q:"Your platform API needs a field renamed for clarity. What is the correct path?", options:["Ship a new version alongside the old","Rename it and notify all consumers","Rename it in the next release window","Alias the new name, drop the old one"], correct:0, cat:"cloud",
+ why:"Renames are breaking changes. A new version with a published overlap and deprecation timeline is the only path that does not break existing integrations."},
+{q:"A portfolio manager needs today's position including unsettled morning trades. Which view serves that?", options:["The accounting book of record","The investment book of record","The custodian position statement","The firm's general ledger extract"], correct:1, cat:"alad",
+ why:"The IBOR gives the near-real-time decision view including pending activity; the ABOR is the settled, reconciled accounting view used for NAV and reporting."},
+{q:"Adoption of your internal platform has stalled after onboarding. Which metric would most likely reveal why?", options:["Total registered account count","Monthly infrastructure spending","Time to first successful call","Average query execution time"], correct:2, cat:"pm",
+ why:"Time-to-first-value is the dominant early adoption lever. A long, ticket-driven path from docs to working call is where most stalled platform funnels leak."},
+{q:"Two vendors classify the same issuer into different sectors, so exposure reports disagree. What discipline resolves this?", options:["End-to-end data lineage","Stricter schema enforcement","Query plan optimisation","Master data management"], correct:3, cat:"gov",
+ why:"MDM resolves source variants into a golden record with explicit survivorship rules deciding which source wins on which field."},
+{q:"A workload runs constantly all day. Your team built it on serverless functions for cost reasons. What should you check?", options:["Whether sustained use now costs more than reserved capacity","Whether cold starts are adding latency to the critical path","Whether the function memory allocation has been right-sized","Whether concurrency limits are throttling the busiest hours"], correct:0, cat:"cloud",
+ why:"Serverless is cheapest for bursty work. Once a workload becomes constant the per-invocation curve crosses reserved capacity, and the crossover is a real roadmap input."},
+{q:"Your extraction pipeline returns a fund name with 0.58 confidence. The correct product behaviour is to:", options:["Publish it, flagged in the catalog","Route it to a human review queue","Discard the whole document safely","Re-run it on a much larger model"], correct:1, cat:"ai",
+ why:"Confidence scores exist to enable selective human review. A review queue with a named owner and an SLA is a first-class product surface, not a fallback."},
+{q:"A client wants your data product but cannot get procurement approval. Their objection is bill unpredictability. What do you change?", options:["Cut the headline per-query rate","Extend the evaluation trial period","A platform fee with committed tiers","Move more features into the top tier"], correct:2, cat:"pm",
+ why:"Enterprise buyers will accept a higher predictable price over a lower unpredictable one, because procurement cannot approve a number it cannot forecast."},
+{q:"Which of these is the strongest argument for a lakehouse over a classic warehouse in a research-heavy firm?", options:["It removes the need to maintain a data catalog","It guarantees higher data quality by default","It eliminates transformation work entirely","Raw and modelled data stay in one governed place"], correct:3, cat:"arch",
+ why:"The lakehouse value is warehouse guarantees over lake-priced storage, so raw and modelled data live in one governed place rather than two diverging copies."},
+{q:"Your error budget for the quarter is exhausted in week three. By prior agreement, what happens next?", options:["The SLO target is revised upward","Reliability work takes the next sprint","The client SLA gets renegotiated","Incidents are logged as maintenance"], correct:1, cat:"cloud",
+ why:"The error budget converts reliability from an argument into arithmetic. Exhausting it triggers the pre-agreed shift from feature work to reliability work."},
+{q:"A senior engineer argues your RAG quality problem needs a larger generation model. What do you check first?", options:["The length of the prompt template","The configured sampling temperature setting","Whether retrieval returned the right passages","The token cost of each generation request"], correct:2, cat:"ai",
+ why:"Most RAG quality failures are retrieval failures. If the correct passage never reaches the context window, no generation model can produce a correct grounded answer."},
+{q:"Private markets data is strategically hard for a data platform mainly because:", options:["Volumes far exceed public market feeds","Regulators prohibit centralising any of it","It changes second by second all day","It arrives as unstandardised documents"], correct:3, cat:"alad",
+ why:"Capital account statements, capital calls and LP agreements arrive as documents in inconsistent formats, with no equivalent of a standardised public market feed."},
+{q:"You want governance to stop being a fight with delivery teams. The most effective mechanism is:", options:["A paved road that is compliant by default","A mandatory architecture review board","A published monthly governance scorecard","A quarterly compliance attestation cycle"], correct:0, cat:"pm",
+ why:"A paved road makes the compliant path the easiest path, converting governance from a review gate into a default that teams adopt because it is faster."},
+{q:"A team asks to land unmasked client identifiers into the lake and mask them later. Why might you refuse?", options:["Batch masking is cheaper to run","Privacy rules may forbid raw PII landing","ELT always outperforms ETL here","Raw storage costs would rise sharply"], correct:1, cat:"gov",
+ why:"ELT is the cloud default, but where regulation or licensing forbids raw data landing, masking or tokenisation must happen in flight — the ETL case that survives."},
+{q:"Which pairing correctly describes when to fine-tune rather than use RAG?", options:["Lower latency versus higher accuracy","Cheaper inference versus cheaper training","Consistent output form versus changing facts","Stronger citations versus stronger reasoning"], correct:2, cat:"ai",
+ why:"Fine-tuning teaches behaviour that must be consistent; RAG supplies knowledge that changes and must be cited. Mixing them up creates avoidable platform debt."},
+{q:"Your migration off the legacy feed reached 80% of tenants and stopped. What is the missing ingredient?", options:["Clearer migration documentation","Lower pricing on the new feed","A more capable replacement API","An executive-backed end date"], correct:3, cat:"pm",
+ why:"Voluntary migrations reliably stall near 80%. The remaining tenants are the hardest, and only a mandated, dated deadline with support moves them."},
+{q:"An interviewer asks what makes Aladdin a platform rather than an application. The sharpest evidence is:", options:["Clients build their own solutions on its APIs","It spans a wide range of asset classes","It is used by institutions across the world","It bundles sophisticated risk analytics"], correct:0, cat:"alad",
+ why:"A platform is judged by what others build on it. An API surface that lets clients build proprietary applications is the defining characteristic, not breadth of coverage."},
+{q:"Which metric best exposes a cheap model that fails often and forces manual rework?", options:["Cost of each API call","Cost per successful task","Average tokens per request","Median inference latency"], correct:1, cat:"ai",
+ why:"Cost per call ignores failures. Cost per successful task captures retries, escalations and manual rework, which is where a cheap unreliable model actually loses money."},
+{q:"A domain team publishes a dataset and a consumer breaks when a column is retyped. What prevents this recurring?", options:["A weekly change advisory board","More defensive consumer error handling","A data contract enforced in CI","A richer catalog entry for the dataset"], correct:2, cat:"gov",
+ why:"Contracts enforced in the producer build fail the breaking change before release. Contracts without an enforcement point are documentation, not protection."},
+{q:"Which of these is genuinely a platform capability rather than an application feature?", options:["Entitlements inherited by every engine","A desk-specific reconciliation screen","A client-specific exception workflow","A monthly board reporting pack"], correct:0, cat:"pm",
+ why:"Platform capabilities are general, reused by many consumers, and wasteful to rebuild per team. Workflow-specific screens serve one use case and belong above the platform."},
+{q:"Your chunking strategy cuts contracts every 500 characters. Analysts complain answers are incomplete. The fix is:", options:["Retrieve many more chunks per query","Split on clause and section lines","Move to a larger generation model","Lower the retrieval similarity cutoff"], correct:1, cat:"ai",
+ why:"Structure-aware splitting keeps a retrieved chunk semantically complete. Fixed-length cuts return half an obligation, and no amount of extra retrieval repairs that cleanly."},
+{q:"An instrument identifier changes after a merger. What must the platform guarantee?", options:["Real-time propagation to consumers","Automatic recalculation of risk models","Immediate reconciliation with the vendor","Historical positions stay correctly linked"], correct:3, cat:"alad",
+ why:"Corporate actions mean instrument identity is not stable over time, so point-in-time correct reference data is what keeps historical performance and exposure intact."},
+{q:"Which best describes the practical purpose of the bronze layer in a medallion architecture?", options:["Serving business-ready aggregates out","Holding conformed, deduplicated entities","Enforcing entitlements before consumption","Preserving raw data for audit and rebuild"], correct:3, cat:"arch",
+ why:"Bronze is deliberately immutable and unprocessed, so everything downstream can be rebuilt and every reported number can be traced back to what actually arrived."},
+{q:"You are asked whether to build or buy a capability. Which factor is most often left out of the comparison?", options:["Ongoing maintenance and on-call cost","The vendor's overall security posture","The initial licence and support pricing","Time to reach a first deployment"], correct:0, cat:"pm",
+ why:"Build-versus-buy is a total cost of ownership argument. Most 'we could build it cheaper' claims compare a licence fee to a build estimate and omit a decade of maintenance."},
+];
+
+/* =============== ANSWER VAULT =============== */
+const VAULT = [
+{cat:"Positioning", ico:"🧭", q:"Walk me through your background. Why you, for a data platform product role?",
+ open:"I have spent eight years solving complex enterprise problems at the intersection of business, operations and technology, and my work moved upstream over time into discovery, prioritisation and building technology-enabled solutions. What I am doing now is applying that to data and AI platforms specifically.",
+ frame:["Lead with enterprise technology and transformation, not with business analysis as a job title.","Name the scale and complexity you have operated in: global stakeholders, regulated financial services, multiple countries, controls and governance.","Show the arc from requirements to ownership: problem definition, prioritisation, solution design, delivery, adoption, measurement.","Land on the technical platform depth deliberately: the data and AI platform work you have built and studied.","Close on why this specific role is the natural next step rather than a leap."],
+ say:["Frame yourself as someone who has operated inside complex enterprises for eight years, which many candidates with a PM title have never done.","Use the word adoption early. Enterprise platform people care about it more than they care about delivery.","Name the shift explicitly if asked: from fixing processes inside systems to building the systems themselves."],
+ trap:"Do not narrate a BA-to-PM transition story. It invites the interviewer to score you against the five-years-of-PM-experience line rather than against the competencies they actually need.",
+ yours:"Write this as six sentences and rehearse it until it is 60 seconds. Every specific in it — companies, scope, outcomes, metrics — must be something you can defend in detail if they pull the thread."},
+
+{cat:"Product", ico:"🗺️", q:"How would you define the roadmap for an enterprise data platform?",
+ open:"I would anchor it on the business outcomes the platform is funded for, then work backwards through capability gaps rather than starting from a feature list.",
+ frame:["Start with the outcome: what decisions get faster, what cost falls, what risk reduces.","Segment the consumers — internal domain teams, application teams, external clients — and identify what blocks each today.","Map the current capability stack against a target architecture and name the gaps.","Sequence by dependency and forcing function: foundations first, regulatory deadlines as fixed points, quick adoption wins early to earn credibility.","Publish an explicit allocation across capability, reliability and debt, and tenant-specific work.","Define leading and lagging metrics per horizon, and state what would make you change direction."],
+ say:["Roughly 50% capability, 25% reliability and technical debt, 25% tenant-specific requests, published so a yes to one thing is a visible no to another.","Horizon framing: next quarter is committed, the following two are directional, beyond that is thematic.","Name what you would deliberately not build, because a roadmap without exclusions is a wish list."],
+ trap:"Do not present a feature list by quarter. At VP level they are testing whether you reason from outcomes and trade-offs, and a Gantt chart answer signals delivery management rather than product leadership."},
+
+{cat:"Product", ico:"⚖️", q:"How do you prioritise platform capabilities when three stakeholders all want different things?",
+ open:"On a platform every requester is legitimate, so the work is making the criteria explicit before the arguments start rather than adjudicating case by case.",
+ frame:["Agree the scoring dimensions up front: reach across tenants, strategic alignment, risk or regulatory forcing function, effort, and reusable capability versus bespoke workflow.","Apply the three-consumer test — if fewer than three consumers need it, it is probably application work.","Hold the published allocation so trade-offs are visible rather than invisible.","Where two teams want the same thing differently, build the general primitive underneath.","Say no with a reason, a workaround and the conditions under which you would revisit."],
+ say:["Multiple teams asking for variations of the same thing is a signal to build the primitive, not to build three things.","A no without a path is what destroys platform relationships; a no with a workaround and a revisit trigger preserves them.","If someone escalates, I want the escalation to land on a documented framework rather than on my opinion."],
+ trap:"Do not say you would prioritise by revenue or by the loudest voice. Internal platforms rarely have clean revenue attribution, and building for the loudest tenant is the classic platform failure mode."},
+
+{cat:"Product", ico:"📈", q:"How would you drive adoption of an internal platform?",
+ open:"I would treat it as a funnel with a real conversion problem at a specific stage, and the stage is almost always time-to-first-value.",
+ frame:["Instrument the funnel: aware, evaluating, integrated, in production, expanding.","Find where teams actually drop out — usually access provisioning, documentation, or a missing capability that blocks production.","Attack time-to-first-value: self-serve sandbox, honest quickstart, sample data, working examples.","Build the paved road so the supported path is faster than building it themselves.","Recruit design partners and make their success visible internally, because peer evidence beats mandate.","Use mandate only where it is genuinely warranted, and always paired with migration support."],
+ say:["Cutting time from docs to first successful call from three weeks of access tickets to twenty minutes changes the curve more than any feature.","Teams that integrated but never reached production are the highest-signal cohort you have — that gap is a specific missing capability, not apathy.","Forced adoption without value produces compliance and shadow systems, so I measure workloads in production rather than registered users."],
+ trap:"Do not lead with executive mandate. It signals you expect authority to do the work, and on a platform the shadow-system workaround is always available to a team that does not want to be there."},
+
+{cat:"Technical", ico:"🏗️", q:"Design a platform to ingest unstructured data at enterprise scale.",
+ open:"I would lay it out as a layered pipeline and be explicit about the product decision and failure mode at each layer, because the hard parts here are governance and confidence, not the model.",
+ frame:["Sources and capture: document stores, mail, portals, client uploads — plus classification and rights, because confidentiality decides what may even be processed externally.","Classification, OCR and layout parsing so structure survives, since a number in a table means something different from a number in a footnote.","Extraction into schema-constrained fields with a confidence score on every field, normalised and resolved against existing master data.","Chunking on structural boundaries with mandatory metadata: source, page, section, effective date, entitlement tags.","Embedding and a vector index with metadata filtering, treating the embedding model as a long-lived commitment.","Retrieval with entitlement filtering before ranking, hybrid search and reranking.","Generation with mandatory citations, guardrails, abstention, and an evaluation harness with a golden set.","Application and feedback loop, with corrections flowing back into the evaluation set."],
+ say:["Entitlements are enforced inside retrieval, never on the generated answer.","Every extracted field carries a confidence score, which is what makes a human review queue possible instead of publishing guesses.","Chunking strategy is a decision you pay for twice, because changing it forces a full reindex."],
+ trap:"Do not present it as a diagram and stop. The differentiator is naming, at each layer, what you would decide as a PM, what fails in production, and what you would measure — that is what separates a platform PM from someone who has read an architecture blog."},
+
+{cat:"Technical", ico:"🗄️", q:"What is the difference between a data lake, a data warehouse and a lakehouse?",
+ open:"They are three answers to the same question — where the data lives — and the real variable is who pays the cost of structure and when.",
+ frame:["Warehouse: schema-on-write, modelled, governed, fast SQL — trustworthy and rigid, and expensive per terabyte.","Lake: schema-on-read, raw files in object storage — cheap and flexible, and prone to becoming ungovernable.","Lakehouse: a transactional table layer over lake storage giving ACID transactions, schema enforcement and time travel at lake economics.","The choice follows the use case: reproducible regulated reporting wants warehouse guarantees; exploratory research on documents wants lake flexibility.","Note that the failure mode of a lake is organisational — no catalog, no owner, no contract — not technical."],
+ say:["Time travel is the capability that makes point-in-time reproducibility possible without maintaining frozen snapshots for every reporting date.","Separating storage from compute means different engines read one copy, so you avoid a warehouse copy and a lake copy quietly diverging."],
+ trap:"Do not answer as three definitions and stop. Add the consequence — reproducibility, governance, cost — or it reads as memorised rather than understood."},
+
+{cat:"Technical", ico:"🧪", q:"How would you prepare unstructured data for machine learning?",
+ open:"The work is turning documents into something with a schema, a quality measure and a provenance trail, because unstructured data has none of those by default.",
+ frame:["Assess the corpus: types, volumes, languages, scan quality, duplication, and rights to use it for model purposes.","Parse with layout awareness so tables and reading order survive.","Extract into a defined schema with confidence scores; normalise units, dates and currencies; resolve entities against master data.","Label where supervised learning is involved, with a documented guideline and an inter-annotator agreement check.","Split with point-in-time correctness so no feature encodes the future.","Define quality as extraction accuracy and coverage per document type, since schema validation does not apply.","Version the dataset so any model can be traced back to the exact corpus it saw."],
+ say:["Data leakage is the failure I watch for hardest — a feature that accidentally encodes the future gives spectacular offline accuracy and a model that fails immediately in production.","For unstructured sources, data quality has to be redefined as extraction confidence and coverage, and reported per document type rather than as one headline number."],
+ trap:"Do not skip labelling quality and rights. In a regulated firm, whether you are permitted to use a given corpus for training is a real gating question, and mentioning it unprompted signals enterprise judgement."},
+
+{cat:"Technical", ico:"🔌", q:"How would you design APIs for an enterprise data platform?",
+ open:"I would start from the access patterns, because a single API style cannot serve an analyst, an application and a bulk consumer well.",
+ frame:["Segment consumers: SQL for analysts, REST or GraphQL for applications, bulk export or direct sharing for analytical volumes, event subscriptions for streaming consumers.","Design the contract: resource-oriented naming, cursor pagination, idempotency keys on writes, consistent errors, rate limits that fail with a retry hint.","Version from day one and publish the deprecation policy alongside v1.","Enforce identity and entitlements at the API layer and at direct data access, so policy cannot be bypassed.","Treat developer experience as product: SDKs, sandbox, working examples, and error messages that say what to do next.","Instrument adoption and reliability: latency percentiles, error rate by tenant, active integrations, time-to-integrate."],
+ say:["Paginating ten million rows over REST is an API design failure, not a client problem — that consumer needs bulk sharing.","Every version I keep alive is permanent operational cost, so the deprecation policy ships with v1 rather than being retrofitted onto clients who already built against it."],
+ trap:"Do not treat the API as a technical detail. On a platform the API is the product, and answering at the level of HTTP verbs rather than commitments and lifecycle misses the seniority signal."},
+
+{cat:"Technical", ico:"🎛️", q:"What are the challenges of multimodal data?",
+ open:"The core challenge is that a single answer may depend on text, a table and an image at once, and each modality has its own extraction path, quality measure and failure mode.",
+ frame:["No common schema, so validation and quality have to be defined per modality.","Alignment: linking a chart, its caption, the table behind it and the narrative that qualifies it.","Extraction quality differs sharply by modality — table extraction and handwriting fail differently from body text.","Embedding and retrieval across modalities requires either a shared multimodal space or a fusion strategy across separate indexes.","Cost and latency rise substantially, and vision processing is materially more expensive per document.","Evaluation is harder because ground truth must be established per modality and per document type.","Governance carries over: entitlements and retention apply to an image as much as to a row."],
+ say:["A number in a chart, a number in a table and a number in a footnote can all be different and all be correct in context, which is why layout and provenance matter more than raw extraction accuracy.","I would scope the first release to the document types where volume times value is highest, rather than claiming general multimodal coverage."],
+ trap:"Do not describe multimodal as simply more data types. The interviewer is probing whether you understand that quality, evaluation and cost all fragment per modality."},
+
+{cat:"Metrics", ico:"📊", q:"How would you measure whether the enterprise data platform is successful?",
+ open:"I would use four layers of platform metrics, and I would never present any of them without the business outcome attached.",
+ frame:["Adoption: teams onboarded, workloads in production, active integrations, expansion within onboarded teams.","Experience: time-to-first-value, time-to-integrate, support tickets per team, documentation search failure rate.","Reliability and quality: availability, API latency at p95 and p99, freshness SLA attainment, pipeline success rate, quality scores by data tier.","Economics: cost per workload, cost per terabyte processed, utilisation, cost per successful AI task.","Business outcome: decision cycle time, analyst hours released, reconciliation effort avoided, control breaches reduced, client onboarding time."],
+ say:["Registered users is a vanity metric; workloads in production is the number that survives a sceptical executive.","I report p95 and p99 rather than the mean, because the mean hides exactly the tail that generates complaints.","Availability alone is a misleading SLO for a data platform, since the API can be up while serving stale or wrong data — freshness and quality need their own SLOs."],
+ trap:"Do not reach for DAU or MAU. Platform consumption is often programmatic and scheduled, so daily active users measures cron jobs rather than value."},
+
+{cat:"Metrics", ico:"🧠", q:"How do you evaluate an AI-powered product?",
+ open:"Evaluation is a layered system rather than a test, and it has to run continuously because prompts, models and data all change underneath you.",
+ frame:["Offline: a golden set of representative real inputs with verified outputs, scored on every change in CI.","Component level: retrieval recall and precision at k, extraction accuracy per field, generation groundedness and citation validity.","Judgement: LLM-as-judge for scale, calibrated periodically against human labels so the dashboard does not drift from reality.","Online: acceptance rate, human override rate, escalation rate, task completion time.","Guardrail metrics: abstention rate, refusal correctness, and rate of unsupported claims.","Economics: cost per successful task, and latency at the percentile users actually feel.","Regression discipline: no prompt, chunking or model change ships without its golden-set delta."],
+ say:["Human override rate is usually the most honest production signal — how often does a user discard the output and do it manually anyway.","Model self-reported confidence is not calibrated probability of being right, and treating it as an accuracy guarantee is a dangerous product decision."],
+ trap:"Do not answer with accuracy as a single number. The interviewer is testing whether you know that AI quality is multi-dimensional and that regression is the real operational risk."},
+
+{cat:"Strategy", ico:"🏭", q:"Why should we build this rather than buy it?",
+ open:"I would answer it on four axes — differentiation, total cost of ownership, lock-in, and capability to operate it — and I would be honest about which side each one falls on.",
+ frame:["Differentiation: is this a source of competitive advantage or table stakes infrastructure.","Total cost of ownership over five to ten years, including the engineers who maintain, upgrade and are on call for it.","Lock-in severity and the exit path, including where governance and metadata live even when the data format is open.","Skills: can we hire and retain the people to run this, and what happens when they leave.","The common answer is hybrid: buy the commodity engine, build the proprietary data model, semantics and interface on top.","Non-functional scoring: vendor security posture, roadmap alignment, financial stability and support model can veto on their own."],
+ say:["Most 'we could build it cheaper' claims compare a licence fee to a build estimate and omit a decade of maintenance and on-call.","Open formats reduce data lock-in but governance and the catalog are usually still vendor-specific, and that is where the real switching cost hides."],
+ trap:"Do not answer categorically in either direction. A confident 'always buy' or 'always build' reads as ideology, and the interviewer wants to see you weigh a specific case."},
+
+{cat:"Strategy", ico:"🧩", q:"How do you decide what belongs in the platform versus the application layer?",
+ open:"My test is whether it is a general capability with multiple consumers or a workflow that serves one use case.",
+ frame:["Capability versus workflow: authentication, entitlements, lineage, orchestration and ingestion are capabilities; a desk-specific screen is a workflow.","The three-consumer test: if fewer than three teams need it, it is application work until proven otherwise.","Rate of change: things that change per client or per desk belong above the platform; things that change slowly and universally belong in it.","Cost of duplication: if every team rebuilding it is genuinely wasteful and risky, that argues for the platform.","Reversibility: platform interfaces are permanent commitments, so the bar for adding one is higher than for adding an application feature."],
+ say:["Everything I put in the platform I have to version, support and eventually deprecate, so the cost of a yes is much higher than it looks in the moment.","When two teams want the same capability shaped differently, that is the signal to build the primitive rather than either specific request."],
+ trap:"Do not say 'anything reusable'. Almost anything can be argued as reusable, and without a threshold test the platform bloats into a collection of half-general features nobody owns."},
+
+{cat:"Strategy", ico:"💰", q:"How would you take an enterprise data product to market commercially?",
+ open:"I would start from segmentation and from what the product actually displaces, because positioning against the alternative is what determines the entire message.",
+ frame:["Segment: which client types have this problem acutely enough to pay, sized bottom-up from segment counts and realistic pricing.","Position against the real alternative — status quo, an internal build, or a named competitor — since each implies a completely different proof set.","Value proposition with quantified proof points and a defensible ROI model.","Packaging and pricing: usually a platform fee plus consumption, with commitments and caps so procurement can forecast the number.","Design partners who co-build and become references, then a staged launch with adoption targets rather than a big-bang release.","Sales enablement: battlecards, reference architecture, security and compliance answers, integration guide.","Post-launch adoption plan, because in enterprise the sale is the beginning of the risk, not the end."],
+ say:["Positioning against a client's own internal build means the proof points are total cost of ownership and maintenance burden avoided, not a feature comparison.","The buying committee includes security, compliance, procurement and legal, and each can veto — so the GTM kit needs artifacts aimed at them or the deal stalls after a successful pilot."],
+ trap:"Do not build the sizing top-down from an analyst market figure. Bottom-up from segment counts and realistic pricing is both more defensible and more useful."},
+
+{cat:"Leadership", ico:"🤝", q:"Tell me about a time engineering disagreed with your product decision.",
+ open:"Choose a real disagreement where the engineering objection was legitimate, and where the resolution changed the plan in some way — a story where you were simply right is less credible and less interesting.",
+ frame:["Situation: the decision, the constraint, and why it mattered to the business.","The disagreement stated fairly, in the engineer's terms, showing you understood the technical objection rather than dismissing it.","What you did to resolve it: got the data, ran a spike, brought the trade-off into the open, reframed against the shared goal.","The decision and the explicit trade-off you accepted, including what you gave up.","The result, with a number if you have one.","What you changed in how you work afterwards."],
+ say:["Weight the story toward Decision and Trade-off rather than Situation. Most candidates spend 70% of the answer on context; the signal is in the judgement.","Name what you gave up. A trade-off with no cost is not a trade-off, and interviewers notice."],
+ trap:"Do not tell a story where you escalated to win. Escalation as a first move signals you cannot influence peers, which is the entire competency being tested.",
+ yours:"Pick this from your own history and write it out in full. Do not invent scale, numbers, or outcomes — a fabricated detail collapses the moment they ask a follow-up question about it."},
+
+{cat:"Leadership", ico:"📣", q:"How do you influence senior stakeholders without authority?",
+ open:"I treat influence as mechanics rather than personality: understand what each person is measured on, frame in their terms, bring evidence, and never let a forum be the first time someone hears a decision.",
+ frame:["Map stakeholders by what they are accountable for, not by seniority.","Translate the same decision into each stakeholder's currency — risk reduction, cost, capacity, client outcome.","Bring evidence rather than opinion: usage data, incident history, cost analysis, a spike result.","Pre-socialise one to one so the meeting confirms rather than debates.","Disagree explicitly and commit visibly once the decision lands.","Write it down, so the decision and its rationale survive the people who made it.","Design the operating model — intake, prioritisation forum, published roadmap, architecture review — so your judgement scales past the decisions you personally attend."],
+ say:["Framing a data quality investment as reduced control breaches for a risk leader and reduced reconciliation headcount for a COO is the same programme told in two currencies.","Publishing a visible intake and prioritisation process converts a stream of escalations into a queue people can see themselves in, which removes most of the escalations."],
+ trap:"Do not describe influence as relationship-building or trust in the abstract. At VP level they want a repeatable mechanism, not a personality trait.",
+ yours:"Have two concrete examples ready — one where you changed a senior decision, one where you did not and had to commit anyway. The second is often the more convincing story."},
+
+{cat:"Leadership", ico:"🌱", q:"How do you mentor product managers and business analysts?",
+ open:"I mentor toward judgement rather than toward output, because the thing that scales is how someone decides, not what they produced last sprint.",
+ frame:["Diagnose where the person actually is: requirements thinking, delivery execution, or product judgement.","Move them from what are the requirements to what should we build, why, for whom and in what sequence.","Give real ownership with a safety net rather than reviewing their work into your own shape.","Coach in the moment on artefacts — a prioritisation call, a stakeholder conversation, a written decision.","Make written reasoning a habit, because that is where fuzzy thinking becomes visible.","Measure it by whether they start making decisions you did not have to be in the room for."],
+ say:["The transition I coach most often is from documenting what stakeholders asked for to owning the problem and the trade-off.","I would rather they make a defensible decision I disagree with than an undefended one I would have made myself."],
+ trap:"Do not describe mentoring as reviewing work and giving feedback. That is management hygiene, not development, and it does not answer the question they asked.",
+ yours:"Ground this in people you have actually developed. Name what they could not do at the start and what they were doing independently by the end."},
+];
+
+/* =============== 12-WEEK PLAN =============== */
+const PLAN = [
+ {tag:"Month 1", title:"Technical Foundation", intent:"By the end of this month you can whiteboard a cloud-based enterprise data platform end to end and defend every layer choice. This is the month that closes the loudest gaps: data platforms, cloud, and platform architecture.",
+  weeks:[
+   {wk:"Week 1", h:"Data fundamentals", pts:["Relational modelling, normalisation, star and snowflake schemas","SQL to a genuinely fluent level: window functions, CTEs, query plans","Warehouse vs lake vs lakehouse, and what schema-on-write really costs","Columnar storage, partitioning, and why Parquet beats CSV"], out:"A one-page written comparison of warehouse, lake and lakehouse with a named use case for each, in your own words."},
+   {wk:"Week 2", h:"Data engineering", pts:["ETL vs ELT and the reprocessing argument","Pipelines, DAGs, orchestration, idempotency and backfill","Batch vs streaming vs CDC, framed by decision latency","Data quality dimensions, lineage, metadata and catalogs","Data contracts and how they are enforced in CI"], out:"Build a small pipeline yourself: land a raw file, transform it, publish it, add a quality test, break it and fix it."},
+   {wk:"Week 3", h:"Cloud architecture", pts:["Pick one cloud and stay with it — Azure if you want the enterprise-oriented path","Object storage, tiering, and its cost model","Compute: serverless, containers, managed clusters and where each wins","Identity and access, least privilege, service principals","Managed data services and the reference data architecture for your chosen cloud"], out:"Draw the reference architecture for a cloud data platform from memory, then check it against the vendor's published one and note every difference."},
+   {wk:"Week 4", h:"APIs & platform architecture", pts:["REST design, pagination, idempotency, error semantics","Authentication, gateways, rate limiting and quotas","Event-driven architecture and message queues","Versioning, backward compatibility and deprecation policy","Multi-tenancy, isolation and the noisy neighbour problem","SLA, SLO, SLI and error budgets"], out:"Deliverable for the month: whiteboard the full platform — sources to consumption — and record yourself explaining it in ten minutes."}
+  ]},
+ {tag:"Month 2", title:"AI, Unstructured Data & the Flagship Build", intent:"This month converts AI familiarity into product judgement. The output is a working prototype plus the product artefacts around it, which is the single highest-leverage thing you can carry into the interview.",
+  weeks:[
+   {wk:"Week 5", h:"Unstructured & multimodal data", pts:["Document classification, OCR and layout-aware parsing","Table extraction and why it fails differently from body text","Schema-constrained extraction with confidence scores","Human-in-the-loop review as a product surface","Multimodal: where text, tables and images have to be aligned"], out:"Ingest 30 real messy PDFs, extract three fields from each, and measure your own accuracy per field."},
+   {wk:"Week 6", h:"RAG, properly", pts:["Chunking strategies and why the choice forces a reindex","Embeddings, model choice, and re-embedding cost","Vector indexes, ANN, metadata filtering, hybrid search","Reranking and context assembly under budget","Entitlement filtering inside retrieval","Citation, abstention and groundedness checks"], out:"Build the retrieval half properly and measure recall at k against 30 questions you wrote answers for yourself."},
+   {wk:"Week 7", h:"ML fundamentals for PMs", pts:["Supervised vs unsupervised, training vs inference","Features, feature stores, training-serving skew and leakage","Evaluation: precision, recall, F1, and why accuracy misleads","Fine-tuning vs RAG vs prompting, and what each costs you later","Drift: data, concept and model, and how each is detected"], out:"Write the evaluation plan for your prototype: golden set, component metrics, online signals, regression gate."},
+   {wk:"Week 8", h:"AI platform PM & assembly", pts:["Model gateways, routing, quotas and chargeback","Prompt and template versioning","Guardrails, PII filtering, observability and token tracing","Accuracy, latency and cost trade-offs; cost per successful task"], out:"Deliverable for the month: working prototype plus architecture diagram, PRD, KPI framework and evaluation plan."}
+  ]},
+ {tag:"Month 3", title:"Domain, Cases & Interview Reps", intent:"The technical work is done. This month is about the firm, the strategy answers, and turning eight years of enterprise experience into leadership stories that land at VP level.",
+  weeks:[
+   {wk:"Week 9", h:"BlackRock, Aladdin & investment data", pts:["Aladdin as a unified platform with a common data language","Aladdin Studio and what an API surface obliges a platform to do","Aladdin Data Cloud and the move from files to data-as-a-service","eFront, Preqin and why private markets data is an unstructured problem","Security master, reference data, IBOR vs ABOR","The investment workflow end to end and what data each stage needs"], out:"A one-page brief on why high-quality enterprise data is existential in investment technology, in your own words. Verify every product claim on blackrock.com/aladdin."},
+   {wk:"Week 10", h:"Product strategy cases", pts:["Design a data platform for an asset manager","Increase adoption of an enterprise data platform","Prioritise three competing data capabilities","Measure platform success for an executive audience","Build an unstructured-data ingestion platform at enterprise scale","Build versus buy for a specific capability"], out:"Six written case answers, each under 400 words, each ending with metrics and an explicit trade-off."},
+   {wk:"Week 11", h:"Leadership stories", pts:["Draft 10 to 12 stories: conflict, ambiguity, failure, influence, prioritisation, stakeholder management, hard decision, transformation, adoption, mentoring, delivery miss","Use STAR but weight it toward Decision and Trade-off","Attach a number to every story you can honestly quantify","Prepare the follow-up layer: what would you do differently, what did you give up"], out:"All stories written out, each rehearsed to under two minutes, none containing a fact you cannot defend under follow-up."},
+   {wk:"Week 12", h:"Mocks & pressure testing", pts:["30% product strategy","25% technical and data","20% leadership","15% BlackRock and Aladdin domain","10% behavioural","Record yourself; watch for hedging, filler and over-long setups"], out:"Deliverable: full mock loop completed, weak areas listed, and a targeted fix plan for the final week before the real interview."}
+  ]}
+];
+
+const PROJECT = {
+ title:"The flagship: an Enterprise Unstructured Data Platform",
+ blurb:"Certificates will not close the gap this job description opens. One serious end-to-end build will. Ship a working prototype that ingests messy documents, extracts structured fields with confidence scores, indexes them for retrieval, answers grounded questions with citations, and reports its own quality — then wrap it in the product artefacts a VP would be expected to produce. Unlike a generic AI chatbot demo, this evidences platform thinking, unstructured data handling, ML data preparation and AI developer platform judgement all at once.",
+ cols:[
+  {k:"Build", items:["Ingestion of PDFs, spreadsheets, decks and images","Classification, OCR and layout parsing","Schema-constrained extraction with confidence scores","Human review queue for low-confidence fields","Chunking with source, page and entitlement metadata","Embeddings and a filtered vector index","Grounded retrieval with citations and abstention","A small API surface plus usage analytics"]},
+  {k:"Product artefacts", items:["Product vision and positioning statement","Personas: analyst, data engineer, compliance reviewer","User journeys and the current painful baseline","PRD with explicit non-goals","Architecture diagram and API strategy","Data governance and security model","KPI framework across all four metric layers","Evaluation plan with a golden set"]},
+  {k:"Commercial layer", items:["Market and competitive analysis","Segmentation and target client profile","Bottom-up TAM, SAM and SOM","Pricing and packaging model","Value proposition with proof points","GTM and design-partner plan","Adoption plan and success targets","Build versus buy analysis for each major component"]},
+  {k:"How to present it", items:["Lead with the problem and the baseline cost, not the tech","Show one real document going end to end","Quote your own measured accuracy per field type","Name what you deliberately did not build and why","State the three biggest risks and your mitigations","Have the cost per successful task ready","Be ready to defend every number as your own measurement"]}
+ ]
+};
+
+/* =============== STATE =============== */
+let state = {
+  view:"library",
+  search:"", activeCat:"all", openIdx:null,
+  bpPath:"structured", bpOpen:0, bpFocus:false,
+  vaultCat:"all", vaultOpen:null,
+  quizOrder:[], quizIndex:0, quizScore:0, quizAnswered:null, quizHistory:[], quizDone:false
+};
+
+const main = document.getElementById("main");
+const modalRoot = document.getElementById("modalRoot");
+
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function shuffled(n){ const a=[...Array(n).keys()]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+function resetQuiz(){ state.quizOrder=shuffled(SCENARIOS.length); state.quizIndex=0; state.quizScore=0; state.quizAnswered=null; state.quizHistory=[]; state.quizDone=false; }
+resetQuiz();
+
+const ARROW = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6.5 2.5L10 6l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const CHEV = '<svg class="layer-chev" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+/* =============== LIBRARY =============== */
+function catCounts(){ const c={}; ENTRIES.forEach(e=>{ c[e.cat]=(c[e.cat]||0)+1; }); return c; }
+
+function filtered(){
+  const q = state.search.trim().toLowerCase();
+  return ENTRIES.map((e,i)=>({e,i})).filter(({e})=>{
+    if(state.activeCat!=="all" && e.cat!==state.activeCat) return false;
+    if(!q) return true;
+    return (e.name+" "+e.hook+" "+e.def+" "+e.example.join(" ")+" "+e.watch).toLowerCase().includes(q);
+  });
+}
+
+function renderLibrary(){
+  const counts = catCounts();
+  const list = filtered();
+  const pills = ['<button class="pill" data-cat="all" data-active="'+(state.activeCat==="all")+'" onclick="setCat(\'all\')">All <span class="count">'+ENTRIES.length+'</span></button>']
+    .concat(Object.keys(CATS).map(k=>'<button class="pill" data-cat="'+k+'" data-active="'+(state.activeCat===k)+'" onclick="setCat(\''+k+'\')">'+CATS[k].icon+' '+esc(CATS[k].label)+' <span class="count">'+(counts[k]||0)+'</span></button>')).join("");
+
+  const cards = list.length ? list.map(({e,i})=>
+    '<article class="card" data-cat="'+e.cat+'" role="button" tabindex="0" onclick="openEntry('+i+')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openEntry('+i+');}" aria-label="Open '+esc(e.name)+'">'+
+      '<span class="cat-tag" data-cat="'+e.cat+'">'+CATS[e.cat].icon+' '+esc(CATS[e.cat].label)+'</span>'+
+      '<h3>'+esc(e.name)+'</h3>'+
+      '<p class="hook">'+esc(e.hook)+'</p>'+
+      '<span class="explore-row">Explore '+ARROW+'</span>'+
+    '</article>').join("")
+   : '<div class="empty-state"><span class="big">🔍</span><p>No concepts match that search or filter.</p><button onclick="clearFilters()">Clear filters</button></div>';
+
+  return '<div class="view-head"><span class="kicker">Mode 01 &middot; Reference</span><h2>Concept Library</h2>'+
+    '<p>The vocabulary you need to hold your own with data engineers, ML engineers and enterprise stakeholders. Search it, filter it, and open any card for the definition, two concrete examples and the nuance that separates memorising a term from understanding it.</p></div>'+
+    '<div class="search-wrap"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#63789B" stroke-width="1.7"/><path d="M11 11l3 3" stroke="#63789B" stroke-width="1.7" stroke-linecap="round"/></svg>'+
+    '<input id="searchInput" type="text" placeholder="Search 51 concepts — try lineage, RAG, multi-tenancy, IBOR&hellip;" value="'+esc(state.search)+'" oninput="setSearch(this.value)" aria-label="Search concepts"></div>'+
+    '<div class="pill-row">'+pills+'</div>'+
+    '<p class="result-count">'+list.length+' of '+ENTRIES.length+' concepts'+(state.activeCat!=="all"?" &middot; "+esc(CATS[state.activeCat].label):"")+'</p>'+
+    '<div class="grid">'+cards+'</div>';
+}
+
+function setCat(c){ state.activeCat = (state.activeCat===c && c!=="all") ? "all" : c; render(); }
+function setSearch(v){ state.search=v; render(true); }
+function clearFilters(){ state.search=""; state.activeCat="all"; render(); }
+
+function openEntry(i){ state.openIdx=i; renderModal(); }
+function closeEntry(){ state.openIdx=null; renderModal(); }
+
+function renderModal(){
+  if(state.openIdx===null){ modalRoot.innerHTML=""; return; }
+  const e = ENTRIES[state.openIdx];
+  modalRoot.innerHTML =
+   '<div class="modal-overlay" onclick="if(event.target===this)closeEntry()">'+
+    '<div class="modal" role="dialog" aria-modal="true" aria-label="'+esc(e.name)+'">'+
+      '<div class="modal-top"><span class="cat-tag" data-cat="'+e.cat+'">'+CATS[e.cat].icon+' '+esc(CATS[e.cat].label)+'</span>'+
+      '<button class="close-btn" onclick="closeEntry()" aria-label="Close">&times;</button></div>'+
+      '<h3>'+esc(e.name)+'</h3><p class="m-hook">'+esc(e.hook)+'</p>'+
+      '<div class="sec"><span class="kicker">What it is</span><p>'+esc(e.def)+'</p></div>'+
+      '<div class="sec"><span class="kicker">In practice</span><ul class="ex-list">'+e.example.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul></div>'+
+      '<div class="sec"><div class="watch"><strong>Watch out:</strong> '+esc(e.watch)+'</div></div>'+
+    '</div></div>';
+  const btn = modalRoot.querySelector(".close-btn"); if(btn) btn.focus();
+}
+document.addEventListener("keydown", e=>{ if(e.key==="Escape" && state.openIdx!==null) closeEntry(); });
+
+/* =============== BLUEPRINT =============== */
+function renderBlueprint(){
+  const path = BLUEPRINT[state.bpPath];
+  const layers = path.layers.map((L,i)=>{
+    const open = state.bpOpen===i;
+    let body="";
+    if(open){
+      body = '<div class="layer-body"><p class="layer-what">'+esc(L.what)+'</p>'+
+        '<div class="chipline">'+L.tech.map(t=>'<span class="chip">'+esc(t)+'</span>').join("")+'</div>'+
+        '<div class="lb-grid">'+
+          '<div class="lb-box pmdec"><span class="kicker">Decisions you own</span><ul>'+L.pmdec.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul></div>'+
+          '<div class="lb-box fail"><span class="kicker">How it fails</span><ul>'+L.fail.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul></div>'+
+          '<div class="lb-box metric"><span class="kicker">What you measure</span><ul>'+L.metric.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul></div>'+
+        '</div></div>';
+    }
+    return '<div class="layer'+(open?" open":"")+'">'+
+      '<button class="layer-head" onclick="toggleLayer('+i+')" aria-expanded="'+open+'">'+
+        '<span class="layer-idx">'+String(i+1).padStart(2,"0")+'</span>'+
+        '<span class="layer-title">'+esc(L.t)+'</span>'+
+        '<span class="layer-sub">'+esc(L.s)+'</span>'+CHEV+
+      '</button>'+body+'</div>';
+  }).join("");
+
+  return '<div class="view-head"><span class="kicker">Mode 02 &middot; Signature</span><h2>Platform Blueprint</h2>'+
+    '<p>The answer to <em>"design an enterprise data platform"</em>, laid out as a stack you can walk down in an interview. Switch paths to see how the structured pipeline and the unstructured/AI pipeline mirror each other. Open a layer for what happens there, the decisions a PM owns, how it fails in production, and what you would measure.</p></div>'+
+    '<div class="note"><span class="ni">🎯</span><div><strong>How to drill this:</strong> turn on focus mode, open one layer, close the guide, and say the whole layer out loud &mdash; what it does, one decision, one failure mode, one metric. Do all eight in under ten minutes and you can whiteboard this cold.</div></div>'+
+    '<div class="bp-toggle">'+
+      Object.keys(BLUEPRINT).map(k=>'<button data-on="'+(state.bpPath===k)+'" onclick="setPath(\''+k+'\')">'+esc(BLUEPRINT[k].label)+'</button>').join("")+
+      '<button data-on="'+state.bpFocus+'" onclick="toggleFocus()" aria-pressed="'+state.bpFocus+'">🔦 Focus mode</button>'+
+    '</div>'+
+    '<p class="result-count">'+esc(path.sub)+'</p>'+
+    '<div class="stack" data-focus="'+state.bpFocus+'">'+layers+'</div>';
+}
+function setPath(p){ state.bpPath=p; state.bpOpen=0; render(); }
+function toggleLayer(i){ state.bpOpen = state.bpOpen===i ? null : i; render(); }
+function toggleFocus(){ state.bpFocus=!state.bpFocus; render(); }
+
+/* =============== DRILLS =============== */
+function renderDrills(){
+  const head = '<div class="view-head"><span class="kicker">Mode 03 &middot; Active recall</span><h2>Interview Drills</h2>'+
+    '<p>Thirty-two applied judgement questions across all six areas. Reading the library is forgettable; retrieving under pressure is what sticks. Wrong answers are the point &mdash; the results screen shows exactly which area is weakest.</p></div>';
+
+  if(state.quizDone) return head + renderResults();
+
+  const qi = state.quizOrder[state.quizIndex];
+  const s = SCENARIOS[qi];
+  const ans = state.quizAnswered;
+  const pct = Math.round((state.quizIndex/SCENARIOS.length)*100);
+
+  const opts = s.options.map((o,i)=>{
+    let cls="opt";
+    if(ans!==null){ if(i===s.correct) cls+=" correct"; else if(i===ans) cls+=" wrong"; }
+    const mark = ans!==null ? (i===s.correct?"✓":(i===ans?"✗":String.fromCharCode(65+i))) : String.fromCharCode(65+i);
+    return '<button class="'+cls+'" '+(ans!==null?"disabled":"")+' onclick="answerQuiz('+i+')"><span class="letter">'+mark+'</span><span>'+esc(o)+'</span></button>';
+  }).join("");
+
+  const why = ans!==null ? '<div class="why"><span class="kicker">'+(ans===s.correct?"✓ Correct":"✗ Not quite")+' &middot; '+esc(CATS[s.cat].label)+'</span>'+esc(s.why)+'</div>'+
+    '<div class="btn-row"><button class="btn" onclick="nextQuiz()">'+(state.quizIndex===SCENARIOS.length-1?"See results":"Next question")+' '+ARROW+'</button></div>' : "";
+
+  return head + '<div class="quiz-wrap">'+
+    '<div class="quiz-bar"><span>Question '+(state.quizIndex+1)+' / '+SCENARIOS.length+'</span><span>Score '+state.quizScore+'</span></div>'+
+    '<div class="prog"><span style="width:'+pct+'%"></span></div>'+
+    '<p class="q-text">'+esc(s.q)+'</p>'+
+    '<div class="opts">'+opts+'</div>'+why+'</div>';
+}
+
+function answerQuiz(i){
+  if(state.quizAnswered!==null) return;
+  const s = SCENARIOS[state.quizOrder[state.quizIndex]];
+  state.quizAnswered=i;
+  const ok = i===s.correct;
+  if(ok) state.quizScore++;
+  state.quizHistory.push({q:s.q, ok, cat:s.cat, correct:s.options[s.correct], why:s.why});
+  render();
+}
+function nextQuiz(){
+  if(state.quizIndex===SCENARIOS.length-1){ state.quizDone=true; }
+  else { state.quizIndex++; state.quizAnswered=null; }
+  render();
+}
+function restartQuiz(){ resetQuiz(); render(); }
+
+function renderResults(){
+  const total = SCENARIOS.length, sc = state.quizScore;
+  const pct = Math.round((sc/total)*100);
+  const verdict = pct>=85 ? "Interview-ready on the concepts. Move your reps to the Answer Vault and mocks."
+    : pct>=65 ? "Solid base with real gaps. Work the weakest two areas below before your next mock."
+    : "Foundations still shaky. Re-read those categories in the library, then run this again tomorrow.";
+  const colour = pct>=85 ? "var(--ai)" : pct>=65 ? "var(--alad)" : "var(--pm)";
+
+  const byCat = {};
+  state.quizHistory.forEach(h=>{ if(!byCat[h.cat]) byCat[h.cat]={ok:0,n:0}; byCat[h.cat].n++; if(h.ok) byCat[h.cat].ok++; });
+  const bars = Object.keys(CATS).filter(k=>byCat[k]).map(k=>{
+    const b=byCat[k], p=Math.round((b.ok/b.n)*100);
+    return '<div class="bd-row"><span class="nm">'+CATS[k].icon+' '+esc(CATS[k].label)+'</span>'+
+      '<span class="bd-bar"><span style="width:'+p+'%; background:var(--'+k+')"></span></span>'+
+      '<span class="sc">'+b.ok+'/'+b.n+'</span></div>';
+  }).join("");
+
+  const missed = state.quizHistory.filter(h=>!h.ok);
+  const missHtml = missed.length ? missed.map(h=>
+    '<div class="miss"><p class="mq">'+esc(h.q)+'</p><p class="ma">→ '+esc(h.correct)+'</p><p class="mw">'+esc(h.why)+'</p></div>').join("")
+    : '<div class="miss"><p class="mw">Nothing missed. Run it again with a fresh shuffle, then move to the Answer Vault.</p></div>';
+
+  return '<div class="quiz-wrap">'+
+    '<div class="score-hero"><div class="num" style="color:'+colour+'">'+sc+'<span style="font-size:26px; color:var(--ink-soft)">/'+total+'</span></div>'+
+    '<p class="sub">'+esc(verdict)+'</p></div>'+
+    '<div class="sec"><span class="kicker">Where you stand by area</span>'+bars+'</div>'+
+    '<div class="sec" style="margin-top:24px"><span class="kicker">Review &mdash; '+missed.length+' missed</span>'+missHtml+'</div>'+
+    '<div class="btn-row"><button class="btn" onclick="restartQuiz()">Run again, reshuffled</button>'+
+    '<button class="btn ghost" onclick="goto(\'library\')">Back to the library</button></div></div>';
+}
+
+/* =============== VAULT =============== */
+function renderVault(){
+  const cats = ["all"].concat([...new Set(VAULT.map(v=>v.cat))]);
+  const pills = cats.map(c=>'<button class="pill" data-cat="'+(c==="all"?"all":"")+'" data-active="'+(state.vaultCat===c)+'" onclick="setVaultCat(\''+c+'\')">'+(c==="all"?"All questions":esc(c))+' <span class="count">'+(c==="all"?VAULT.length:VAULT.filter(v=>v.cat===c).length)+'</span></button>').join("");
+  const list = VAULT.map((v,i)=>({v,i})).filter(({v})=>state.vaultCat==="all"||v.cat===state.vaultCat);
+
+  const items = list.map(({v,i})=>{
+    const open = state.vaultOpen===i;
+    let body="";
+    if(open){
+      body = '<div class="vq-body">'+
+        '<div class="sec"><span class="kicker">Open with this</span><div class="open-line">'+esc(v.open)+'</div></div>'+
+        '<div class="sec"><span class="kicker">The structure</span><ol class="frame-list">'+v.frame.map(f=>'<li>'+esc(f)+'</li>').join("")+'</ol></div>'+
+        '<div class="sec"><span class="kicker">Lines worth actually saying</span><ul class="say-list">'+v.say.map(s=>'<li>'+esc(s)+'</li>').join("")+'</ul></div>'+
+        '<div class="sec"><div class="trap"><strong>The trap:</strong> '+esc(v.trap)+'</div></div>'+
+        (v.yours?'<div class="sec"><div class="yours"><strong>This part is yours:</strong> '+esc(v.yours)+'</div></div>':"")+
+      '</div>';
+    }
+    return '<div class="vq'+(open?" open":"")+'">'+
+      '<button class="vq-head" onclick="toggleVault('+i+')" aria-expanded="'+open+'">'+
+        '<span class="q-ico">'+v.ico+'</span><span>'+esc(v.q)+'</span><span class="plus">+</span></button>'+body+'</div>';
+  }).join("");
+
+  return '<div class="view-head"><span class="kicker">Mode 04 &middot; Rehearsal</span><h2>Answer Vault</h2>'+
+    '<p>The questions this role actually asks, each with an opening line, a structure to hold under pressure, specific phrases that signal seniority, and the trap that sinks most candidates. Leadership answers are deliberately incomplete &mdash; those are yours to fill with real experience, never with invented specifics.</p></div>'+
+    '<div class="note"><span class="ni">⚠️</span><div><strong>Read this before you use the leadership section:</strong> every story you tell must be defensible under a follow-up question. A fabricated number or scaled-up scope collapses the moment an interviewer pulls the thread, and it costs you the whole loop, not just the question.</div></div>'+
+    '<div class="pill-row">'+pills+'</div>'+
+    '<p class="result-count">'+list.length+' of '+VAULT.length+' questions</p>'+
+    '<div class="vault-list">'+items+'</div>';
+}
+function setVaultCat(c){ state.vaultCat=c; state.vaultOpen=null; render(); }
+function toggleVault(i){ state.vaultOpen = state.vaultOpen===i ? null : i; render(); }
+
+/* =============== ROADMAP =============== */
+function renderRoadmap(){
+  const months = PLAN.map(m=>
+    '<section class="month"><div class="month-head"><span class="mtag">'+esc(m.tag)+'</span><h3>'+esc(m.title)+'</h3></div>'+
+    '<p>'+esc(m.intent)+'</p><div class="weeks">'+
+    m.weeks.map(w=>'<article class="week"><span class="wk">'+esc(w.wk)+'</span><h4>'+esc(w.h)+'</h4>'+
+      '<ul>'+w.pts.map(p=>'<li>'+esc(p)+'</li>').join("")+'</ul>'+
+      '<div class="out"><b>Output</b>'+esc(w.out)+'</div></article>').join("")+
+    '</div></section>').join("");
+
+  const proj = '<section class="project"><span class="kicker">The one thing that moves the needle</span>'+
+    '<h3>'+esc(PROJECT.title)+'</h3><p>'+esc(PROJECT.blurb)+'</p>'+
+    '<div class="proj-grid">'+PROJECT.cols.map(c=>
+      '<div class="lb-box"><span class="kicker">'+esc(c.k)+'</span><ul>'+c.items.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul></div>').join("")+
+    '</div></section>';
+
+  return '<div class="view-head"><span class="kicker">Mode 05 &middot; Plan</span><h2>The 12-Week Plan</h2>'+
+    '<p>Three months, twelve weeks, one output per week. The sequence matters: technical foundation first because it is the loudest gap, then the flagship build because it is the strongest evidence, then domain and reps because they only pay off once the substance is there.</p></div>'+
+    '<div class="note"><span class="ni">🧭</span><div><strong>The positioning shift this plan serves:</strong> stop telling a business-analyst-to-product-manager story. Tell an enterprise technology and transformation story that arrives at data and AI platform product management. The goal is not to become a better generic PM in twelve weeks &mdash; it is to become a credible enterprise data and AI platform PM who happens to have eight years of enterprise transformation behind them.</div></div>'+
+    months + proj;
+}
+
+/* =============== SHELL =============== */
+function goto(v){ state.view=v; state.openIdx=null; renderModal(); render(); window.scrollTo({top:0,behavior:"smooth"}); }
+
+function render(keepFocus){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active", t.dataset.view===state.view));
+  main.innerHTML =
+    state.view==="library"   ? renderLibrary()  :
+    state.view==="blueprint" ? renderBlueprint():
+    state.view==="drills"    ? renderDrills()   :
+    state.view==="vault"     ? renderVault()    : renderRoadmap();
+  if(keepFocus){
+    const inp = document.getElementById("searchInput");
+    if(inp){ inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
+  }
+}
+
+document.querySelectorAll(".tab").forEach(t=>{
+  t.addEventListener("click", ()=>goto(t.dataset.view));
+});
+
+(function syncBadges(){
+  const b = document.querySelectorAll(".badges .badge");
+  if(b[0]) b[0].textContent = "📚 " + ENTRIES.length + " concepts";
+  if(b[1]) b[1].textContent = "🎯 " + SCENARIOS.length + " drills";
+  if(b[2]) b[2].textContent = "🎤 " + VAULT.length + " answer skeletons";
+})();
+
+render();
+</script>
+</body>
+</html>
