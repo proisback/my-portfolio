@@ -134,19 +134,19 @@ html:not(.js) .gauge-arc { stroke-dashoffset: calc(100 - var(--fill)); }
 html:not(.js) .gauge-needle { transform: rotate(var(--a)); }
 
 /* Night cards (3D at night) */
-html.has-3d .seg--cockpit .card {
+html.is-night .seg--cockpit .card {
   background: rgba(14, 18, 34, 0.9);
   border-color: rgba(255, 255, 255, 0.12);
   color: var(--flap-ink);
 }
-html.has-3d .seg--cockpit .card-head,
-html.has-3d .seg--cockpit .card-role span,
-html.has-3d .seg--cockpit .gauge-label,
-html.has-3d .seg--cockpit .quote-role { color: rgba(244, 238, 221, 0.66); }
-html.has-3d .seg--cockpit .card-code { background: var(--marigold); color: var(--ink); }
-html.has-3d .seg--cockpit .quote { background: rgba(245, 201, 76, 0.1); }
-html.has-3d .seg--cockpit .gauge-ring { fill: rgba(255, 255, 255, 0.04); }
-html.has-3d .seg--cockpit .card-reg { border-color: rgba(255, 210, 122, 0.6); }
+html.is-night .seg--cockpit .card-head,
+html.is-night .seg--cockpit .card-role span,
+html.is-night .seg--cockpit .gauge-label,
+html.is-night .seg--cockpit .quote-role { color: rgba(244, 238, 221, 0.66); }
+html.is-night .seg--cockpit .card-code { background: var(--marigold); color: var(--ink); }
+html.is-night .seg--cockpit .quote { background: rgba(245, 201, 76, 0.1); }
+html.is-night .seg--cockpit .gauge-ring { fill: rgba(255, 255, 255, 0.04); }
+html.is-night .seg--cockpit .card-reg { border-color: rgba(255, 210, 122, 0.6); }
 
 /* ---------- Legs: in-flight captions ---------- */
 .seg--leg { min-height: 118vh; padding: 0 var(--gutter); }
@@ -191,12 +191,12 @@ html.has-3d .seg--cockpit .card-reg { border-color: rgba(255, 210, 122, 0.6); }
 .js .seg--thesis .thesis .line { opacity: 0; transform: translateY(0.4em); transition: opacity 0.8s var(--ease-out), transform 1s var(--ease-out); }
 .js .seg--thesis.is-in .thesis .line { opacity: 1; transform: none; }
 .js .seg--thesis.is-in .thesis .line--marigold { transition-delay: 0.35s; }
-html.has-3d .seg--thesis { color: var(--ivory); }
-html.has-3d .seg--thesis .thesis { text-shadow: 0 4px 40px rgba(6, 10, 24, 0.55); }
-html.has-3d .seg--thesis .thesis .line--marigold { color: var(--marigold); }
-html.has-3d .seg--thesis .card-head,
-html.has-3d .seg--thesis .thesis-wrap > p:not(.card-head) { color: rgba(253, 251, 244, 0.78); }
-html.has-3d .seg--thesis .card-code { background: var(--marigold); color: var(--ink); }
+html.is-night .seg--thesis { color: var(--ivory); }
+html.is-night .seg--thesis .thesis { text-shadow: 0 4px 40px rgba(6, 10, 24, 0.55); }
+html.is-night .seg--thesis .thesis .line--marigold { color: var(--marigold); }
+html.is-night .seg--thesis .card-head,
+html.is-night .seg--thesis .thesis-wrap > p:not(.card-head) { color: rgba(253, 251, 244, 0.78); }
+html.is-night .seg--thesis .card-code { background: var(--marigold); color: var(--ink); }
 
 /* ---------- HUD ---------- */
 .hud {

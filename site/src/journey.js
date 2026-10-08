@@ -86,7 +86,7 @@ function initNav() {
   if (!nav) return;
   const dark = () => [
     ...document.querySelectorAll('#board, #contact'),
-    ...(document.documentElement.classList.contains('has-3d') ? document.querySelectorAll('#cockpit, #thesis') : []),
+    ...(document.documentElement.classList.contains('is-night') ? document.querySelectorAll('#cockpit, #thesis') : []),
   ];
   let tick = false;
   const update = () => {

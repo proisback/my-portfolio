@@ -208,10 +208,13 @@ export async function startFlight({ tier, canvas, stage, journey, veil, onFail, 
     const veilNight = U.uNight.value > 0.5;
     if (veilNight !== lastVeilNight) {
       veil.style.background = veilNight ? '#141B33' : '';
+      // Night styling for the cockpit card and thesis follows the actual sky,
+      // so their light text only appears over the dark scene.
+      document.documentElement.classList.toggle('is-night', veilNight);
       lastVeilNight = veilNight;
     }
 
-    const labelAlpha = (1 - S.veil) * (1 - smooth(0.05, 0.4, S.cockpit));
+    const labelAlpha = (1 - S.veil) * (1 - smooth(0.05, 0.4, S.cockpit)) * (1 - smooth(0, 15, S.waveR));
     for (const l of labels) {
       proj.copy(l.world).project(camera);
       const dist = camera.position.distanceTo(l.world);
@@ -294,7 +297,7 @@ export async function startFlight({ tier, canvas, stage, journey, veil, onFail, 
     renderer.dispose();
     labelLayer.remove();
     stage.classList.remove('is-ready');
-    document.documentElement.classList.remove('has-3d');
+    document.documentElement.classList.remove('has-3d', 'is-night');
   }
 
   start();
