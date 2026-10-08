@@ -11,7 +11,7 @@ import { buildPlane } from './plane.js';
 import { buildClouds } from './clouds.js';
 import { buildTrails } from './trails.js';
 import { buildPath, planePose, createPose, composeCamera, BANKS, P } from './path.js';
-import { S, buildChoreography, destroyChoreography } from './choreography.js';
+import { S, buildChoreography, destroyChoreography, seekJourney, beatRanges } from './choreography.js';
 import { CITY } from './places.js';
 
 const LABELS = [
@@ -49,7 +49,8 @@ function isSoftware(gl) {
   return /swiftshader|llvmpipe|softpipe|basic render|software/i.test(name);
 }
 
-export async function startFlight({ tier, canvas, stage, journey, veil, onFail, forced = false }) {
+export async function startFlight(opts) {
+  const { tier, canvas, forced = false } = opts;
   setQuality(tier);
   const renderer = new WebGLRenderer({
     canvas,
@@ -58,10 +59,26 @@ export async function startFlight({ tier, canvas, stage, journey, veil, onFail, 
     powerPreference: 'high-performance',
     stencil: false,
   });
-  if (!forced && isSoftware(renderer.getContext())) {
+  // A GPU reset during the async build must still end in the fallback.
+  let lostEarly = false;
+  const onEarlyLost = (e) => {
+    e.preventDefault();
+    lostEarly = true;
+  };
+  canvas.addEventListener('webglcontextlost', onEarlyLost);
+  try {
+    if (!forced && isSoftware(renderer.getContext())) throw new Error('software-webgl');
+    return await runFlight(renderer, opts, () => lostEarly);
+  } catch (err) {
     renderer.dispose();
-    throw new Error('software-webgl');
+    if (!renderer.getContext().isContextLost()) renderer.forceContextLoss();
+    throw err;
+  } finally {
+    canvas.removeEventListener('webglcontextlost', onEarlyLost);
   }
+}
+
+async function runFlight(renderer, { tier, canvas, stage, journey, veil, onFail }, wasLost) {
   let dprCap = tier === 'full' ? 1.5 : 1.25;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
 
@@ -83,13 +100,13 @@ export async function startFlight({ tier, canvas, stage, journey, veil, onFail, 
   const trails = buildTrails();
   scene.add(sky, ground, route, cities.group, aircraft.group, clouds, smoke, shadow, trails.group);
   await yieldToMain();
-  // Compile shaders off the main thread where KHR_parallel_shader_compile exists.
   // Compile every shader now (cockpit included) so nothing stalls mid-flight;
   // off the main thread where KHR_parallel_shader_compile exists.
   aircraft.cockpit.visible = true;
   if (renderer.extensions.has('KHR_parallel_shader_compile')) await renderer.compileAsync(scene, camera).catch(() => {});
   else renderer.compile(scene, camera);
   aircraft.cockpit.visible = false;
+  if (wasLost()) throw new Error('context-lost');
 
   const pose = createPose();
   const waveCenter = curve.getPoint(P(35.3));
@@ -113,6 +130,8 @@ export async function startFlight({ tier, canvas, stage, journey, veil, onFail, 
   let shiftPx = 0;
   let appliedShift = NaN;
   function resize() {
+    // Re-apply DPR too: browser zoom or a move to another monitor changes it.
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
     width = stage.clientWidth;
     height = stage.clientHeight;
     shiftPx = width >= 900 ? width * 0.15 : 0;
@@ -134,12 +153,14 @@ export async function startFlight({ tier, canvas, stage, journey, veil, onFail, 
     lastW = window.innerWidth;
     clearTimeout(rebuildTimer);
     rebuildTimer = setTimeout(() => {
+      if (dead) return;
       buildChoreography(journey);
       ScrollTrigger.refresh();
     }, 180);
   };
   window.addEventListener('resize', onResize);
   document.fonts?.ready.then(() => {
+    if (dead) return;
     buildChoreography(journey);
     ScrollTrigger.refresh();
   });
@@ -167,8 +188,15 @@ export async function startFlight({ tier, canvas, stage, journey, veil, onFail, 
   function frame() {
     raf = requestAnimationFrame(frame);
     const now = performance.now();
-    const dt = Math.min((now - last) / 1000, 0.05);
+    const raw = (now - last) / 1000;
     last = now;
+    // Animation steps are clamped; the guard sees the real frame time (minus
+    // long pauses) so a device stuck below 20 fps really does fall back.
+    step(Math.min(raw, 0.05));
+    guard(Math.min(raw, 0.25));
+  }
+
+  function step(dt) {
     time += dt;
 
     U.uTime.value = time;
@@ -239,7 +267,9 @@ export async function startFlight({ tier, canvas, stage, journey, veil, onFail, 
       stage.classList.add('is-ready');
       document.documentElement.classList.add('has-3d');
     }
+  }
 
+  function guard(dt) {
     warm += dt;
     if (warm > 2) {
       sample += dt;
@@ -259,8 +289,18 @@ export async function startFlight({ tier, canvas, stage, journey, veil, onFail, 
     }
   }
 
+  // Deterministic single-frame render (used to capture the launch video):
+  // stops the live loop and draws the current state S at an exact time.
+  let capturing = false;
+  function renderAt(t, dt = 1 / 30) {
+    stop();
+    capturing = true;
+    time = t - dt;
+    step(dt);
+  }
+
   function start() {
-    if (raf || dead) return;
+    if (raf || dead || capturing) return;
     last = performance.now();
     raf = requestAnimationFrame(frame);
   }
@@ -270,9 +310,14 @@ export async function startFlight({ tier, canvas, stage, journey, veil, onFail, 
   }
 
   // Render only while the journey is on screen; pause the moment it leaves.
-  const io = new IntersectionObserver(([e]) => (e.isIntersecting && !document.hidden ? start() : stop()));
+  let onScreen = false;
+  const io = new IntersectionObserver((entries) => {
+    onScreen = entries[entries.length - 1].isIntersecting;
+    if (onScreen && !document.hidden) start();
+    else stop();
+  });
   io.observe(journey);
-  const onVis = () => (document.hidden ? stop() : start());
+  const onVis = () => (onScreen && !document.hidden ? start() : stop());
   document.addEventListener('visibilitychange', onVis);
 
   const onLost = (e) => {
@@ -284,6 +329,7 @@ export async function startFlight({ tier, canvas, stage, journey, veil, onFail, 
   function dispose() {
     dead = true;
     stop();
+    clearTimeout(rebuildTimer);
     io.disconnect();
     document.removeEventListener('visibilitychange', onVis);
     window.removeEventListener('resize', onResize);
@@ -295,11 +341,13 @@ export async function startFlight({ tier, canvas, stage, journey, veil, onFail, 
     });
     disposeShared();
     renderer.dispose();
+    // Free the GPU context itself, not just the resources in it.
+    if (!renderer.getContext().isContextLost()) renderer.forceContextLoss();
     labelLayer.remove();
     stage.classList.remove('is-ready');
     document.documentElement.classList.remove('has-3d', 'is-night');
   }
 
   start();
-  return { dispose, S };
+  return { dispose, S, renderAt, seek: seekJourney, beats: () => beatRanges(journey) };
 }

@@ -130,6 +130,17 @@ export function buildChoreography(journey) {
   return st;
 }
 
+// For deterministic capture: detach from scroll and jump the timeline to p.
+export function seekJourney(p) {
+  st?.disable(false);
+  tl?.progress(Math.min(1, Math.max(0, p)), false);
+}
+
+// Beat windows as fractions of the journey (same measure the timeline uses).
+export function beatRanges(journey) {
+  return measure(journey);
+}
+
 export function destroyChoreography() {
   st?.kill();
   tl?.kill();
