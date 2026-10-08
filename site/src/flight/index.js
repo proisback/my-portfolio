@@ -9,6 +9,7 @@ import { buildSky } from './sky.js';
 import { buildCities, CHIMNEYS, XLRI, LIGHTHOUSE } from './cities.js';
 import { buildPlane } from './plane.js';
 import { buildClouds } from './clouds.js';
+import { buildTrails } from './trails.js';
 import { buildPath, planePose, createPose, composeCamera, BANKS, P } from './path.js';
 import { S, buildChoreography, destroyChoreography } from './choreography.js';
 import { CITY } from './places.js';
@@ -79,7 +80,8 @@ export async function startFlight({ tier, canvas, stage, journey, veil, onFail, 
   const aircraft = buildPlane();
   const { clouds, smoke } = buildClouds(tier, BANKS, CHIMNEYS);
   const shadow = shadowMesh();
-  scene.add(sky, ground, route, cities.group, aircraft.group, clouds, smoke, shadow);
+  const trails = buildTrails();
+  scene.add(sky, ground, route, cities.group, aircraft.group, clouds, smoke, shadow, trails.group);
   await yieldToMain();
   // Compile shaders off the main thread where KHR_parallel_shader_compile exists.
   if (renderer.extensions.has('KHR_parallel_shader_compile')) {
@@ -181,6 +183,7 @@ export async function startFlight({ tier, canvas, stage, journey, veil, onFail, 
     aircraft.group.position.copy(pose.pos);
     aircraft.group.quaternion.copy(pose.quatRolled);
     aircraft.update(time, S.cockpit);
+    trails.update(curve, S.t, pose, S.cockpit);
     shadow.position.set(pose.pos.x, 0.03, pose.pos.z);
     shadow.scale.setScalar(0.9 + pose.pos.y * 0.25);
     shadow.material.uniforms.uAlpha.value = 0.32 * (1 - smooth(0.5, 9, pose.pos.y)) * (1 - S.cockpit);
