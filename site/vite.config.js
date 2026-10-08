@@ -12,10 +12,15 @@ const LEGACY = [
   'PRDs',
   'field-guides',
   'products',
+  'resume',
   'images/comic-story',
   'Prateek-Mehta-AI-PM-Resume.pdf',
   'Prateek-Mehta-PM-Resume.pdf',
+  'Prateek-Mehta-Product-Resume.pdf',
+  'Resume.pdf',
   'rethink-buildathon-2nd-place.pdf',
+  'brand-visualizer-galpal.html',
+  '.nojekyll',
 ];
 
 const MIME = {
@@ -101,6 +106,8 @@ export default defineConfig({
   plugins: [contentHtml(), legacyAssets()],
   build: {
     target: 'es2022',
+    // The 3D chunk (three + gsap + scene) is ~200 KB gzipped and lazy-loaded.
+    chunkSizeWarningLimit: 800,
     assetsInlineLimit: 2048,
     rollupOptions: { input: pageInputs() },
   },

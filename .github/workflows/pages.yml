@@ -1,4 +1,4 @@
-name: Deploy static site to Pages
+name: Deploy site to Pages
 
 on:
   push:
@@ -17,14 +17,29 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Install
+        working-directory: site
+        run: npm ci
+
+      # Generates work/, read/ and comic/ from src/content.js, builds with
+      # Vite, and copies the old site's PRDs, field guides and PDFs into dist
+      # so their URLs keep working.
+      - name: Build
+        working-directory: site
+        run: npm run build
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
@@ -32,9 +47,15 @@ jobs:
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Publish the repository root as-is (plain static site, .nojekyll present).
-          path: '.'
+          path: site/dist
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
