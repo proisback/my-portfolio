@@ -1,0 +1,73 @@
+/* Design tokens. Paper + blueprint ink for the ops years, marigold for 2026.
+   Carried over from the previous site (styles-v3.css) and extended. */
+:root {
+  /* Paper */
+  --paper: #F5EFE1;
+  --paper-2: #EFE6D3;
+  --paper-3: #E6DBC4;
+  --ivory: #FDFBF4;
+
+  /* Ink */
+  --ink: #1F1A1D;
+  --ink-2: #5A524B;
+  --ink-3: #8C8478;
+  --rule: rgba(31, 26, 29, 0.16);
+  --hair: rgba(31, 26, 29, 0.08);
+
+  /* Blueprint */
+  --blue: #22304A;
+  --blue-2: rgba(34, 48, 74, 0.6);
+  --blue-3: rgba(34, 48, 74, 0.28);
+  --grid: rgba(34, 48, 74, 0.07);
+
+  /* Marigold */
+  --marigold: #F5C94C;
+  --marigold-deep: #C98A12;
+  --marigold-soft: #FFF0B3;
+
+  /* Night (board, contact) */
+  --night: #12172A;
+  --night-2: #1B2238;
+  --night-3: #273050;
+  --flap: #0E1220;
+  --flap-ink: #F4EEDD;
+  --lamp: #FFD27A;
+
+  /* Pastel accents (status chips) */
+  --mint: #D6E4C8;
+  --sky: #D0DAE8;
+  --peach: #F7D4C3;
+  --lilac: #DDD1E6;
+
+  /* Type */
+  --font: 'Sora', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: clamp(1.35rem, 1.1rem + 0.9vw, 1.75rem);
+  --fs-2xl: clamp(1.9rem, 1.4rem + 2vw, 2.8rem);
+  --fs-hero: clamp(3rem, 1.6rem + 6.4vw, 7.25rem);
+
+  /* Space + shape */
+  --gutter: clamp(16px, 4vw, 48px);
+  --max: 1200px;
+  --r-sm: 8px;
+  --r: 14px;
+  --r-lg: 22px;
+  --r-pill: 999px;
+  --nav-h: 64px;
+
+  /* Elevation */
+  --shadow: 0 1px 0 var(--hair), 0 12px 32px rgba(31, 26, 29, 0.07);
+  --shadow-lift: 0 1px 0 var(--hair), 0 22px 60px rgba(31, 26, 29, 0.14);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --t-fast: 160ms;
+  --t: 320ms;
+  --t-slow: 700ms;
+}
