@@ -54,8 +54,12 @@ function pageInputs() {
 
 // Serves legacy files during `vite dev`, copies them into dist on build.
 function legacyAssets() {
+  let outDir = resolve(root, 'dist');
   return {
     name: 'legacy-assets',
+    configResolved(config) {
+      outDir = resolve(config.root, config.build.outDir);
+    },
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         let url = decodeURIComponent((req.url || '').split('?')[0]);
@@ -75,7 +79,7 @@ function legacyAssets() {
     closeBundle() {
       for (const p of LEGACY) {
         const src = join(repo, p);
-        if (existsSync(src)) cpSync(src, join(root, 'dist', p), { recursive: true });
+        if (existsSync(src)) cpSync(src, join(outDir, p), { recursive: true });
       }
     },
   };
@@ -95,11 +99,14 @@ function contentHtml() {
       const mod = server
         ? await server.ssrLoadModule('/src/render/index.js')
         : await import(pathToFileURL(resolve(root, 'src/render/index.js')).href + `?t=${Date.now()}`);
-      return html.replace(/<!--@([a-z-]+)-->/g, (m, name) => {
+      const out = html.replace(/<!--@([a-z-]+)-->/g, (m, name) => {
         const fn = mod.blocks[name];
         if (!fn) throw new Error(`[content-html] unknown block "${name}" in ${ctx.filename}`);
         return fn();
       });
+      // Same rule as the generated pages: no em-dashes anywhere in the copy.
+      if (out.includes('—')) throw new Error(`[content-html] em-dash found in ${ctx.filename}; remove it from content.js`);
+      return out;
     },
   };
 }

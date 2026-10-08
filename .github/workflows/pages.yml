@@ -3,6 +3,8 @@ name: Deploy site to Pages
 on:
   push:
     branches: [main]
+  # Pull requests only build (and check bundle budgets); nothing deploys.
+  pull_request:
   workflow_dispatch:
 
 # Allow the workflow to publish to GitHub Pages.
@@ -13,7 +15,7 @@ permissions:
 
 # One deploy at a time; don't cancel an in-progress publish.
 concurrency:
-  group: pages
+  group: pages-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -41,15 +43,22 @@ jobs:
         working-directory: site
         run: npm run build
 
+      - name: Check bundle budgets
+        working-directory: site
+        run: npm run size
+
       - name: Configure Pages
+        if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v5
 
       - name: Upload site artifact
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
           path: site/dist
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:
