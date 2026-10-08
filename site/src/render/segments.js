@@ -1,5 +1,10 @@
-import { SEGMENTS, TESTIMONIALS, CITIES, STATS } from '../content.js';
+﻿import { SEGMENTS, TESTIMONIALS, CITIES, STATS } from '../content.js';
 import { esc, link, ICON } from './shared.js';
+
+// Which HUD stop each segment belongs to, and the year shown on the odometer.
+const HUD_INDEX = { mumbai: 0, tcs: 0, 'leg-1': 1, jamshedpur: 1, 'leg-2': 2, chennai: 2, 'leg-3': 3, marsh: 3, turn: 3, cockpit: 4, thesis: 4 };
+const yearOf = (s) => String(s.year || s.years || '').match(/\d{4}/)?.[0] || '';
+const segData = (s) => `data-year="${yearOf(s)}" data-hud="${HUD_INDEX[s.id] ?? 0}"`;
 
 function quote(key) {
   const t = TESTIMONIALS[key];
@@ -22,7 +27,7 @@ function metrics(list) {
 function gauges() {
   const fills = [0.8, 0.9, 0.3, 0.7];
   return `<ul class="gauges" aria-label="Instrument panel">${STATS.map((s, i) => {
-    const a = -210 + fills[i] * 240;
+    const a = -130 + fills[i] * 260;
     return `<li class="gauge">
       <svg viewBox="0 0 100 100" aria-hidden="true">
         <circle class="gauge-ring" cx="50" cy="50" r="42"/>
@@ -49,7 +54,7 @@ function stop(s) {
   if (s.thesis) {
     const [a, b] = s.title.split('. ');
     return `
-  <section class="seg seg--thesis" id="${s.id}" data-beat="${s.beat}" aria-labelledby="${s.id}-title">
+  <section class="seg seg--thesis" id="${s.id}" data-beat="${s.beat}" ${segData(s)} aria-labelledby="${s.id}-title">
     <div class="thesis-wrap">
       <p class="card-head mono"><span class="card-code">${esc(city.code)}</span><span>${esc(s.label)}</span><span>${esc(s.years)}</span></p>
       <h2 class="thesis" id="${s.id}-title"><span class="line">${esc(a)}.</span> <span class="line line--marigold">${esc(b)}</span></h2>
@@ -60,7 +65,7 @@ function stop(s) {
   }
 
   return `
-  <section class="seg seg--stop${s.gauges ? ' seg--cockpit' : ''}" id="${s.id}" data-beat="${s.beat}" data-city="${s.city}" aria-labelledby="${s.id}-title">
+  <section class="seg seg--stop${s.gauges ? ' seg--cockpit' : ''}" id="${s.id}" data-beat="${s.beat}" data-city="${s.city}" ${segData(s)} aria-labelledby="${s.id}-title">
     <article class="card">
       <p class="card-head mono"><span class="card-code">${esc(city.code)}</span><span class="card-city">${esc(s.label)}</span><span class="card-years">${esc(s.years)}</span></p>
       <h2 class="card-title" id="${s.id}-title">${esc(s.title)}</h2>
@@ -79,7 +84,7 @@ function leg(s) {
   const from = CITIES[s.from];
   const to = CITIES[s.to];
   return `
-  <section class="seg seg--leg" id="${s.id}" data-beat="${s.beat}" aria-label="Flight from ${esc(from.name)} to ${esc(to.name)}, ${esc(s.year)}">
+  <section class="seg seg--leg" id="${s.id}" data-beat="${s.beat}" ${segData(s)} aria-label="Flight from ${esc(from.name)} to ${esc(to.name)}, ${esc(s.year)}">
     <p class="leg-caption mono">
       <span class="leg-port"><b>${esc(from.code)}</b>${esc(from.name)}</span>
       <span class="leg-line" aria-hidden="true">${ICON.plane}</span>
@@ -91,7 +96,7 @@ function leg(s) {
 
 export function segments() {
   return `
-<div class="flight" id="flight" aria-label="The flight: Prateek's career, city by city">
+<div class="track" id="flight" aria-label="The flight: Prateek's career, city by city">
   ${SEGMENTS.map((s) => (s.leg ? leg(s) : stop(s))).join('')}
 </div>`;
 }
