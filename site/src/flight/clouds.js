@@ -1,4 +1,4 @@
-﻿import {
+import {
   PlaneGeometry, InstancedBufferGeometry, InstancedBufferAttribute, Mesh, ShaderMaterial, Vector3,
 } from 'three';
 import { NOISE, REVEAL_UNIFORMS, REVEAL } from './glsl.js';

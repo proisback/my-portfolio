@@ -1,4 +1,4 @@
-﻿import {
+import {
   LatheGeometry, ExtrudeGeometry, Shape, CylinderGeometry, BoxGeometry, SphereGeometry,
   Vector2, Group, Mesh, BackSide, BufferAttribute,
 } from 'three';

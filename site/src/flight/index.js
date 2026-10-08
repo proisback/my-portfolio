@@ -1,4 +1,4 @@
-﻿import {
+import {
   WebGLRenderer, Scene, PerspectiveCamera, Vector3, Mesh, CircleGeometry, ShaderMaterial,
 } from 'three';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';

@@ -1,4 +1,4 @@
-﻿import {
+import {
   ShaderMaterial, BufferGeometry, BufferAttribute, EdgesGeometry, Mesh, LineSegments, Group,
   Matrix4, Vector3, Quaternion, Euler, Color, FrontSide,
 } from 'three';

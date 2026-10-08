@@ -1,4 +1,4 @@
-﻿import { SphereGeometry, CylinderGeometry, TorusGeometry, Group } from 'three';
+import { SphereGeometry, CylinderGeometry, TorusGeometry, Group } from 'three';
 import { Builder } from './materials.js';
 
 // The marigold AI sidekick from the old site's illustrations, built from

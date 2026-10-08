@@ -1,4 +1,4 @@
-﻿// The 2D layer of the journey. Works in every tier, with or without 3D:
+// The 2D layer of the journey. Works in every tier, with or without 3D:
 // card reveals, the HUD (route progress + year odometer), nav state, hero tilt.
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)');

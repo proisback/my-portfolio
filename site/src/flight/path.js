@@ -1,4 +1,4 @@
-﻿import { CatmullRomCurve3, Vector3, Matrix4, Quaternion } from 'three';
+import { CatmullRomCurve3, Vector3, Matrix4, Quaternion } from 'three';
 import { RUNWAY } from './places.js';
 
 // Waypoints (x, altitude, z). Indices are referenced by the choreography,

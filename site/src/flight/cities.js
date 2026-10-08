@@ -1,4 +1,4 @@
-﻿import {
+import {
   BoxGeometry, CylinderGeometry, ConeGeometry, SphereGeometry, TorusGeometry,
   Group, Mesh, ShaderMaterial, AdditiveBlending, Matrix4, Vector3,
 } from 'three';

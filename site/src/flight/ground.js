@@ -1,4 +1,4 @@
-﻿import {
+import {
   PlaneGeometry, Mesh, ShaderMaterial, Color, Vector2, Vector3, Vector4,
   BufferGeometry, BufferAttribute, DoubleSide,
 } from 'three';

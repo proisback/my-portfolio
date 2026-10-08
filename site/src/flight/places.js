@@ -1,4 +1,4 @@
-﻿// World layout. Cities sit where an equirectangular projection of their real
+// World layout. Cities sit where an equirectangular projection of their real
 // coordinates puts them (x = (lon - 79) * 10, z = -(lat - 18) * 10), so the
 // flight directions are true. No country outline is drawn, only local coast.
 import { Vector2, Vector3 } from 'three';

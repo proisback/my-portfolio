@@ -1,4 +1,4 @@
-﻿import { SEGMENTS, TESTIMONIALS, CITIES, STATS } from '../content.js';
+import { SEGMENTS, TESTIMONIALS, CITIES, STATS } from '../content.js';
 import { esc, link, ICON } from './shared.js';
 
 // Which HUD stop each segment belongs to, and the year shown on the odometer.

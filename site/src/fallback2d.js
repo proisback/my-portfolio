@@ -12,9 +12,8 @@ const CITIES = [
 const ROUTE = 'M -61.2 -10.8 Q 2 -52 72 -48 Q 66 4 12.7 49.2 Q -36 40 -61.2 -10.8';
 const PLANE = 'M21 15.5v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V8.5l-8 5v2l8-2.5V18l-2 1.5V21l3.5-1 3.5 1v-1.5L13 18v-5z';
 
-export function startFallback({ stage, journey, animate }) {
+export function startFallback({ stage, animate }) {
   if (!stage || stage.querySelector('.route-map')) return;
-  const ns = 'http://www.w3.org/2000/svg';
   const wrap = document.createElement('div');
   wrap.className = 'route-map' + (animate ? '' : ' route-map--static');
   wrap.innerHTML = `
@@ -45,7 +44,7 @@ export function startFallback({ stage, journey, animate }) {
   const len = route.getTotalLength();
   route.style.strokeDasharray = `${len}`;
   const track = document.getElementById('flight');
-  void ns;
+  if (!track) return;
 
   let ticking = false;
   function update() {
@@ -72,5 +71,4 @@ export function startFallback({ stage, journey, animate }) {
     }
   }, { passive: true });
   update();
-  void journey;
 }
