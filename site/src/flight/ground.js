@@ -33,6 +33,12 @@ float side(vec2 p, vec2 a, vec2 b) {
   return (p.x - a.x) * d.y - (p.y - a.y) * d.x;
 }
 
+float waterLine(float y) {
+  float v = abs(fract(y) - 0.5);
+  float w = fwidth(y);
+  return 1.0 - smoothstep(0.07 - w, 0.07 + w, v);
+}
+
 float coastDistance(vec2 p) {
   float near = 1e5;
   for (int i = 0; i < 3; i++) near = min(near, distance(p, uCity[i].xz));
@@ -66,12 +72,13 @@ void main() {
   float gw = fwidth(p.x) * 1.3;
   float grid = (1.0 - smoothstep(0.0, gw, min(g.x, g.y))) * (1.0 - smoothstep(0.8, 2.5, gw));
 
-  float wy = p.y * 1.5 + sin(p.x * 0.35) * 0.4;
-  float wv = abs(fract(wy) - 0.5);
-  float ww = fwidth(wy);
-  float wline = (1.0 - smoothstep(0.06 - ww, 0.06 + ww, wv)) * water;
+  // Water hatching: ~10px apart on screen at any distance (two blended
+  // power-of-two densities), so close-ups never turn into thick bars.
+  float wy0 = p.y + sin(p.x * 0.35) * 0.27;
+  float wl = log2(max(fwidth(wy0), 1e-5) * 10.0);
+  float wd = exp2(-floor(wl));
+  float wline = mix(waterLine(wy0 * wd), waterLine(wy0 * wd * 0.5), fract(wl)) * water;
   wline *= 0.25 + 0.75 * (1.0 - smoothstep(0.0, 7.0, -cd));
-  wline *= 1.0 - smoothstep(0.18, 0.45, ww);
 
   float cwid = fwidth(cd) * 1.4 + 0.015;
   float coast = 1.0 - smoothstep(0.0, cwid, abs(cd));

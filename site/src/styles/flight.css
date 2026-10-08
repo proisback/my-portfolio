@@ -152,7 +152,7 @@ html.has-3d .seg--cockpit .card-reg { border-color: rgba(255, 210, 122, 0.6); }
 /* ---------- Legs: in-flight captions ---------- */
 .seg--leg { min-height: 118vh; padding: 0 var(--gutter); }
 .leg-caption {
-  position: sticky; top: 44vh;
+  position: sticky; top: calc(var(--nav-h) + 3.5vh);
   width: max-content; max-width: 100%; margin: 0 auto;
   display: flex; align-items: center; gap: clamp(10px, 2vw, 20px);
   padding: 12px 20px; border-radius: var(--r-pill);

@@ -82,9 +82,11 @@ export async function startFlight({ tier, canvas, stage, journey, veil, onFail, 
   scene.add(sky, ground, route, cities.group, aircraft.group, clouds, smoke, shadow);
   await yieldToMain();
   // Compile shaders off the main thread where KHR_parallel_shader_compile exists.
-  aircraft.cockpit.visible = true;
-  await renderer.compileAsync(scene, camera).catch(() => {});
-  aircraft.cockpit.visible = false;
+  if (renderer.extensions.has('KHR_parallel_shader_compile')) {
+    aircraft.cockpit.visible = true;
+    await renderer.compileAsync(scene, camera).catch(() => {});
+    aircraft.cockpit.visible = false;
+  }
 
   const pose = createPose();
   const waveCenter = curve.getPoint(P(35.3));
