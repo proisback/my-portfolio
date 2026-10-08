@@ -133,7 +133,7 @@ export function buildGround(tier) {
       uLamp: { value: PALETTE.lamp },
     },
     vertexShader: groundVert,
-    fragmentShader: groundFrag(tier === 'mobile' ? 4 : 5),
+    fragmentShader: groundFrag(tier === 'mobile' ? 3 : 4),
   });
   const mesh = new Mesh(geo, mat);
   mesh.position.set(10, 0, 10);

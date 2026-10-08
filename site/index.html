@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#F5EFE1">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <!-- Chromium rejects a promise when it skips a cross-document view transition
+       under load; navigation still completes, so don't surface it as an error. -->
+  <script>addEventListener('unhandledrejection',function(e){var r=e.reason;if(r&&r.name==='InvalidStateError'&&/transition/i.test(r.message))e.preventDefault()})</script>
   <!--@head-->
   <script type="module" src="/src/main.js"></script>
 </head>

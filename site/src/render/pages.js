@@ -31,8 +31,14 @@ const ARROW = {
 // transition, so the pass morphs from the departures board instead of also
 // playing its own entrance. Must be a classic head script to run before the
 // first frame (pagereveal fires then).
+// Also swallows the rejection Chromium raises when it skips a cross-document
+// transition (busy main thread): navigation still completes, only the morph
+// is lost, so it isn't an error worth surfacing.
+export const VT_GUARD =
+  "<script>addEventListener('unhandledrejection',function(e){var r=e.reason;if(r&&r.name==='InvalidStateError'&&/transition/i.test(r.message))e.preventDefault()})</script>";
 const VT_HOOK =
-  "<script>addEventListener('pagereveal',function(e){if(e.viewTransition)document.documentElement.classList.add('vt-in')})</script>";
+  "<script>addEventListener('pagereveal',function(e){if(e.viewTransition)document.documentElement.classList.add('vt-in')})</script>" +
+  VT_GUARD;
 
 function lamp(status) {
   return `<span class="pg-lamp pg-lamp--${LAMP[status] || 'live'}" aria-hidden="true"></span>`;

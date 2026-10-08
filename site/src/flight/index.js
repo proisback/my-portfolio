@@ -62,7 +62,7 @@ export async function startFlight({ tier, canvas, stage, journey, veil, onFail, 
     renderer.dispose();
     throw new Error('software-webgl');
   }
-  let dprCap = tier === 'full' ? 2 : 1.5;
+  let dprCap = tier === 'full' ? 1.5 : 1.25;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
 
   const scene = new Scene();
@@ -84,11 +84,12 @@ export async function startFlight({ tier, canvas, stage, journey, veil, onFail, 
   scene.add(sky, ground, route, cities.group, aircraft.group, clouds, smoke, shadow, trails.group);
   await yieldToMain();
   // Compile shaders off the main thread where KHR_parallel_shader_compile exists.
-  if (renderer.extensions.has('KHR_parallel_shader_compile')) {
-    aircraft.cockpit.visible = true;
-    await renderer.compileAsync(scene, camera).catch(() => {});
-    aircraft.cockpit.visible = false;
-  }
+  // Compile every shader now (cockpit included) so nothing stalls mid-flight;
+  // off the main thread where KHR_parallel_shader_compile exists.
+  aircraft.cockpit.visible = true;
+  if (renderer.extensions.has('KHR_parallel_shader_compile')) await renderer.compileAsync(scene, camera).catch(() => {});
+  else renderer.compile(scene, camera);
+  aircraft.cockpit.visible = false;
 
   const pose = createPose();
   const waveCenter = curve.getPoint(P(35.3));
@@ -265,7 +266,8 @@ export async function startFlight({ tier, canvas, stage, journey, veil, onFail, 
     raf = 0;
   }
 
-  const io = new IntersectionObserver(([e]) => (e.isIntersecting && !document.hidden ? start() : stop()), { rootMargin: '100px' });
+  // Render only while the journey is on screen; pause the moment it leaves.
+  const io = new IntersectionObserver(([e]) => (e.isIntersecting && !document.hidden ? start() : stop()));
   io.observe(journey);
   const onVis = () => (document.hidden ? stop() : start());
   document.addEventListener('visibilitychange', onVis);
