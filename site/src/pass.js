@@ -104,7 +104,13 @@ export function initPass(hooks = {}) {
 
   list.addEventListener('click', (e) => {
     const a = e.target.closest('a.flight');
-    if (!a || busy || RM.matches || e.defaultPrevented) return;
+    if (!a) return;
+    // A second click mid-boarding must not cut the animation or navigate.
+    if (busy) {
+      e.preventDefault();
+      return;
+    }
+    if (RM.matches || e.defaultPrevented) return;
     if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
     busy = true;

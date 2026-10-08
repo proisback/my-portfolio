@@ -60,7 +60,7 @@ export const SEGMENTS = [
     id: 'mumbai',
     beat: 'mumbai-a',
     city: 'BOM',
-    years: '2012 to 2017',
+    years: '2012 to 2016',
     label: 'Mumbai',
     title: 'Where it started',
     role: 'BE (Information Technology)',

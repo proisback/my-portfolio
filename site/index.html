@@ -8,6 +8,9 @@
   <!-- Chromium rejects a promise when it skips a cross-document view transition
        under load; navigation still completes, so don't surface it as an error. -->
   <script>addEventListener('unhandledrejection',function(e){var r=e.reason;if(r&&r.name==='InvalidStateError'&&/transition/i.test(r.message))e.preventDefault()})</script>
+  <!-- Mark JS before first paint so entrance animations play once, not twice.
+       If the main script never boots, drop the class so nothing stays hidden. -->
+  <script>document.documentElement.classList.add('js');setTimeout(function(){if(!window.__booted)document.documentElement.classList.remove('js')},4000)</script>
   <!--@head-->
   <script type="module" src="/src/main.js"></script>
 </head>

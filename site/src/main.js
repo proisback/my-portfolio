@@ -17,6 +17,7 @@ import { detectTier, forcedTier } from './tier.js';
 
 const root = document.documentElement;
 root.classList.add('js');
+window.__booted = true;
 const tier = detectTier();
 root.dataset.tier = tier;
 

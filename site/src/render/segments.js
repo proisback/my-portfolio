@@ -117,7 +117,7 @@ export function hud() {
     ${stops
       .map(
         (s, i) =>
-          `<li><a class="hud-stop mono" href="#${s.id}" data-stop="${i}" aria-label="Jump to ${esc(s.code)} ${esc(s.year)}"><span class="hud-dot" aria-hidden="true"></span><span>${esc(s.code)}</span></a></li>`
+          `<li><a class="hud-stop mono" href="#${s.id}" data-stop="${i}" aria-label="Jump to ${esc(s.code === s.year ? s.year : s.code + ' ' + s.year)}"><span class="hud-dot" aria-hidden="true"></span><span>${esc(s.code)}</span></a></li>`
       )
       .join('')}
   </ol>

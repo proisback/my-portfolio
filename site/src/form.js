@@ -204,7 +204,7 @@ export function initForm() {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (busy) return;
-    const email = (input.value || '').trim();
+    const email = (input.value || '').trim().toLowerCase();
 
     if (!EMAIL_RE.test(email)) {
       showError(MSG_INVALID);

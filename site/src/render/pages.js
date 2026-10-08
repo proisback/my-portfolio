@@ -70,7 +70,7 @@ function doc({ title, description, path, page, body, current = '' }) {
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(description)}">
   <meta property="og:url" content="${esc(url)}">
-  <meta property="og:image" content="${esc(SITE.url)}og.png">
+  <meta property="og:image" content="${esc(SITE.url)}og.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   ${VT_HOOK}

@@ -10,7 +10,7 @@ export function head() {
   <meta property="og:title" content="${esc(SITE.title)}">
   <meta property="og:description" content="${esc(SITE.description)}">
   <meta property="og:url" content="${esc(SITE.url)}">
-  <meta property="og:image" content="${esc(SITE.url)}og.png">
+  <meta property="og:image" content="${esc(SITE.url)}og.jpg">
   <meta name="twitter:card" content="summary_large_image">`;
 }
 
