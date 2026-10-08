@@ -45,6 +45,8 @@ function initHud(journey) {
     const r = track.getBoundingClientRect();
     const inTrack = r.top < vh * 0.5 && r.bottom > vh * 0.5;
     hud.classList.toggle('is-on', inTrack);
+    // Hidden HUD links must not be reachable by keyboard.
+    hud.inert = !inTrack;
     const p = Math.min(1, Math.max(0, (vh * 0.5 - r.top) / r.height));
     progress.style.transform = `scaleX(${p.toFixed(4)})`;
     plane.style.left = `${(p * 100).toFixed(2)}%`;
@@ -133,6 +135,9 @@ function initSmoothLinks() {
     e.preventDefault();
     el.scrollIntoView({ behavior: reduce.matches ? 'auto' : 'smooth', block: 'start' });
     history.replaceState(null, '', `#${id}`);
+    // Move keyboard focus with the scroll (skip link, HUD, nav).
+    if (!el.hasAttribute('tabindex') && !el.matches('a, button, input, select, textarea')) el.setAttribute('tabindex', '-1');
+    el.focus({ preventScroll: true });
   });
 }
 

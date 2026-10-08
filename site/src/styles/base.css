@@ -34,6 +34,9 @@ blockquote, figure { margin: 0; }
   border-radius: 4px;
 }
 
+/* Sections focused by in-page links: no ring around the whole block. */
+[tabindex="-1"]:focus { outline: none; }
+
 ::selection { background: var(--marigold); color: var(--ink); }
 
 .visually-hidden {
@@ -66,8 +69,8 @@ blockquote, figure { margin: 0; }
 .btn--sm { min-height: 36px; padding: 6px 14px; }
 .btn--ink { background: var(--ink); color: var(--ivory); }
 .btn--ink:hover { box-shadow: 0 10px 24px rgba(31, 26, 29, 0.22); }
-.btn--marigold { background: var(--marigold); color: var(--ink); box-shadow: 0 6px 0 -1px var(--marigold-deep); }
-.btn--marigold:hover { box-shadow: 0 9px 0 -1px var(--marigold-deep), 0 16px 30px rgba(201, 138, 18, 0.25); }
+.btn--marigold { background: var(--marigold); color: var(--ink); box-shadow: 0 6px 0 -1px var(--marigold-shade); }
+.btn--marigold:hover { box-shadow: 0 9px 0 -1px var(--marigold-shade), 0 16px 30px rgba(201, 138, 18, 0.25); }
 .btn--ghost { background: rgba(253, 251, 244, 0.6); border-color: var(--rule); color: var(--ink); backdrop-filter: blur(6px); }
 .btn--ghost:hover { border-color: var(--ink); background: var(--ivory); }
 .btn-icon {

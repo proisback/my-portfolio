@@ -10,7 +10,7 @@
   /* Ink */
   --ink: #1F1A1D;
   --ink-2: #5A524B;
-  --ink-3: #8C8478;
+  --ink-3: #6B6358;
   --rule: rgba(31, 26, 29, 0.16);
   --hair: rgba(31, 26, 29, 0.08);
 
@@ -22,7 +22,10 @@
 
   /* Marigold */
   --marigold: #F5C94C;
-  --marigold-deep: #C98A12;
+  /* Text-safe marigold (4.6:1 on paper) for copy and focus rings. */
+  --marigold-deep: #8F6400;
+  /* Decorative shade for the buttons' 3D edge only, never text. */
+  --marigold-shade: #C98A12;
   --marigold-soft: #FFF0B3;
 
   /* Night (board, contact) */

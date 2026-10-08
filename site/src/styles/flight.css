@@ -169,9 +169,11 @@ html.is-night .seg--cockpit .card-reg { border-color: rgba(255, 210, 122, 0.6); 
   background: repeating-linear-gradient(90deg, var(--blue-2) 0 8px, transparent 8px 14px);
 }
 .leg-line svg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(90deg); color: var(--ink); }
-@supports (animation-timeline: view()) {
-  .leg-line svg { animation: leg-fly linear both; animation-timeline: view(); animation-range: cover 25% cover 75%; }
-  @keyframes leg-fly { from { left: 0%; } to { left: 100%; } }
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .leg-line svg { animation: leg-fly linear both; animation-timeline: view(); animation-range: cover 25% cover 75%; }
+    @keyframes leg-fly { from { left: 0%; } to { left: 100%; } }
+  }
 }
 .leg-year { padding: 5px 10px; border-radius: var(--r-pill); background: var(--ink); color: var(--marigold); letter-spacing: 0.1em; }
 
@@ -277,3 +279,16 @@ html.is-night .seg--thesis .card-code { background: var(--marigold); color: var(
   .leg-port b { font-size: 1.05rem; }
   .leg-line { width: 56px; }
 }
+
+/* ---------- Reduced motion (static tier): no scroll theatre ----------
+   Cards sit in normal flow and are all visible; the route map stays behind. */
+html[data-tier='static'] .seg--stop { min-height: 0; padding: 10vh var(--gutter); }
+html[data-tier='static'] .seg--stop .card { position: relative; top: auto; }
+html[data-tier='static'] .seg--leg { min-height: 0; padding: 3vh var(--gutter); }
+html[data-tier='static'] .leg-caption { position: relative; top: auto; }
+html[data-tier='static'] .seg--thesis { min-height: 0; padding: 14vh var(--gutter); }
+html[data-tier='static'] .thesis-wrap { position: relative; top: auto; }
+html.js[data-tier='static'] .seg .card,
+html.js[data-tier='static'] .seg .card > *,
+html.js[data-tier='static'] .leg-caption,
+html.js[data-tier='static'] .thesis .line { opacity: 1; transform: none; }
