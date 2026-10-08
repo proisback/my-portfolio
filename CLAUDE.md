@@ -2,89 +2,72 @@
 
 ## What this is
 
-A personal portfolio website for Prateek Mehta. Built with plain HTML, CSS, and vanilla JavaScript only. No frameworks, no React, no Tailwind, no build tools. The site works by opening `index.html` in a browser and is deployed via GitHub Pages.
+A personal portfolio website for Prateek Mehta: a scroll-driven 3D "flight" over his real career cities (Mumbai → Jamshedpur → Chennai → Mumbai) that turns from blueprint ink into full color as it reaches 2026, followed by a split-flap departures board of his 7 AI products. Two audiences: PM hiring managers first, prospective site-build clients second (a small "I build sites like this" section, no price anywhere).
+
+The live site lives in **`site/`** (Vite + Three.js + GSAP, vanilla ES modules, no React). The old hand-written site at the repo root (`index.html`, `styles-v3.css`, `script.js`) is kept as **legacy** and is no longer deployed. Design spec and plan: `docs/superpowers/specs/2026-10-09-flight-portfolio-design.md`, `docs/superpowers/plans/2026-10-09-flight-portfolio.md`.
 
 ## Design guidelines
 
-* Clean, minimal, modern aesthetic — cream paper theme with marigold accents
-* Professional but warm and personal
-* Generous whitespace — nothing should feel cramped
-* Fully responsive — must look great on both mobile and desktop
-* Cohesive color palette — tokens defined in `styles-v3.css` (`--cream`, `--charcoal`, `--marigold`, `--ivory`, pastel stitch colors)
-* Sora typeface, single family, weight + italic do hierarchy work
-* Subtle animations and transitions — paper-grain texture, polaroid tilts, washi tapes, reveal-on-scroll
+* "Blueprint to color": cream paper and blueprint-ink linework for the ops years; color, light and marigold arrive in 2026. At night the drawing inverts into a literal blueprint (pale lines on navy).
+* Aviation vocabulary throughout: boarding passes, flight codes, departures board, safety card, arrivals.
+* Sora for headings and body, IBM Plex Mono for flight metadata. Tokens in `site/src/styles/tokens.css` (`--paper`, `--ink`, `--blue`, `--marigold`, night palette).
+* Motion serves the story: scroll is the timeline, text never waits for 3D, one hero moment per stop, reduced motion gets fades only.
+* Fully responsive; phones get a lighter 3D scene, weak devices and reduced motion get a 2D SVG route map.
+* No em-dashes in any copy.
 
 ## Tech constraints
 
-* Plain HTML + CSS + vanilla JavaScript ONLY
-* No frameworks, no libraries (except Supabase JS client, loaded from CDN)
-* No npm, no build steps, no bundlers
-* The site must work by simply opening `index.html` in a browser
+* Stack: Vite, Three.js, GSAP (ScrollTrigger), vanilla JS modules, Fontsource fonts. No frameworks. Free tools only.
+* **No 3D model files.** Every object (cities, plane, sidekick) is procedural geometry, so the 3D chunk stays around 200 KB gzipped.
+* All copy lives in **`site/src/content.js`**. Renderers in `site/src/render/` turn it into HTML at build time (every word is in the HTML before JS runs); `site/scripts/generate-pages.mjs` writes `work/<slug>/`, `read/` and `comic/` pages from it.
+* Budgets: entry JS under 30 KB gz, 3D chunk under 250 KB gz loaded after first paint, total under 3 MB desktop / 1.5 MB phone.
+* Supabase is reached with a plain `fetch` to its REST API (no SDK).
 
-## File structure
+## File structure (site/)
 
-* **`index.html`** — the main portfolio page (served by GitHub Pages). Includes the optional notify-me signup section.
-* **`styles-v3.css`** — the portfolio stylesheet (warm paper theme with design tokens, polaroid/washi system, notify-me styles).
-* **`script.js`** — vanilla JS for nav scroll state, mobile hamburger, expandable cards, "show more case studies" toggle, scroll-reveal, and active nav link tracking.
-* **`config.js`** — Supabase credentials for the notify-me signup. Committed to the repo (anon key is public by design).
-* **`config.example.js`** — placeholder template for anyone cloning the repo to wire up their own Supabase project.
-* **`images/`** — `hero-comic.png` (career comic), `philosophy-illustration.png` (cross-legged with AI sidekick), `contact-illustration.png` (park bench wave), `gate-avatar.png` (Prateek + marigold AI sidekick — used by the notify-me section).
-* **`products/`** — screenshots for the project cards (`galpal.jpg`, `plan-karo-chalo.jpg`).
-* **`PRDs/`** — rendered HTML PRDs for five shipped projects, linked from project cards.
-* **`resume/`** — source HTML + CSS for the resume versions. `resume-ai-pm.html` uses the premium **Editorial Gold** theme (`resume-premium.css` — Fraunces serif name/headers, antique-gold accent, ATS-safe); `resume-general-pm.html` uses the older shared `resume.css`. Rendered to PDF via Chrome headless print-to-PDF (use `--virtual-time-budget=20000` so Google Fonts load before printing).
-* **`Prateek-Mehta-AI-PM-Resume.pdf`** — AI-PM-positioned version (Editorial Gold), linked from the hero "View Resume" button. Generated from `resume/resume-ai-pm.html`. Contact links (email, LinkedIn, portfolio) are clickable annotations that Chrome preserves from the `<a href>` tags.
-* **`Prateek-Mehta-PM-Resume.pdf`** — General PM version. Generated from `resume/resume-general-pm.html`.
-* **`Prateek-Mehta-Product-Resume.pdf`, `Resume.pdf`** — older Canva-exported resumes, kept for archival reference.
-* **`CLAUDE.md`** — this file.
-* **`.github/workflows/pages.yml`, `.nojekyll`** — GitHub Actions Pages deploy workflow and the static-site marker (see Deployment below).
-* **`brand-guide.md`, `updated_copy.md`, `resume-enrichment.md`, `brand-visualizer-galpal.html`** — working notes and references.
+* **`index.html`** — page template with `<!--@block-->` markers filled from `src/render/`.
+* **`src/content.js`** — single source of truth for copy, products, segments, testimonials.
+* **`src/render/`** — build-time HTML renderers (`hero.js`, `segments.js`, `board.js`, `sections.js`, `pages.js`).
+* **`src/main.js`** — entry: tier detection, journey, board, form, lazy-loads `src/flight/` on idle.
+* **`src/flight/`** — the 3D world: `uniforms.js`, `glsl.js` (reveal mask, hatching), `materials.js` (blueprint-to-color shader, geometry baker), `ground.js`, `sky.js`, `cities.js`, `plane.js` (incl. cockpit), `sidekick.js`, `clouds.js`, `path.js` (waypoints, banking, camera rig), `choreography.js` (GSAP scroll timeline), `index.js` (renderer, loop, guards).
+* **`src/journey.js`** — card hand-offs, HUD odometer, nav state. **`src/tier.js`**, **`src/fallback2d.js`** — device tiers and the 2D route map.
+* **`src/board.js`, `src/pass.js`** — split-flap board and boarding-pass transition. **`src/form.js`, `src/config.js`** — notify form.
+* **`src/page.js`**, **`src/styles/`** — generated-page entry and all CSS.
+* **`public/`** — favicon, `og.png`. **`tests/`** — Playwright end-to-end suite.
 
-Old v1/v2 portfolio files (`index-v2.html`, `styles.css`, `styles-v2.css`, `copy.md`) are gitignored but kept locally for reference.
+Legacy files at the repo root (`PRDs/`, `field-guides/`, `products/`, `resume/`, resume PDFs, `images/comic-story/`, `rethink-buildathon-2nd-place.pdf`) are copied into the build by the `legacy-assets` plugin in `site/vite.config.js`, so their URLs keep working. Resume sources and PDF pipeline are unchanged (`resume/`, rendered via Chrome headless with `--virtual-time-budget=20000`).
 
 ## Notify-me signup
 
-A small, optional email-capture section (`#notify`) sits between `#story` ("Why I'm Doing This") and `#contact`. It is **not** a gate — the portfolio loads immediately and the section is just one more way for an interested reader to stay in touch. Framed as a notify-me list, not a fixed-cadence newsletter, so it doesn't lock me into a delivery commitment.
+Part of the Contact ("Arrivals") section. Not a gate. Same copy and behaviour as before:
 
-**Copy:**
-* Section label: `Stay in the Loop`
-* Title: `Get a heads-up when I ship something new`
-* Body: `I send a short note when I ship a new product, finish a case study, or write something worth reading. No fixed cadence — usually once every few weeks at most.`
-* Polaroid caption: `the AI sidekick & I will say hi.`
-* Placeholder: `your@email.com`
-* Button: `Notify me` (changes to `Adding you…` while submitting)
-* Note: `Your email stays with me. No spam, ever.`
-* Success state: `You're on the list.` / `I'll be in touch when there's something worth sharing.`
-* Returning subscriber state: `You're already on the list. Thanks for being early.`
-
-**Tech:**
-* **SDK**: Supabase JS client loaded from `https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2` (deferred).
-* **Config**: credentials live in `config.js` (committed — public anon key). The notify controller reads them via `window.__NEWSLETTER_CONFIG__`. If `config.js` is missing or has placeholders, the form runs in local-only mode — validation still runs and the success state still shows, but nothing is written. This is intentional and safe.
-* **Supabase table**: `subscribers` with a text column `email` (unchanged from the previous gate — pre-existing emails carry over). Requires RLS enabled, an INSERT policy for the `anon` role, and the table must be exposed via Project Settings → Data API → Exposed tables. (Being exposed via the Data API is a separate, newer setting from RLS — if client inserts return 401 despite correct policies, check this first.)
-* **Three-layer email validation** (identical to the previous gate):
-  1. Format regex — `/^[^\s@]+@[^\s@]+\.[^\s@]+$/` (local@domain.tld, no spaces).
-  2. Blocklist of 17 placeholder/disposable domains — `test.com`, `example.{com,org,net}`, `mailinator.com`, `tempmail.com`, `10minutemail.com`, `guerrillamail.com`, `yopmail.com`, `maildrop.cc`, etc.
-  3. Typo map covering 31 common variants of Gmail, Yahoo, Hotmail, Outlook, iCloud, Protonmail, and Live (`gmial.com` → suggests `gmail.com`). Inline clickable suggestion with a marigold underline auto-fills the input. A deliberate resubmit of the same typo is respected and lets the email through.
-* **Fails open by design**: if Supabase is unreachable, the SDK fails to load, credentials are placeholders, or the insert errors out (including duplicate-email unique-constraint violations, Postgres code 23505), the form still shows the success state. The signup never blocks anything; failure reasons are logged to `console.debug` for the owner.
-* **Timeout**: Supabase save races against a 3.5s timeout so slow networks don't stall the success state.
-* **Storage flag**: `localStorage.portfolio_notify_subscribed = '1'` is set after any attempt (success, duplicate, or error). On next visit, the form is replaced with a "You're already on the list" message. To re-show the form for testing: `localStorage.removeItem('portfolio_notify_subscribed')`.
-* **XSS-safe typo suggestion**: the clickable typo correction is built via DOM nodes (`createElement` + `textContent`), not `innerHTML`, so a malicious local part can't inject HTML.
-* **Accessibility**: visually-hidden label on the email input, `aria-invalid` toggled on error, `role="alert"` on the inline error element, and the success card uses `aria-hidden` while invisible.
+* Copy lives in `NOTIFY` in `content.js` (`Stay in the Loop`, `Get a heads-up when I ship something new`, `Notify me` / `Adding you…`, success and returning-subscriber messages).
+* **Config**: `site/src/config.js` (public anon key, protected by RLS). Placeholder values (`YOUR_...`) switch to local-only mode.
+* **Supabase table**: `subscribers` with a text column `email`. Requires RLS enabled, an INSERT policy for `anon`, and the table exposed via Project Settings → Data API → Exposed tables (if inserts return 401 despite correct policies, check this first).
+* **Three-layer validation**: format regex, 18 blocked placeholder/disposable domains, 31-entry typo map with a clickable suggestion built from DOM nodes (never `innerHTML`). A deliberate resubmit of the same typo goes through.
+* **Fails open**: network errors, timeouts (3.5 s, aborted), duplicates (409 / 23505) and placeholder config all still show success; reasons go to `console.debug`.
+* **Storage flag**: `localStorage.portfolio_notify_subscribed = '1'`. To re-show the form: `localStorage.removeItem('portfolio_notify_subscribed')`.
+* **Tests never write to Supabase**: they stub `**/rest/v1/**`.
 
 ## Deployment
 
-Deployed to **GitHub Pages** via a **GitHub Actions workflow** ([.github/workflows/pages.yml](.github/workflows/pages.yml)), which publishes the repo root as a static site on every push to `main`. Live at `https://proisback.github.io/my-portfolio/`. Pages source is set to **GitHub Actions** (repo Settings → Pages → Source: GitHub Actions; equivalently `build_type=workflow` via the API). A root [.nojekyll](.nojekyll) file keeps the site static (no Jekyll processing).
+GitHub Pages via GitHub Actions ([.github/workflows/pages.yml](.github/workflows/pages.yml)) on every push to `main`: `npm ci && npm run build` in `site/`, then `site/dist` is published. Live at `https://proisback.github.io/my-portfolio/`. Pages source must stay **GitHub Actions** (Settings → Pages). `.nojekyll` is copied into the build.
 
-Deploy check after a push: `gh run list --workflow=pages.yml` shows the run; the live site updates when it completes (~1–2 min). PDFs and other assets are served with `Cache-Control: max-age=600`, so hard-refresh (Ctrl+Shift+R) to bust local cache after a redeploy.
-
-We moved off the legacy "Deploy from a branch" (Jekyll) builder on 2026-07-02 after it failed and then hung during a GitHub Pages incident; the Actions path is the reliable, modern default. To revert: set `build_type=legacy` and remove the workflow.
-
-No Vercel, Netlify, or other platform needed — the site is fully static and GitHub Pages is free for public repos.
+Deploy check: `gh run list --workflow=pages.yml`; the live site updates in ~1–2 min. Hard-refresh (Ctrl+Shift+R) to bypass the 10-minute asset cache.
 
 ## Local development
 
-1. Open `index.html` directly in a browser (file://). Everything works — no server required.
-2. To re-show the notify-me form after you've already submitted: open devtools Console and run `localStorage.removeItem('portfolio_notify_subscribed')`, then reload.
-3. To test local-only mode (no Supabase writes): replace the values in `config.js` with `YOUR_...` placeholders.
+```
+cd site
+npm install
+npm run dev        # http://localhost:5173/my-portfolio/
+npm run build      # production build in site/dist
+npm run preview    # serve the build at http://localhost:4173/my-portfolio/
+npm test           # Playwright end-to-end suite (builds + previews automatically)
+```
+
+* Force a device tier with `?tier=full|mobile|lite|static`.
+* `window.__flight.S` holds the live 3D state (handy for debugging camera beats).
 
 ## About Prateek
 
