@@ -40,7 +40,15 @@ function shadowMesh() {
   return m;
 }
 
-export function startFlight({ tier, canvas, stage, journey, veil, onFail }) {
+// Software WebGL (SwiftShader, llvmpipe, Microsoft Basic Render) draws every
+// frame on the CPU: slow and battery-hungry, so those devices get the 2D map.
+function isSoftware(gl) {
+  const info = gl.getExtension('WEBGL_debug_renderer_info');
+  const name = info ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) : '';
+  return /swiftshader|llvmpipe|softpipe|basic render|software/i.test(name);
+}
+
+export async function startFlight({ tier, canvas, stage, journey, veil, onFail, forced = false }) {
   setQuality(tier);
   const renderer = new WebGLRenderer({
     canvas,
@@ -49,21 +57,34 @@ export function startFlight({ tier, canvas, stage, journey, veil, onFail }) {
     powerPreference: 'high-performance',
     stencil: false,
   });
+  if (!forced && isSoftware(renderer.getContext())) {
+    renderer.dispose();
+    throw new Error('software-webgl');
+  }
   let dprCap = tier === 'full' ? 2 : 1.5;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
 
   const scene = new Scene();
   const camera = new PerspectiveCamera(40, 1, 0.08, 900);
 
+  // Build in slices, yielding between them, so no single task blocks input.
+  const yieldToMain = () => new Promise((r) => setTimeout(r, 0));
   const curve = buildPath();
   const ground = buildGround(tier);
   const route = buildRoute(curve, tier === 'full' ? 1100 : 700);
   const sky = buildSky();
+  await yieldToMain();
   const cities = buildCities();
+  await yieldToMain();
   const aircraft = buildPlane();
   const { clouds, smoke } = buildClouds(tier, BANKS, CHIMNEYS);
   const shadow = shadowMesh();
   scene.add(sky, ground, route, cities.group, aircraft.group, clouds, smoke, shadow);
+  await yieldToMain();
+  // Compile shaders off the main thread where KHR_parallel_shader_compile exists.
+  aircraft.cockpit.visible = true;
+  await renderer.compileAsync(scene, camera).catch(() => {});
+  aircraft.cockpit.visible = false;
 
   const pose = createPose();
   const waveCenter = curve.getPoint(P(35.3));
@@ -168,7 +189,7 @@ export function startFlight({ tier, canvas, stage, journey, veil, onFail }) {
       camera.far = near < 0.01 ? 420 : 900;
       camera.updateProjectionMatrix();
     }
-    composeCamera(camera, pose, S, aircraft.eye);
+    composeCamera(camera, pose, S, aircraft.eye, time);
     const shift = shiftPx * S.shift;
     if (!(Math.abs(shift - appliedShift) < 0.5)) {
       camera.setViewOffset(width, height, -shift, 0, width, height);

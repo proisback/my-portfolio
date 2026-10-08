@@ -109,7 +109,7 @@ const lookV = new Vector3();
 
 // Camera from the scrubbed state S: a plane-relative chase rig blended with a
 // world-anchored rig (S.world) and the captain's seat (S.cockpit).
-export function composeCamera(camera, pose, S, eye) {
+export function composeCamera(camera, pose, S, eye, time = 0) {
   // Chase rig in the level frame
   camA.copy(pose.pos)
     .addScaledVector(pose.fwd, -S.back)
@@ -117,8 +117,9 @@ export function composeCamera(camera, pose, S, eye) {
     .addScaledVector(pose.right, S.right);
   tgtA.copy(pose.pos).addScaledVector(pose.fwd, S.ahead).addScaledVector(UP, S.lookUp);
 
-  // World rig
-  camA.lerp(b.set(S.wx, S.wy, S.wz), S.world);
+  // World rig, with a slow breathing drift so held shots never look frozen.
+  const drift = 0.7;
+  camA.lerp(b.set(S.wx + Math.sin(time * 0.11) * drift, S.wy + Math.sin(time * 0.07) * drift * 0.4, S.wz + Math.cos(time * 0.11) * drift), S.world);
   tgtA.lerp(c.set(S.tx, S.ty, S.tz), S.world);
 
   if (S.cockpit > 0) {

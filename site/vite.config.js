@@ -58,7 +58,10 @@ function legacyAssets() {
     name: 'legacy-assets',
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
-        const url = decodeURIComponent((req.url || '').split('?')[0]);
+        let url = decodeURIComponent((req.url || '').split('?')[0]);
+        // Vite's dev HTML transform prefixes the base onto absolute <img src>
+        // that already carry it; undo the doubling (builds are unaffected).
+        if (url.startsWith(SITE.base + SITE.base.slice(1))) url = url.slice(SITE.base.length - 1);
         if (!url.startsWith(SITE.base)) return next();
         const rel = url.slice(SITE.base.length);
         if (!LEGACY.some((p) => rel === p || rel.startsWith(p + '/'))) return next();

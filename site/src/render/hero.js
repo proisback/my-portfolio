@@ -17,8 +17,8 @@ export function head() {
 export function nav() {
   return `
 <nav class="nav" id="nav" aria-label="Primary">
-  <a class="nav-logo" href="#top" aria-label="${esc(PROFILE.name)}, back to top">
-    <span class="nav-mark">pm</span><span class="nav-name">${esc(PROFILE.name)}</span>
+  <a class="nav-logo" href="#top">
+    <span class="nav-mark" aria-hidden="true">pm</span><span class="nav-name">${esc(PROFILE.name)}</span><span class="visually-hidden">, back to top</span>
   </a>
   <div class="nav-links">
     <a href="#mumbai">The flight</a>

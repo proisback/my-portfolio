@@ -184,6 +184,28 @@ export function matrixOf({ pos = [0, 0, 0], rot = [0, 0, 0], scale = 1 } = {}) {
   return new Matrix4().compose(new Vector3(...pos), new Quaternion().setFromEuler(new Euler(...rot)), new Vector3(...s));
 }
 
+// Cities reuse a handful of base shapes hundreds of times, so the
+// non-indexed copy and the edge set are computed once per shape.
+const baseCache = new WeakMap();
+const edgeCache = new WeakMap();
+function baseOf(geo) {
+  let g = baseCache.get(geo);
+  if (!g) {
+    g = geo.index ? geo.toNonIndexed() : geo.clone();
+    for (const k of Object.keys(g.attributes)) if (k !== 'position' && k !== 'normal') g.deleteAttribute(k);
+    if (!g.attributes.normal) g.computeVertexNormals();
+    baseCache.set(geo, g);
+  }
+  return g;
+}
+function edgesOf(geo, threshold) {
+  let byThreshold = edgeCache.get(geo);
+  if (!byThreshold) edgeCache.set(geo, (byThreshold = new Map()));
+  let e = byThreshold.get(threshold);
+  if (!e) byThreshold.set(threshold, (e = new EdgesGeometry(geo, threshold)));
+  return e;
+}
+
 // Collects many small parts and bakes them into one mesh + one line set,
 // so a whole city costs two draw calls.
 export class Builder {
@@ -196,14 +218,12 @@ export class Builder {
     const { color = '#ffffff', win = 0, emit = 0, edges = true, threshold = 31, matrix, parent } = opts;
     let m = matrix || matrixOf(opts);
     if (parent) m = parent.clone().multiply(m);
-    const g = geo.index ? geo.toNonIndexed() : geo.clone();
-    for (const k of Object.keys(g.attributes)) if (k !== 'position' && k !== 'normal') g.deleteAttribute(k);
-    if (!g.attributes.normal) g.computeVertexNormals();
+    const g = baseOf(geo).clone();
     g.applyMatrix4(m);
     paint(g, color, win, emit);
     this.meshParts.push(g);
     if (edges) {
-      const e = new EdgesGeometry(geo, threshold);
+      const e = edgesOf(geo, threshold).clone();
       e.applyMatrix4(m);
       paint(e, color);
       this.lineParts.push(e);

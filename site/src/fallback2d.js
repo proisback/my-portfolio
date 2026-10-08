@@ -17,20 +17,16 @@ export function startFallback({ stage, animate }) {
   const wrap = document.createElement('div');
   wrap.className = 'route-map' + (animate ? '' : ' route-map--static');
   wrap.innerHTML = `
-<svg viewBox="-92 -78 196 150" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+<svg viewBox="-92 -78 196 150" preserveAspectRatio="xMidYMid meet" overflow="visible" aria-hidden="true">
   <defs>
-    <pattern id="rm-grid" width="10" height="10" patternUnits="userSpaceOnUse">
-      <path d="M10 0H0V10" fill="none" stroke="currentColor" stroke-width="0.12" opacity="0.18"/>
-    </pattern>
     <pattern id="rm-water" width="3" height="1.6" patternUnits="userSpaceOnUse">
       <path d="M0 0.8H3" stroke="currentColor" stroke-width="0.14" opacity="0.4"/>
     </pattern>
   </defs>
-  <rect x="-92" y="-78" width="196" height="150" fill="url(#rm-grid)"/>
-  <path class="rm-sea" d="M -63.6 -11 L -27 80 L -110 80 L -110 -95 L -75 -95 Z" fill="url(#rm-water)"/>
-  <path class="rm-sea" d="M 15.4 49.2 L 92 -44 L 130 -44 L 130 90 L -10 90 Z" fill="url(#rm-water)"/>
-  <path class="rm-coast" d="M -75 -40 L -63.6 -11 L -27 80"/>
-  <path class="rm-coast" d="M 100 -54 L 15.4 49.2 L 0 68"/>
+  <path class="rm-sea" d="M -91.4 -80 L -63.6 -11 L -17 106 L -400 106 L -400 -80 Z" fill="url(#rm-water)"/>
+  <path class="rm-sea" d="M -10 80 L 15.4 49.2 L 110 -66 L 400 -66 L 400 106 L -10 106 Z" fill="url(#rm-water)"/>
+  <path class="rm-coast" d="M -91.4 -80 L -63.6 -11 L -17 106"/>
+  <path class="rm-coast" d="M 110 -66 L 15.4 49.2 L -30 106"/>
   <path class="rm-route-base" d="${ROUTE}"/>
   <path class="rm-route" d="${ROUTE}"/>
   ${CITIES.map((c) => `<g class="rm-city" transform="translate(${c.x} ${c.y})"><circle r="1.6"/><circle class="rm-ring" r="3.4"/><text x="4.2" y="-2.6">${c.code}</text><text class="rm-name" x="4.2" y="1.6">${c.name}</text></g>`).join('')}
