@@ -70,7 +70,7 @@ function stop(s) {
       <p class="card-head mono"><span class="card-code">${esc(city.code)}</span><span class="card-city">${esc(s.label)}</span><span class="card-years">${esc(s.years)}</span></p>
       <h2 class="card-title" id="${s.id}-title">${esc(s.title)}</h2>
       ${role}
-      <div class="card-body">${body}</div>
+      ${body ? `<div class="card-body">${body}</div>` : ''}
       ${metrics(s.metrics)}
       ${s.gauges ? gauges() : ''}
       ${accolade}

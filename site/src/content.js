@@ -124,7 +124,7 @@ export const SEGMENTS = [
     city: 'BOM',
     years: '2025',
     label: 'Mumbai',
-    title: 'Back home, five countries at once',
+    title: 'Back in Mumbai, working across Europe',
     role: 'Senior Manager, Business Analysis',
     org: 'Marsh McLennan India · Mumbai',
     body: [
@@ -158,7 +158,7 @@ export const SEGMENTS = [
     title: 'Taking the controls',
     role: 'AI-first Mastering Product Management 2.0, Cohort 7',
     org: 'Rethink Systems',
-    body: ['Co-Founder, Product & Ops at galpals since April 2026.'],
+    body: [],
     accolade: {
       text: 'Placed 2nd, AI-First Buildathon · 10-day build sprint',
       href: 'rethink-buildathon-2nd-place.pdf',
