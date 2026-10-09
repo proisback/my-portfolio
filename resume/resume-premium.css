@@ -101,7 +101,7 @@ html, body {
 
 /* ----- Section header — Fraunces, editorial, gold rule ---------------------- */
 
-.r-section { margin-bottom: 10pt; }
+.r-section { margin-bottom: 12pt; }
 
 .r-section h2 {
   font-family: 'Fraunces', Georgia, serif;
@@ -117,7 +117,7 @@ html, body {
 
 /* ----- Entry (work) --------------------------------------------------------- */
 
-.entry { margin-bottom: 7pt; page-break-inside: avoid; }
+.entry { margin-bottom: 9pt; page-break-inside: avoid; }
 .entry:last-child { margin-bottom: 0; }
 /* A long role may flow across the page break instead of leaving a gap. */
 .entry--flow, .entry--flow.entry { page-break-inside: auto; }
@@ -166,7 +166,7 @@ ul.bullets {
 ul.bullets li {
   position: relative;
   padding-left: 12pt;
-  margin-bottom: 2pt;
+  margin-bottom: 2.6pt;
   font-size: 9.6pt;
   line-height: 1.4;
   color: var(--ink-body);
