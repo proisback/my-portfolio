@@ -35,7 +35,9 @@ The live site lives in **`site/`** (Vite + Three.js + GSAP, vanilla ES modules, 
 * **`src/page.js`**, **`src/styles/`** — generated-page entry and all CSS.
 * **`public/`** — favicon, `og.jpg`. **`tests/`** — Playwright end-to-end suite.
 
-Legacy files at the repo root (`PRDs/`, `field-guides/`, `products/`, `resume/`, resume PDFs, `images/comic-story/`, `rethink-buildathon-2nd-place.pdf`) are copied into the build by the `legacy-assets` plugin in `site/vite.config.js`, so their URLs keep working. Resume sources and PDF pipeline are unchanged (`resume/`, rendered via Chrome headless with `--virtual-time-budget=20000`).
+Legacy files at the repo root (`PRDs/`, `field-guides/`, `products/`, `images/comic-story/`, `rethink-buildathon-2nd-place.pdf`) are copied into the build by the `legacy-assets` plugin in `site/vite.config.js`, so their URLs keep working.
+
+**One resume only:** `Prateek-Mehta-AI-PM-Resume.pdf`, rendered from `resume/resume-ai-pm.html` + `resume/resume-premium.css` (Editorial Gold) via Chrome headless with `--virtual-time-budget=20000`. Keep it to two A4 pages. The old resume URLs (`Prateek-Mehta-PM-Resume.pdf`, `Prateek-Mehta-Product-Resume.pdf`, `Resume.pdf`) are served a copy of that same file at build time, and the `resume/` sources are not published.
 
 ## Notify-me signup
 

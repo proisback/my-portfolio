@@ -141,4 +141,14 @@ test.describe('legacy assets keep their URLs', () => {
       expect(res.headers()['content-type'] || '').toMatch(type);
     });
   }
+
+  test('old resume URLs serve the current resume, not an outdated one', async ({ request }, testInfo) => {
+    only(testInfo, 'desktop');
+    const current = await (await request.get('Prateek-Mehta-AI-PM-Resume.pdf')).body();
+    for (const path of ['Prateek-Mehta-PM-Resume.pdf', 'Prateek-Mehta-Product-Resume.pdf', 'Resume.pdf']) {
+      const res = await request.get(path);
+      expect(res.status(), path).toBe(200);
+      expect((await res.body()).equals(current), `${path} should be the current resume`).toBe(true);
+    }
+  });
 });

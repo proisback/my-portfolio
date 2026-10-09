@@ -12,16 +12,17 @@ const LEGACY = [
   'PRDs',
   'field-guides',
   'products',
-  'resume',
   'images/comic-story',
   'Prateek-Mehta-AI-PM-Resume.pdf',
-  'Prateek-Mehta-PM-Resume.pdf',
-  'Prateek-Mehta-Product-Resume.pdf',
-  'Resume.pdf',
   'rethink-buildathon-2nd-place.pdf',
   'brand-visualizer-galpal.html',
   '.nojekyll',
 ];
+
+// Old resume URLs that may still be shared around: each one now serves the
+// current resume, so no outdated version stays online.
+const RESUME = 'Prateek-Mehta-AI-PM-Resume.pdf';
+const RESUME_ALIASES = ['Prateek-Mehta-PM-Resume.pdf', 'Prateek-Mehta-Product-Resume.pdf', 'Resume.pdf'];
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -67,7 +68,8 @@ function legacyAssets() {
         // that already carry it; undo the doubling (builds are unaffected).
         if (url.startsWith(SITE.base + SITE.base.slice(1))) url = url.slice(SITE.base.length - 1);
         if (!url.startsWith(SITE.base)) return next();
-        const rel = url.slice(SITE.base.length);
+        let rel = url.slice(SITE.base.length);
+        if (RESUME_ALIASES.includes(rel)) rel = RESUME;
         if (!LEGACY.some((p) => rel === p || rel.startsWith(p + '/'))) return next();
         let file = join(repo, rel);
         if (existsSync(file) && statSync(file).isDirectory()) file = join(file, 'index.html');
@@ -81,6 +83,7 @@ function legacyAssets() {
         const src = join(repo, p);
         if (existsSync(src)) cpSync(src, join(outDir, p), { recursive: true });
       }
+      for (const alias of RESUME_ALIASES) cpSync(join(repo, RESUME), join(outDir, alias));
     },
   };
 }
