@@ -54,3 +54,14 @@ images/_originals_backup/
 #   Row Level Security is what actually protects the data). config.example.js
 #   stays as a template for anyone cloning the repo and wiring up their own
 #   Supabase project.
+case-studies/_snapshots/
+case-studies/_*.html
+
+# Launch video (brag-output/): keep the plan, copy, poster and composition
+# source in git; the rendered video, raw footage and licensed audio stay local.
+brag-output/*.mp4
+brag-output/*.webm
+brag-output/footage/
+brag-output/composition/assets/footage/
+brag-output/composition/assets/music/
+brag-output/composition/assets/sfx/

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#F5EFE1">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <!-- Chromium rejects a promise when it skips a cross-document view transition
+       under load; navigation still completes, so don't surface it as an error. -->
+  <script>addEventListener('unhandledrejection',function(e){var r=e.reason;if(r&&r.name==='InvalidStateError'&&/transition/i.test(r.message))e.preventDefault()})</script>
+  <!-- Mark JS before first paint so entrance animations play once, not twice.
+       If the main script never boots, drop the class so nothing stays hidden.
+       Reduced motion gets the short static layout before first layout too, so
+       a deep link (#chennai) scrolls to the right place (rule mirrors tier.js). -->
+  <script>(function(d){d.classList.add('js');var f=(/[?&]tier=(full|mobile|lite|static)\b/.exec(location.search)||[])[1];if(f==='static'||(!f&&matchMedia('(prefers-reduced-motion: reduce)').matches))d.dataset.tier='static';setTimeout(function(){if(!window.__booted)d.classList.remove('js')},4000)})(document.documentElement)</script>
+  <!--@head-->
+  <script type="module" src="/src/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#board">Skip to the work</a>
+  <!--@nav-->
+  <main id="main">
+    <div class="journey" id="journey">
+      <div class="stage" id="stage" aria-hidden="true">
+        <canvas id="scene"></canvas>
+        <div class="stage-fallback" id="stage-fallback"></div>
+        <div class="stage-veil"></div>
+      </div>
+      <!--@hero-->
+      <!--@segments-->
+    </div>
+    <!--@hud-->
+    <!--@board-->
+    <!--@principles-->
+    <!--@sites-->
+    <!--@contact-->
+  </main>
+  <!--@footer-->
+  <div class="grain" aria-hidden="true"></div>
+</body>
+</html>

@@ -1,0 +1,294 @@
+/* ---------- Stage: the sticky 3D canvas behind the hero and the flight ---------- */
+.journey { position: relative; isolation: isolate; }
+.stage {
+  position: sticky; top: 0; z-index: 0;
+  height: 100vh; margin-bottom: -100vh;
+  overflow: hidden;
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+@supports (height: 100lvh) {
+  .stage { height: 100lvh; margin-bottom: -100lvh; }
+}
+.stage canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  opacity: 0; transition: opacity 1.6s var(--ease-out);
+}
+.stage.is-ready canvas { opacity: 1; }
+.stage-veil { position: absolute; inset: 0; background: var(--paper); opacity: 0; pointer-events: none; will-change: opacity; }
+.stage-fallback { display: none; }
+
+.city-labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.city-label {
+  position: absolute; left: 0; top: 0; opacity: 0;
+  translate: -50% -140%;
+  display: flex; gap: 6px; align-items: baseline; white-space: nowrap;
+  padding: 4px 10px; border-radius: var(--r-pill);
+  font-family: var(--mono); font-size: 11px;
+  background: rgba(253, 251, 244, 0.86); border: 1px solid var(--rule); color: var(--ink);
+  box-shadow: 0 6px 16px rgba(31, 26, 29, 0.08);
+  will-change: transform, opacity;
+}
+.city-label b { font-weight: 500; letter-spacing: 0.1em; }
+.city-label span { color: var(--ink-2); }
+.city-label--small { font-size: 10px; padding: 3px 8px; }
+.city-label::after {
+  content: ''; position: absolute; left: 50%; top: 100%; width: 1px; height: 14px;
+  background: var(--ink-2); opacity: 0.5;
+}
+
+/* ---------- Segments ---------- */
+.track { position: relative; z-index: 1; }
+.seg { position: relative; }
+
+.seg--stop { min-height: 168vh; padding: 0 var(--gutter); }
+.seg--stop .card {
+  position: sticky; top: calc(var(--nav-h) + 3.5vh);
+  max-width: 440px;
+  margin-left: max(0px, calc((100vw - var(--max)) / 2 - var(--gutter)));
+}
+
+.card {
+  position: relative;
+  padding: 24px 26px;
+  border-radius: var(--r-lg);
+  /* Solid, not frosted: blurring a live WebGL canvas costs a full re-blur per frame. */
+  background: rgba(253, 251, 244, 0.95);
+  border: 1px solid var(--rule);
+  box-shadow: var(--shadow);
+}
+.js .seg--stop .card { opacity: 0; transform: translateY(28px) scale(0.985); transition: opacity 0.7s var(--ease-out), transform 0.9s var(--ease-out); }
+.js .seg--stop.is-in .card { opacity: 1; transform: none; }
+.js .seg--stop .card > * { opacity: 0; transform: translateY(10px); transition: opacity 0.6s var(--ease-out), transform 0.7s var(--ease-out); }
+.js .seg--stop.is-in .card > * { opacity: 1; transform: none; }
+.js .seg--stop.is-in .card > :nth-child(2) { transition-delay: 0.06s; }
+.js .seg--stop.is-in .card > :nth-child(3) { transition-delay: 0.12s; }
+.js .seg--stop.is-in .card > :nth-child(4) { transition-delay: 0.18s; }
+.js .seg--stop.is-in .card > :nth-child(5) { transition-delay: 0.24s; }
+.js .seg--stop.is-in .card > :nth-child(n + 6) { transition-delay: 0.3s; }
+
+.card-head {
+  display: flex; gap: 10px; align-items: center;
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--ink-2);
+}
+.card-code { padding: 4px 8px; background: var(--ink); color: var(--marigold); border-radius: 6px; font-weight: 500; letter-spacing: 0.12em; }
+.card-years { margin-left: auto; }
+.card-title { margin-top: 14px; font-size: clamp(1.45rem, 1.15rem + 1vw, 2rem); letter-spacing: -0.035em; line-height: 1.08; }
+.card-role { margin-top: 10px; display: flex; flex-direction: column; gap: 2px; font-size: var(--fs-sm); line-height: 1.45; }
+.card-role strong { font-weight: 600; }
+.card-role span { color: var(--ink-2); }
+.card-body { margin-top: 12px; display: grid; gap: 10px; font-size: 0.95rem; line-height: 1.6; }
+
+.metrics { margin-top: 16px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.metrics li { padding: 10px 12px; border-radius: 12px; background: var(--paper-2); display: flex; flex-direction: column; gap: 3px; }
+.metrics li:last-child:nth-child(odd) { grid-column: span 2; }
+.metric-value { font-weight: 700; font-size: 1.25rem; letter-spacing: -0.03em; line-height: 1.1; }
+.metric-label { font-size: 12px; color: var(--ink-2); line-height: 1.35; }
+
+.quote {
+  margin-top: 16px; padding: 14px 16px;
+  border-left: 3px solid var(--marigold);
+  background: rgba(245, 201, 76, 0.12);
+  border-radius: 0 12px 12px 0;
+}
+.quote p { font-size: 13.5px; line-height: 1.6; }
+.quote p::before { content: '\201C'; }
+.quote p::after { content: '\201D'; }
+.quote figcaption { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 2px 8px; font-size: 12px; }
+.quote-name { font-weight: 600; }
+.quote-role { color: var(--ink-2); }
+
+.card-accolade { margin-top: 14px; }
+.card-accolade a {
+  display: inline-flex; gap: 6px; align-items: center;
+  font-weight: 600; font-size: var(--fs-sm);
+  text-decoration: underline; text-decoration-color: var(--marigold); text-decoration-thickness: 2px; text-underline-offset: 4px;
+}
+
+.card-reg { position: absolute; width: 14px; height: 14px; pointer-events: none; }
+.card-reg--tl { top: 9px; left: 9px; border-top: 1.5px solid var(--blue-2); border-left: 1.5px solid var(--blue-2); }
+.card-reg--br { bottom: 9px; right: 9px; border-bottom: 1.5px solid var(--blue-2); border-right: 1.5px solid var(--blue-2); }
+
+/* Cockpit: instrument dials */
+.gauges { margin-top: 16px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.gauge { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; }
+.gauge svg { width: 100%; max-width: 72px; overflow: visible; }
+.gauge-ring { fill: rgba(31, 26, 29, 0.04); stroke: currentColor; stroke-opacity: 0.22; stroke-width: 1.5; }
+.gauge-arc {
+  fill: none; stroke: var(--marigold); stroke-width: 6; stroke-linecap: round;
+  stroke-dasharray: 100; stroke-dashoffset: 100;
+  transition: stroke-dashoffset 1.4s var(--ease-out) 0.3s;
+}
+.gauge-needle { transform-origin: 50px 50px; transform: rotate(-130deg); transition: transform 1.6s var(--ease-spring) 0.35s; }
+.gauge-needle line { stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
+.gauge-hub { fill: currentColor; }
+.seg.is-in .gauge-arc { stroke-dashoffset: calc(100 - var(--fill)); }
+.seg.is-in .gauge-needle { transform: rotate(var(--a)); }
+.gauge-value { font-weight: 700; font-size: 1.1rem; letter-spacing: -0.03em; line-height: 1; }
+.gauge-label { font-family: var(--mono); font-size: 9px; line-height: 1.3; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-2); }
+
+html:not(.js) .gauge-arc { stroke-dashoffset: calc(100 - var(--fill)); }
+html:not(.js) .gauge-needle { transform: rotate(var(--a)); }
+
+/* Night cards (3D at night) */
+html.is-night .seg--cockpit .card {
+  background: rgba(14, 18, 34, 0.9);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: var(--flap-ink);
+}
+html.is-night .seg--cockpit .card-head,
+html.is-night .seg--cockpit .card-role span,
+html.is-night .seg--cockpit .gauge-label,
+html.is-night .seg--cockpit .quote-role { color: rgba(244, 238, 221, 0.66); }
+html.is-night .seg--cockpit .card-code { background: var(--marigold); color: var(--ink); }
+html.is-night .seg--cockpit .quote { background: rgba(245, 201, 76, 0.1); }
+html.is-night .seg--cockpit .gauge-ring { fill: rgba(255, 255, 255, 0.04); }
+html.is-night .seg--cockpit .card-reg { border-color: rgba(255, 210, 122, 0.6); }
+
+/* ---------- Legs: in-flight captions ---------- */
+.seg--leg { min-height: 118vh; padding: 0 var(--gutter); }
+.leg-caption {
+  position: sticky; top: calc(var(--nav-h) + 3.5vh);
+  width: max-content; max-width: 100%; margin: 0 auto;
+  display: flex; align-items: center; gap: clamp(10px, 2vw, 20px);
+  padding: 12px 20px; border-radius: var(--r-pill);
+  background: rgba(253, 251, 244, 0.93);
+  border: 1px solid var(--rule);
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-2);
+  box-shadow: var(--shadow);
+}
+.js .seg--leg .leg-caption { opacity: 0; transform: translateY(14px) scale(0.97); transition: opacity 0.6s var(--ease-out), transform 0.7s var(--ease-out); }
+.js .seg--leg.is-in .leg-caption { opacity: 1; transform: none; }
+.leg-port { display: flex; flex-direction: column; line-height: 1.25; }
+.leg-port b { font-family: var(--font); font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
+.leg-line {
+  position: relative; width: clamp(70px, 16vw, 210px); height: 2px;
+  background: repeating-linear-gradient(90deg, var(--blue-2) 0 8px, transparent 8px 14px);
+}
+.leg-line svg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(90deg); color: var(--ink); }
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .leg-line svg { animation: leg-fly linear both; animation-timeline: view(); animation-range: cover 25% cover 75%; }
+    @keyframes leg-fly { from { left: 0%; } to { left: 100%; } }
+  }
+}
+.leg-year { padding: 5px 10px; border-radius: var(--r-pill); background: var(--ink); color: var(--marigold); letter-spacing: 0.1em; }
+
+/* ---------- Thesis: the night over Mumbai ---------- */
+.seg--thesis { min-height: 200vh; padding: 0 var(--gutter); }
+.thesis-wrap {
+  position: sticky; top: 20vh;
+  max-width: 920px; margin: 0 auto; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 22px;
+}
+.thesis-wrap .card-head { justify-content: center; }
+.thesis-wrap .card-head span:last-child { margin-left: 0; }
+.thesis { font-size: clamp(2.4rem, 1.1rem + 5.4vw, 5.6rem); line-height: 0.98; letter-spacing: -0.05em; }
+.thesis .line { display: block; }
+.thesis .line--marigold { color: var(--marigold-deep); }
+.thesis-wrap > p:not(.card-head) { font-size: var(--fs-lg); color: var(--ink-2); }
+.js .seg--thesis .thesis .line { opacity: 0; transform: translateY(0.4em); transition: opacity 0.8s var(--ease-out), transform 1s var(--ease-out); }
+.js .seg--thesis.is-in .thesis .line { opacity: 1; transform: none; }
+.js .seg--thesis.is-in .thesis .line--marigold { transition-delay: 0.35s; }
+html.is-night .seg--thesis { color: var(--ivory); }
+html.is-night .seg--thesis .thesis { text-shadow: 0 4px 40px rgba(6, 10, 24, 0.55); }
+html.is-night .seg--thesis .thesis .line--marigold { color: var(--marigold); }
+html.is-night .seg--thesis .card-head,
+html.is-night .seg--thesis .thesis-wrap > p:not(.card-head) { color: rgba(253, 251, 244, 0.78); }
+html.is-night .seg--thesis .card-code { background: var(--marigold); color: var(--ink); }
+
+/* ---------- HUD ---------- */
+.hud {
+  position: fixed; left: 50%; bottom: max(14px, env(safe-area-inset-bottom));
+  z-index: 55;
+  display: flex; align-items: center; gap: 12px;
+  padding: 7px 8px 9px 16px; border-radius: var(--r-pill);
+  background: rgba(253, 251, 244, 0.88);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--rule);
+  box-shadow: var(--shadow);
+  opacity: 0; transform: translate(-50%, 140%);
+  transition: transform 0.5s var(--ease-out), opacity 0.3s;
+  pointer-events: none;
+}
+.hud.is-on { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.hud-year { display: flex; flex-direction: column; line-height: 1; padding-right: 4px; }
+.hud-year-label { font-size: 8.5px; text-transform: uppercase; letter-spacing: 0.18em; color: var(--ink-3); }
+.hud-year-value { margin-top: 3px; font-size: 1.15rem; font-weight: 500; color: var(--ink); }
+.odo { display: inline-flex; height: 1.2em; overflow: hidden; }
+.odo-digit { display: block; width: 0.62em; height: 1.2em; overflow: hidden; text-align: center; }
+.odo-strip { display: block; white-space: pre; line-height: 1.2em; transform: translateY(calc(var(--d, 0) * -1.2em)); transition: transform 0.8s var(--ease-out); }
+.hud-route { display: flex; gap: 2px; }
+.hud-stop {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 10px; border-radius: var(--r-pill);
+  font-size: 10.5px; letter-spacing: 0.1em; text-decoration: none; color: var(--ink-2);
+  transition: background var(--t), color var(--t);
+}
+.hud-stop:hover { background: var(--hair); color: var(--ink); }
+.hud-dot { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid currentColor; transition: background var(--t); }
+.hud-stop.is-past .hud-dot { background: currentColor; }
+.hud-stop.is-now { background: var(--ink); color: var(--marigold); }
+.hud-stop.is-now .hud-dot { background: var(--marigold); border-color: var(--marigold); }
+.hud-track { position: absolute; left: 18px; right: 18px; bottom: 3px; height: 2px; border-radius: 2px; overflow: hidden; background: var(--hair); }
+.hud-progress { position: absolute; inset: 0; background: var(--marigold-deep); transform-origin: left center; transform: scaleX(0); }
+.hud-plane { display: none; }
+
+/* ---------- 2D route map (lite / static tiers) ---------- */
+.stage.is-fallback canvas { display: none; }
+.route-map {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  padding: calc(var(--nav-h) + 4vh) 4vw 12vh max(4vw, calc((100vw - var(--max)) / 2 + 480px));
+  color: var(--blue);
+}
+.route-map svg { width: 100%; height: 100%; max-height: 84vh; }
+.rm-coast { fill: none; stroke: currentColor; stroke-width: 0.4; stroke-linecap: round; }
+.rm-route-base { fill: none; stroke: currentColor; stroke-width: 0.3; stroke-dasharray: 1.2 1.2; opacity: 0.4; }
+.rm-route { fill: none; stroke: var(--ink); stroke-width: 0.8; stroke-linecap: round; transition: stroke 0.6s; }
+.route-map.is-late .rm-route { stroke: var(--marigold-deep); }
+.rm-city circle { fill: var(--ink); }
+.rm-city .rm-ring { fill: none; stroke: var(--ink); stroke-width: 0.25; }
+.rm-city text { font-family: var(--mono); font-size: 3.6px; font-weight: 500; fill: var(--ink); letter-spacing: 0.08em; }
+.rm-city .rm-name { font-weight: 400; fill: var(--ink-2); font-size: 2.8px; letter-spacing: 0; }
+.rm-plane path { fill: var(--ink); }
+.route-map.is-late .rm-plane path { fill: var(--marigold-deep); }
+
+/* ---------- Small screens: cards flow over the scene instead of sticking ---------- */
+@media (max-width: 899px) {
+  .seg--stop { min-height: 0; padding: 52vh 16px 34vh; }
+  .seg--stop .card { position: relative; top: auto; margin: 0 auto; max-width: 520px; padding: 20px; }
+  .seg--leg { min-height: 96vh; }
+  .leg-caption { padding: 10px 14px; gap: 10px; }
+  .leg-port b { font-size: 1.15rem; }
+  .leg-port { font-size: 9.5px; }
+  .seg--thesis { min-height: 170vh; }
+  .thesis-wrap { top: 18vh; }
+  .gauges { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 14px; }
+  .hud { gap: 8px; padding: 6px 6px 8px 12px; }
+  .hud-stop { padding: 7px 8px; }
+  .hud-stop span:not(.hud-dot) { display: none; }
+  .hud-stop.is-now span:not(.hud-dot) { display: inline; }
+  .route-map { padding: calc(var(--nav-h) + 2vh) 4vw 14vh; }
+}
+@media (max-width: 380px) {
+  .leg-port { font-size: 0; }
+  .leg-port b { font-size: 1.05rem; }
+  .leg-line { width: 56px; }
+}
+
+/* ---------- Reduced motion (static tier): no scroll theatre ----------
+   Cards sit in normal flow and are all visible; the route map stays behind. */
+html[data-tier='static'] .seg--stop { min-height: 0; padding: 10vh var(--gutter); }
+html[data-tier='static'] .seg--stop .card { position: relative; top: auto; }
+html[data-tier='static'] .seg--leg { min-height: 0; padding: 3vh var(--gutter); }
+html[data-tier='static'] .leg-caption { position: relative; top: auto; }
+html[data-tier='static'] .seg--thesis { min-height: 0; padding: 14vh var(--gutter); }
+html[data-tier='static'] .thesis-wrap { position: relative; top: auto; }
+html.js[data-tier='static'] .seg .card,
+html.js[data-tier='static'] .seg .card > *,
+html.js[data-tier='static'] .leg-caption,
+html.js[data-tier='static'] .thesis .line { opacity: 1; transform: none; }

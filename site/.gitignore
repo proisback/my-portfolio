@@ -1,0 +1,9 @@
+node_modules/
+dist/
+# Generated from src/content.js by scripts/generate-pages.mjs
+work/
+read/
+comic/
+test-results/
+playwright-report/
+.lighthouse/
