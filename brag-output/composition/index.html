@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <script src="assets/audio-data.js"></script>
+    <style>
+      @font-face { font-family: 'Sora'; src: url('assets/fonts/sora-latin-400-normal.woff2') format('woff2'); font-weight: 400; }
+      @font-face { font-family: 'Sora'; src: url('assets/fonts/sora-latin-600-normal.woff2') format('woff2'); font-weight: 600; }
+      @font-face { font-family: 'Sora'; src: url('assets/fonts/sora-latin-700-normal.woff2') format('woff2'); font-weight: 700; }
+      @font-face { font-family: 'IBM Plex Mono'; src: url('assets/fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2'); font-weight: 400; }
+      @font-face { font-family: 'IBM Plex Mono'; src: url('assets/fonts/ibm-plex-mono-latin-500-normal.woff2') format('woff2'); font-weight: 500; }
+
+      :root {
+        --paper: #F5EFE1;
+        --paper-2: #EFE6D3;
+        --ivory: #FDFBF4;
+        --ink: #1F1A1D;
+        --ink-2: #5A524B;
+        --ink-3: #6B6358;
+        --rule: rgba(31, 26, 29, 0.16);
+        --blue: #22304A;
+        --blue-3: rgba(34, 48, 74, 0.28);
+        --marigold: #F5C94C;
+        --marigold-deep: #8F6400;
+        --marigold-soft: #FFF0B3;
+        --night: #12172A;
+        --flap-ink: #F4EEDD;
+        --lamp: #FFD27A;
+        --p: 38px;
+        --ch: 52px;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--paper); }
+      #root {
+        position: relative; width: 100%; height: 100%; overflow: hidden;
+        background: var(--paper); color: var(--ink);
+        font-family: 'Sora', sans-serif;
+      }
+      .mono { font-family: 'IBM Plex Mono', monospace; }
+
+      /* ---------- Footage ---------- */
+      .shot { position: absolute; inset: 0; overflow: hidden; }
+      .shot video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      #s1 { z-index: 1; } #s2a { z-index: 2; } #s2b { z-index: 3; } #s2c { z-index: 4; }
+      #s3 { z-index: 5; } #s4 { z-index: 6; }
+
+      /* ---------- Paper cards (the site's stop cards) ---------- */
+      .card {
+        position: absolute; z-index: 20;
+        background: rgba(253, 251, 244, 0.97);
+        border: 1px solid var(--rule);
+        border-radius: 22px;
+        box-shadow: 0 1px 0 rgba(31, 26, 29, 0.08), 0 22px 60px rgba(31, 26, 29, 0.16);
+        padding: 34px 44px 38px;
+      }
+      .reg { position: absolute; width: 18px; height: 18px; border-color: var(--blue); opacity: 0.55; }
+      .reg.tl { top: -10px; left: -10px; border-top: 1.5px solid; border-left: 1.5px solid; }
+      .reg.tr { top: -10px; right: -10px; border-top: 1.5px solid; border-right: 1.5px solid; }
+      .reg.bl { bottom: -10px; left: -10px; border-bottom: 1.5px solid; border-left: 1.5px solid; }
+      .reg.br { bottom: -10px; right: -10px; border-bottom: 1.5px solid; border-right: 1.5px solid; }
+      .kicker {
+        display: flex; align-items: center; gap: 12px;
+        font: 500 17px/1 'IBM Plex Mono', monospace; letter-spacing: 0.2em; text-transform: uppercase;
+        color: var(--ink-2);
+      }
+      .code-chip { padding: 6px 10px; background: var(--ink); color: var(--marigold); border-radius: 7px; letter-spacing: 0.14em; }
+      .big { display: block; font-weight: 700; letter-spacing: -0.04em; line-height: 1.04; }
+      .mask { display: block; overflow: hidden; padding-bottom: 0.08em; }
+      .ln { display: block; }
+
+      #hook { left: 120px; bottom: 132px; width: 960px; }
+      #hook .big { margin-top: 22px; font-size: 76px; }
+      #eight { left: 120px; bottom: 132px; width: 820px; }
+      #eight .big { margin-top: 22px; font-size: 76px; }
+      .deep { color: var(--marigold-deep); }
+
+      /* ---------- Route banner + year odometer ---------- */
+      #route {
+        position: absolute; z-index: 21; top: 56px; left: 50%; margin-left: -470px; width: 940px; height: 92px;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0 34px 0 38px;
+        background: rgba(18, 23, 42, 0.94); color: var(--flap-ink);
+        border-radius: 999px;
+        box-shadow: 0 0 0 1px rgba(255, 210, 122, 0.16), 0 24px 50px rgba(18, 23, 42, 0.28);
+      }
+      .legs { display: flex; align-items: center; gap: 18px; font: 500 34px/1 'IBM Plex Mono', monospace; letter-spacing: 0.08em; }
+      .iata { position: relative; color: rgba(244, 238, 221, 0.58); }
+      .iata .on { position: absolute; inset: 0; color: var(--marigold); text-shadow: 0 0 22px rgba(245, 201, 76, 0.55); opacity: 0; }
+      .iata .bar { position: absolute; left: 0; right: 0; bottom: -12px; height: 3px; border-radius: 3px; background: var(--marigold); transform-origin: 0 50%; transform: scaleX(0); }
+      .hop { width: 26px; height: 26px; color: rgba(244, 238, 221, 0.45); }
+      .hop svg { width: 100%; height: 100%; transform: rotate(90deg); }
+      .odo { display: flex; align-items: center; gap: 16px; padding-left: 30px; border-left: 1px solid rgba(244, 238, 221, 0.16); }
+      .odo-k { font: 500 14px/1 'IBM Plex Mono', monospace; letter-spacing: 0.22em; color: rgba(255, 210, 122, 0.75); }
+      .odo-digits { display: flex; font: 600 40px/1 'Sora', sans-serif; letter-spacing: -0.02em; color: var(--flap-ink); }
+      .reel { display: block; height: 44px; overflow: hidden; width: 0.8em; text-align: center; }
+      .reel-strip { display: block; }
+      .reel-strip b { display: block; height: 44px; line-height: 44px; font-weight: 600; }
+
+      /* ---------- Night captions (cockpit, thesis) ---------- */
+      .scrim {
+        position: absolute; z-index: 19; inset: 0; pointer-events: none;
+        background: radial-gradient(120% 75% at 22% 12%, rgba(10, 13, 26, 0.78) 0%, rgba(10, 13, 26, 0.45) 45%, rgba(10, 13, 26, 0) 75%);
+      }
+      .night-cap { position: absolute; z-index: 22; left: 128px; color: var(--flap-ink); }
+      .night-cap .kicker { color: rgba(255, 210, 122, 0.85); }
+      .night-cap .big { margin-top: 20px; font-size: 68px; }
+      #cap1, #cap2 { left: auto; right: 110px; top: 150px; width: 900px; text-align: right; }
+      #cap1 .kicker, #cap2 .kicker { justify-content: flex-end; }
+      .gold-soft { color: var(--marigold); }
+      #thesis { top: 120px; width: 1500px; }
+      #thesis .big { font-size: 120px; line-height: 1.02; margin-top: 0; }
+      #thesis .gold { color: var(--marigold); text-shadow: 0 0 calc(var(--glow, 0) * 46px) rgba(245, 201, 76, calc(0.25 + var(--glow, 0) * 0.45)); }
+
+      /* ---------- Departures board ---------- */
+      #board-scene {
+        position: absolute; z-index: 30; inset: 0;
+        color: var(--flap-ink);
+        background:
+          radial-gradient(70% 50% at 50% 0%, rgba(255, 210, 122, 0.13), rgba(255, 210, 122, 0) 70%),
+          radial-gradient(130% 70% at 50% 108%, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0) 60%),
+          linear-gradient(180deg, var(--night) 0%, #0E1222 100%);
+        clip-path: inset(100% 0 0 0);
+      }
+      .board-head { position: absolute; left: 160px; top: 84px; }
+      .board-label { font: 500 18px/1 'IBM Plex Mono', monospace; letter-spacing: 0.24em; text-transform: uppercase; color: rgba(255, 210, 122, 0.85); }
+      .board-title { margin-top: 18px; font-size: 76px; font-weight: 700; letter-spacing: -0.04em; line-height: 1; color: var(--ivory); }
+      .board {
+        position: absolute; left: 160px; right: 160px; top: 262px;
+        padding: 26px 30px 22px;
+        border-radius: 22px;
+        background: linear-gradient(180deg, #1B2135 0%, #121727 50%, #0D111D 100%);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 226, 170, 0.14),
+          0 0 0 1px #05070D, 0 0 0 6px #161B2C, 0 0 0 7px rgba(255, 210, 122, 0.12),
+          0 -24px 70px -34px rgba(255, 210, 122, 0.32), 0 60px 90px -40px rgba(0, 0, 0, 0.9);
+      }
+      .board-bar {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0 6px 16px; margin-bottom: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
+      }
+      .board-name { display: flex; align-items: center; gap: 14px; font: 500 20px/1 'IBM Plex Mono', monospace; letter-spacing: 0.24em; text-transform: uppercase; color: var(--lamp); text-shadow: 0 0 18px rgba(255, 210, 122, 0.35); }
+      .board-icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 8px; background: var(--lamp); color: var(--night); box-shadow: 0 0 22px rgba(255, 210, 122, 0.4); }
+      .board-icon svg { width: 60%; height: 60%; transform: rotate(45deg); }
+      .board-clock { font: 500 15px/1 'IBM Plex Mono', monospace; letter-spacing: 0.22em; color: rgba(244, 238, 221, 0.62); }
+      .cols, .row { display: grid; grid-template-columns: calc(6 * var(--p)) calc(15 * var(--p)) calc(6 * var(--p)) calc(0.8 * var(--p)) calc(9 * var(--p)); column-gap: calc(0.75 * var(--p)); align-items: center; padding: 0 16px; }
+      .cols { padding-top: 6px; padding-bottom: 10px; font: 500 13px/1 'IBM Plex Mono', monospace; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255, 210, 122, 0.66); }
+      .row { padding-top: 11px; padding-bottom: 11px; }
+      .row + .row { border-top: 1px solid rgba(0, 0, 0, 0.6); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035); }
+      .fl { display: flex; gap: 3px; height: var(--ch); font: 500 36px/1 'IBM Plex Mono', monospace; text-transform: uppercase; }
+      .fl--code { color: var(--lamp); }
+      .fl--status { color: var(--lc); }
+      .fc {
+        position: relative; display: block; flex: none;
+        width: calc(var(--p) - 3px); height: var(--ch); overflow: hidden; border-radius: 5px;
+        background: linear-gradient(180deg, #232A3F 0%, #191E30 50%, #121626 50%, #181D2F 100%);
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.8), 0 2px 3px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+      }
+      .fc::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: rgba(3, 5, 10, 0.92); }
+      .strip { display: block; }
+      .strip i { display: block; height: var(--ch); line-height: var(--ch); text-align: center; font-style: normal; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.55); }
+      .row[data-status="live"] { --lc: #5DD38C; }
+      .row[data-status="prototype"] { --lc: #FF9F43; }
+      .row[data-status="launched"] { --lc: var(--marigold); }
+      .lamp {
+        justify-self: center; width: calc(var(--p) * 0.42); height: calc(var(--p) * 0.42); border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #FFFDF2 0 10%, var(--lc) 45%, #1a1a1a 130%);
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.55), 0 0 14px 2px var(--lc);
+      }
+
+      /* ---------- End card: the boarding pass ---------- */
+      #end {
+        position: absolute; z-index: 40; inset: 0;
+        background:
+          radial-gradient(60% 60% at 50% 45%, rgba(253, 251, 244, 0.9), rgba(245, 239, 225, 0) 70%),
+          var(--paper);
+        clip-path: circle(0% at 50% 50%);
+      }
+      .grid-bg {
+        position: absolute; inset: 0;
+        background-image:
+          linear-gradient(rgba(34, 48, 74, 0.07) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(34, 48, 74, 0.07) 1px, transparent 1px);
+        background-size: 64px 64px;
+        mask-image: radial-gradient(80% 80% at 50% 50%, #000 30%, transparent 85%);
+      }
+      .pass {
+        position: absolute; left: 50%; top: 50%; width: 1240px; height: 560px; margin: -300px 0 0 -620px;
+        display: grid; grid-template-columns: 1fr 340px;
+        background: var(--ivory); color: var(--ink);
+        border-radius: 28px;
+        box-shadow: 0 1px 0 rgba(31, 26, 29, 0.08), 0 40px 90px rgba(31, 26, 29, 0.18), 0 8px 24px rgba(31, 26, 29, 0.06);
+      }
+      .pass-main { padding: 40px 48px 40px; display: flex; flex-direction: column; min-width: 0; }
+      .pass-top { display: flex; justify-content: space-between; font: 500 17px/1 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.2em; color: var(--ink-2); padding-bottom: 22px; border-bottom: 1.5px dashed var(--rule); }
+      .pass-k { display: block; font: 500 15px/1 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.18em; color: var(--ink-3); }
+      .pass-name { margin-top: 30px; font-size: 92px; font-weight: 700; letter-spacing: -0.045em; line-height: 1; }
+      .pass-claim { margin-top: 18px; font-size: 38px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
+      .pass-claim u { text-decoration: none; background: linear-gradient(transparent 62%, rgba(245, 201, 76, 0.75) 62%); }
+      .pass-url {
+        margin-top: auto; padding-top: 24px; border-top: 1.5px dashed var(--rule);
+        display: flex; align-items: center; justify-content: space-between;
+      }
+      .url { font: 500 38px/1 'IBM Plex Mono', monospace; letter-spacing: 0; color: var(--ink); white-space: nowrap; }
+      .url-wrap { display: flex; align-items: center; gap: 16px; }
+      .url-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--marigold); box-shadow: 0 0 0 4px rgba(245, 201, 76, 0.3); }
+      .credit { position: absolute; left: 0; right: 0; bottom: 92px; text-align: center; font: 500 20px/1 'IBM Plex Mono', monospace; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); }
+      .pass-stub {
+        position: relative; padding: 40px 34px; display: flex; flex-direction: column; gap: 6px;
+        border-left: 2.5px dashed var(--rule);
+        background: var(--marigold-soft);
+        border-radius: 0 28px 28px 0;
+        box-shadow: inset 0 0 calc(var(--glow, 0) * 90px) rgba(245, 201, 76, calc(var(--glow, 0) * 0.9));
+      }
+      .pass-stub .pass-v { display: block; font-size: 34px; font-weight: 600; letter-spacing: -0.01em; }
+      .pass-stub .pass-v + .pass-k { margin-top: 22px; }
+      .pass-stub::before, .pass-stub::after { content: ''; position: absolute; left: -16px; width: 30px; height: 30px; border-radius: 50%; background: var(--paper); }
+      .pass-stub::before { top: -15px; }
+      .pass-stub::after { bottom: -15px; }
+      .barcode { margin-top: auto; width: 100%; height: 92px; color: var(--ink); }
+      .route-mini { display: flex; align-items: center; gap: 16px; margin-top: 30px; font: 700 54px/1 'Sora', sans-serif; letter-spacing: -0.04em; }
+      .route-mini .to { color: var(--marigold-deep); }
+      .route-mini .dash { width: 120px; border-top: 2px dashed var(--blue-3); }
+      .route-mini svg { width: 30px; height: 30px; transform: rotate(90deg); }
+      .route-mini .sub { display: block; margin-top: 8px; font: 400 15px/1 'IBM Plex Mono', monospace; letter-spacing: 0.04em; color: var(--ink-2); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="24" data-width="1920" data-height="1080">
+
+      <!-- Footage: the real site, captured frame-by-frame at 1080p -->
+      <div class="shot" id="s1">
+        <video id="v1" src="assets/footage/01-takeoff.mp4" data-start="0" data-duration="3.6" data-media-start="0" data-track-index="0" muted playsinline></video>
+      </div>
+      <div class="shot" id="s2a">
+        <video id="v2a" src="assets/footage/02a-cloud.mp4" data-start="3.3" data-duration="1.95" data-media-start="0.25" data-track-index="1" muted playsinline></video>
+      </div>
+      <div class="shot" id="s2b">
+        <video id="v2b" src="assets/footage/02b-jamshedpur.mp4" data-start="5.1" data-duration="1.95" data-media-start="0.2" data-track-index="2" muted playsinline></video>
+      </div>
+      <div class="shot" id="s2c">
+        <video id="v2c" src="assets/footage/02c-chennai.mp4" data-start="6.9" data-duration="1.84" data-media-start="0.3" data-track-index="3" muted playsinline></video>
+      </div>
+      <div class="shot" id="s3">
+        <video id="v3" src="assets/footage/03-cockpit.mp4" data-start="8.74" data-duration="4.6" data-media-start="0" data-track-index="4" muted playsinline></video>
+      </div>
+      <div class="shot" id="s4">
+        <video id="v4" src="assets/footage/04-wave.mp4" data-start="13.11" data-duration="4.6" data-media-start="0.4" data-track-index="5" muted playsinline></video>
+      </div>
+
+      <!-- Scene 1: hook -->
+      <div class="card" id="hook">
+        <i class="reg tl"></i><i class="reg tr"></i><i class="reg bl"></i><i class="reg br"></i>
+        <div class="kicker"><span class="code-chip">BOM</span><span>Prateek Mehta</span></div>
+        <div class="big">
+          <span class="mask"><span class="ln">I turned my career</span></span>
+          <span class="mask"><span class="ln">into a <span class="deep">flight.</span></span></span>
+        </div>
+      </div>
+
+      <!-- Scene 2: the route -->
+      <div id="route">
+        <div class="legs mono">
+          <span class="iata" id="c0">BOM<span class="on">BOM</span><span class="bar"></span></span>
+          <span class="hop"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 15.5v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V8.5l-8 5v2l8-2.5V18l-2 1.5V21l3.5-1 3.5 1v-1.5L13 18v-5z"/></svg></span>
+          <span class="iata" id="c1">IXW<span class="on">IXW</span><span class="bar"></span></span>
+          <span class="hop"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 15.5v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V8.5l-8 5v2l8-2.5V18l-2 1.5V21l3.5-1 3.5 1v-1.5L13 18v-5z"/></svg></span>
+          <span class="iata" id="c2">MAA<span class="on">MAA</span><span class="bar"></span></span>
+          <span class="hop"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 15.5v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V8.5l-8 5v2l8-2.5V18l-2 1.5V21l3.5-1 3.5 1v-1.5L13 18v-5z"/></svg></span>
+          <span class="iata" id="c3">BOM<span class="on">BOM</span><span class="bar"></span></span>
+        </div>
+        <div class="odo">
+          <span class="odo-k">YEAR</span>
+          <span class="odo-digits" id="odo"></span>
+        </div>
+      </div>
+
+      <div class="card" id="eight">
+        <i class="reg tl"></i><i class="reg tr"></i><i class="reg bl"></i><i class="reg br"></i>
+        <div class="kicker"><span class="code-chip">8+</span><span>Years in business analysis &amp; operations</span></div>
+        <div class="big">
+          <span class="mask"><span class="ln">Eight years.</span></span>
+          <span class="mask"><span class="ln">Three cities.</span></span>
+        </div>
+      </div>
+
+      <!-- Scene 3 + 4: night captions -->
+      <div class="scrim" id="scrim"></div>
+      <div class="night-cap" id="cap1">
+        <div class="kicker mono">Seat · Captain</div>
+        <div class="big"><span class="mask"><span class="ln gold-soft">2026.</span></span><span class="mask"><span class="ln">I took the controls.</span></span></div>
+      </div>
+      <div class="night-cap" id="cap2">
+        <div class="kicker mono">Co-pilot</div>
+        <div class="big"><span class="mask"><span class="ln">With AI as</span></span><span class="mask"><span class="ln">my co-pilot.</span></span></div>
+      </div>
+      <div class="night-cap" id="thesis">
+        <div class="big">
+          <span class="mask"><span class="ln">Stop fixing systems.</span></span>
+          <span class="mask"><span class="ln gold" id="gold">Start building them.</span></span>
+        </div>
+      </div>
+
+      <!-- Scene 5: departures board -->
+      <div id="board-scene">
+        <div class="board-head">
+          <div class="board-label" id="bl">Now boarding</div>
+          <div class="board-title" id="bt">7 AI products built in 2026</div>
+        </div>
+        <div class="board" id="board">
+          <div class="board-bar">
+            <div class="board-name"><span class="board-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 15.5v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V8.5l-8 5v2l8-2.5V18l-2 1.5V21l3.5-1 3.5 1v-1.5L13 18v-5z"/></svg></span><span>Departures</span></div>
+            <div class="board-clock">BOM · 2026</div>
+          </div>
+          <div class="cols"><span>Flight</span><span>Destination</span><span>Month</span><span></span><span>Status</span></div>
+          <div id="rows"></div>
+        </div>
+      </div>
+
+      <!-- End card -->
+      <div id="end">
+        <div class="grid-bg"></div>
+        <div class="pass" id="pass">
+          <div class="pass-main">
+            <div class="pass-top"><span>Boarding pass</span><span>PM 2026</span></div>
+            <div class="pass-name" id="pname">Prateek Mehta</div>
+            <div class="pass-claim" id="pclaim">Product Manager who <u>builds with AI.</u></div>
+            <div class="route-mini" id="proute">
+              <span><span>OPS</span><span class="sub">Fixing systems</span></span>
+              <span class="dash"></span>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 15.5v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V8.5l-8 5v2l8-2.5V18l-2 1.5V21l3.5-1 3.5 1v-1.5L13 18v-5z"/></svg>
+              <span class="dash"></span>
+              <span><span class="to">PM</span><span class="sub">Building them</span></span>
+            </div>
+            <div class="pass-url">
+              <div class="url-wrap" id="url"><span class="url-dot"></span><span class="url">proisback.github.io/my-portfolio</span></div>
+            </div>
+          </div>
+          <div class="pass-stub" id="stub">
+            <span class="pass-k">Flight</span><span class="pass-v">PM 2026</span>
+            <span class="pass-k">Seat</span><span class="pass-v">Captain</span>
+            <span class="pass-k">Class</span><span class="pass-v">Builds with AI</span>
+            <svg class="barcode" viewBox="0 0 123 44" preserveAspectRatio="none" fill="currentColor"><rect x="0" y="0" width="1" height="44"/><rect x="5" y="0" width="1" height="44"/><rect x="11" y="0" width="2" height="44"/><rect x="18" y="0" width="2" height="44"/><rect x="23" y="0" width="1" height="44"/><rect x="28" y="0" width="3" height="44"/><rect x="36" y="0" width="2" height="44"/><rect x="42" y="0" width="1" height="44"/><rect x="46" y="0" width="2" height="44"/><rect x="52" y="0" width="1" height="44"/><rect x="57" y="0" width="3" height="44"/><rect x="63" y="0" width="2" height="44"/><rect x="70" y="0" width="3" height="44"/><rect x="77" y="0" width="2" height="44"/><rect x="82" y="0" width="2" height="44"/><rect x="89" y="0" width="3" height="44"/><rect x="95" y="0" width="3" height="44"/><rect x="101" y="0" width="3" height="44"/><rect x="108" y="0" width="2" height="44"/><rect x="114" y="0" width="2" height="44"/><rect x="119" y="0" width="1" height="44"/></svg>
+          </div>
+        </div>
+        <div class="credit" id="credit">Designed and built with Claude Code.</div>
+      </div>
+
+      <!-- Audio: music bed + sparse SFX -->
+      <audio id="music" src="assets/music/happy-beats-business-moves-vol-12-by-ende-dot-app.mp3" data-start="0" data-duration="24" data-track-index="10"
+        data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0},{"t":0.6,"v":0.62},{"t":22.8,"v":0.62},{"t":24,"v":0}]}]}'></audio>
+      <audio id="sfx-cloud" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="3.32" data-duration="0.18" data-track-index="11" data-volume="0.85"></audio>
+      <audio id="sfx-cockpit" src="assets/sfx/impact/impactSoft_medium_004.ogg" data-start="8.74" data-duration="0.15" data-track-index="12" data-volume="0.8"></audio>
+      <audio id="sfx-row-first" src="assets/sfx/casino/card-slide-1.ogg" data-start="17.74" data-duration="0.6" data-track-index="13" data-volume="0.8"></audio>
+      <audio id="sfx-row-last" src="assets/sfx/casino/card-slide-1.ogg" data-start="19.38" data-duration="0.6" data-track-index="14" data-volume="0.8"></audio>
+      <audio id="sfx-bell" src="assets/sfx/impact/impactBell_heavy_000.ogg" data-start="22.93" data-duration="1.07" data-track-index="15" data-volume="0.85"></audio>
+    </div>
+
+    <script>
+      (function () {
+        // Seeded PRNG: flap glyphs are the same on every render.
+        let seed = 20260;
+        const rnd = () => {
+          seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+          let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+        const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const CH = 52;
+        const SPINS = 4;
+
+        // ----- Year odometer reels: 2017 -> 2022 -> 2023 -> 2025 -----
+        const odo = document.getElementById('odo');
+        const reels = [];
+        for (let i = 0; i < 4; i++) {
+          const reel = document.createElement('span');
+          reel.className = 'reel';
+          const strip = document.createElement('span');
+          strip.className = 'reel-strip';
+          for (let d = 0; d < 20; d++) {
+            const b = document.createElement('b');
+            b.textContent = String(d % 10);
+            strip.appendChild(b);
+          }
+          reel.appendChild(strip);
+          odo.appendChild(reel);
+          reels.push(strip);
+        }
+
+        // ----- Board rows (site content, src/content.js PRODUCTS) -----
+        const PRODUCTS = [
+          ['PM 101', 'PLAN KARO CHALO', 'APR 26', 'LIVE'],
+          ['PM 102', 'PMPATHFINDER', 'MAR 26', 'LIVE'],
+          ['PM 103', 'GALPALS', 'APR 26', 'LIVE'],
+          ['PM 104', 'HITAARTH', 'SEP 26', 'LAUNCHED'],
+          ['PM 105', 'SIGNAL', 'MAR 26', 'PROTOTYPE'],
+          ['PM 106', 'STOREOPS', 'FEB 26', 'PROTOTYPE'],
+          ['PM 107', 'BHOJAN', 'MAR 26', 'LIVE'],
+        ];
+        const WIDTHS = [6, 15, 6, 9];
+        const CLASSES = ['fl--code', 'fl--board', 'fl--month', 'fl--status'];
+        const rowsEl = document.getElementById('rows');
+        const rowCells = [];
+        const lamps = [];
+        PRODUCTS.forEach((p) => {
+          const row = document.createElement('div');
+          row.className = 'row';
+          row.dataset.status = p[3].toLowerCase();
+          const cells = [];
+          p.forEach((text, f) => {
+            const field = document.createElement('div');
+            field.className = 'fl ' + CLASSES[f];
+            const padded = text.padEnd(WIDTHS[f], ' ');
+            for (let c = 0; c < WIDTHS[f]; c++) {
+              const cell = document.createElement('span');
+              cell.className = 'fc';
+              const strip = document.createElement('span');
+              strip.className = 'strip';
+              const seq = [' '];
+              for (let s = 0; s < SPINS; s++) seq.push(GLYPHS[Math.floor(rnd() * GLYPHS.length)]);
+              seq.push(padded[c]);
+              seq.forEach((g) => {
+                const i = document.createElement('i');
+                i.textContent = g;
+                strip.appendChild(i);
+              });
+              cell.appendChild(strip);
+              field.appendChild(cell);
+              cells.push({ strip, field: f, index: c });
+            }
+            row.appendChild(field);
+            if (f === 2) {
+              const lamp = document.createElement('span');
+              lamp.className = 'lamp';
+              row.appendChild(lamp);
+              lamps.push(lamp);
+            }
+          });
+          rowsEl.appendChild(row);
+          rowCells.push(cells);
+        });
+
+        // ----- Audio-reactive glow: smoothed bass envelope as keyframes -----
+        const AD = window.AUDIO_DATA;
+        function glowKeys(from, to, gain) {
+          const keys = [];
+          let env = 0;
+          const step = 2 / AD.fps;
+          for (let t = from; t < to; t += step) {
+            const fr = AD.frames[Math.min(AD.frames.length - 1, Math.round(t * AD.fps))];
+            const bass = (fr.bands[0] + fr.bands[1]) / 2;
+            env = env * 0.55 + bass * 0.45;
+            keys.push({ '--glow': Math.min(1, env * gain), duration: step });
+          }
+          return keys;
+        }
+
+        const tl = gsap.timeline({ paused: true });
+        const out = 'power3.out';
+        const io = 'power2.inOut';
+
+        // ===== Scene 1: take-off (0 - 3.4) =====
+        tl.fromTo('#hook', { autoAlpha: 0, y: 40, scale: 0.97 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, ease: out }, 1.15);
+        tl.fromTo('#hook .ln', { yPercent: 105 }, { yPercent: 0, duration: 0.7, ease: out, stagger: 0.12 }, 1.25);
+        tl.to('#hook', { autoAlpha: 0, y: -18, duration: 0.3, ease: 'power2.in' }, 3.22);
+
+        // ===== Scene 2: the route (3.4 - 8.74) =====
+        // Soft scaled crossfades between the city shots.
+        tl.fromTo('#s2a', { opacity: 0, scale: 1.06 }, { opacity: 1, scale: 1, duration: 0.28, ease: out }, 3.3);
+        tl.fromTo('#s2b', { opacity: 0, scale: 1.05 }, { opacity: 1, scale: 1, duration: 0.24, ease: out }, 5.1);
+        tl.fromTo('#s2c', { opacity: 0, scale: 1.05 }, { opacity: 1, scale: 1, duration: 0.24, ease: out }, 6.9);
+
+        tl.fromTo('#route', { autoAlpha: 0, y: -30 }, { autoAlpha: 1, y: 0, duration: 0.55, ease: out }, 3.5);
+        const lightCode = (id, at) => {
+          tl.to(`${id} .on`, { opacity: 1, duration: 0.3, ease: 'power1.out' }, at);
+          tl.to(`${id} .bar`, { scaleX: 1, duration: 0.45, ease: out }, at);
+        };
+        const dimCode = (id, at) => {
+          tl.to(`${id} .on`, { opacity: 0.35, duration: 0.3 }, at);
+          tl.to(`${id} .bar`, { opacity: 0.3, duration: 0.3 }, at);
+        };
+        lightCode('#c0', 3.65);
+        dimCode('#c0', 5.15); lightCode('#c1', 5.15);
+        dimCode('#c1', 6.95); lightCode('#c2', 6.95);
+        dimCode('#c2', 8.1); lightCode('#c3', 8.1);
+        tl.to('#route', { autoAlpha: 0, y: -20, duration: 0.25, ease: 'power2.in' }, 8.5);
+
+        // Odometer: reel index n shows digit n % 10; the extra ten let a digit spin a full turn.
+        const setYear = (digits, at, dur) => {
+          digits.forEach((d, i) => {
+            if (d === null) return;
+            tl.to(reels[i], { y: -d * 44, duration: dur, ease: 'power2.inOut' }, at + i * 0.05);
+          });
+        };
+        tl.set(reels[0], { y: -2 * 44 }, 0);
+        tl.set(reels[1], { y: 0 }, 0);
+        tl.set(reels[2], { y: -1 * 44 }, 0);
+        tl.set(reels[3], { y: -7 * 44 }, 0);
+        setYear([null, null, 2, 12], 4.0, 0.9);   // 2017 -> 2022 (BOM -> IXW)
+        setYear([null, null, null, 13], 6.95, 0.6); // 2023 (IXW -> MAA)
+        setYear([null, null, null, 15], 8.1, 0.5);  // 2025 (MAA -> BOM)
+
+        tl.fromTo('#eight', { autoAlpha: 0, y: 40, scale: 0.97 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.65, ease: out }, 5.45);
+        tl.fromTo('#eight .ln', { yPercent: 105 }, { yPercent: 0, duration: 0.65, ease: out, stagger: 0.14 }, 5.55);
+        tl.to('#eight', { autoAlpha: 0, y: -16, duration: 0.24, ease: 'power2.in' }, 8.5);
+
+        // ===== Scene 3: the cockpit (8.74 - 13.11), hard cut on the beat =====
+        // beat-locked: 8.74s
+        tl.fromTo('#s3', { scale: 1.035 }, { scale: 1, duration: 4.6, ease: 'none' }, 8.74);
+        
+        tl.fromTo('#cap1', { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, 8.95);
+        tl.fromTo('#cap1 .ln', { yPercent: 105 }, { yPercent: 0, duration: 0.7, ease: out, stagger: 0.12 }, 8.95);
+        tl.to('#cap1', { autoAlpha: 0, y: -14, duration: 0.3, ease: 'power2.in' }, 10.75);
+        tl.fromTo('#cap2', { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, 11.0);
+        tl.fromTo('#cap2 .ln', { yPercent: 105 }, { yPercent: 0, duration: 0.7, ease: out, stagger: 0.12 }, 11.0);
+        tl.to('#cap2', { autoAlpha: 0, y: -14, duration: 0.3, ease: 'power2.in' }, 12.85);
+
+        // ===== Scene 4: blueprint to colour (13.11 - 17.47) =====
+        // beat-locked: 13.11s
+        tl.fromTo('#s4', { opacity: 0, scale: 1.05 }, { opacity: 1, scale: 1, duration: 0.4, ease: out }, 13.11);
+        tl.fromTo('#scrim', { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5, ease: 'power1.out' }, 13.2);
+        tl.fromTo('#thesis', { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, 13.45);
+        tl.fromTo('#thesis .ln', { yPercent: 105 }, { yPercent: 0, duration: 0.8, ease: out, stagger: 0.75 }, 13.45);
+        // Bass warms the marigold line while it holds.
+        tl.to('#gold', { keyframes: glowKeys(14.3, 17.5, 1.5), ease: 'none' }, 14.3);
+
+        // ===== Scene 5: departures board (17.47 - 21.28) =====
+        // beat-locked: 17.47s
+        tl.to('#board-scene', { clipPath: 'inset(0% 0 0 0)', duration: 0.6, ease: 'power3.inOut' }, 17.4);
+        // The board now covers scene 4: retire its captions.
+        tl.set(['#thesis', '#scrim'], { autoAlpha: 0 }, 18.05);
+        tl.fromTo('#bl', { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: out }, 17.62);
+        tl.fromTo('#bt', { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: out }, 17.7);
+        tl.fromTo('#board', { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: out }, 17.55);
+        tl.set(lamps, { opacity: 0.12, scale: 0.7 }, 0);
+
+        // beat-grid: rows on the half-beat from 17.74s (17.74, 18.02, 18.29, 18.56, 18.83, 19.10, 19.38)
+        const ROW_AT = [17.74, 18.02, 18.29, 18.56, 18.83, 19.10, 19.38];
+        rowCells.forEach((cells, r) => {
+          const start = ROW_AT[r];
+          cells.forEach((cell, k) => {
+            const at = start + k * 0.008 + cell.field * 0.03;
+            tl.to(cell.strip, { y: -(SPINS + 1) * CH, duration: 0.45, ease: `steps(${SPINS + 1})` }, at);
+          });
+          tl.to(lamps[r], { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(2)' }, start + 0.75);
+        });
+
+        // ===== End card (21.28 - 24.0) =====
+        tl.to('#end', { clipPath: 'circle(75% at 50% 50%)', duration: 0.8, ease: 'power3.inOut' }, 21.2);
+        tl.fromTo('#pass', { autoAlpha: 0, y: 70, rotation: -5 }, { autoAlpha: 1, y: 0, rotation: -1.5, duration: 0.9, ease: 'power3.out' }, 21.4);
+        tl.fromTo(['#pname', '#pclaim', '#proute'], { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.55, ease: out, stagger: 0.12 }, 21.75);
+        tl.fromTo('#stub', { x: 40, rotation: 3 }, { x: 0, rotation: 0, duration: 0.7, ease: 'back.out(1.6)' }, 21.6);
+        // beat-locked: 22.93s (URL lands with the bell)
+        tl.fromTo('#url', { autoAlpha: 0, x: -24 }, { autoAlpha: 1, x: 0, duration: 0.45, ease: out }, 22.9);
+        tl.fromTo('#credit', { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4 }, 23.1);
+        tl.to('#stub', { keyframes: glowKeys(21.9, 24.0, 1.1), ease: 'none' }, 21.9);
+        tl.set({}, {}, 24);
+
+        window.__timelines['main'] = tl;
+      })();
+    </script>
+  </body>
+</html>
