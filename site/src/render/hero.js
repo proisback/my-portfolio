@@ -35,7 +35,7 @@ export function nav() {
 
 export function hero() {
   const [first, ...rest] = PROFILE.name.split(' ');
-  const stats = STATS.map(
+  const stats = STATS.filter((s) => s.hero).map(
     (s) => `<li class="stat"><span class="stat-value">${esc(s.value)}</span><span class="stat-label">${esc(s.label)}</span></li>`
   ).join('');
   const claim = esc(PROFILE.claim).replace('builds with AI', '<span class="ink-mark">builds with AI</span>');
@@ -52,13 +52,9 @@ export function hero() {
       <div class="hero-ctas">
         <a class="btn btn--marigold" href="#mumbai" data-board-flight>${ICON.plane}<span>Board the flight</span></a>
         ${link(PROFILE.resume, 'View resume', 'btn btn--ghost')}
-        <a class="btn btn--ghost" href="#contact">Get in touch</a>
-        ${link(PROFILE.linkedin, ICON.linkedin, 'btn-icon', 'aria-label="LinkedIn"')}
       </div>
       <p class="hero-meta mono">
-        <span class="avail"><span class="live-dot" aria-hidden="true"></span>${esc(PROFILE.availability)}</span>
         <a href="#board">Skip to the work</a>
-        <a href="${href('read/')}">Read as a page</a>
       </p>
     </div>
     ${heroPass()}

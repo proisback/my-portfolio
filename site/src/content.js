@@ -14,10 +14,9 @@ export const SITE = {
 
 export const PROFILE = {
   name: 'Prateek Mehta',
-  eyebrow: 'AI-Native Product Manager · Mumbai',
+  eyebrow: 'Open to PM roles · Mumbai',
   claim: 'Product Manager who builds with AI.',
-  intro:
-    "Eight years of solving operations problems across financial services taught me how to frame problems clearly, align teams, and ship. Now I bring that discipline to building AI-native products and I've built seven in 2026 to prove it.",
+  intro: "I fixed systems across banking and insurance. Then I quit to see what AI made possible. Here's the flight.",
   availability: 'Open to PM roles · Mumbai',
   availabilityLong: 'Open to PM roles · Mumbai, open to remote',
   location: 'Mumbai, India',
@@ -29,11 +28,12 @@ export const PROFILE = {
   thesis: ['Stop fixing systems.', 'Start building them.'],
 };
 
+// All four sit on the cockpit gauges; `hero` ones also open the page.
 export const STATS = [
-  { value: '8+', label: 'Years in Business Analysis & Operations' },
-  { value: '180+', label: 'User Research Data Points' },
-  { value: '30%', label: 'Avg Efficiency Gain Delivered' },
-  { value: '7', label: 'AI Products Built in 2026' },
+  { value: '8+', label: 'Years in business analysis & ops', hero: true },
+  { value: '180+', label: 'Research data points' },
+  { value: '30%', label: 'Avg efficiency gain' },
+  { value: '7', label: 'AI products built in 2026', hero: true },
 ];
 
 // The hero boarding pass. Design copy, no facts beyond the profile.
@@ -55,17 +55,24 @@ export const CITIES = {
 
 // Flight segments, in scroll order. `beat` names the 3D choreography beat
 // that plays while the segment is on screen. `leg` segments carry no card.
+// `pull` is the last line of a stop (or the leg caption's line): it sets up
+// the next stop. `stamp` is the passport stamp that stands in for `org` on the
+// home page: `logo` names a file in src/stamps/, `text` is a typeset stamp
+// where no clean official vector exists, `mask` is a raster logo used as a
+// one-ink mask. `org` stays for the read page.
 export const SEGMENTS = [
   {
     id: 'mumbai',
     beat: 'mumbai-a',
     city: 'BOM',
-    years: '2012 to 2016',
+    years: '2012 to 2017',
     label: 'Mumbai',
-    title: 'Where it started',
+    title: 'My first job was finding the cracks.',
     role: 'BE (Information Technology)',
     org: 'Mumbai University / Ramrao Adik Institute of Technology',
-    body: ['I started at TCS as a tester: thinking like a user, finding the cracks. That instinct stayed.'],
+    stamp: { text: ['University', 'of Mumbai'], rim: 'RAIT', name: 'University of Mumbai, Ramrao Adik Institute of Technology' },
+    body: ['An IT degree from Mumbai University, then TCS as a tester. Thinking like a user, finding the cracks. That instinct stayed.'],
+    pull: 'Finding them was the easy part.',
   },
   {
     id: 'tcs',
@@ -73,69 +80,82 @@ export const SEGMENTS = [
     city: 'BOM',
     years: '2017 to 2022',
     label: 'Mumbai',
-    title: 'Five years of removing complexity',
-    role: 'IT Business Analyst',
+    title: 'I cared more about the person than the system.',
+    role: 'Tester, then IT Business Analyst',
     org: 'Tata Consultancy Services · Mumbai',
+    stamp: { logo: 'tcs', name: 'Tata Consultancy Services' },
+    clients: {
+      label: 'Clients · via TCS',
+      items: [
+        { logo: 'citi', name: 'Citi' },
+        { text: ['ICICI', 'Prudential'], name: 'ICICI Prudential' },
+      ],
+    },
     body: [
-      'Five years as a BA on the ICICI Prudential and Citibank Singapore accounts taught me the most impactful changes come from removing complexity, not adding features. I cared more about the person than the system.',
+      'On the ICICI Prudential and Citibank Singapore accounts, the changes that landed removed complexity instead of adding features.',
     ],
     metrics: [
-      { value: '100+', label: 'New Business enhancements shipped' },
-      { value: '30%', label: 'cost savings from a digitised purchase journey' },
-      { value: '+10%', label: 'CSAT after redesigned onboarding' },
-      { value: '50%', label: 'less manual testing (1,200 hrs/year)' },
+      { value: '~90%', label: 'less drop-off after digitised onboarding (est.)' },
+      { value: '1,200 hrs', label: 'of manual testing cut a year' },
     ],
     quote: 'aruna',
   },
-  { id: 'leg-1', beat: 'leg-1', leg: true, from: 'BOM', to: 'IXW', year: '2022' },
+  { id: 'leg-1', beat: 'leg-1', leg: true, from: 'BOM', to: 'IXW', year: '2022', pull: 'Five years in, I went back to school.' },
   {
     id: 'jamshedpur',
     beat: 'jamshedpur',
     city: 'IXW',
     years: '2022 to 2023',
     label: 'Jamshedpur',
-    title: 'An MBA sharpened the thinking',
+    title: 'In as an analyst. Out as a manager.',
     role: 'MBA, PGDM (General Management)',
     org: 'XLRI Jamshedpur',
-    body: ['An MBA at XLRI sharpened the thinking.'],
+    stamp: { logo: 'xlri', name: 'XLRI Jamshedpur' },
+    body: ['One year at XLRI that sharpened the thinking.'],
+    metrics: [
+      { value: '#1', label: 'in my batch, AOL functional knowledge exam' },
+      { value: 'CWC', label: 'Corporate Workshop Committee member' },
+    ],
   },
-  { id: 'leg-2', beat: 'leg-2', leg: true, from: 'IXW', to: 'MAA', year: '2023' },
+  { id: 'leg-2', beat: 'leg-2', leg: true, from: 'IXW', to: 'MAA', year: '2023', pull: 'Chennai, where I learned what comes before automation.' },
   {
     id: 'chennai',
     beat: 'chennai',
     city: 'MAA',
     years: '2023 to 2025',
     label: 'Chennai',
-    title: 'Standardize first, then automate',
+    title: "You can't automate a mess.",
     role: 'Manager, Process Standardization',
     org: 'Standard Chartered GBS · Chennai',
+    stamp: { logo: 'standard-chartered', name: 'Standard Chartered GBS' },
     body: [
-      'You cannot automate your way out of a process problem. The real value was the standardization that happened before the automation.',
+      'So I split client communication into rules and judgment calls, standardised it across the top 5 markets, and only then automated.',
     ],
     metrics: [
-      { value: '30 HC', label: 'manual work removed by automating client communication' },
-      { value: 'Top 5', label: 'global markets standardised across CDD and Servicing & Transactions' },
+      { value: '30 FTE', label: 'of manual work automated away' },
+      { value: '50%', label: 'fewer manual touchpoints in rate booking' },
     ],
   },
-  { id: 'leg-3', beat: 'leg-3', leg: true, from: 'MAA', to: 'BOM', year: '2025' },
+  { id: 'leg-3', beat: 'leg-3', leg: true, from: 'MAA', to: 'BOM', year: '2025', pull: "Home to Mumbai. Five countries that couldn't all match." },
   {
     id: 'marsh',
     beat: 'mumbai-dusk',
     city: 'BOM',
     years: '2025',
     label: 'Mumbai',
-    title: 'Back in Mumbai, working across Europe',
+    title: 'Not everything should be identical.',
     role: 'Senior Manager, Business Analysis',
     org: 'Marsh McLennan India · Mumbai',
+    stamp: { logo: 'marsh-mclennan', name: 'Marsh McLennan India' },
     body: [
-      'Standardization is not about making everything identical. It is about finding the right level of consistency.',
+      'I harmonised one process across 5 EU countries by keeping what regulation required and cutting what was just legacy habit.',
     ],
     metrics: [
-      { value: '~30%', label: 'efficiency gain, Year-End Premium Adjustment across 5 EU countries' },
-      { value: '20+', label: 'countries in the Placement Data Capture centralization TOM' },
-      { value: '500+', label: 'users on the EU Access Authorization Framework' },
+      { value: '~30%', label: 'less effort, year-end premium adjustment' },
+      { value: '20+', label: 'countries in one data-capture model' },
     ],
     quote: 'ewa',
+    pull: 'Eight years in, I kept seeing the same pattern.',
   },
   {
     id: 'turn',
@@ -143,11 +163,12 @@ export const SEGMENTS = [
     city: 'BOM',
     years: '2025',
     label: 'The turn',
-    title: 'Nobody had built the alternative yet',
+    title: 'Nobody had built the alternative yet.',
     body: [
-      'Ops roles at Standard Chartered and Marsh McLennan kept showing me the same pattern: capable people spending days on tasks AI could handle in minutes. Not because anyone chose that. Because nobody had built the alternative yet.',
-      'So I quit my job to learn what was actually possible. My kid was one and a half years old at the time.',
+      'Capable people spent days on tasks AI could handle in minutes. Not because anyone chose that.',
+      'So I quit my job to learn what was actually possible. My kid was one and a half.',
     ],
+    pull: 'So, what was possible?',
   },
   {
     id: 'cockpit',
@@ -155,9 +176,10 @@ export const SEGMENTS = [
     city: 'BOM',
     years: '2026',
     label: "Captain's seat",
-    title: 'Taking the controls',
+    title: 'Turns out, quite a lot.',
     role: 'AI-first Mastering Product Management 2.0, Cohort 7',
     org: 'Rethink Systems',
+    stamp: { mask: 'rethink', ratio: 436 / 212, name: 'Rethink Systems' },
     body: [],
     accolade: {
       text: 'Placed 2nd, AI-First Buildathon · 10-day build sprint',
@@ -174,28 +196,33 @@ export const SEGMENTS = [
     label: 'Mumbai, tonight',
     thesis: true,
     title: 'Stop fixing systems. Start building them.',
-    body: ['7 AI products built in 2026. They are boarding now.'],
+    body: ['Seven built in 2026. All boarding now.'],
   },
 ];
 
+// `excerpt` is a verbatim span of `text` (cuts marked with …) for the home
+// cards; the read page shows the full `text`.
 export const TESTIMONIALS = {
   aruna: {
     name: 'Aruna Rajagopalan',
     role: 'Vice President, Citi',
     context: 'On the Citibank Singapore account during TCS tenure',
     text: 'I had the pleasure of managing Prateek during his tenure on Citi projects as a Business Analyst, and highly recommend him for his professionalism and strong work ethic. His positive attitude stands out and makes him a delight to work with.',
+    excerpt: 'His positive attitude stands out and makes him a delight to work with.',
   },
   ewa: {
     name: 'Ewa Leszczyna',
     role: 'Broker / Client Executive, Marsh McLennan',
     context: 'On the Year-End Premium Adjustment harmonization across 5 EU countries',
     text: 'From the very beginning, he stood out for his exceptional ability to understand complex operations and break them down into clear, workable components. He consistently ensured that every feature we explored addressed a real and specific challenge, which made the direction of the project both meaningful and well-aligned with user expectations.',
+    excerpt: '…exceptional ability to understand complex operations and break them down into clear, workable components.',
   },
   ravi: {
     name: 'K Ravi Kiran',
     role: 'PM, Broadcom',
     context: 'On the AI-first MPM Cohort 7 at Rethink Systems',
     text: "Prateek was someone who just got things done: no waiting around for permission or a perfect plan. When we were still figuring out what to even try, he'd already started building. He was one of the first in our cohort to dive into tools like Claude and Lovable, and he brought the same energy to leading discussions as he did to implementation. On top of that, he kept everything documented in a way that actually helped the rest of us stay aligned. Rare to find someone who's both a starter and a structurer.",
+    excerpt: "When we were still figuring out what to even try, he'd already started building.",
   },
 };
 
@@ -577,50 +604,48 @@ export const PRODUCTS = [
 
 export const PRINCIPLES = {
   label: 'Safety card',
-  title: 'How I think about product',
-  lead: 'The best products are built by people who have sat close enough to the mess to know what simple actually takes.',
+  title: 'Four rules I fly by.',
   items: [
     {
       title: 'Structure before speed.',
-      text: 'Most teams rush to solutions before the problem is clear. I frame problems so business, tech, and users can align on them. If you cannot explain the problem in one sentence, you are not ready to build.',
+      text: "If you can't explain the problem in one sentence, you're not ready to build.",
     },
     {
       title: 'Removal is underrated.',
-      text: 'The most impactful changes I have delivered were not about adding features. They were about eliminating steps, reducing friction, and simplifying decisions. The customer did not need a better form. They needed fewer forms.',
+      text: "The customer didn't need a better form. They needed fewer forms.",
     },
     {
       title: 'AI is a lever, not a feature.',
-      text: "I don't believe in adding AI to products. I believe in understanding user problems deeply, then asking whether AI is the right solution. Sometimes it is. Sometimes a better form field is the answer.",
+      text: "Understand the problem first. Then ask whether AI is the answer. Sometimes it isn't.",
     },
     {
       title: "Show, don't pitch.",
-      text: 'A working prototype beats a deck in ten seconds. With AI, I can build enough to test an idea in an afternoon. I bring working demos into discovery conversations instead of asking people to imagine what I mean.',
+      text: 'A working prototype beats a deck in ten seconds.',
     },
   ],
 };
 
-// New copy written for this site (flagged for Prateek's review).
 export const SITES_PITCH = {
   label: 'Like the flight?',
   title: 'I build sites like this.',
-  body: "This whole site, from the 3D flight to the departures board, was designed and built by me with Claude Code. If you want a portfolio that makes people ask how you made it, tell me where you're headed.",
+  body: 'I designed and built this one with Claude Code, 3D flight and all. Want a site that makes people ask how?',
   cta: 'Chart your route',
 };
 
 export const CONTACT = {
   label: 'Arrivals',
-  title: "Let's connect",
+  title: 'Looking for a PM who ships?',
   body: [
-    "I'm looking for a PM role where I own problems end-to-end and ship them. Best fit: a team building AI-native products, or one rethinking how their users work because of AI. I bring discovery discipline, and the habit of actually shipping.",
-    "If that sounds like your team, let's talk.",
+    'I want to own problems end to end and ship them. Best fit: a team building AI-native products, or rethinking how its users work because of AI.',
+    "If that's your team, let's talk.",
   ],
   book: 'Book a 30-min intro',
 };
 
 export const NOTIFY = {
   label: 'Stay in the Loop',
-  title: 'Get a heads-up when I ship something new',
-  body: 'I send a short note when I ship a new product, finish a case study, or write something worth reading. No fixed cadence, usually once every few weeks at most.',
+  title: 'Get the next one first.',
+  body: 'A short note when I ship something new. Every few weeks at most.',
   placeholder: 'your@email.com',
   button: 'Notify me',
   busy: 'Adding you…',

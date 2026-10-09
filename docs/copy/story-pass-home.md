@@ -1,6 +1,18 @@
 # Story pass, Gate 1: home page copy deck
 
-Branch `feat/story-pass` · 9 Oct 2026 · nothing in `site/` has changed yet.
+Branch `feat/story-pass` · 9 Oct 2026 · **Approved with changes and built** (the doc below is the proposal as reviewed).
+
+**Decisions from Prateek's review**
+- Started at TCS as a Tester for 1.5 years, then promoted to BA. The TCS role line now reads "Tester, then IT Business Analyst".
+- Mumbai card years: 2012 to 2017 (the degree plus the start at TCS).
+- TCS headline: Alt A, "I cared more about the person than the system." "Fewer forms" returns to the safety card.
+- TCS metric: ~90% less drop-off after digitised onboarding (est.) replaces +10% CSAT.
+- Aruna's 13-word excerpt stays on the TCS card (the only review from a direct client manager).
+- Hero keeps two stats (8+ years, 7 products), so the intro drops its numbers.
+- Marsh headline: "Not everything should be identical."
+- XLRI tiles added: #1 in batch on the AOL functional knowledge exam; Corporate Workshop Committee (CWC) member.
+- All [F] lines confirmed. Depth stays as proposed. Logo option A. Period marks OK. Rethink logo comes from rethinksystems.in.
+- Measured result: visible words on the home page 1,185 → 864 (−27%); 817 (−31%) excluding stamp lettering.
 
 **Word count: 1,064 → ~670 (−37%).** Org names move into the logo stamps (as alt text), so they leave the visible count. A true half (~540) is possible. Section 7 lists what that would cost.
 

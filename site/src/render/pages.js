@@ -275,6 +275,7 @@ function stopArticle(s) {
           ${role}
           ${s.body.map((b) => `<p>${esc(b)}</p>`).join('')}
           ${metrics}${accolade}${s.quote ? quote(s.quote) : ''}
+          ${s.pull ? `<p class="rp-pull">${esc(s.pull)}</p>` : ''}
         </article>`;
 }
 
@@ -282,7 +283,8 @@ function legDivider(s) {
   const from = CITIES[s.from];
   const to = CITIES[s.to];
   return `
-        <p class="rp-leg mono" aria-label="Flight from ${esc(from.name)} to ${esc(to.name)}, ${esc(s.year)}"><span aria-hidden="true">${esc(from.code)}</span><span class="rp-leg-plane" aria-hidden="true">${ICON.plane}</span><span aria-hidden="true">${esc(to.code)}</span><span class="rp-leg-year" aria-hidden="true">${esc(s.year)}</span></p>`;
+        <p class="rp-leg mono" aria-label="Flight from ${esc(from.name)} to ${esc(to.name)}, ${esc(s.year)}"><span aria-hidden="true">${esc(from.code)}</span><span class="rp-leg-plane" aria-hidden="true">${ICON.plane}</span><span aria-hidden="true">${esc(to.code)}</span><span class="rp-leg-year" aria-hidden="true">${esc(s.year)}</span></p>${s.pull ? `
+        <p class="rp-pull rp-pull--leg">${esc(s.pull)}</p>` : ''}`;
 }
 
 // The cities flown through, in order: "Mumbai → Jamshedpur → Chennai → Mumbai".
@@ -371,7 +373,7 @@ export function readPage() {
       <section class="rp-sec" id="principles" aria-labelledby="principles-title">
         <p class="section-label">04 · How I think</p>
         <h2 class="rp-h2" id="principles-title">${esc(PRINCIPLES.title)}</h2>
-        <p class="rp-lead">${esc(PRINCIPLES.lead)}</p>
+        ${PRINCIPLES.lead ? `<p class="rp-lead">${esc(PRINCIPLES.lead)}</p>` : ''}
         <ol class="rp-principles">${PRINCIPLES.items
           .map((it, i) => `<li><span class="rp-p-n mono" aria-hidden="true">${pad(i + 1)}</span><h3>${esc(it.title)}</h3><p>${esc(it.text)}</p></li>`)
           .join('')}</ol>
