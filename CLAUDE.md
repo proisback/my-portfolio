@@ -33,7 +33,7 @@ The live site lives in **`site/`** (Vite + Three.js + GSAP, vanilla ES modules, 
 * **`src/journey.js`** — card hand-offs, HUD odometer, nav state. **`src/tier.js`**, **`src/fallback2d.js`** — device tiers and the 2D route map.
 * **`src/board.js`, `src/pass.js`** — split-flap board and boarding-pass transition. **`src/form.js`, `src/config.js`** — notify form.
 * **`src/page.js`**, **`src/styles/`** — generated-page entry and all CSS.
-* **`public/`** — favicon, `og.png`. **`tests/`** — Playwright end-to-end suite.
+* **`public/`** — favicon, `og.jpg`. **`tests/`** — Playwright end-to-end suite.
 
 Legacy files at the repo root (`PRDs/`, `field-guides/`, `products/`, `resume/`, resume PDFs, `images/comic-story/`, `rethink-buildathon-2nd-place.pdf`) are copied into the build by the `legacy-assets` plugin in `site/vite.config.js`, so their URLs keep working. Resume sources and PDF pipeline are unchanged (`resume/`, rendered via Chrome headless with `--virtual-time-budget=20000`).
 
