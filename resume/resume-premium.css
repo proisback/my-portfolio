@@ -4,7 +4,8 @@
    high-contrast ink body. ATS-safe: real selectable text, colour on accents
    only (name rules, links, org names, section rules), never on body copy.
    A4 print, 2 balanced pages. Rendered to PDF via Chrome headless print-to-pdf.
-   Spacing tuned for even two-page balance (see UX pass, Jul 2026).
+   Spacing tuned for even two-page balance (UX pass Jul 2026, retuned Oct 2026
+   for the longer Projects section).
    ============================================================================ */
 
 :root {
@@ -19,7 +20,7 @@
 
 @page {
   size: A4;
-  margin: 12mm 13mm 11mm 13mm;
+  margin: 11mm 12mm 10mm 12mm;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -70,7 +71,7 @@ html, body {
 }
 
 .r-contact {
-  font-size: 9.3pt;
+  font-size: 8.9pt;
   color: var(--muted);
   line-height: 1.5;
 }
@@ -87,20 +88,20 @@ html, body {
 /* ----- Summary -------------------------------------------------------------- */
 
 .r-summary {
-  font-size: 10pt;
-  line-height: 1.46;
+  font-size: 9.6pt;
+  line-height: 1.42;
   color: var(--ink-body);
   padding: 8pt 0 10pt;
   border-top: 0.75pt solid var(--gold-hair);
   border-bottom: 0.75pt solid var(--gold-hair);
-  margin-bottom: 12pt;
+  margin-bottom: 10pt;
 }
 
 .r-summary strong { color: var(--ink); font-weight: 700; }
 
 /* ----- Section header — Fraunces, editorial, gold rule ---------------------- */
 
-.r-section { margin-bottom: 13pt; }
+.r-section { margin-bottom: 10pt; }
 
 .r-section h2 {
   font-family: 'Fraunces', Georgia, serif;
@@ -111,13 +112,15 @@ html, body {
   color: var(--ink);
   padding-bottom: 4pt;
   border-bottom: 1pt solid var(--gold);
-  margin-bottom: 7pt;
+  margin-bottom: 6pt;
 }
 
 /* ----- Entry (work) --------------------------------------------------------- */
 
-.entry { margin-bottom: 10pt; page-break-inside: avoid; }
+.entry { margin-bottom: 7pt; page-break-inside: avoid; }
 .entry:last-child { margin-bottom: 0; }
+/* A long role may flow across the page break instead of leaving a gap. */
+.entry--flow, .entry--flow.entry { page-break-inside: auto; }
 
 .entry-head {
   display: flex;
@@ -163,9 +166,9 @@ ul.bullets {
 ul.bullets li {
   position: relative;
   padding-left: 12pt;
-  margin-bottom: 3pt;
-  font-size: 10pt;
-  line-height: 1.45;
+  margin-bottom: 2pt;
+  font-size: 9.6pt;
+  line-height: 1.4;
   color: var(--ink-body);
 }
 
@@ -232,6 +235,6 @@ ul.bullets li strong { color: var(--ink); font-weight: 700; }
 @media print {
   body { font-size: 10pt; }
   .r-contact a, .cert-line a { color: var(--muted); }
-  .entry { page-break-inside: avoid; }
+  .entry:not(.entry--flow) { page-break-inside: avoid; }
   .r-section h2 { page-break-after: avoid; }
 }
