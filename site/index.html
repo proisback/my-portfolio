@@ -9,8 +9,10 @@
        under load; navigation still completes, so don't surface it as an error. -->
   <script>addEventListener('unhandledrejection',function(e){var r=e.reason;if(r&&r.name==='InvalidStateError'&&/transition/i.test(r.message))e.preventDefault()})</script>
   <!-- Mark JS before first paint so entrance animations play once, not twice.
-       If the main script never boots, drop the class so nothing stays hidden. -->
-  <script>document.documentElement.classList.add('js');setTimeout(function(){if(!window.__booted)document.documentElement.classList.remove('js')},4000)</script>
+       If the main script never boots, drop the class so nothing stays hidden.
+       Reduced motion gets the short static layout before first layout too, so
+       a deep link (#chennai) scrolls to the right place (rule mirrors tier.js). -->
+  <script>(function(d){d.classList.add('js');var f=(/[?&]tier=(full|mobile|lite|static)\b/.exec(location.search)||[])[1];if(f==='static'||(!f&&matchMedia('(prefers-reduced-motion: reduce)').matches))d.dataset.tier='static';setTimeout(function(){if(!window.__booted)d.classList.remove('js')},4000)})(document.documentElement)</script>
   <!--@head-->
   <script type="module" src="/src/main.js"></script>
 </head>

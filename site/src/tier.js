@@ -5,6 +5,7 @@
 //   static reduced motion: 2D route map without animation
 // `?tier=` overrides for testing. Software WebGL is caught later, inside the
 // renderer (see flight/index.js), so detection here never creates a context.
+// The static rule is duplicated in index.html's head script; keep them in step.
 const TIERS = ['full', 'mobile', 'lite', 'static'];
 
 export function forcedTier() {
