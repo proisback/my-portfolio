@@ -21,7 +21,7 @@ export const PROFILE = {
   availability: 'Open to PM roles · Mumbai',
   availabilityLong: 'Open to PM roles · Mumbai, open to remote',
   location: 'Mumbai, India',
-  email: 'iamprateekbm@gmail.com',
+  email: 'prateek.milestoneindia@gmail.com',
   linkedin: 'https://www.linkedin.com/in/prateek-mehta-xlri/',
   linkedinLabel: 'linkedin.com/in/prateek-mehta-xlri',
   calendly: 'https://calendly.com/iamprateekbm/get-in-touch-with-prateek',
@@ -314,10 +314,10 @@ export const PRODUCTS = [
     board: 'GALPALS',
     month: 'APR 26',
     status: 'LIVE',
-    headline: 'Co-founding · blank page to Product Hunt in 4 days',
+    headline: 'Founding PM · blank page to Product Hunt in 4 days',
     kind: 'Women-Only Friendship App for Bangalore',
-    meta: 'Apr 2026 · Buildathon · Team of 6',
-    badge: 'Co-founding',
+    meta: 'Apr to Jul 2026 · Buildathon · Team of 6',
+    badge: 'Founding PM',
     tagline:
       'Led discovery, PRD, and design on a 6-person Buildathon team: blank page to Product Hunt launch in 4 days.',
     summary:
