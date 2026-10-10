@@ -275,8 +275,8 @@
   .tour-bubble[data-side="above"]::before{bottom:-7px;}
   .tour-bubble[data-side="none"]::before{display:none;}
   .tour-bubble .ele{width:62px;grid-row:span 2;}
-  .tour-hi{font-family:var(--display);font-weight:700;font-size:18px;line-height:1.35;color:var(--ink);}
-  .tour-en{font-size:14px;line-height:1.35;color:var(--ink-2);margin-top:3px;}
+  .tour-hi{white-space:pre-line;font-family:var(--display);font-weight:700;font-size:18px;line-height:1.35;color:var(--ink);}
+  .tour-en{white-space:pre-line;font-size:14px;line-height:1.35;color:var(--ink-2);margin-top:3px;}
   .tour-nav{grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;}
   .tour-skip{appearance:none;border:0;background:none;cursor:pointer;color:var(--ink-2);font-size:15px;padding:8px 4px;text-decoration:underline;text-underline-offset:3px;}
   .tour-dots{display:flex;gap:5px;}
@@ -866,9 +866,7 @@ const TOURS = {
   board: [
     { hi: 'नमस्ते! चलो, साथ में संस्कार सीखें।', en: "Hello! Let's learn good values together. I'll show you around." },
     { at: '.board .cell:not(.silent)', hi: 'किसी भी अक्षर को छुओ। उसका संस्कार, तस्वीर और आवाज़ खुलेगी।', en: 'Tap any letter to see its value and a picture, and to hear it.' },
-    { at: '.count', hi: 'हर नए अक्षर पर एक ★ मिलता है।', en: 'Every new letter you open earns a star.' },
-    { at: '#tab-drill', hi: 'फटाफट बोलो: अक्षर देखकर संस्कार बोलो, फिर जाँचो।', en: 'Say it fast: see a letter, say its lesson, then check.' },
-    { at: '#tab-sar', hi: 'सार: सारे मूल्य एक साथ।', en: 'Summary: all the values in one place.' },
+    { at: '.tabs', hi: 'फटाफट बोलो: अक्षर देखकर संस्कार बोलो, फिर जाँचो।\nसार: सारे मूल्य एक साथ।', en: 'Say it fast: see a letter, say its lesson, then check.\nSummary: all the values in one place.' },
     { at: '.help', hi: 'यह दौरा फिर से देखना हो, तो यहाँ दबाओ।', en: 'Tap here any time to see this tour again.' },
   ],
   card: [
