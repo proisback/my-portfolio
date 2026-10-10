@@ -12,18 +12,25 @@
   main { max-width:1500px; margin:0 auto; padding:32px 16px 64px; }
   h1 { margin:0; font-size:clamp(1.6rem,1.2rem + 2vw,2.4rem); letter-spacing:-.03em; }
   .lede { max-width:62ch; color:var(--ink-2); }
-  .stat { display:inline-block; margin-top:4px; padding:6px 12px; border-radius:999px; background:var(--ink); color:var(--marigold); font:500 13px ui-monospace,monospace; }
+  .stats { display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 0; padding:0; list-style:none; }
+  .stats li { padding:6px 12px; border-radius:999px; background:var(--ink); color:var(--marigold); font:500 13px ui-monospace,monospace; }
   nav { margin:20px 0 8px; display:flex; gap:10px; flex-wrap:wrap; }
   nav a { padding:8px 14px; border:1px solid var(--rule); border-radius:999px; color:var(--ink); text-decoration:none; font-size:14px; }
   nav a:hover { border-color:var(--ink); }
   h2 { margin:48px 0 0; padding-top:16px; border-top:1px solid var(--rule); font-size:1.3rem; }
-  h3 { margin:32px 0 10px; font:600 12px ui-monospace,monospace; text-transform:uppercase; letter-spacing:.12em; color:var(--ink-2); }
+  h3, h4 { margin:32px 0 10px; font:600 12px ui-monospace,monospace; text-transform:uppercase; letter-spacing:.12em; color:var(--ink-2); }
   .pair { display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start; }
   .pair--phone { grid-template-columns:repeat(2,minmax(0,390px)); }
   figure { margin:0; }
   figcaption { margin-bottom:6px; font:500 12px ui-monospace,monospace; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-2); }
   figcaption.after { color:var(--deep); }
   img { display:block; width:100%; height:auto; border:1px solid var(--rule); border-radius:10px; background:#fff; }
+  .hint { color:var(--ink-2); font-size:14px; }
+  .case { margin-top:12px; border:1px solid var(--rule); border-radius:12px; background:rgba(253,251,244,.7); }
+  .case summary { cursor:pointer; padding:14px 16px; font-weight:600; list-style-position:inside; }
+  .case[open] summary { border-bottom:1px solid var(--rule); }
+  .case > :not(summary) { margin-left:16px; margin-right:16px; }
+  .case > .pair:last-child { margin-bottom:16px; }
   @media (max-width:760px) {
     .pair--desktop { grid-template-columns:1fr; gap:12px; }
     .pair--phone { gap:10px; }
@@ -33,235 +40,296 @@
 <body>
 <main>
   <h1>Copy review: before and after</h1>
-  <p class="lede">The portfolio, stop by stop. Before is the live site today. After is the rewrite from your feedback: shorter copy, stronger headlines, a line at the end of each stop that pulls you into the next, and the logos as passport stamps. Desktop first, then phone.</p>
-  <p class="stat">Visible words on the home page: 1,185 → 864</p>
-  <nav><a href="#desktop">Desktop</a><a href="#phone">Phone</a></nav>
-  <h2 id="desktop">Desktop</h2>
-    <section class="stop">
-      <h3>Hero</h3>
+  <p class="lede">The portfolio, stop by stop, then the seven case studies. Before is the old site. After is the rewrite from your feedback: shorter copy, stronger headlines, a line at the end of each stop that pulls you into the next, the logos as passport stamps, and a 3-line opener on every case study.</p>
+  <ul class="stats"><li>Home page: 1,185 → 864 words</li><li>Case studies: 2,778 → 1,781 words</li></ul>
+  <nav><a href="#desktop">Home · desktop</a><a href="#phone">Home · phone</a><a href="#cases">Case studies</a></nav>
+  <h2 id="desktop">Home page · desktop</h2>
+    <section class="stop"><h3>Hero</h3>
       <div class="pair pair--desktop">
-        <figure><figcaption>Before</figcaption><img src="before/desktop-00-top.webp" width="1440" height="900" loading="lazy" alt="Hero, before (desktop)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/desktop-00-top.webp" width="1440" height="900" loading="lazy" alt="Hero, after (desktop)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/desktop-00-top.webp" width="1440" height="900" loading="lazy" alt="Hero (desktop), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/desktop-00-top.webp" width="1440" height="900" loading="lazy" alt="Hero (desktop), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Stop 1 · Mumbai</h3>
+    <section class="stop"><h3>Stop 1 · Mumbai</h3>
       <div class="pair pair--desktop">
-        <figure><figcaption>Before</figcaption><img src="before/desktop-01-mumbai.webp" width="1440" height="900" loading="lazy" alt="Stop 1 · Mumbai, before (desktop)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/desktop-01-mumbai.webp" width="1440" height="900" loading="lazy" alt="Stop 1 · Mumbai, after (desktop)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/desktop-01-mumbai.webp" width="1440" height="900" loading="lazy" alt="Stop 1 · Mumbai (desktop), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/desktop-01-mumbai.webp" width="1440" height="900" loading="lazy" alt="Stop 1 · Mumbai (desktop), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Stop 2 · TCS</h3>
+    <section class="stop"><h3>Stop 2 · TCS</h3>
       <div class="pair pair--desktop">
-        <figure><figcaption>Before</figcaption><img src="before/desktop-02-tcs.webp" width="1440" height="900" loading="lazy" alt="Stop 2 · TCS, before (desktop)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/desktop-02-tcs.webp" width="1440" height="900" loading="lazy" alt="Stop 2 · TCS, after (desktop)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/desktop-02-tcs.webp" width="1440" height="900" loading="lazy" alt="Stop 2 · TCS (desktop), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/desktop-02-tcs.webp" width="1440" height="900" loading="lazy" alt="Stop 2 · TCS (desktop), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Flight · Mumbai to Jamshedpur</h3>
+    <section class="stop"><h3>Flight · Mumbai to Jamshedpur</h3>
       <div class="pair pair--desktop">
-        <figure><figcaption>Before</figcaption><img src="before/desktop-03-leg-1.webp" width="1440" height="900" loading="lazy" alt="Flight · Mumbai to Jamshedpur, before (desktop)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/desktop-03-leg-1.webp" width="1440" height="900" loading="lazy" alt="Flight · Mumbai to Jamshedpur, after (desktop)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/desktop-03-leg-1.webp" width="1440" height="900" loading="lazy" alt="Flight · Mumbai to Jamshedpur (desktop), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/desktop-03-leg-1.webp" width="1440" height="900" loading="lazy" alt="Flight · Mumbai to Jamshedpur (desktop), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Stop 3 · XLRI</h3>
+    <section class="stop"><h3>Stop 3 · XLRI</h3>
       <div class="pair pair--desktop">
-        <figure><figcaption>Before</figcaption><img src="before/desktop-04-jamshedpur.webp" width="1440" height="900" loading="lazy" alt="Stop 3 · XLRI, before (desktop)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/desktop-04-jamshedpur.webp" width="1440" height="900" loading="lazy" alt="Stop 3 · XLRI, after (desktop)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/desktop-04-jamshedpur.webp" width="1440" height="900" loading="lazy" alt="Stop 3 · XLRI (desktop), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/desktop-04-jamshedpur.webp" width="1440" height="900" loading="lazy" alt="Stop 3 · XLRI (desktop), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Flight · Jamshedpur to Chennai</h3>
+    <section class="stop"><h3>Flight · Jamshedpur to Chennai</h3>
       <div class="pair pair--desktop">
-        <figure><figcaption>Before</figcaption><img src="before/desktop-05-leg-2.webp" width="1440" height="900" loading="lazy" alt="Flight · Jamshedpur to Chennai, before (desktop)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/desktop-05-leg-2.webp" width="1440" height="900" loading="lazy" alt="Flight · Jamshedpur to Chennai, after (desktop)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/desktop-05-leg-2.webp" width="1440" height="900" loading="lazy" alt="Flight · Jamshedpur to Chennai (desktop), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/desktop-05-leg-2.webp" width="1440" height="900" loading="lazy" alt="Flight · Jamshedpur to Chennai (desktop), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Stop 4 · Standard Chartered</h3>
+    <section class="stop"><h3>Stop 4 · Standard Chartered</h3>
       <div class="pair pair--desktop">
-        <figure><figcaption>Before</figcaption><img src="before/desktop-06-chennai.webp" width="1440" height="900" loading="lazy" alt="Stop 4 · Standard Chartered, before (desktop)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/desktop-06-chennai.webp" width="1440" height="900" loading="lazy" alt="Stop 4 · Standard Chartered, after (desktop)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/desktop-06-chennai.webp" width="1440" height="900" loading="lazy" alt="Stop 4 · Standard Chartered (desktop), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/desktop-06-chennai.webp" width="1440" height="900" loading="lazy" alt="Stop 4 · Standard Chartered (desktop), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Flight · Chennai to Mumbai</h3>
+    <section class="stop"><h3>Flight · Chennai to Mumbai</h3>
       <div class="pair pair--desktop">
-        <figure><figcaption>Before</figcaption><img src="before/desktop-07-leg-3.webp" width="1440" height="900" loading="lazy" alt="Flight · Chennai to Mumbai, before (desktop)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/desktop-07-leg-3.webp" width="1440" height="900" loading="lazy" alt="Flight · Chennai to Mumbai, after (desktop)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/desktop-07-leg-3.webp" width="1440" height="900" loading="lazy" alt="Flight · Chennai to Mumbai (desktop), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/desktop-07-leg-3.webp" width="1440" height="900" loading="lazy" alt="Flight · Chennai to Mumbai (desktop), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Stop 5 · Marsh McLennan</h3>
+    <section class="stop"><h3>Stop 5 · Marsh McLennan</h3>
       <div class="pair pair--desktop">
-        <figure><figcaption>Before</figcaption><img src="before/desktop-08-marsh.webp" width="1440" height="900" loading="lazy" alt="Stop 5 · Marsh McLennan, before (desktop)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/desktop-08-marsh.webp" width="1440" height="900" loading="lazy" alt="Stop 5 · Marsh McLennan, after (desktop)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/desktop-08-marsh.webp" width="1440" height="900" loading="lazy" alt="Stop 5 · Marsh McLennan (desktop), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/desktop-08-marsh.webp" width="1440" height="900" loading="lazy" alt="Stop 5 · Marsh McLennan (desktop), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Stop 6 · The turn</h3>
+    <section class="stop"><h3>Stop 6 · The turn</h3>
       <div class="pair pair--desktop">
-        <figure><figcaption>Before</figcaption><img src="before/desktop-09-turn.webp" width="1440" height="900" loading="lazy" alt="Stop 6 · The turn, before (desktop)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/desktop-09-turn.webp" width="1440" height="900" loading="lazy" alt="Stop 6 · The turn, after (desktop)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/desktop-09-turn.webp" width="1440" height="900" loading="lazy" alt="Stop 6 · The turn (desktop), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/desktop-09-turn.webp" width="1440" height="900" loading="lazy" alt="Stop 6 · The turn (desktop), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Stop 7 · Cockpit</h3>
+    <section class="stop"><h3>Stop 7 · Cockpit</h3>
       <div class="pair pair--desktop">
-        <figure><figcaption>Before</figcaption><img src="before/desktop-10-cockpit.webp" width="1440" height="900" loading="lazy" alt="Stop 7 · Cockpit, before (desktop)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/desktop-10-cockpit.webp" width="1440" height="900" loading="lazy" alt="Stop 7 · Cockpit, after (desktop)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/desktop-10-cockpit.webp" width="1440" height="900" loading="lazy" alt="Stop 7 · Cockpit (desktop), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/desktop-10-cockpit.webp" width="1440" height="900" loading="lazy" alt="Stop 7 · Cockpit (desktop), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Stop 8 · Thesis</h3>
+    <section class="stop"><h3>Stop 8 · Thesis</h3>
       <div class="pair pair--desktop">
-        <figure><figcaption>Before</figcaption><img src="before/desktop-11-thesis.webp" width="1440" height="900" loading="lazy" alt="Stop 8 · Thesis, before (desktop)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/desktop-11-thesis.webp" width="1440" height="900" loading="lazy" alt="Stop 8 · Thesis, after (desktop)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/desktop-11-thesis.webp" width="1440" height="900" loading="lazy" alt="Stop 8 · Thesis (desktop), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/desktop-11-thesis.webp" width="1440" height="900" loading="lazy" alt="Stop 8 · Thesis (desktop), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Departures board</h3>
+    <section class="stop"><h3>Departures board</h3>
       <div class="pair pair--desktop">
-        <figure><figcaption>Before</figcaption><img src="before/desktop-12-board.webp" width="1440" height="900" loading="lazy" alt="Departures board, before (desktop)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/desktop-12-board.webp" width="1440" height="900" loading="lazy" alt="Departures board, after (desktop)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/desktop-12-board.webp" width="1440" height="900" loading="lazy" alt="Departures board (desktop), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/desktop-12-board.webp" width="1440" height="900" loading="lazy" alt="Departures board (desktop), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Safety card</h3>
+    <section class="stop"><h3>Safety card</h3>
       <div class="pair pair--desktop">
-        <figure><figcaption>Before</figcaption><img src="before/desktop-13-principles.webp" width="1440" height="900" loading="lazy" alt="Safety card, before (desktop)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/desktop-13-principles.webp" width="1440" height="900" loading="lazy" alt="Safety card, after (desktop)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/desktop-13-principles.webp" width="1440" height="900" loading="lazy" alt="Safety card (desktop), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/desktop-13-principles.webp" width="1440" height="900" loading="lazy" alt="Safety card (desktop), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>I build sites like this</h3>
+    <section class="stop"><h3>I build sites like this</h3>
       <div class="pair pair--desktop">
-        <figure><figcaption>Before</figcaption><img src="before/desktop-14-sites.webp" width="1440" height="900" loading="lazy" alt="I build sites like this, before (desktop)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/desktop-14-sites.webp" width="1440" height="900" loading="lazy" alt="I build sites like this, after (desktop)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/desktop-14-sites.webp" width="1440" height="900" loading="lazy" alt="I build sites like this (desktop), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/desktop-14-sites.webp" width="1440" height="900" loading="lazy" alt="I build sites like this (desktop), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Contact</h3>
+    <section class="stop"><h3>Contact</h3>
       <div class="pair pair--desktop">
-        <figure><figcaption>Before</figcaption><img src="before/desktop-15-contact.webp" width="1440" height="900" loading="lazy" alt="Contact, before (desktop)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/desktop-15-contact.webp" width="1440" height="900" loading="lazy" alt="Contact, after (desktop)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/desktop-15-contact.webp" width="1440" height="900" loading="lazy" alt="Contact (desktop), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/desktop-15-contact.webp" width="1440" height="900" loading="lazy" alt="Contact (desktop), after"></figure>
       </div>
     </section>
-  <h2 id="phone">Phone</h2>
-    <section class="stop">
-      <h3>Hero</h3>
+  <h2 id="phone">Home page · phone</h2>
+    <section class="stop"><h3>Hero</h3>
       <div class="pair pair--phone">
-        <figure><figcaption>Before</figcaption><img src="before/phone-00-top.webp" width="390" height="844" loading="lazy" alt="Hero, before (phone)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/phone-00-top.webp" width="390" height="844" loading="lazy" alt="Hero, after (phone)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/phone-00-top.webp" width="390" height="844" loading="lazy" alt="Hero (phone), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/phone-00-top.webp" width="390" height="844" loading="lazy" alt="Hero (phone), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Stop 1 · Mumbai</h3>
+    <section class="stop"><h3>Stop 1 · Mumbai</h3>
       <div class="pair pair--phone">
-        <figure><figcaption>Before</figcaption><img src="before/phone-01-mumbai.webp" width="390" height="844" loading="lazy" alt="Stop 1 · Mumbai, before (phone)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/phone-01-mumbai.webp" width="390" height="844" loading="lazy" alt="Stop 1 · Mumbai, after (phone)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/phone-01-mumbai.webp" width="390" height="844" loading="lazy" alt="Stop 1 · Mumbai (phone), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/phone-01-mumbai.webp" width="390" height="844" loading="lazy" alt="Stop 1 · Mumbai (phone), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Stop 2 · TCS</h3>
+    <section class="stop"><h3>Stop 2 · TCS</h3>
       <div class="pair pair--phone">
-        <figure><figcaption>Before</figcaption><img src="before/phone-02-tcs.webp" width="390" height="844" loading="lazy" alt="Stop 2 · TCS, before (phone)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/phone-02-tcs.webp" width="390" height="844" loading="lazy" alt="Stop 2 · TCS, after (phone)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/phone-02-tcs.webp" width="390" height="844" loading="lazy" alt="Stop 2 · TCS (phone), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/phone-02-tcs.webp" width="390" height="844" loading="lazy" alt="Stop 2 · TCS (phone), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Flight · Mumbai to Jamshedpur</h3>
+    <section class="stop"><h3>Flight · Mumbai to Jamshedpur</h3>
       <div class="pair pair--phone">
-        <figure><figcaption>Before</figcaption><img src="before/phone-03-leg-1.webp" width="390" height="844" loading="lazy" alt="Flight · Mumbai to Jamshedpur, before (phone)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/phone-03-leg-1.webp" width="390" height="844" loading="lazy" alt="Flight · Mumbai to Jamshedpur, after (phone)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/phone-03-leg-1.webp" width="390" height="844" loading="lazy" alt="Flight · Mumbai to Jamshedpur (phone), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/phone-03-leg-1.webp" width="390" height="844" loading="lazy" alt="Flight · Mumbai to Jamshedpur (phone), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Stop 3 · XLRI</h3>
+    <section class="stop"><h3>Stop 3 · XLRI</h3>
       <div class="pair pair--phone">
-        <figure><figcaption>Before</figcaption><img src="before/phone-04-jamshedpur.webp" width="390" height="844" loading="lazy" alt="Stop 3 · XLRI, before (phone)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/phone-04-jamshedpur.webp" width="390" height="844" loading="lazy" alt="Stop 3 · XLRI, after (phone)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/phone-04-jamshedpur.webp" width="390" height="844" loading="lazy" alt="Stop 3 · XLRI (phone), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/phone-04-jamshedpur.webp" width="390" height="844" loading="lazy" alt="Stop 3 · XLRI (phone), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Flight · Jamshedpur to Chennai</h3>
+    <section class="stop"><h3>Flight · Jamshedpur to Chennai</h3>
       <div class="pair pair--phone">
-        <figure><figcaption>Before</figcaption><img src="before/phone-05-leg-2.webp" width="390" height="844" loading="lazy" alt="Flight · Jamshedpur to Chennai, before (phone)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/phone-05-leg-2.webp" width="390" height="844" loading="lazy" alt="Flight · Jamshedpur to Chennai, after (phone)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/phone-05-leg-2.webp" width="390" height="844" loading="lazy" alt="Flight · Jamshedpur to Chennai (phone), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/phone-05-leg-2.webp" width="390" height="844" loading="lazy" alt="Flight · Jamshedpur to Chennai (phone), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Stop 4 · Standard Chartered</h3>
+    <section class="stop"><h3>Stop 4 · Standard Chartered</h3>
       <div class="pair pair--phone">
-        <figure><figcaption>Before</figcaption><img src="before/phone-06-chennai.webp" width="390" height="844" loading="lazy" alt="Stop 4 · Standard Chartered, before (phone)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/phone-06-chennai.webp" width="390" height="844" loading="lazy" alt="Stop 4 · Standard Chartered, after (phone)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/phone-06-chennai.webp" width="390" height="844" loading="lazy" alt="Stop 4 · Standard Chartered (phone), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/phone-06-chennai.webp" width="390" height="844" loading="lazy" alt="Stop 4 · Standard Chartered (phone), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Flight · Chennai to Mumbai</h3>
+    <section class="stop"><h3>Flight · Chennai to Mumbai</h3>
       <div class="pair pair--phone">
-        <figure><figcaption>Before</figcaption><img src="before/phone-07-leg-3.webp" width="390" height="844" loading="lazy" alt="Flight · Chennai to Mumbai, before (phone)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/phone-07-leg-3.webp" width="390" height="844" loading="lazy" alt="Flight · Chennai to Mumbai, after (phone)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/phone-07-leg-3.webp" width="390" height="844" loading="lazy" alt="Flight · Chennai to Mumbai (phone), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/phone-07-leg-3.webp" width="390" height="844" loading="lazy" alt="Flight · Chennai to Mumbai (phone), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Stop 5 · Marsh McLennan</h3>
+    <section class="stop"><h3>Stop 5 · Marsh McLennan</h3>
       <div class="pair pair--phone">
-        <figure><figcaption>Before</figcaption><img src="before/phone-08-marsh.webp" width="390" height="844" loading="lazy" alt="Stop 5 · Marsh McLennan, before (phone)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/phone-08-marsh.webp" width="390" height="844" loading="lazy" alt="Stop 5 · Marsh McLennan, after (phone)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/phone-08-marsh.webp" width="390" height="844" loading="lazy" alt="Stop 5 · Marsh McLennan (phone), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/phone-08-marsh.webp" width="390" height="844" loading="lazy" alt="Stop 5 · Marsh McLennan (phone), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Stop 6 · The turn</h3>
+    <section class="stop"><h3>Stop 6 · The turn</h3>
       <div class="pair pair--phone">
-        <figure><figcaption>Before</figcaption><img src="before/phone-09-turn.webp" width="390" height="844" loading="lazy" alt="Stop 6 · The turn, before (phone)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/phone-09-turn.webp" width="390" height="844" loading="lazy" alt="Stop 6 · The turn, after (phone)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/phone-09-turn.webp" width="390" height="844" loading="lazy" alt="Stop 6 · The turn (phone), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/phone-09-turn.webp" width="390" height="844" loading="lazy" alt="Stop 6 · The turn (phone), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Stop 7 · Cockpit</h3>
+    <section class="stop"><h3>Stop 7 · Cockpit</h3>
       <div class="pair pair--phone">
-        <figure><figcaption>Before</figcaption><img src="before/phone-10-cockpit.webp" width="390" height="844" loading="lazy" alt="Stop 7 · Cockpit, before (phone)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/phone-10-cockpit.webp" width="390" height="844" loading="lazy" alt="Stop 7 · Cockpit, after (phone)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/phone-10-cockpit.webp" width="390" height="844" loading="lazy" alt="Stop 7 · Cockpit (phone), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/phone-10-cockpit.webp" width="390" height="844" loading="lazy" alt="Stop 7 · Cockpit (phone), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Stop 8 · Thesis</h3>
+    <section class="stop"><h3>Stop 8 · Thesis</h3>
       <div class="pair pair--phone">
-        <figure><figcaption>Before</figcaption><img src="before/phone-11-thesis.webp" width="390" height="844" loading="lazy" alt="Stop 8 · Thesis, before (phone)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/phone-11-thesis.webp" width="390" height="844" loading="lazy" alt="Stop 8 · Thesis, after (phone)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/phone-11-thesis.webp" width="390" height="844" loading="lazy" alt="Stop 8 · Thesis (phone), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/phone-11-thesis.webp" width="390" height="844" loading="lazy" alt="Stop 8 · Thesis (phone), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Departures board</h3>
+    <section class="stop"><h3>Departures board</h3>
       <div class="pair pair--phone">
-        <figure><figcaption>Before</figcaption><img src="before/phone-12-board.webp" width="390" height="844" loading="lazy" alt="Departures board, before (phone)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/phone-12-board.webp" width="390" height="844" loading="lazy" alt="Departures board, after (phone)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/phone-12-board.webp" width="390" height="844" loading="lazy" alt="Departures board (phone), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/phone-12-board.webp" width="390" height="844" loading="lazy" alt="Departures board (phone), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Safety card</h3>
+    <section class="stop"><h3>Safety card</h3>
       <div class="pair pair--phone">
-        <figure><figcaption>Before</figcaption><img src="before/phone-13-principles.webp" width="390" height="844" loading="lazy" alt="Safety card, before (phone)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/phone-13-principles.webp" width="390" height="844" loading="lazy" alt="Safety card, after (phone)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/phone-13-principles.webp" width="390" height="844" loading="lazy" alt="Safety card (phone), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/phone-13-principles.webp" width="390" height="844" loading="lazy" alt="Safety card (phone), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>I build sites like this</h3>
+    <section class="stop"><h3>I build sites like this</h3>
       <div class="pair pair--phone">
-        <figure><figcaption>Before</figcaption><img src="before/phone-14-sites.webp" width="390" height="844" loading="lazy" alt="I build sites like this, before (phone)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/phone-14-sites.webp" width="390" height="844" loading="lazy" alt="I build sites like this, after (phone)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/phone-14-sites.webp" width="390" height="844" loading="lazy" alt="I build sites like this (phone), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/phone-14-sites.webp" width="390" height="844" loading="lazy" alt="I build sites like this (phone), after"></figure>
       </div>
     </section>
-    <section class="stop">
-      <h3>Contact</h3>
+    <section class="stop"><h3>Contact</h3>
       <div class="pair pair--phone">
-        <figure><figcaption>Before</figcaption><img src="before/phone-15-contact.webp" width="390" height="844" loading="lazy" alt="Contact, before (phone)"></figure>
-        <figure><figcaption class="after">After</figcaption><img src="after/phone-15-contact.webp" width="390" height="844" loading="lazy" alt="Contact, after (phone)"></figure>
+        <figure><figcaption>Before</figcaption><img src="before/phone-15-contact.webp" width="390" height="844" loading="lazy" alt="Contact (phone), before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="after/phone-15-contact.webp" width="390" height="844" loading="lazy" alt="Contact (phone), after"></figure>
       </div>
     </section>
+  <h2 id="cases">Case studies</h2>
+  <p class="hint">Full pages, top to bottom. Tap a case study to open it.</p>
+    <details class="case">
+      <summary>PM 101 · Plan Karo Chalo</summary>
+      <h4>Desktop</h4>
+      <div class="pair pair--desktop">
+        <figure><figcaption>Before</figcaption><img src="cs-before/desktop-plan-karo-chalo.webp" width="1440" height="4125" loading="lazy" alt="PM 101 · Plan Karo Chalo, desktop, before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="cs-after/desktop-plan-karo-chalo.webp" width="1440" height="4124" loading="lazy" alt="PM 101 · Plan Karo Chalo, desktop, after"></figure>
+      </div>
+      <h4>Phone</h4>
+      <div class="pair pair--phone">
+        <figure><figcaption>Before</figcaption><img src="cs-before/phone-plan-karo-chalo.webp" width="390" height="5485" loading="lazy" alt="PM 101 · Plan Karo Chalo, phone, before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="cs-after/phone-plan-karo-chalo.webp" width="390" height="5185" loading="lazy" alt="PM 101 · Plan Karo Chalo, phone, after"></figure>
+      </div>
+    </details>
+    <details class="case">
+      <summary>PM 102 · PMPathfinder</summary>
+      <h4>Desktop</h4>
+      <div class="pair pair--desktop">
+        <figure><figcaption>Before</figcaption><img src="cs-before/desktop-pmpathfinder.webp" width="1440" height="3969" loading="lazy" alt="PM 102 · PMPathfinder, desktop, before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="cs-after/desktop-pmpathfinder.webp" width="1440" height="3676" loading="lazy" alt="PM 102 · PMPathfinder, desktop, after"></figure>
+      </div>
+      <h4>Phone</h4>
+      <div class="pair pair--phone">
+        <figure><figcaption>Before</figcaption><img src="cs-before/phone-pmpathfinder.webp" width="390" height="5003" loading="lazy" alt="PM 102 · PMPathfinder, phone, before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="cs-after/phone-pmpathfinder.webp" width="390" height="4260" loading="lazy" alt="PM 102 · PMPathfinder, phone, after"></figure>
+      </div>
+    </details>
+    <details class="case">
+      <summary>PM 103 · galpals</summary>
+      <h4>Desktop</h4>
+      <div class="pair pair--desktop">
+        <figure><figcaption>Before</figcaption><img src="cs-before/desktop-galpals.webp" width="1440" height="4418" loading="lazy" alt="PM 103 · galpals, desktop, before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="cs-after/desktop-galpals.webp" width="1440" height="4113" loading="lazy" alt="PM 103 · galpals, desktop, after"></figure>
+      </div>
+      <h4>Phone</h4>
+      <div class="pair pair--phone">
+        <figure><figcaption>Before</figcaption><img src="cs-before/phone-galpals.webp" width="390" height="5964" loading="lazy" alt="PM 103 · galpals, phone, before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="cs-after/phone-galpals.webp" width="390" height="5162" loading="lazy" alt="PM 103 · galpals, phone, after"></figure>
+      </div>
+    </details>
+    <details class="case">
+      <summary>PM 104 · Hitaarth</summary>
+      <h4>Desktop</h4>
+      <div class="pair pair--desktop">
+        <figure><figcaption>Before</figcaption><img src="cs-before/desktop-hitaarth.webp" width="1440" height="4091" loading="lazy" alt="PM 104 · Hitaarth, desktop, before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="cs-after/desktop-hitaarth.webp" width="1440" height="4151" loading="lazy" alt="PM 104 · Hitaarth, desktop, after"></figure>
+      </div>
+      <h4>Phone</h4>
+      <div class="pair pair--phone">
+        <figure><figcaption>Before</figcaption><img src="cs-before/phone-hitaarth.webp" width="390" height="4990" loading="lazy" alt="PM 104 · Hitaarth, phone, before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="cs-after/phone-hitaarth.webp" width="390" height="4812" loading="lazy" alt="PM 104 · Hitaarth, phone, after"></figure>
+      </div>
+    </details>
+    <details class="case">
+      <summary>PM 105 · Signal</summary>
+      <h4>Desktop</h4>
+      <div class="pair pair--desktop">
+        <figure><figcaption>Before</figcaption><img src="cs-before/desktop-signal.webp" width="1440" height="3593" loading="lazy" alt="PM 105 · Signal, desktop, before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="cs-after/desktop-signal.webp" width="1440" height="3113" loading="lazy" alt="PM 105 · Signal, desktop, after"></figure>
+      </div>
+      <h4>Phone</h4>
+      <div class="pair pair--phone">
+        <figure><figcaption>Before</figcaption><img src="cs-before/phone-signal.webp" width="390" height="4420" loading="lazy" alt="PM 105 · Signal, phone, before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="cs-after/phone-signal.webp" width="390" height="3512" loading="lazy" alt="PM 105 · Signal, phone, after"></figure>
+      </div>
+    </details>
+    <details class="case">
+      <summary>PM 106 · StoreOps</summary>
+      <h4>Desktop</h4>
+      <div class="pair pair--desktop">
+        <figure><figcaption>Before</figcaption><img src="cs-before/desktop-storeops.webp" width="1440" height="3574" loading="lazy" alt="PM 106 · StoreOps, desktop, before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="cs-after/desktop-storeops.webp" width="1440" height="3230" loading="lazy" alt="PM 106 · StoreOps, desktop, after"></figure>
+      </div>
+      <h4>Phone</h4>
+      <div class="pair pair--phone">
+        <figure><figcaption>Before</figcaption><img src="cs-before/phone-storeops.webp" width="390" height="4401" loading="lazy" alt="PM 106 · StoreOps, phone, before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="cs-after/phone-storeops.webp" width="390" height="3691" loading="lazy" alt="PM 106 · StoreOps, phone, after"></figure>
+      </div>
+    </details>
+    <details class="case">
+      <summary>PM 107 · Bhojan</summary>
+      <h4>Desktop</h4>
+      <div class="pair pair--desktop">
+        <figure><figcaption>Before</figcaption><img src="cs-before/desktop-bhojan.webp" width="1440" height="3347" loading="lazy" alt="PM 107 · Bhojan, desktop, before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="cs-after/desktop-bhojan.webp" width="1440" height="3366" loading="lazy" alt="PM 107 · Bhojan, desktop, after"></figure>
+      </div>
+      <h4>Phone</h4>
+      <div class="pair pair--phone">
+        <figure><figcaption>Before</figcaption><img src="cs-before/phone-bhojan.webp" width="390" height="3977" loading="lazy" alt="PM 107 · Bhojan, phone, before"></figure>
+        <figure><figcaption class="after">After</figcaption><img src="cs-after/phone-bhojan.webp" width="390" height="3797" loading="lazy" alt="PM 107 · Bhojan, phone, after"></figure>
+      </div>
+    </details>
 </main>
 </body>
 </html>
