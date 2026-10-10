@@ -41,9 +41,11 @@ test.describe('home', () => {
     await expect(page.locator('footer.footer')).toContainText(FOOTER.credit);
     await expect(page.locator('footer.footer')).toContainText('Designed and built by Prateek with Claude Code.');
 
-    // The page ends on the intro call; personal notes and the duplicate text-version link stay out.
+    // The contact section just above carries the intro call, so the footer doesn't repeat it;
+    // personal notes and the duplicate text-version link stay out too.
     const footer = page.locator('footer.footer');
-    await expect(footer.locator(`a.btn[href="${PROFILE.calendly}"]`)).toHaveCount(1);
+    await expect(footer.locator(`a[href="${PROFILE.calendly}"]`)).toHaveCount(0);
+    await expect(page.locator(`#contact a[href="${PROFILE.calendly}"]`)).toHaveCount(1);
     await expect(footer.locator('a', { hasText: FOOTER.comic.label })).toHaveCount(1);
     await expect(footer.locator('a[href*="field-guides"], a[href$="read/"]')).toHaveCount(0);
     await expect(page.locator('#nav .nav-read')).toHaveText('Quick read');
