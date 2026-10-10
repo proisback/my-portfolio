@@ -155,6 +155,21 @@
   .pager{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:18px;}
   .pager .step{margin:0;}
 
+  /* English: one quiet line under each Hindi statement. Body font, lighter, smaller. */
+  .en{font-family:var(--body);font-weight:500;color:var(--ink-2);line-height:1.35;}
+  .en--lede{font-size:15px;margin-top:2px;}
+  .en--say{font-size:15px;margin-top:0;}
+  .en--line{font-size:clamp(16px,2.6vw,19px);margin-top:4px;min-height:1.35em;}
+  .en--head{font-size:16px;margin-top:4px;}
+  .sar p > .en{display:block;font-size:15px;margin-top:1px;}
+  /* Plain warm chips (no grain): with two lines of text, texture would be noise. */
+  .value{flex-direction:column;gap:1px;padding:6px 12px 6px;background:#F8ECD3;}
+  .v-hi{display:inline-flex;align-items:baseline;gap:6px;}
+  .v-en{font-family:var(--body);font-size:12px;font-weight:500;color:#7A5530;line-height:1.1;}
+  .closing .pair + .pair{margin-top:14px;}
+  .closing p.en{font-family:var(--body);font-weight:500;font-size:clamp(14px,2.4vw,16px);color:var(--ink-2);margin-top:3px;}
+  .closing .controls{margin-top:18px;}
+
   footer{margin-top:36px;text-align:center;font-size:13px;color:var(--ink-2);}
   footer a{color:inherit;}
 
@@ -178,6 +193,7 @@
     <span class="kicker">संस्कार · बच्चों के लिए</span>
     <h1>जैन जीवन की वर्णमाला</h1>
     <p class="lede">जीवन में हर अक्षर हमें एक संस्कार और एक सीख देता है।</p>
+    <p class="en en--lede" lang="en">Every letter in life gives us a value and a lesson.</p>
   </header>
 
   <div class="tabs" role="tablist" aria-label="मोड">
@@ -198,6 +214,21 @@
 // iPhone's Hindi voice reads a lone "अ" as "dollar"; joined to the next word it
 // sounds the same as "अ से". The screen always shows the original line.
 const SAY = { 'अ': 'असे अदब करो।' };
+// English for every line (approved by Prateek, 10 Oct 2026). Shown under the Hindi, read after it.
+const EN = {
+  'अ': 'Show respect.', 'आ': 'Believe in yourself.', 'इ': 'Pray with devotion.', 'ई': 'Be honest.',
+  'उ': 'Stay enthusiastic.', 'ऊ': 'Be full of energy.', 'ए': 'Stay united.', 'ऐ': 'Be prosperous.',
+  'ओ': 'Be radiant and strong.', 'औ': 'Serve others.',
+  'क': 'Do good deeds.', 'ख': 'Be true and upright.', 'ग': 'Carry yourself with dignity.', 'घ': "Don't be arrogant.",
+  'च': 'Be a person of good character.', 'छ': "Don't deceive anyone.", 'ज': "Don't be jealous of others.", 'झ': "Don't fight.",
+  'ट': "Don't clash with others.", 'ठ': "Don't cheat anyone.", 'ढ': 'Learn to adapt in life.', 'त': 'Be ready to act, and keep progressing.',
+  'थ': 'Never grow weary in life.', 'द': 'Show compassion.', 'ध': 'Practise dharma.', 'न': 'Be gentle.',
+  'प': 'Work hard.', 'फ': 'Fulfil your duty.', 'ब': 'Be strong.', 'भ': 'Do good for others.',
+  'म': 'Become a great person.', 'य': 'Have faith.', 'र': 'Be merciful to all living beings.', 'ल': 'Reach your goals.',
+  'व': 'Keep your promises.',
+  'श': 'Have a sense of modesty.', 'ष': "Don't plot against anyone.", 'स': 'Be punctual.', 'ह': 'Be cheerful.',
+  'क्ष': 'Forgive.', 'त्र': "Don't cry out in despair.", 'ज्ञ': 'Become wise.',
+};
 // [letter, line, words to mark]. A line with "मत" is a don't.
 const LESSONS = [
   ['अ','अ से अदब करो।',['अदब']],
@@ -242,7 +273,7 @@ const LESSONS = [
   ['क्ष','क्ष से क्षमा करो।',['क्षमा']],
   ['त्र','त्र से त्राहि-त्राहि मत करो।',['त्राहि-त्राहि']],
   ['ज्ञ','ज्ञ से ज्ञानी बनो।',['ज्ञानी']],
-].map(([l, line, mark], i) => ({ l, line, mark, i, dont: / मत[ ।]/.test(line), swar: i < 10, say: SAY[l] || line }));
+].map(([l, line, mark], i) => ({ l, line, mark, i, dont: / मत[ ।]/.test(line), swar: i < 10, say: SAY[l] || line, en: EN[l] }));
 const BY_LETTER = Object.fromEntries(LESSONS.map((x) => [x.l, x]));
 
 // The two boards, in वर्णमाला order. ङ ञ ड ण have no sanskar in the list: carved, but silent.
@@ -251,10 +282,18 @@ const BOARDS = [
   { name: 'व्यंजन', letters: ['क','ख','ग','घ','ङ','च','छ','ज','झ','ञ','ट','ठ','ड','ढ','ण','त','थ','द','ध','न','प','फ','ब','भ','म','य','र','ल','व','श','ष','स','ह','क्ष','त्र','ज्ञ'] },
 ];
 
-// The values from the closing lines, each tied to its letter.
+// The values from the closing lines, each tied to its letter: [value, letter, English].
 const VALUES = [
-  [['अदब','अ'],['आत्मविश्वास','आ'],['इबादत','इ'],['ईमानदारी','ई'],['उत्साह','उ'],['ऊर्जा','ऊ'],['एकता','ए'],['ऐश्वर्य','ऐ'],['ओज','ओ'],['सेवा','औ']],
-  [['कर्म','क'],['खरेपन','ख'],['गरिमा','ग'],['चरित्र','च'],['दया','द'],['धर्म','ध'],['परिश्रम','प'],['भलाई','भ'],['वचन','व'],['क्षमा','क्ष'],['ज्ञान','ज्ञ']],
+  [['अदब','अ','Respect'],['आत्मविश्वास','आ','Self-confidence'],['इबादत','इ','Prayer'],['ईमानदारी','ई','Honesty'],['उत्साह','उ','Enthusiasm'],
+   ['ऊर्जा','ऊ','Energy'],['एकता','ए','Unity'],['ऐश्वर्य','ऐ','Prosperity'],['ओज','ओ','Radiance'],['सेवा','औ','Service']],
+  [['कर्म','क','Good deeds'],['खरेपन','ख','Integrity'],['गरिमा','ग','Dignity'],['चरित्र','च','Character'],['दया','द','Compassion'],
+   ['धर्म','ध','Dharma'],['परिश्रम','प','Hard work'],['भलाई','भ','Goodness'],['वचन','व','Keeping your word'],['क्षमा','क्ष','Forgiveness'],['ज्ञान','ज्ञ','Knowledge']],
+];
+// The closing statements, Hindi then English. `gold` marks the line set in gold.
+const CLOSING = [
+  { hi: 'यह केवल वर्णमाला नहीं है।', en: 'This is not just an alphabet.' },
+  { hi: 'यह अच्छे जीवन की वर्णमाला है।', en: 'It is the alphabet of a good life.', gold: true },
+  { hi: ['इसे केवल बोलना नहीं है,', 'इसे अपने जीवन में उतारना है।'], en: 'It is not only to be recited; it is to be lived.' },
 ];
 
 /* ---------- State ---------- */
@@ -271,23 +310,43 @@ const state = {
 };
 let autoTimer = null;
 
-/* ---------- Read aloud (device's Hindi voice; hidden when there is none) ---------- */
-let hiVoice = null;
+/* ---------- Read aloud: Hindi line, then its English (device voices; hidden when there are none) ---------- */
+let hiVoice = null, enVoice = null, speakRun = 0;
 function pickVoice() {
   const voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
   hiVoice = voices.find((v) => /^hi([-_]|$)/i.test(v.lang)) || null;
-  document.documentElement.classList.toggle('can-speak', !!hiVoice);
+  const en = voices.filter((v) => /^en([-_]|$)/i.test(v.lang));
+  enVoice = ['IN', 'GB', 'US'].map((r) => en.find((v) => new RegExp(`^en[-_]${r}`, 'i').test(v.lang))).find(Boolean) || en[0] || null;
+  document.documentElement.classList.toggle('can-speak', !!(hiVoice || enVoice));
 }
 if ('speechSynthesis' in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
-function speak(text, onend) {
-  if (!hiVoice) { if (onend) onend(); return; }
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.voice = hiVoice; u.lang = hiVoice.lang; u.rate = 0.85;
-  if (onend) { u.onend = onend; u.onerror = onend; }
-  speechSynthesis.speak(u);
+const hiPart = (text) => ({ text, voice: hiVoice, rate: 0.85 });
+const enPart = (text) => ({ text, voice: enVoice, rate: 0.95 });
+// Speaks the parts in order, skipping any whose voice the device lacks. A newer
+// call (or hush) retires the old queue, so a cancelled line never resumes.
+function speakSeq(parts, onend) {
+  const run = ++speakRun;
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  const queue = parts.filter((p) => p.voice && p.text);
+  const next = () => {
+    if (run !== speakRun) return;
+    const p = queue.shift();
+    if (!p) { if (onend) onend(); return; }
+    const u = new SpeechSynthesisUtterance(p.text);
+    u.voice = p.voice; u.lang = p.voice.lang; u.rate = p.rate;
+    // Some engines never report the end of a line; a length-based watchdog keeps
+    // auto-play moving. speak() queues, so a late line never overlaps the next.
+    let done = false;
+    const finish = () => { if (done) return; done = true; clearTimeout(watch); next(); };
+    const watch = setTimeout(finish, 2000 + p.text.length * 110);
+    u.onend = finish; u.onerror = finish;
+    speechSynthesis.speak(u);
+  };
+  next();
 }
-function hush() { if (window.speechSynthesis) speechSynthesis.cancel(); }
+const speakLesson = (x, onend) => speakSeq([hiPart(x.say), enPart(x.en)], onend);
+const speakClosing = () => speakSeq(CLOSING.flatMap((c) => [hiPart([].concat(c.hi).join(' ')), enPart(c.en)]));
+function hush() { speakRun++; if (window.speechSynthesis) speechSynthesis.cancel(); }
 
 /* ---------- Helpers ---------- */
 const marked = (x) => x.mark.reduce((s, w) => s.replace(w, `<mark>${w}</mark>`), x.line);
@@ -347,9 +406,13 @@ function renderDrill() {
   const dots = d.list.map((_, k) => `<i class="${k < d.i ? 'done' : k === d.i ? 'now' : ''}"></i>`).join('');
   return `<div class="drill">
     <p class="say">बच्चों से कहें: फटाफट बोलो!</p>
+    <p class="en en--say" lang="en">Tell the children: say it fast!</p>
     ${opts}
     <div class="tile"><span class="big${d.revealed ? '' : ' trace'}" aria-hidden="true">${x.l}</span></div>
-    <p class="line${d.revealed ? '' : ' hidden'}" aria-live="polite">${d.revealed ? marked(x) : `${x.l} से … ?`}</p>
+    <div aria-live="polite">
+      <p class="line${d.revealed ? '' : ' hidden'}">${d.revealed ? marked(x) : `${x.l} से … ?`}</p>
+      <p class="en en--line" lang="en">${d.revealed ? x.en : '&nbsp;'}</p>
+    </div>
     <div class="controls">
       ${d.revealed
         ? `<button class="btn primary" onclick="drillNext()">अगला →</button>`
@@ -363,17 +426,18 @@ function renderDrill() {
 }
 
 function renderSar() {
-  const chips = (row) => row.map(([w, l]) => `<button class="value" onclick="openLetter(${BY_LETTER[l].i}, this)" aria-haspopup="dialog"><b>${l}</b>${w}</button>`).join('');
+  const chips = (row) => row.map(([w, l, en]) => `<button class="value" onclick="openLetter(${BY_LETTER[l].i}, this)" aria-haspopup="dialog"><span class="v-hi"><b>${l}</b>${w}</span><span class="v-en" lang="en">${en}</span></button>`).join('');
+  const closing = CLOSING.map((c) => `
+      <div class="pair"><p${c.gold ? ' class="gold"' : ''}>${[].concat(c.hi).join('<br>')}</p><p class="en" lang="en">${c.en}</p></div>`).join('');
   return `<div class="sar">
     <h2>यही है हमारी जीवन की वर्णमाला</h2>
-    <p>हर अक्षर हमें जीवन का एक मूल्य सिखाता है:</p>
+    <p class="en en--head" lang="en">This is our alphabet of life.</p>
+    <p>हर अक्षर हमें जीवन का एक मूल्य सिखाता है: <span class="en" lang="en">Every letter teaches us a value for life:</span></p>
     <div class="values">${chips(VALUES[0])}</div>
     <p>फिर:</p>
     <div class="values">${chips(VALUES[1])}</div>
-    <div class="closing">
-      <p>यह केवल वर्णमाला नहीं है।</p>
-      <p class="gold">यह अच्छे जीवन की वर्णमाला है।</p>
-      <p>इसे केवल बोलना नहीं है,<br>इसे अपने जीवन में उतारना है।</p>
+    <div class="closing">${closing}
+      <div class="controls"><button class="btn speak" onclick="speakClosing()">${speakIcon} सुनो</button></div>
     </div>
   </div>`;
 }
@@ -402,7 +466,8 @@ function renderSheet() {
       <div class="tile"><span class="big trace" aria-hidden="true">${x.l}</span></div>
       ${stamp(x)}
       <p class="line" id="sheet-line">${marked(x)}</p>
-      <div class="controls"><button class="btn speak" onclick="speak(LESSONS[${x.i}].say)">${speakIcon} सुनो</button></div>
+      <p class="en en--line" lang="en" id="sheet-en">${x.en}</p>
+      <div class="controls"><button class="btn speak" onclick="speakLesson(LESSONS[${x.i}])">${speakIcon} सुनो</button></div>
       <div class="pager">
         <button class="btn" onclick="stepLetter(-1)" ${x.i === 0 ? 'disabled' : ''} aria-label="पिछला अक्षर">← पिछला</button>
         <p class="step">${x.i + 1} / ${LESSONS.length}</p>
@@ -452,7 +517,7 @@ function drillReveal(withVoice) {
   const d = state.drill;
   d.revealed = true;
   render();
-  if (withVoice) speak(d.list[d.i].say);
+  if (withVoice) speakLesson(d.list[d.i]);
 }
 function drillNext() {
   const d = state.drill;
@@ -461,15 +526,15 @@ function drillNext() {
   else { d.i += 1; d.revealed = false; }
   render();
 }
-// Auto play: show the letter, give the child a moment, reveal (and speak), move on.
+// Auto play: show the letter, give the child a moment, reveal (and speak Hindi, then English), move on.
 function autoStep() {
   const d = state.drill;
   if (!d.auto || d.done || state.view !== 'drill') return;
   autoTimer = setTimeout(() => {
     if (!d.auto) return;
     d.revealed = true; render();
-    const next = () => { autoTimer = setTimeout(() => { if (!d.auto) return; drillNext(); autoStep(); }, hiVoice ? 700 : 2200); };
-    speak(d.list[d.i].say, next);
+    const next = () => { autoTimer = setTimeout(() => { if (!d.auto) return; drillNext(); autoStep(); }, hiVoice || enVoice ? 700 : 3000); };
+    speakLesson(d.list[d.i], next);
   }, 1800);
 }
 function toggleAuto() {
