@@ -48,6 +48,10 @@ test.describe('case study pages', () => {
       await expect(pass).toContainText(p.status);
       await expect(page.locator('.wp-kicker')).toContainText(`Case study ${String(i + 1).padStart(2, '0')} of 07`);
       for (const s of p.sections) await expect(page.locator('.wp-sec-title', { hasText: s.h })).toHaveCount(1);
+      // The 3-line opener carries the case; the old self-assessment section is gone.
+      const opener = page.locator('.wp-opener dd');
+      await expect(opener).toHaveText([p.opener.problem, p.opener.did, p.opener.result]);
+      await expect(page.locator('.wp-sec-title', { hasText: 'What This Demonstrates' })).toHaveCount(0);
       await expect(page.locator('footer')).toContainText(FOOTER.credit);
       await page.waitForTimeout(300);
       expect(errors, errors.join('\n')).toEqual([]);
@@ -72,7 +76,11 @@ test.describe('read page', () => {
     expect(res.status()).toBe(200);
     await expect(page.locator('h1')).toContainText(PROFILE.name);
     const main = page.locator('main');
-    for (const p of PRODUCTS) await expect(main.locator('.rp-product h3', { hasText: p.name })).toHaveCount(1);
+    for (const p of PRODUCTS) {
+      const entry = main.locator('.rp-product', { has: page.locator('h3', { hasText: p.name }) });
+      await expect(entry).toHaveCount(1);
+      await expect(entry.locator('.rp-opener dd')).toHaveText([p.opener.problem, p.opener.did, p.opener.result]);
+    }
     for (const line of PROFILE.thesis) await expect(page.locator('#thesis')).toContainText(line);
     await expect(page.locator('#thesis-title')).toContainText('Stop fixing systems. Start building them.');
     await expect(page.locator('footer')).toContainText(FOOTER.credit);
