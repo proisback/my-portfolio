@@ -128,7 +128,9 @@
     transition:transform .3s var(--soft), box-shadow .3s var(--soft);}
   @media (hover:hover){.cell:not(.silent):hover{transform:translateY(-3px);box-shadow:0 7px 0 var(--edge);}}
   .cell:not(.silent):active{transform:translateY(3px);box-shadow:0 1px 0 var(--edge);}
-  .cell.silent{cursor:default;--bg:#F1F2F6;--fg:#C3C7D3;--edge:#E2E4EC;text-shadow:none;}
+  .cell.silent{cursor:default;--bg:#F1F2F6;--fg:#C3C7D3;--edge:#E2E4EC;text-shadow:none;-webkit-tap-highlight-color:transparent;}
+  .board .cell.silent.wiggle{animation:wiggle .5s ease-in-out;}
+  @keyframes wiggle{0%,100%{transform:rotate(0)}20%{transform:rotate(-5deg)}40%{transform:rotate(4deg)}60%{transform:rotate(-3deg)}80%{transform:rotate(2deg)}}
   .cell.last{grid-column:3;}
   .cell.seen::after{content:'★';position:absolute;top:3px;right:6px;font-size:14px;line-height:1;color:#F59F00;text-shadow:0 1px 0 #fff;}
   /* one calm reveal on first load */
@@ -485,6 +487,14 @@ const ELEPHANT = `<svg viewBox="0 0 120 120" aria-hidden="true" focusable="false
 const ARROW = '<svg class="arrow" viewBox="0 0 40 20" aria-hidden="true"><path d="M2 10h32M27 3l8 7-8 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3 5"/></svg>';
 const NOPE = '<svg class="nope" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="7"/><path d="M19 19 81 81" stroke="currentColor" stroke-width="7" stroke-linecap="round"/></svg>';
 const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+// ङ ञ ड ण have no sanskar: a tap gives a small wiggle instead of nothing.
+function wiggle(el) {
+  if (calm()) return;
+  el.classList.remove('wiggle');
+  void el.offsetWidth; // restart the wiggle on a quick second tap
+  el.classList.add('wiggle');
+  el.addEventListener('animationend', () => el.classList.remove('wiggle'), { once: true });
+}
 
 /* ---------- State ---------- */
 // Storage keys keep the guide's first name so stars, speed and tours survive the move to /sanskaar-abc/.
@@ -634,7 +644,7 @@ function renderBoard() {
       const x = BY_LETTER[l];
       const last = b.letters.length % 5 === 1 && k === b.letters.length - 1 ? ' last' : '';
       const order = n * 10 + k;
-      if (!x) return `<span class="cell silent h${HUE[l]}${last}" style="--k:${order}" aria-hidden="true">${l}</span>`;
+      if (!x) return `<span class="cell silent h${HUE[l]}${last}" style="--k:${order}" aria-hidden="true" onclick="wiggle(this)">${l}</span>`;
       return `<button class="cell h${HUE[l]}${state.seen.has(l) ? ' seen' : ''}${last}" style="--k:${order}" aria-haspopup="dialog" aria-label="${l}" onclick="openLetter(${x.i}, this)">${l}</button>`;
     }).join('');
     const count = n === 0
