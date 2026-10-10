@@ -185,6 +185,9 @@
   .chip{appearance:none;cursor:pointer;border:1.5px solid rgba(110,63,23,.22);background:rgba(255,250,238,.7);border-radius:999px;
     padding:5px 13px;font-size:15px;font-weight:500;color:var(--ink-2);transition:all .25s;}
   .chip[aria-pressed="true"]{background:var(--carve);border-color:var(--carve);color:#FFF6E4;}
+  .speed{display:flex;justify-content:center;align-items:center;gap:6px;margin-top:14px;}
+  .speed-k{font-size:14px;color:var(--ink-2);margin-right:2px;}
+  .speed .chip{padding:3px 11px;font-size:14px;}
   .progress{display:flex;justify-content:center;flex-wrap:wrap;gap:4px;margin:18px auto 0;max-width:440px;}
   .progress i{width:7px;height:7px;border-radius:50%;background:rgba(110,63,23,.16);transition:background .3s;}
   .progress i.done{background:var(--marigold-deep);}
@@ -402,6 +405,10 @@ const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ---------- State ---------- */
 const STORE = 'jain-varnamala-seen';
+// Drill speed: scales speech and auto-play pauses. Remembered on this device.
+const SPEEDS = [0.5, 1, 1.25, 1.5];
+const SPEED_STORE = 'jain-varnamala-speed';
+const loadSpeed = () => { try { const s = Number(localStorage.getItem(SPEED_STORE)); return SPEEDS.includes(s) ? s : 1; } catch { return 1; } };
 const loadSeen = () => { try { return new Set(JSON.parse(localStorage.getItem(STORE) || '[]')); } catch { return new Set(); } };
 const saveSeen = () => { try { localStorage.setItem(STORE, JSON.stringify([...state.seen])); } catch {} };
 
@@ -410,7 +417,7 @@ const state = {
   open: null,          // index into LESSONS for the letter card
   fresh: false,        // true right after a card opens (the elephant peeks in once)
   seen: loadSeen(),
-  drill: { set: 'swar', order: 'seq', list: [], i: 0, revealed: false, done: false, auto: false },
+  drill: { set: 'swar', order: 'seq', list: [], i: 0, revealed: false, done: false, auto: false, speed: loadSpeed() },
 };
 let autoTimer = null;
 
@@ -424,8 +431,9 @@ function pickVoice() {
   document.documentElement.classList.toggle('can-speak', !!(hiVoice || enVoice));
 }
 if ('speechSynthesis' in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
-const hiPart = (text) => ({ text, voice: hiVoice, rate: 0.85 });
-const enPart = (text) => ({ text, voice: enVoice, rate: 0.95 });
+// `speed` (0.5×, 1×, 1.25×, 1.5×) scales the voices' natural rates.
+const hiPart = (text, speed = 1) => ({ text, voice: hiVoice, rate: 0.85 * speed, speed });
+const enPart = (text, speed = 1) => ({ text, voice: enVoice, rate: 0.95 * speed, speed });
 // Speaks the parts in order, skipping any whose voice the device lacks. A newer
 // call (or hush) retires the old queue, so a cancelled line never resumes.
 function speakSeq(parts, onend) {
@@ -442,13 +450,13 @@ function speakSeq(parts, onend) {
     // auto-play moving. speak() queues, so a late line never overlaps the next.
     let done = false;
     const finish = () => { if (done) return; done = true; clearTimeout(watch); next(); };
-    const watch = setTimeout(finish, 2000 + p.text.length * 110);
+    const watch = setTimeout(finish, (2000 + p.text.length * 110) / (p.speed || 1));
     u.onend = finish; u.onerror = finish;
     speechSynthesis.speak(u);
   };
   next();
 }
-const speakLesson = (x, onend) => speakSeq([hiPart(x.say), enPart(x.en)], onend);
+const speakLesson = (x, onend, speed = 1) => speakSeq([hiPart(x.say, speed), enPart(x.en, speed)], onend);
 const speakClosing = () => speakSeq(CLOSING.flatMap((c) => [hiPart([].concat(c.hi).join(' ')), enPart(c.en)]));
 function hush() { speakRun++; if (window.speechSynthesis) speechSynthesis.cancel(); }
 
@@ -607,6 +615,10 @@ function renderDrill() {
       <button class="btn speak" onclick="drillReveal(true)">${speakIcon} सुनो</button>
       <button class="btn gold" onclick="toggleAuto()" aria-pressed="${d.auto}">${d.auto ? '❚❚ रोको' : '▶ अपने आप चलाओ'}</button>
     </div>
+    <div class="speed" role="group" aria-label="गति (speed)">
+      <span class="speed-k" aria-hidden="true">गति</span>
+      ${SPEEDS.map((s) => `<button class="chip" aria-pressed="${d.speed === s}" aria-label="${s}× speed" onclick="setSpeed(${s})">${s}×</button>`).join('')}
+    </div>
     <div class="progress" aria-hidden="true">${dots}</div>
     <p class="step">${d.i + 1} / ${d.list.length}</p>
   </div>`;
@@ -713,7 +725,7 @@ function drillReveal(withVoice) {
   const d = state.drill;
   d.revealed = true;
   render();
-  if (withVoice) speakLesson(d.list[d.i]);
+  if (withVoice) speakLesson(d.list[d.i], null, d.speed);
 }
 function drillNext() {
   const d = state.drill;
@@ -730,9 +742,9 @@ function autoStep() {
   autoTimer = setTimeout(() => {
     if (!d.auto) return;
     d.revealed = true; render();
-    const next = () => { autoTimer = setTimeout(() => { if (!d.auto) return; drillNext(); autoStep(); }, hiVoice || enVoice ? 700 : 3000); };
-    speakLesson(d.list[d.i], next);
-  }, 1800);
+    const next = () => { autoTimer = setTimeout(() => { if (!d.auto) return; drillNext(); autoStep(); }, (hiVoice || enVoice ? 700 : 3000) / d.speed); };
+    speakLesson(d.list[d.i], next, d.speed);
+  }, 1800 / d.speed);
 }
 function toggleAuto() {
   const d = state.drill;
@@ -741,6 +753,14 @@ function toggleAuto() {
   else { stopAuto(); render(); }
 }
 function stopAuto() { state.drill.auto = false; clearTimeout(autoTimer); autoTimer = null; hush(); }
+// A running auto-play picks up the new speed from the next step.
+function setSpeed(s) {
+  state.drill.speed = s;
+  try { localStorage.setItem(SPEED_STORE, String(s)); } catch {}
+  render();
+  const on = document.querySelector('.speed .chip[aria-pressed="true"]');
+  if (on) on.focus();
+}
 
 /* ---------- Navigation ---------- */
 function setView(v) {
