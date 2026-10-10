@@ -1,20 +1,42 @@
 import { SEGMENTS, TESTIMONIALS, CITIES, STATS } from '../content.js';
 import { esc, link, ICON } from './shared.js';
+import { sprite, stamp } from './stamps.js';
 
 // Which HUD stop each segment belongs to, and the year shown on the odometer.
 const HUD_INDEX = { mumbai: 0, tcs: 0, 'leg-1': 1, jamshedpur: 1, 'leg-2': 2, chennai: 2, 'leg-3': 3, marsh: 3, turn: 3, cockpit: 4, thesis: 4 };
 const yearOf = (s) => String(s.year || s.years || '').match(/\d{4}/)?.[0] || '';
 const segData = (s) => `data-year="${yearOf(s)}" data-hud="${HUD_INDEX[s.id] ?? 0}"`;
 
+// Each stop's passport stamp, tilted a little differently, like real ones.
+const STAMPED = SEGMENTS.filter((s) => s.stamp);
+const TILTS = [-5, 4, -3, 5, -6, 3];
+const stampOf = (s, opts = {}) =>
+  stamp(s.stamp, {
+    top: `${CITIES[s.city].code} · ${yearOf(s)}`,
+    bottom: s.stamp.rim || 'Arrived',
+    tilt: TILTS[STAMPED.indexOf(s) % TILTS.length],
+    ...opts,
+  });
+
+// Home cards show the verbatim excerpt; the read page keeps the full quote.
 function quote(key) {
   const t = TESTIMONIALS[key];
   if (!t) return '';
   return `
       <figure class="quote">
-        <blockquote><p>${esc(t.text)}</p></blockquote>
+        <blockquote><p>${esc(t.excerpt || t.text)}</p></blockquote>
         <figcaption><span class="quote-name">${esc(t.name)}</span><span class="quote-role">${esc(t.role)}</span></figcaption>
       </figure>`;
 }
+
+function clients(c) {
+  if (!c) return '';
+  const stamps = c.items.map((item, i) => stamp(item, { tilt: i % 2 ? 3 : -3, scale: 0.75, cls: 'stamp--visa' })).join('');
+  return `<div class="clients"><span class="clients-label mono">${esc(c.label)}</span>${stamps}</div>`;
+}
+
+const pull = (text) =>
+  text ? `<p class="card-pull"><span class="card-pull-icon" aria-hidden="true">${ICON.plane}</span><span>${esc(text)}</span></p>` : '';
 
 function metrics(list) {
   if (!list) return '';
@@ -43,9 +65,11 @@ function gauges() {
 
 function stop(s) {
   const city = CITIES[s.city];
-  const role = s.role
-    ? `<p class="card-role"><strong>${esc(s.role)}</strong>${s.org ? `<span>${esc(s.org)}</span>` : ''}</p>`
+  // With a stamp, the stamp names the organisation (its accessible name is the org).
+  const roleLine = s.role
+    ? `<p class="card-role"><strong>${esc(s.role)}</strong>${s.org && !s.stamp ? `<span>${esc(s.org)}</span>` : ''}</p>`
     : '';
+  const role = s.stamp ? `<div class="card-id">${roleLine}${stampOf(s)}</div>` : roleLine;
   const accolade = s.accolade
     ? `<p class="card-accolade">${link(s.accolade.href, `${esc(s.accolade.text)} ${ICON.arrowUpRight}`)}</p>`
     : '';
@@ -58,6 +82,7 @@ function stop(s) {
     <div class="thesis-wrap">
       <p class="card-head mono"><span class="card-code">${esc(city.code)}</span><span>${esc(s.label)}</span><span>${esc(s.years)}</span></p>
       <h2 class="thesis" id="${s.id}-title"><span class="line">${esc(a)}.</span> <span class="line line--marigold">${esc(b)}</span></h2>
+      <ul class="passport" aria-label="Stamps collected on the flight">${STAMPED.map((p, i) => `<li style="--i:${i}">${stampOf(p, { scale: 0.8 })}</li>`).join('')}</ul>
       ${body}
       <a class="btn btn--marigold" href="#board">${ICON.plane}<span>See departures</span></a>
     </div>
@@ -71,10 +96,12 @@ function stop(s) {
       <h2 class="card-title" id="${s.id}-title">${esc(s.title)}</h2>
       ${role}
       ${body ? `<div class="card-body">${body}</div>` : ''}
+      ${clients(s.clients)}
       ${metrics(s.metrics)}
       ${s.gauges ? gauges() : ''}
       ${accolade}
       ${s.quote ? quote(s.quote) : ''}
+      ${pull(s.pull)}
       <span class="card-reg card-reg--tl" aria-hidden="true"></span><span class="card-reg card-reg--br" aria-hidden="true"></span>
     </article>
   </section>`;
@@ -85,17 +112,21 @@ function leg(s) {
   const to = CITIES[s.to];
   return `
   <section class="seg seg--leg" id="${s.id}" data-beat="${s.beat}" ${segData(s)} aria-label="Flight from ${esc(from.name)} to ${esc(to.name)}, ${esc(s.year)}">
-    <p class="leg-caption mono">
-      <span class="leg-port"><b>${esc(from.code)}</b>${esc(from.name)}</span>
-      <span class="leg-line" aria-hidden="true">${ICON.plane}</span>
-      <span class="leg-port"><b>${esc(to.code)}</b>${esc(to.name)}</span>
-      <span class="leg-year">${esc(s.year)}</span>
-    </p>
+    <div class="leg-caption">
+      <p class="leg-pill mono">
+        <span class="leg-port"><b>${esc(from.code)}</b>${esc(from.name)}</span>
+        <span class="leg-line" aria-hidden="true">${ICON.plane}</span>
+        <span class="leg-port"><b>${esc(to.code)}</b>${esc(to.name)}</span>
+        <span class="leg-year">${esc(s.year)}</span>
+      </p>
+      ${s.pull ? `<p class="leg-pull">${esc(s.pull)}</p>` : ''}
+    </div>
   </section>`;
 }
 
 export function segments() {
   return `
+${sprite()}
 <div class="track" id="flight" aria-label="The flight: Prateek's career, city by city">
   ${SEGMENTS.map((s) => (s.leg ? leg(s) : stop(s))).join('')}
 </div>`;

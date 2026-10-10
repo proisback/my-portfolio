@@ -19,6 +19,12 @@ import {
 import { esc, href, link, ICON, barcode } from './shared.js';
 
 const pad = (n) => String(n).padStart(2, '0');
+// The 3-line manifest that opens every case study (and its read-page entry).
+const OPENER = [
+  ['problem', 'Problem'],
+  ['did', 'What I did'],
+  ['result', 'Result'],
+];
 const isExternal = (path) => /^https?:/.test(href(path));
 const LAMP = { LIVE: 'live', PROTOTYPE: 'proto', LAUNCHED: 'launched' };
 
@@ -181,8 +187,9 @@ function intro(p) {
     <section class="wp-intro${p.image ? ' wp-intro--shot' : ''}" aria-labelledby="brief-title">
       <div class="wp-intro-copy">
         <h2 class="visually-hidden" id="brief-title">Overview</h2>
-        <p class="wp-tagline">${esc(p.tagline)}</p>
-        <p class="wp-summary">${p.summary}</p>
+        <dl class="wp-opener">${OPENER.map(([k, label]) => `
+          <div class="wp-op wp-op--${k}"><dt class="mono">${label}</dt><dd>${k === 'result' ? `<span class="wp-mark">${esc(p.opener[k])}</span>` : esc(p.opener[k])}</dd></div>`).join('')}
+        </dl>
         <ul class="wp-tags" aria-label="What this shows">${tags}</ul>
         <div class="wp-links">${links}</div>
       </div>${shot}
@@ -275,6 +282,7 @@ function stopArticle(s) {
           ${role}
           ${s.body.map((b) => `<p>${esc(b)}</p>`).join('')}
           ${metrics}${accolade}${s.quote ? quote(s.quote) : ''}
+          ${s.pull ? `<p class="rp-pull">${esc(s.pull)}</p>` : ''}
         </article>`;
 }
 
@@ -282,7 +290,8 @@ function legDivider(s) {
   const from = CITIES[s.from];
   const to = CITIES[s.to];
   return `
-        <p class="rp-leg mono" aria-label="Flight from ${esc(from.name)} to ${esc(to.name)}, ${esc(s.year)}"><span aria-hidden="true">${esc(from.code)}</span><span class="rp-leg-plane" aria-hidden="true">${ICON.plane}</span><span aria-hidden="true">${esc(to.code)}</span><span class="rp-leg-year" aria-hidden="true">${esc(s.year)}</span></p>`;
+        <p class="rp-leg mono" aria-label="Flight from ${esc(from.name)} to ${esc(to.name)}, ${esc(s.year)}"><span aria-hidden="true">${esc(from.code)}</span><span class="rp-leg-plane" aria-hidden="true">${ICON.plane}</span><span aria-hidden="true">${esc(to.code)}</span><span class="rp-leg-year" aria-hidden="true">${esc(s.year)}</span></p>${s.pull ? `
+        <p class="rp-pull rp-pull--leg">${esc(s.pull)}</p>` : ''}`;
 }
 
 // The cities flown through, in order: "Mumbai → Jamshedpur → Chennai → Mumbai".
@@ -304,8 +313,7 @@ function productArticle(p) {
           <p class="rp-meta mono"><span class="rp-code">${esc(p.code)}</span><span>${esc(p.meta)}</span><span class="rp-status">${lamp(p.status)}${esc(p.status)}</span></p>
           <h3 id="${esc(p.slug)}-title">${esc(p.name)}${p.badge ? ` <span class="rp-badge mono">${esc(p.badge)}</span>` : ''}</h3>
           <p class="rp-kind">${esc(p.kind)}</p>
-          <p class="rp-tagline">${esc(p.tagline)}</p>
-          <p>${p.summary}</p>
+          <dl class="rp-opener">${OPENER.map(([k, label]) => `<div><dt class="mono">${label}</dt><dd>${esc(p.opener[k])}</dd></div>`).join('')}</dl>
           <p class="rp-links">
             <a href="${href(`work/${p.slug}/`)}"><span>Read the case study</span>${ARROW.right}</a>
             ${live ? action(live.href, live.label, '') : ''}
@@ -371,7 +379,7 @@ export function readPage() {
       <section class="rp-sec" id="principles" aria-labelledby="principles-title">
         <p class="section-label">04 · How I think</p>
         <h2 class="rp-h2" id="principles-title">${esc(PRINCIPLES.title)}</h2>
-        <p class="rp-lead">${esc(PRINCIPLES.lead)}</p>
+        ${PRINCIPLES.lead ? `<p class="rp-lead">${esc(PRINCIPLES.lead)}</p>` : ''}
         <ol class="rp-principles">${PRINCIPLES.items
           .map((it, i) => `<li><span class="rp-p-n mono" aria-hidden="true">${pad(i + 1)}</span><h3>${esc(it.title)}</h3><p>${esc(it.text)}</p></li>`)
           .join('')}</ol>

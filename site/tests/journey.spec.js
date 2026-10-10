@@ -1,5 +1,5 @@
 import { test, expect, only, waitForScene, centre, yearOf } from './fixtures.js';
-import { SEGMENTS } from '../src/content.js';
+import { SEGMENTS, TESTIMONIALS } from '../src/content.js';
 
 // Every segment that drives the HUD, in scroll order, with the year the
 // odometer should read when it holds the midline.
@@ -90,5 +90,36 @@ test.describe('journey', () => {
     }
     const hrefs = await page.$$eval('#hud .hud-stop', (els) => els.map((a) => a.getAttribute('href')));
     expect(hrefs).toEqual(['#mumbai', '#jamshedpur', '#chennai', '#marsh', '#cockpit']);
+  });
+});
+
+// The story layer: every stop hands off to the next and wears its stamp.
+test.describe('story', () => {
+  test('each stamped stop shows its organisation stamp, the thesis collects them all, every logo resolves', async ({ page }) => {
+    await page.goto('./', { waitUntil: 'domcontentloaded' });
+    const stamped = SEGMENTS.filter((s) => s.stamp);
+    for (const s of stamped) {
+      await expect(page.locator(`#${s.id} .card-id .stamp[role="img"]`)).toHaveAttribute('aria-label', s.stamp.name);
+    }
+    const passport = page.locator('#thesis .passport .stamp');
+    await expect(passport).toHaveCount(stamped.length);
+    expect(await passport.evaluateAll((els) => els.map((e) => e.getAttribute('aria-label')))).toEqual(stamped.map((s) => s.stamp.name));
+    const tcsClients = SEGMENTS.find((s) => s.id === 'tcs').clients.items.map((c) => c.name);
+    expect(await page.locator('#tcs .clients .stamp').evaluateAll((els) => els.map((e) => e.getAttribute('aria-label')))).toEqual(tcsClients);
+    const unresolved = await page.$$eval('svg use', (uses) => uses.map((u) => u.getAttribute('href')).filter((h) => !document.querySelector(h)));
+    expect(unresolved, 'every <use> points at a sprite symbol').toEqual([]);
+  });
+
+  test('every pull line is on the page', async ({ page }) => {
+    await page.goto('./', { waitUntil: 'domcontentloaded' });
+    for (const s of SEGMENTS.filter((s) => s.pull)) await expect(page.locator(`#${s.id}`)).toContainText(s.pull);
+  });
+
+  test('home quotes are verbatim excerpts; the read page keeps the full text', async ({ page }) => {
+    for (const t of Object.values(TESTIMONIALS)) {
+      for (const part of t.excerpt.split('…').map((p) => p.trim()).filter(Boolean)) expect(t.text).toContain(part);
+    }
+    await page.goto('./read/', { waitUntil: 'domcontentloaded' });
+    for (const t of Object.values(TESTIMONIALS)) await expect(page.locator('.rp-quote').filter({ hasText: t.name })).toContainText(t.text);
   });
 });

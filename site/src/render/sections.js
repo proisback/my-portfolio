@@ -100,7 +100,7 @@ export function principles() {
             <p class="section-label">${esc(p.label)}</p>
             <h2 class="section-title" id="principles-title">${esc(p.title)}</h2>
           </div>
-          <p class="safety-lead">${esc(p.lead)}</p>
+          ${p.lead ? `<p class="safety-lead">${esc(p.lead)}</p>` : ''}
         </div>
         <ol class="safety-grid">${panels}
         </ol>

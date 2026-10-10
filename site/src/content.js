@@ -14,10 +14,9 @@ export const SITE = {
 
 export const PROFILE = {
   name: 'Prateek Mehta',
-  eyebrow: 'AI-Native Product Manager · Mumbai',
+  eyebrow: 'Open to PM roles · Mumbai',
   claim: 'Product Manager who builds with AI.',
-  intro:
-    "Eight years of solving operations problems across financial services taught me how to frame problems clearly, align teams, and ship. Now I bring that discipline to building AI-native products and I've built seven in 2026 to prove it.",
+  intro: "I fixed systems across banking and insurance. Then I quit to see what AI made possible. Here's the flight.",
   availability: 'Open to PM roles · Mumbai',
   availabilityLong: 'Open to PM roles · Mumbai, open to remote',
   location: 'Mumbai, India',
@@ -29,11 +28,12 @@ export const PROFILE = {
   thesis: ['Stop fixing systems.', 'Start building them.'],
 };
 
+// All four sit on the cockpit gauges; `hero` ones also open the page.
 export const STATS = [
-  { value: '8+', label: 'Years in Business Analysis & Operations' },
-  { value: '180+', label: 'User Research Data Points' },
-  { value: '30%', label: 'Avg Efficiency Gain Delivered' },
-  { value: '7', label: 'AI Products Built in 2026' },
+  { value: '8+', label: 'Years in business analysis & ops', hero: true },
+  { value: '180+', label: 'Research data points' },
+  { value: '30%', label: 'Avg efficiency gain' },
+  { value: '7', label: 'AI products built in 2026', hero: true },
 ];
 
 // The hero boarding pass. Design copy, no facts beyond the profile.
@@ -55,17 +55,24 @@ export const CITIES = {
 
 // Flight segments, in scroll order. `beat` names the 3D choreography beat
 // that plays while the segment is on screen. `leg` segments carry no card.
+// `pull` is the last line of a stop (or the leg caption's line): it sets up
+// the next stop. `stamp` is the passport stamp that stands in for `org` on the
+// home page: `logo` names a file in src/stamps/, `text` is a typeset stamp
+// where no clean official vector exists, `mask` is a raster logo used as a
+// one-ink mask. `org` stays for the read page.
 export const SEGMENTS = [
   {
     id: 'mumbai',
     beat: 'mumbai-a',
     city: 'BOM',
-    years: '2012 to 2016',
+    years: '2012 to 2017',
     label: 'Mumbai',
-    title: 'Where it started',
+    title: 'My first job was finding the cracks.',
     role: 'BE (Information Technology)',
     org: 'Mumbai University / Ramrao Adik Institute of Technology',
-    body: ['I started at TCS as a tester: thinking like a user, finding the cracks. That instinct stayed.'],
+    stamp: { text: ['University', 'of Mumbai'], rim: 'RAIT', name: 'University of Mumbai, Ramrao Adik Institute of Technology' },
+    body: ['An IT degree from Mumbai University, then TCS as a tester. Thinking like a user, finding the cracks. That instinct stayed.'],
+    pull: 'Finding them was the easy part.',
   },
   {
     id: 'tcs',
@@ -73,69 +80,82 @@ export const SEGMENTS = [
     city: 'BOM',
     years: '2017 to 2022',
     label: 'Mumbai',
-    title: 'Five years of removing complexity',
-    role: 'IT Business Analyst',
+    title: 'I cared more about the person than the system.',
+    role: 'Tester, then IT Business Analyst',
     org: 'Tata Consultancy Services · Mumbai',
+    stamp: { logo: 'tcs', name: 'Tata Consultancy Services' },
+    clients: {
+      label: 'Clients · via TCS',
+      items: [
+        { logo: 'citi', name: 'Citi' },
+        { text: ['ICICI', 'Prudential'], name: 'ICICI Prudential' },
+      ],
+    },
     body: [
-      'Five years as a BA on the ICICI Prudential and Citibank Singapore accounts taught me the most impactful changes come from removing complexity, not adding features. I cared more about the person than the system.',
+      'On the ICICI Prudential and Citibank Singapore accounts, the changes that landed removed complexity instead of adding features.',
     ],
     metrics: [
-      { value: '100+', label: 'New Business enhancements shipped' },
-      { value: '30%', label: 'cost savings from a digitised purchase journey' },
-      { value: '+10%', label: 'CSAT after redesigned onboarding' },
-      { value: '50%', label: 'less manual testing (1,200 hrs/year)' },
+      { value: '~90%', label: 'less drop-off after digitised onboarding (est.)' },
+      { value: '1,200 hrs', label: 'of manual testing cut a year' },
     ],
     quote: 'aruna',
   },
-  { id: 'leg-1', beat: 'leg-1', leg: true, from: 'BOM', to: 'IXW', year: '2022' },
+  { id: 'leg-1', beat: 'leg-1', leg: true, from: 'BOM', to: 'IXW', year: '2022', pull: 'Five years in, I went back to school.' },
   {
     id: 'jamshedpur',
     beat: 'jamshedpur',
     city: 'IXW',
     years: '2022 to 2023',
     label: 'Jamshedpur',
-    title: 'An MBA sharpened the thinking',
+    title: 'In as an analyst. Out as a manager.',
     role: 'MBA, PGDM (General Management)',
     org: 'XLRI Jamshedpur',
-    body: ['An MBA at XLRI sharpened the thinking.'],
+    stamp: { logo: 'xlri', name: 'XLRI Jamshedpur' },
+    body: ['One year at XLRI that sharpened the thinking.'],
+    metrics: [
+      { value: '#1', label: 'in my batch, AOL functional knowledge exam' },
+      { value: 'CWC', label: 'Corporate Workshop Committee member' },
+    ],
   },
-  { id: 'leg-2', beat: 'leg-2', leg: true, from: 'IXW', to: 'MAA', year: '2023' },
+  { id: 'leg-2', beat: 'leg-2', leg: true, from: 'IXW', to: 'MAA', year: '2023', pull: 'Chennai, where I learned what comes before automation.' },
   {
     id: 'chennai',
     beat: 'chennai',
     city: 'MAA',
     years: '2023 to 2025',
     label: 'Chennai',
-    title: 'Standardize first, then automate',
+    title: "You can't automate a mess.",
     role: 'Manager, Process Standardization',
     org: 'Standard Chartered GBS · Chennai',
+    stamp: { logo: 'standard-chartered', name: 'Standard Chartered GBS' },
     body: [
-      'You cannot automate your way out of a process problem. The real value was the standardization that happened before the automation.',
+      'So I split client communication into rules and judgment calls, standardised it across the top 5 markets, and only then automated.',
     ],
     metrics: [
-      { value: '30 HC', label: 'manual work removed by automating client communication' },
-      { value: 'Top 5', label: 'global markets standardised across CDD and Servicing & Transactions' },
+      { value: '30 FTE', label: 'of manual work automated away' },
+      { value: '50%', label: 'fewer manual touchpoints in rate booking' },
     ],
   },
-  { id: 'leg-3', beat: 'leg-3', leg: true, from: 'MAA', to: 'BOM', year: '2025' },
+  { id: 'leg-3', beat: 'leg-3', leg: true, from: 'MAA', to: 'BOM', year: '2025', pull: "Home to Mumbai. Five countries that couldn't all match." },
   {
     id: 'marsh',
     beat: 'mumbai-dusk',
     city: 'BOM',
     years: '2025',
     label: 'Mumbai',
-    title: 'Back in Mumbai, working across Europe',
+    title: 'Not everything should be identical.',
     role: 'Senior Manager, Business Analysis',
     org: 'Marsh McLennan India · Mumbai',
+    stamp: { logo: 'marsh-mclennan', name: 'Marsh McLennan India' },
     body: [
-      'Standardization is not about making everything identical. It is about finding the right level of consistency.',
+      'I harmonised one process across 5 EU countries by keeping what regulation required and cutting what was just legacy habit.',
     ],
     metrics: [
-      { value: '~30%', label: 'efficiency gain, Year-End Premium Adjustment across 5 EU countries' },
-      { value: '20+', label: 'countries in the Placement Data Capture centralization TOM' },
-      { value: '500+', label: 'users on the EU Access Authorization Framework' },
+      { value: '~30%', label: 'less effort, year-end premium adjustment' },
+      { value: '20+', label: 'countries in one data-capture model' },
     ],
     quote: 'ewa',
+    pull: 'Eight years in, I kept seeing the same pattern.',
   },
   {
     id: 'turn',
@@ -143,11 +163,12 @@ export const SEGMENTS = [
     city: 'BOM',
     years: '2025',
     label: 'The turn',
-    title: 'Nobody had built the alternative yet',
+    title: 'Nobody had built the alternative yet.',
     body: [
-      'Ops roles at Standard Chartered and Marsh McLennan kept showing me the same pattern: capable people spending days on tasks AI could handle in minutes. Not because anyone chose that. Because nobody had built the alternative yet.',
-      'So I quit my job to learn what was actually possible. My kid was one and a half years old at the time.',
+      'Capable people spent days on tasks AI could handle in minutes. Not because anyone chose that.',
+      'So I quit my job to learn what was actually possible. My kid was one and a half.',
     ],
+    pull: 'So, what was possible?',
   },
   {
     id: 'cockpit',
@@ -155,9 +176,10 @@ export const SEGMENTS = [
     city: 'BOM',
     years: '2026',
     label: "Captain's seat",
-    title: 'Taking the controls',
+    title: 'Turns out, quite a lot.',
     role: 'AI-first Mastering Product Management 2.0, Cohort 7',
     org: 'Rethink Systems',
+    stamp: { mask: 'rethink', ratio: 436 / 212, name: 'Rethink Systems' },
     body: [],
     accolade: {
       text: 'Placed 2nd, AI-First Buildathon · 10-day build sprint',
@@ -174,32 +196,39 @@ export const SEGMENTS = [
     label: 'Mumbai, tonight',
     thesis: true,
     title: 'Stop fixing systems. Start building them.',
-    body: ['7 AI products built in 2026. They are boarding now.'],
+    body: ['Seven built in 2026. All boarding now.'],
   },
 ];
 
+// `excerpt` is a verbatim span of `text` (cuts marked with …) for the home
+// cards; the read page shows the full `text`.
 export const TESTIMONIALS = {
   aruna: {
     name: 'Aruna Rajagopalan',
     role: 'Vice President, Citi',
     context: 'On the Citibank Singapore account during TCS tenure',
     text: 'I had the pleasure of managing Prateek during his tenure on Citi projects as a Business Analyst, and highly recommend him for his professionalism and strong work ethic. His positive attitude stands out and makes him a delight to work with.',
+    excerpt: 'His positive attitude stands out and makes him a delight to work with.',
   },
   ewa: {
     name: 'Ewa Leszczyna',
     role: 'Broker / Client Executive, Marsh McLennan',
     context: 'On the Year-End Premium Adjustment harmonization across 5 EU countries',
     text: 'From the very beginning, he stood out for his exceptional ability to understand complex operations and break them down into clear, workable components. He consistently ensured that every feature we explored addressed a real and specific challenge, which made the direction of the project both meaningful and well-aligned with user expectations.',
+    excerpt: '…exceptional ability to understand complex operations and break them down into clear, workable components.',
   },
   ravi: {
     name: 'K Ravi Kiran',
     role: 'PM, Broadcom',
     context: 'On the AI-first MPM Cohort 7 at Rethink Systems',
     text: "Prateek was someone who just got things done: no waiting around for permission or a perfect plan. When we were still figuring out what to even try, he'd already started building. He was one of the first in our cohort to dive into tools like Claude and Lovable, and he brought the same energy to leading discussions as he did to implementation. On top of that, he kept everything documented in a way that actually helped the rest of us stay aligned. Rare to find someone who's both a starter and a structurer.",
+    excerpt: "When we were still figuring out what to even try, he'd already started building.",
   },
 };
 
-// Departures board order is the array order.
+// Departures board order is the array order. `opener` is the 3-line manifest
+// under each case study's boarding pass (and on the read page); `tagline` is
+// the page's meta description.
 export const PRODUCTS = [
   {
     slug: 'plan-karo-chalo',
@@ -212,8 +241,11 @@ export const PRODUCTS = [
     kind: 'Group Trip Coordination Tool',
     meta: 'Apr 2026 · Individual Sprint',
     tagline: '132 research data points, solo build in 8 days, 91.7% live activation rate.',
-    summary:
-      "A link-based trip coordination tool that collapses weeks of WhatsApp chaos into minutes of structured decision-making. Built solo in 8 days after 132+ primary research data points.",
+    opener: {
+      problem: '35% of planned group trips never happen. They die in the WhatsApp chaos before anyone books.',
+      did: '132+ research data points (27 interviews, 105 surveys), then built it solo in 8 days.',
+      result: '91.7% member activation in production.',
+    },
     tags: ['Primary Research', 'Problem Framing', 'Zero-to-One Shipping'],
     image: 'products/plan-karo-chalo.jpg',
     links: [
@@ -222,37 +254,43 @@ export const PRODUCTS = [
     ],
     sections: [
       {
-        h: 'The Problem',
+        h: "Trips don't die at booking. They die at dates.",
         html: [
-          '35% of planned group trips never happen. Not because people stop wanting to travel, because the coordination breaks down. Dates never get aligned. Destination debates go circular. One person absorbs all the cognitive load. The gap is not in booking tools. MakeMyTrip and Booking.com handle that. The gap is in the chaotic stretch between "let\'s go somewhere" and "everything\'s booked," a stretch that runs entirely through WhatsApp, Google Sheets, and one exhausted organizer.',
+          'Dates never align, destination debates go in circles, and one organiser carries all of it. Booking tools arrive too late: the gap is between "let\'s go somewhere" and "everything\'s booked."',
         ],
       },
       {
-        h: 'Discovery',
+        h: 'The research killed my first guess.',
         html: [
-          '132+ research data points: 27 interviews across structured conversations, qualitative retrospectives, and cross-group sessions, plus 105 survey responses. The finding that overturned the starting assumption: itinerary building is not the core pain. The trip dies much earlier. Date alignment was the #1 friction point for 80%+ of respondents. 35% of trips that never happened died specifically because dates could not be aligned.',
+          "I assumed itinerary building was the pain. It wasn't. Date alignment was the #1 friction for 80%+ of respondents, and 35% of dead trips died on dates alone.",
+        ],
+        stats: [
+          { value: '27', label: 'interviews' },
+          { value: '105', label: 'survey responses' },
+          { value: '80%+', label: 'say dates are the #1 friction' },
         ],
       },
       {
-        h: 'The Solution',
+        h: 'One link. No app. Ten seconds to start.',
         html: [
-          'A link-based coordination tool that guides groups through the pre-booking sequence of dates, budget, destination, and commitment, via a shared dashboard. No app download for members. The organizer creates a trip in 10 seconds, shares a link, and the tool handles the rest.',
-          'Key mechanics: tap-to-select calendar with auto-overlap calculation, anonymous budget range slider with group sweet spot, destination voting with shake-to-decide tiebreak, hold-to-confirm commitment checkpoint, and a nudge library with 6 tone variants and dynamic member counts. Every feature traces back to a specific failure mode from the research.',
+          'The group moves through dates, budget, destination and commitment on one shared dashboard. Members never download anything.',
+          'Four feature categories were cut on research grounds: expense splitting, booking, in-app chat and AI recommendations.',
+        ],
+        list: [
+          '<strong>Tap-to-select calendar</strong> with auto-overlap.',
+          '<strong>Anonymous budget slider</strong> that finds the group sweet spot.',
+          '<strong>Destination voting</strong> with a shake-to-decide tiebreak.',
+          '<strong>Hold-to-confirm</strong> commitment checkpoint.',
+          '<strong>Nudge library</strong> with 6 tone variants.',
         ],
       },
       {
-        h: 'Live Metrics (from production)',
+        h: 'The numbers from production',
         stats: [
           { value: '91.7%', label: 'member activation rate' },
           { value: '85.2%', label: '48-hour response rate' },
           { value: '1.5 days', label: 'average time to lock dates (target: 5)' },
           { value: '54.1%', label: 'return visit rate (target: 30%)' },
-        ],
-      },
-      {
-        h: 'What This Demonstrates',
-        html: [
-          'Primary research that changed the product direction before a line of code was written. Problem framing that eliminated four feature categories (expense splitting, booking integration, in-app chat, AI recommendations) on research grounds rather than scope grounds. And a clear architectural boundary: Plan Karo Chalo owns the coordination layer. Everything else belongs elsewhere.',
         ],
       },
     ],
@@ -269,8 +307,11 @@ export const PRODUCTS = [
     meta: 'Mar 2026 · Individual Sprint',
     tagline:
       '44-person research turned into a 3-stage AI-scored assessment that benchmarks PM readiness against any real job description.',
-    summary:
-      'A three-stage career navigation platform for aspiring PMs: archetype diagnostic, adaptive AI-scored practice across 6 PM dimensions, and gap analysis against any real job description. Answers the one question every aspiring PM asks: <em>am I ready?</em>',
+    opener: {
+      problem: 'Aspiring PMs have no readiness signal. 84% get no feedback, or only vague feedback.',
+      did: 'A 38-person survey and 6 interviews, then a 3-stage AI-scored platform.',
+      result: 'Live, with all 7 Must-haves shipped: a Ready / Almost / Not Yet read against any real JD.',
+    },
     tags: ['AI-Scored Practice', 'Adaptive Engine', 'Honest Scoring'],
     links: [
       { label: 'Visit live site', href: 'https://pmpathfinder-psi.vercel.app/' },
@@ -279,30 +320,34 @@ export const PRODUCTS = [
     ],
     sections: [
       {
-        h: 'The Problem',
+        h: 'Engineers have LeetCode. PMs have nothing.',
         html: [
-          'PM preparation has no readiness signal. Unlike engineering (LeetCode) or consulting (case math), aspiring PMs can complete every course on the internet and still have no idea whether they would pass a real interview. 84% of aspiring PMs receive no or vague feedback. Only 1 in 38 gets specific, actionable feedback regularly. The cost of applying too early is permanent: top companies trigger a 12-month cooldown on failed interviews.',
+          "You can finish every course and still not know whether you'd pass an interview. Apply too early and a failed interview can mean a 12-month cooldown.",
+        ],
+        stats: [
+          { value: '84%', label: 'get no or vague feedback' },
+          { value: '1 in 38', label: 'gets specific feedback regularly' },
+          { value: '12 months', label: 'cooldown after a failed interview' },
         ],
       },
       {
-        h: 'Discovery',
+        h: 'They lacked signal, not skill.',
         html: [
-          'A 38-person survey and 6 interviews revealed not people who lacked competence, but people who lacked signal. Consultants with 7+ years, engineers who had shipped at scale, designers who had led UX for millions of users, all stuck in preparation limbo, spending lakhs on courses with no way to measure progress. Three personas emerged: Domain Expert, Tech Switcher, MBA/Strategy Transitioner. All three shared one problem: they could not accurately assess where they stood.',
+          "Consultants with 7+ years, engineers who'd shipped at scale, designers who'd led UX for millions: all stuck in prep limbo. Three personas emerged (Domain Expert, Tech Switcher, MBA/Strategy Transitioner), and all three shared one problem: no way to know where they stood.",
         ],
       },
       {
-        h: 'What I Built',
-        html: ['A three-stage platform:'],
+        h: 'Three stages, one honest answer.',
         list: [
-          '<strong>Stage 1: Archetype quiz.</strong> A 10-minute, 12-question scenario quiz assigns a PM archetype: Consumer, B2B, or Technical. <small>Why these three? Research surfaced them as the top PM archetypes by job-market presence. Narrower categories would have starved the matching engine; broader ones would have diluted the signal.</small>',
-          '<strong>Stage 2: Adaptive AI-scored practice</strong> across six PM dimensions: Problem Framing, User Empathy, Structured Thinking, Prioritization, Metrics Reasoning, Communication. A five-slot engine (MCQ warm-up → weakest → second-weakest → mid → stretch) targets your gaps automatically.',
-          '<strong>Stage 3: Real-job gap analysis.</strong> Paste any job description and get a Ready / Almost / Not Yet readout, with a specific improvement path and estimated time. <small>Why three buckets and not a numeric score? A 7.3 vs a 6.8 doesn\'t tell you what to do. Ready means apply now. Almost names the specific gap. Not Yet says where to focus first. The buckets force a clear next action.</small>',
+          '<strong>Archetype quiz.</strong> 12 scenarios in 10 minutes, ending in Consumer, B2B or Technical.',
+          '<strong>Adaptive practice</strong> across 6 PM dimensions. A five-slot engine warms you up, then goes for your weakest areas.',
+          "<strong>Real-job gap analysis.</strong> Paste any JD and get Ready / Almost / Not Yet, plus what to fix and how long it will take. <small>Why buckets, not a score? A 7.3 vs a 6.8 doesn't tell you what to do. Each bucket forces a next action.</small>",
         ],
       },
       {
-        h: 'What This Demonstrates',
+        h: "Scoring that doesn't flatter.",
         html: [
-          'Product discovery rigor: 38-person survey → three personas → MoSCoW prioritization → seven Must-haves shipped. AI treated as a calibrated feature, not a wrapper: the AI evaluator references the same rubric at 2am and 2pm, and scoring is deliberately tuned to resist inflation (5 = on track, 7 = genuinely strong, 9–10 = would impress a senior PM interviewer). In a market saturated with courses that promise transformation and deliver content, PMPathfinder\'s offer is narrower and harder: the truth about where you stand.',
+          'The AI evaluator uses the same rubric at 2am and 2pm, tuned against inflation: 5 = on track, 7 = genuinely strong, 9 to 10 = would impress a senior PM interviewer.',
         ],
       },
     ],
@@ -320,8 +365,11 @@ export const PRODUCTS = [
     badge: 'Founding PM',
     tagline:
       'Led discovery, PRD, and design on a 6-person Buildathon team: blank page to Product Hunt launch in 4 days.',
-    summary:
-      "A hand-verified PWA matching Bangalore-based women for genuine friendship. No feeds, no dating mechanics, no engagement traps. Built with Next.js, Supabase, and a brand system designed to take women's time seriously.",
+    opener: {
+      problem: 'Women new to a city, or whose circle has thinned, have no good tool for finding real friends.',
+      did: 'Led discovery, wrote the PRD, designed every page and ran QA on a 6-person Buildathon team.',
+      result: 'Blank page to a Product Hunt launch in 4 days.',
+    },
     tags: ['Safety-First Design', 'Scope Discipline', 'Systems Thinking'],
     image: 'products/galpal.jpg',
     links: [
@@ -330,42 +378,40 @@ export const PRODUCTS = [
     ],
     sections: [
       {
-        h: 'The Problem',
+        h: 'Dating apps are the wrong context. Professional networks are the wrong intent.',
         html: [
-          'Women relocating to a new city, or long-resident with a fraying social circle, have no good tool for finding real friends. Dating apps are the wrong context. Professional networks are the wrong intent. Interest-based communities solve for the group, not the individual. The gap is a surface that takes safety seriously, respects time, and gets out of the way once a connection is made.',
+          'Interest groups solve for the group, not the individual. The gap is a product that takes safety seriously, respects time, and gets out of the way once two people click.',
         ],
       },
       {
-        h: 'My Contribution',
+        h: 'What I owned',
         html: [
-          "I led discovery and authored the full PRD: framing the problem space, deciding what features made the cut and what didn't, and writing the spec the team built against. I designed every page (visual design and UX flows) and ran end-to-end QA, raising bugs against the build. One teammate owned development; the rest of the 6-person Buildathon team pitched in on testing and strategy.",
+          "Discovery, the full PRD (what made the cut and what didn't), every page's visual design and UX flows, and end-to-end QA. One teammate owned development; the rest of the team pitched in on testing and strategy.",
         ],
       },
       {
-        h: 'The Product',
+        h: 'No feed. No groups. No games.',
         html: [
-          'galpals is a matches-and-chats surface only. No feed, no groups, no stories, no games. Every new member completes a human-led video or phone verification call before seeing matches. Once inside, they see a small scored set of nearby women each week with a reason they would click.',
-          'Communication is intentionally low-friction and low-commitment: a wave with a preset reason or 100 characters of context. Mutual waves open a 1:1 chat. Max 3 lifetime waves to the same person. 30-day expiry. Nothing in the product tries to manufacture engagement.',
+          "Every member passes a human-led video or phone verification before seeing matches. Each week brings a small scored set of nearby women, each with a reason you'd click. A wave with a preset reason, or 100 characters, opens the door; mutual waves open a chat.",
+        ],
+        stats: [
+          { value: '3', label: 'lifetime waves to one person' },
+          { value: '30 days', label: 'until a wave expires' },
+          { value: '100', label: 'characters per wave' },
         ],
       },
       {
-        h: 'Key Decisions',
-        html: [
-          '<strong>Manual verification, by design.</strong> Every member completes a human-led video or phone call before seeing matches. Automating it would be faster, but it kills the safety-first promise that makes the product different from dating apps and generic communities.',
-          '<strong>PWA over native.</strong> Lower friction to try, faster to iterate, no app-store gatekeeping. Right call for a 4-day Buildathon shipping window, still the right call as we iterate.',
-          '<strong>Matching scored on what predicts friendship, not popularity.</strong> Shared interests, looking-for overlap, neighborhood proximity, home state, city tenure, work situation, personality compatibility. Not "people you may know". People you\'d actually click with.',
+        h: 'Slower on purpose.',
+        list: [
+          '<strong>Manual verification.</strong> Automating it would be faster, and would kill the safety promise that sets galpals apart.',
+          '<strong>PWA over native.</strong> Easier to try, faster to iterate, no app-store gatekeeping.',
+          '<strong>Matching on what predicts friendship,</strong> not popularity: interests, neighbourhood, city tenure, personality.',
         ],
       },
       {
-        h: 'Brand Voice',
+        h: 'Easier to find a friend, not harder to leave.',
         html: [
-          'The product should make it easier to find one real friend, not harder to leave the app. Every brand decision traces back to that one belief. Second person always. 14-word sentence cap. No emoji in system copy. Banned words: journey, tribe, vibes, community, seamless, authentic, curated.',
-        ],
-      },
-      {
-        h: 'What This Demonstrates',
-        html: [
-          'End-to-end PM ownership in a 4-day shipping sprint: discovery, PRD authoring, scope discipline, full-page design, and QA. Safety-first design with real operational consequences: verification is manual and human-led by design. And the ability to hold a product vision steady against the pull of engagement mechanics that would undermine it.',
+          'Second person always. 14-word sentence cap. No emoji in system copy. Banned words: journey, tribe, vibes, community, seamless, authentic, curated.',
         ],
       },
     ],
@@ -377,12 +423,15 @@ export const PRODUCTS = [
     board: 'HITAARTH',
     month: 'SEP 26',
     status: 'LAUNCHED',
-    headline: 'One thought, one action, every day · 669 ideas, 4 languages',
+    headline: '669 ideas, 4 languages, one a day',
     kind: 'A Daily Reading Practice in English and Hindi',
     meta: 'Sep 2026 · Solo build',
     tagline: 'One meaningful thought. One small action. Every day.',
-    summary:
-      'Feeds give you endless information, and almost nothing that stays. Hitaarth gives you one carefully chosen idea each day, with one small action to carry into your life. In English and Hindi.',
+    opener: {
+      problem: 'Feeds give endless information and almost nothing that stays.',
+      did: 'Built a daily practice: one idea, what it means, and one small action, in 4 languages.',
+      result: '669 hand-picked ideas, launched September 2026.',
+    },
     tags: ['Distribution Before Monetization', 'Demand Before Rails', 'Local-First Privacy'],
     links: [
       { label: 'Visit live app', href: 'https://the-awakening-quotes-app.vercel.app/' },
@@ -390,47 +439,46 @@ export const PRODUCTS = [
     ],
     sections: [
       {
-        h: 'The Problem',
+        h: 'One sentence can change a day. Feeds bury it.',
         html: [
-          'Social media gave me endless information, but almost nothing that stayed. Every once in a while, though, a single sentence would change how I handled a conversation, a hard decision, an ordinary day. I wanted a place where ideas weren\'t buried under algorithms.',
+          "Social media gave me endless information and almost nothing that stayed. Every so often, though, one sentence changed how I handled a conversation or a hard decision. I wanted a place where ideas weren't buried under algorithms.",
         ],
       },
       {
-        h: 'The Product',
+        h: 'One idea, three layers.',
         html: [
-          'One hand-picked thought a day, in layers: <strong>the thought</strong> (a line worth rereading), <strong>the meaning</strong> (why it matters, in plain words), and <strong>the practice</strong> (one small action for today). Mark "I did it" when you have. That tap is the whole point.',
-          '669 ideas, chosen by hand, from scripture, aphorisms, poems, letters, speeches, books, essays, interviews, cinema and television. Every idea, its lesson, and its action in English, Hindi (written in Devanagari, not transliterated), Spanish and French.',
-          'Any idea becomes a card made for WhatsApp Status, in three styles: Noir, Paper, and Dusk.',
+          '<strong>The thought</strong> (a line worth rereading), <strong>the meaning</strong> (why it matters), <strong>the practice</strong> (one small action for today). Tap "I did it" when you have. That tap is the whole point.',
+        ],
+        stats: [
+          { value: '669', label: 'ideas, chosen by hand' },
+          { value: '4', label: 'languages, Hindi in Devanagari' },
+          { value: '3', label: 'WhatsApp card styles' },
         ],
       },
       {
         h: 'What It Refuses To Do',
         html: [
-          'No infinite feed. No engagement algorithm. No ads. No account. Hitaarth succeeds when it gives you something to carry into your day, not another reason to stay on your screen.',
-          'It works fully offline after the first visit. Favorites and notes live on your phone and never leave it.',
+          'No feed, no engagement algorithm, no ads, no account. It works offline after the first visit, and favourites and notes never leave your phone.',
         ],
       },
       {
-        h: 'Key Decisions',
-        html: [
+        h: 'Four rules I held to.',
+        list: [
           '<strong>Distribution before monetization.</strong> The share card is the growth engine, so the craft went there first.',
-          '<strong>Demand before rails.</strong> The premium screen is a single "I want this" button, not a checkout. Payment infrastructure gets built if 20% of the first 50+ premium page visitors ask for it. Not before.',
-          '<strong>Measure without watching.</strong> Analytics are cookieless and anonymous, honor Do Not Track, and never identify a person. The metrics doc is public.',
-          "<strong>Kill what can't ship.</strong> An early premium promise (home-screen widgets) died when the platform couldn't deliver it. The copy was corrected everywhere the same day.",
+          '<strong>Demand before rails.</strong> Payments get built only if 20% of the first 50+ premium visitors ask for it.',
+          '<strong>Measure without watching.</strong> Cookieless, anonymous analytics, and a public metrics doc.',
+          "<strong>Kill what can't ship.</strong> A promised widget died when the platform couldn't deliver it, and the copy was fixed the same day.",
         ],
       },
       {
-        h: 'Why It Exists',
+        h: "Our son's name, and the value behind it.",
         html: [
-          'When our son was born, we named him Hitaarth: a Sanskrit word meaning one whose purpose is to do good. Becoming a father changed what I noticed about my own days.',
-          "It isn't named after my son as a tribute. It's named after the value I hope we both grow into.",
+          "When our son was born, we named him Hitaarth: Sanskrit for one whose purpose is to do good. The app isn't a tribute to him. It's named after the value I hope we both grow into.",
         ],
       },
       {
-        h: 'Status',
-        html: [
-          'Launched September 2026. A small product experiment, run in public by one person, in vanilla HTML, CSS, and JavaScript with zero dependencies and no build step.',
-        ],
+        h: 'One person, zero dependencies.',
+        html: ['A small product experiment, run in public, in vanilla HTML, CSS and JavaScript with no build step.'],
       },
     ],
   },
@@ -441,13 +489,16 @@ export const PRODUCTS = [
     board: 'SIGNAL',
     month: 'MAR 26',
     status: 'PROTOTYPE',
-    headline: 'Intelligence layer for founder CRM',
+    headline: "Tells founders who they're about to lose",
     kind: 'Intelligence Layer for Founder CRM',
     meta: 'Mar 2026 · Group Project',
     tagline:
       "Six founder interviews surfaced the insight that broke the team's starting hypothesis and reshaped the entire product.",
-    summary:
-      "A passive prioritization layer that reads a founder's existing communication channels, extracts open commitments, detects deal momentum decay, and surfaces a ranked daily action list. No manual logging.",
+    opener: {
+      problem: 'CRMs are built for salespeople. Early-stage founders lose deals to silence, not rejection.',
+      did: 'Co-authored the PRD after 6 founder interviews and 80+ sources on CRM adoption.',
+      result: "A prototype that reads a founder's channels and ranks 3 to 5 deals to act on each day.",
+    },
     tags: ['Research-Led Reframing', 'Assumption Testing', 'Architectural Thinking'],
     links: [
       { label: 'Visit live prototype', href: 'https://signalaicrm.lovable.app' },
@@ -455,29 +506,22 @@ export const PRODUCTS = [
     ],
     sections: [
       {
-        h: 'The Problem',
+        h: "Deals don't die from rejection. They die from silence.",
         html: [
-          'The $73.4B CRM market is built for professional salespeople. It systematically underserves early-stage B2B founders for whom sales is one of many simultaneous responsibilities. Through six in-depth founder interviews, we discovered that the core failure is not that founders lack data. No system reads that data and tells the founder what to do next. Deals die not from rejection, but from silence.',
+          "The $73.4B CRM market serves professional salespeople. Founders don't lack data; nothing reads it and tells them what to do next.",
         ],
       },
       {
-        h: 'My Contribution',
+        h: 'The interview that broke our hypothesis',
         html: [
-          'I co-authored the full problem-space and solution-space PRD. The research phase included six structured 60-minute founder interviews plus secondary analysis of 80+ sources on CRM adoption failure.',
-          'The most significant finding, and the one that reshaped the entire product direction, was that pipeline visibility is not the answer. One founder achieved complete visibility through four years of enforced HubSpot use and still lost deals. The real need is active prioritization: which conversation, why now, what context.',
+          "One founder had four years of enforced HubSpot use and complete pipeline visibility, and still lost deals. Visibility wasn't the answer. Prioritisation was: which conversation, why now, with what context.",
         ],
       },
       {
-        h: 'The Solution',
+        h: '"It reads my inbox and tells me who I\'m about to lose."',
         html: [
-          'Signal reads a founder\'s existing email, calendar, WhatsApp Business, LinkedIn, and Zoom data in the background. It extracts open commitments, detects deal momentum decay, and surfaces a ranked daily action list. The founder sentence: "It reads my inbox and tells me who I\'m about to lose."',
-          'The architecture includes a 4-state deal state machine, rule-based commitment extraction with zero AI hallucination risk, cross-channel decay calculation, and a daily brief delivering 3–5 ranked deal cards with verbatim evidence.',
-        ],
-      },
-      {
-        h: 'What This Demonstrates',
-        html: [
-          "Research-led problem framing that overturned the team's own starting assumptions. Solution evaluation that hard-eliminates options on legal and architectural grounds. And a product philosophy that draws a permanent line: Signal surfaces context; the founder writes every message.",
+          'Signal reads email, calendar, WhatsApp Business, LinkedIn and Zoom in the background, flags open commitments and fading deals, and ranks a daily brief. A 4-state deal model and rule-based extraction keep hallucination risk at zero.',
+          'Signal surfaces context; the founder writes every message.',
         ],
       },
     ],
@@ -494,8 +538,11 @@ export const PRODUCTS = [
     meta: 'Feb 2026 · Group Project',
     tagline:
       '392 reviews and ground research surfaced ₹3.16 Cr/store annual margin loss, and the one-tap intervention to fix it.',
-    summary:
-      'Real-time module surfacing live picker status and one-tap interventions during peak hours. Designed to be comprehensible by a stressed store manager in under five seconds.',
+    opener: {
+      problem: "Blinkit store managers can't see their pickers during the 6 to 10 PM peak.",
+      did: 'Co-authored the PRD in a 4-person PM squad, from 392 reviews, 11 first-person accounts and a store-manager interview.',
+      result: 'Surfaced an estimated ₹3.16 Cr per store in annual margin loss, plus a one-tap fix.',
+    },
     tags: ['Problem Discovery', 'Solution Evaluation', 'Guardrail Design'],
     links: [
       { label: 'Visit live prototype', href: 'https://blinkit-alert-buddy.lovable.app' },
@@ -503,29 +550,23 @@ export const PRODUCTS = [
     ],
     sections: [
       {
-        h: 'The Problem',
-        html: [
-          "Blinkit's highest-volume dark stores were losing an estimated ₹3.16 crore in annual contribution margin per store because Store Managers had zero real-time visibility into picker activity during the 6–10 PM peak window, which drives up to 50% of daily demand. The data existed centrally, but the people with authority to act on the floor could not access it. This was not a data problem. It was a data-routing problem.",
+        h: 'Not a data problem. A data-routing problem.',
+        html: ['The franchise owner outside the store sees live picker metrics. The store manager on the floor sees nothing.'],
+        stats: [
+          { value: '₹3.16 Cr', label: 'margin lost per store, per year (est.)' },
+          { value: 'Up to 50%', label: 'of daily demand in the 6 to 10 PM peak' },
+          { value: '392', label: 'reviews analysed' },
         ],
       },
       {
-        h: 'My Contribution',
-        html: [
-          'I co-authored the full PRD as part of a 4-person PM squad. The discovery phase drew on 392 AmbitionBox reviews, 11 Reddit first-person accounts, ground journalism, and a primary interview with a dark store manager. We identified the core paradox: the franchise owner outside the store sees real-time picker metrics; the employed Store Manager on the floor sees nothing.',
-          'I contributed to persona development, solution evaluation across three options evaluated by temporal intervention point, and the feature specification using MoSCoW prioritization.',
-        ],
+        h: 'What I worked on',
+        html: ['Persona development, evaluating three solution options by when each one intervenes, and the MoSCoW feature spec.'],
       },
       {
-        h: 'The Solution',
+        h: 'No new hardware. No new data.',
         html: [
-          "A real-time StoreOps module extension surfacing live picker status, automated floor alerts, and one-tap interventions during peak hours. No new hardware. No new data. It routes existing Kafka and Newland scanner event data to the SM's device.",
-          'Three design principles governed every decision: action-oriented design (alerts must be actionable, not informational), stress-proof clarity (zero training at peak), and zero context switching (extend StoreOps, do not build a separate app).',
-        ],
-      },
-      {
-        h: 'What This Demonstrates',
-        html: [
-          'Problem framing rooted in primary and secondary research, not assumptions. Solution evaluation based on temporal intervention logic, asking not which is easiest to build but which intervenes at the moment a decision can still change the outcome. Guardrail design that anticipates iatrogenic risk. And a North Star metric tied directly to business impact.',
+          "A StoreOps extension that routes existing Kafka and scanner events to the manager's device: live picker status, floor alerts, one-tap interventions. Designed to be read by a stressed manager in under 5 seconds.",
+          'We picked the option that intervenes while a decision can still change the outcome, not the easiest one to build.',
         ],
       },
     ],
@@ -542,33 +583,41 @@ export const PRODUCTS = [
     meta: 'Mar 2026 · Individual Sprint',
     tagline:
       'One user interview pivoted the entire product direction. Shipped a working app in 4 days with no prior coding background.',
-    summary:
-      'A suggestion-first meal planner for vegetarian Indian families. Auto-generates weekly plans with 75+ meals, festival calendar, grocery lists, and WhatsApp sharing. Built in 4 days with zero prior coding experience.',
+    opener: {
+      problem: '"Aaj kya banayein?" In a joint family of six, that\'s 1,095 meal decisions a year.',
+      did: 'Built a suggestion-first planner after one interview flipped the design.',
+      result: 'Shipped in 4 days on $0 infrastructure, with no prior coding background.',
+    },
     tags: ['User Research Pivot', 'Scope Discipline', 'Shipping as Non-Engineer'],
     links: [{ label: 'Visit live site', href: 'https://bhojan-beta.vercel.app' }],
     sections: [
       {
-        h: 'The Problem',
+        h: '"Aaj kya banayein?"',
         html: [
-          'In a joint family of six, the question "aaj kya banayein?" consumed significant mental energy every single day. This was not a five-minute question. It was a cascading decision involving ingredient availability, yesterday\'s meals, dietary restrictions, baby food needs, cooking time, seasonal ingredients, and the festival calendar. That is 1,095 meal decisions annually.',
+          "Never a five-minute question: ingredients, yesterday's meals, diets, baby food, cooking time, the season, the festival calendar.",
         ],
       },
       {
-        h: 'The Pivotal Insight',
+        h: 'One interview flipped the product.',
         html: [
-          'The first prototype was a traditional weekly planner, a blank 7x3 grid. During a user interview, one piece of feedback changed everything: "I don\'t want to think about what to make next week. Just tell me what to make, and I\'ll say yes or no." This shifted the entire interaction model from planner-first to suggestion-first. The app was recreating the problem it claimed to solve.',
+          '"I don\'t want to think about what to make next week. Just tell me what to make, and I\'ll say yes or no." My blank 7x3 grid was recreating the problem it claimed to solve.',
         ],
       },
       {
-        h: 'What I Built',
+        h: 'What shipped in 4 days',
         html: [
-          'A fully functional web app with 75+ pre-loaded vegetarian Indian meals, auto-suggest engine with seasonal, effort, and preference filters, family profiles, festival and fasting calendar, smart grocery list with WhatsApp sharing, health analytics, Google Auth, Supabase backend with row-level security, and PWA support. Total infrastructure cost: $0.',
+          'Auto-suggest by season, effort and preference; family profiles; a festival and fasting calendar; grocery lists that share to WhatsApp; Google sign-in; Supabase with row-level security; PWA support.',
+        ],
+        stats: [
+          { value: '75+', label: 'vegetarian meals' },
+          { value: '4 days', label: 'to ship' },
+          { value: '$0', label: 'infrastructure' },
         ],
       },
       {
         h: 'Honest Assessment',
         html: [
-          'The suggestion engine is a smart randomizer with filters, not machine learning. 75 meals is enough for 2–3 weeks before repetition becomes noticeable. These limitations are documented because transparency about what is not built is as important as showcasing what works.',
+          "The engine is a smart randomiser with filters, not machine learning. 75 meals last 2 to 3 weeks before repeats show. I document what isn't built as carefully as what works.",
         ],
       },
     ],
@@ -577,50 +626,48 @@ export const PRODUCTS = [
 
 export const PRINCIPLES = {
   label: 'Safety card',
-  title: 'How I think about product',
-  lead: 'The best products are built by people who have sat close enough to the mess to know what simple actually takes.',
+  title: 'Four rules I fly by.',
   items: [
     {
       title: 'Structure before speed.',
-      text: 'Most teams rush to solutions before the problem is clear. I frame problems so business, tech, and users can align on them. If you cannot explain the problem in one sentence, you are not ready to build.',
+      text: "If you can't explain the problem in one sentence, you're not ready to build.",
     },
     {
       title: 'Removal is underrated.',
-      text: 'The most impactful changes I have delivered were not about adding features. They were about eliminating steps, reducing friction, and simplifying decisions. The customer did not need a better form. They needed fewer forms.',
+      text: "The customer didn't need a better form. They needed fewer forms.",
     },
     {
       title: 'AI is a lever, not a feature.',
-      text: "I don't believe in adding AI to products. I believe in understanding user problems deeply, then asking whether AI is the right solution. Sometimes it is. Sometimes a better form field is the answer.",
+      text: "Understand the problem first. Then ask whether AI is the answer. Sometimes it isn't.",
     },
     {
       title: "Show, don't pitch.",
-      text: 'A working prototype beats a deck in ten seconds. With AI, I can build enough to test an idea in an afternoon. I bring working demos into discovery conversations instead of asking people to imagine what I mean.',
+      text: 'A working prototype beats a deck in ten seconds.',
     },
   ],
 };
 
-// New copy written for this site (flagged for Prateek's review).
 export const SITES_PITCH = {
   label: 'Like the flight?',
   title: 'I build sites like this.',
-  body: "This whole site, from the 3D flight to the departures board, was designed and built by me with Claude Code. If you want a portfolio that makes people ask how you made it, tell me where you're headed.",
+  body: 'I designed and built this one with Claude Code, 3D flight and all. Want a site that makes people ask how?',
   cta: 'Chart your route',
 };
 
 export const CONTACT = {
   label: 'Arrivals',
-  title: "Let's connect",
+  title: 'Looking for a PM who ships?',
   body: [
-    "I'm looking for a PM role where I own problems end-to-end and ship them. Best fit: a team building AI-native products, or one rethinking how their users work because of AI. I bring discovery discipline, and the habit of actually shipping.",
-    "If that sounds like your team, let's talk.",
+    'I want to own problems end to end and ship them. Best fit: a team building AI-native products, or rethinking how its users work because of AI.',
+    "If that's your team, let's talk.",
   ],
   book: 'Book a 30-min intro',
 };
 
 export const NOTIFY = {
   label: 'Stay in the Loop',
-  title: 'Get a heads-up when I ship something new',
-  body: 'I send a short note when I ship a new product, finish a case study, or write something worth reading. No fixed cadence, usually once every few weeks at most.',
+  title: 'Get the next one first.',
+  body: 'A short note when I ship something new. Every few weeks at most.',
   placeholder: 'your@email.com',
   button: 'Notify me',
   busy: 'Adding you…',

@@ -1,6 +1,8 @@
 import { test, expect, only, waitForScene, scrollThrough } from './fixtures.js';
 import { SITE, PROFILE, STATS, FOOTER } from '../src/content.js';
 
+const HERO_STATS = STATS.filter((s) => s.hero);
+
 test.describe('home', () => {
   test('hero name, claim within 1.5 s, stats and footer credit', async ({ page }) => {
     const t0 = Date.now();
@@ -29,10 +31,12 @@ test.describe('home', () => {
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page.locator('h1')).toContainText(PROFILE.name);
 
+    // The hero opens with two stats; all four land on the cockpit gauges.
     const values = page.locator('.stats .stat-value');
-    await expect(values).toHaveCount(STATS.length);
-    await expect(values).toHaveText(STATS.map((s) => s.value));
-    for (const v of ['8+', '180+', '30%', '7']) await expect(values.filter({ hasText: v }).first()).toBeVisible();
+    await expect(values).toHaveCount(HERO_STATS.length);
+    await expect(values).toHaveText(HERO_STATS.map((s) => s.value));
+    for (const v of ['8+', '7']) await expect(values.filter({ hasText: v }).first()).toBeVisible();
+    await expect(page.locator('#cockpit .gauge-value')).toHaveText(STATS.map((s) => s.value));
 
     await expect(page.locator('footer.footer')).toContainText(FOOTER.credit);
     await expect(page.locator('footer.footer')).toContainText('Designed and built by Prateek with Claude Code.');
@@ -64,7 +68,7 @@ test.describe('home without JavaScript', () => {
     await expect(page.locator('h1')).toContainText(PROFILE.name);
     await expect(page.locator('.hero-claim')).toBeVisible();
     await expect(page.locator('.hero-claim')).toContainText('builds with AI');
-    await expect(page.locator('.stats .stat-value')).toHaveText(STATS.map((s) => s.value));
+    await expect(page.locator('.stats .stat-value')).toHaveText(HERO_STATS.map((s) => s.value));
     await expect(page.locator('#board a.flight')).toHaveCount(7);
     await expect(page.locator('footer.footer')).toContainText(FOOTER.credit);
   });
