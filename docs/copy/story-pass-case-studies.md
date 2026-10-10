@@ -1,6 +1,19 @@
 # Story pass, Gate 2b: case study copy deck
 
-Branch `feat/story-pass` · 9 Oct 2026 · the case study pages haven't changed yet.
+Branch `feat/story-pass` · 9 Oct 2026 · **Approved and built (Gate 3)**; the doc below is the proposal as reviewed.
+
+**Decisions from Prateek's review (10 Oct 2026)**
+- galpals and Hitaarth resume metrics stay off the pages.
+- "What This Demonstrates" is cut on all 7 pages.
+- All [F] lines are confirmed.
+- The read page uses the 3-line opener too.
+
+**Changes made while building**
+- Hitaarth header: "Named after our son, for a reason." contradicted the page's own line that the app isn't a tribute. It became "Our son's name, and the value behind it."
+- StoreOps keeps the page's "estimated" on ₹3.16 Cr and "up to" on 50%.
+- PMPathfinder's engine line keeps the warm-up slot: "warms you up, then goes for your weakest areas".
+
+**Measured:** copy words 2,668 → 1,581 (−41%, short of the projected −51%; the approved sentences ran longer than the per-page estimates). Visible words on the pages 2,778 → 1,781 (−36%).
 
 **Word count: 2,668 → ~1,300 (about −51%)** across the 7 pages. Every fact below already appears on that page or in your resume. Tags work as before: **[S]** sourced, **[F]** new framing you need to confirm. Rows marked **"(unchanged)"** stay word for word.
 
