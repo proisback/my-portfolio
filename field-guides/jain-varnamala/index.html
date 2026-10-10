@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>जैन जीवन की वर्णमाला · Field Guides</title>
+<meta name="description" content="जैन संस्कारों की वर्णमाला: लकड़ी के बोर्ड पर हर अक्षर को छुओ, उसका संस्कार देखो, सुनो और फटाफट बोलो।">
+<meta name="theme-color" content="#F3E7CF">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Mukta:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --page:#F3E7CF; --page-2:#EADBBD;
+    --wood:#E8CFA4; --wood-hi:#F2DDB7; --wood-lo:#D7B781;
+    --carve:#6E3F17; --carve-deep:#4E2A0B;
+    --ink:#2B1D12; --ink-2:#6B5845;
+    --marigold:#F5C94C; --marigold-deep:#8F6400; --saffron:#E8762B;
+    --do:#2F6B3A; --do-soft:#E1EEDC; --dont:#9B2C1F; --dont-soft:#F6E0DA;
+    --display:'Baloo 2','Mukta',system-ui,sans-serif;
+    --body:'Mukta','Baloo 2',system-ui,sans-serif;
+    --ease:cubic-bezier(.16,1,.3,1); --spring:cubic-bezier(.34,1.4,.64,1);
+    /* Vertical wood grain, generated (no image files). */
+    --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='700' height='1600'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.09 0.004' numOctaves='3' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 0.47 0 0 0 0 0.29 0 0 0 0 0.11 1.6 0 0 0 -0.78'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;}
+  body{
+    font-family:var(--body);color:var(--ink);line-height:1.5;
+    background:radial-gradient(1200px 600px at 50% -10%, #FBF3E2 0%, transparent 60%), var(--page);
+    min-height:100vh;
+  }
+  button{font:inherit;color:inherit;}
+  :focus-visible{outline:3px solid var(--marigold-deep);outline-offset:3px;border-radius:10px;}
+  .wrap{max-width:760px;margin:0 auto;padding:20px 16px 56px;}
+
+  /* top + hero */
+  .top{display:flex;justify-content:space-between;align-items:center;gap:12px;}
+  .back{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:var(--ink-2);text-decoration:none;padding:6px 2px;}
+  .back:hover{color:var(--ink);}
+  .hero{text-align:center;margin:26px 0 22px;}
+  .kicker{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--marigold-deep);
+    background:rgba(245,201,76,.22);border:1px solid rgba(143,100,0,.18);border-radius:999px;padding:4px 14px;}
+  h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,7vw,56px);line-height:1.15;margin-top:14px;color:var(--carve-deep);letter-spacing:-.01em;}
+  .lede{font-size:clamp(17px,2.4vw,20px);color:var(--ink-2);margin-top:8px;}
+
+  /* tabs */
+  .tabs{display:flex;justify-content:center;gap:8px;margin:0 auto 22px;padding:6px;width:max-content;max-width:100%;
+    background:rgba(255,250,238,.7);border:1px solid rgba(110,63,23,.14);border-radius:999px;box-shadow:0 6px 18px rgba(78,42,11,.06);}
+  .tab{appearance:none;border:0;background:transparent;cursor:pointer;font-family:var(--display);font-weight:700;font-size:17px;
+    padding:8px 18px;border-radius:999px;color:var(--ink-2);transition:background .2s,color .2s;white-space:nowrap;}
+  .tab[aria-selected="true"]{background:var(--carve);color:#FFF6E4;}
+  .tab:not([aria-selected="true"]):hover{background:rgba(110,63,23,.08);color:var(--ink);}
+
+  /* the wooden board */
+  .board{position:relative;margin:0 auto 26px;max-width:640px;padding:16px 18px 22px;border-radius:30px;
+    background:var(--grain), linear-gradient(100deg, var(--wood-hi) 0%, var(--wood) 38%, #E3C796 62%, var(--wood-hi) 100%);
+    box-shadow:inset 0 2px 0 rgba(255,246,226,.75), inset 0 -5px 10px rgba(120,74,25,.18), inset 0 0 0 1px rgba(110,63,23,.18),
+      0 1px 0 #C9A26A, 0 3px 0 #BD945A, 0 18px 40px rgba(78,42,11,.18);}
+  .board-top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-bottom:6px;}
+  .board-name{grid-column:3;justify-self:end;font-family:var(--display);font-weight:800;font-size:18px;color:#9A5A23;opacity:.85;
+    text-shadow:0 1px 0 rgba(255,240,210,.6);}
+  .count{grid-column:1;justify-self:start;font-size:13px;font-weight:500;color:#7A5530;}
+  /* carved stylus slot with its wooden pen */
+  .slot{grid-column:2;position:relative;width:min(46vw,260px);height:24px;border-radius:14px;
+    background:linear-gradient(180deg,#C9A36C,#D9B985);box-shadow:inset 0 3px 6px rgba(78,42,11,.45), inset 0 -1px 0 rgba(255,240,210,.5);}
+  .stylus{position:absolute;left:8px;right:22px;top:5px;height:14px;border-radius:2px 8px 8px 2px;
+    background:linear-gradient(180deg,#F7E4C0 0%,#E6C793 45%,#C99E62 100%);
+    clip-path:polygon(0 50%, 9% 0, 100% 0, 100% 100%, 9% 100%);box-shadow:0 1px 1px rgba(78,42,11,.3);}
+  .grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px 6px;}
+  .cell{appearance:none;border:0;background:transparent;cursor:pointer;position:relative;display:block;text-align:center;
+    font-family:var(--display);font-weight:700;font-size:clamp(38px,9.4vw,66px);line-height:1;
+    padding:.16em 0 .12em;border-radius:16px;color:var(--carve);
+    /* carved: dark top lip, light bottom lip */
+    text-shadow:0 -1px 0 rgba(58,28,4,.55), 0 2px 0 rgba(255,238,205,.7);
+    transition:transform .15s var(--spring), background-color .2s;}
+  .cell:hover{background-color:rgba(255,240,200,.45);}
+  .cell:active{transform:scale(.94);}
+  .cell.silent{cursor:default;opacity:.36;}
+  .cell.silent:hover{background:transparent;}
+  .cell.last{grid-column:3;}
+  .cell.seen::after{content:'';position:absolute;top:10%;right:12%;width:9px;height:9px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%,#FFE9A3,#C98A12 70%);box-shadow:0 1px 1px rgba(78,42,11,.35);}
+  .hint{text-align:center;font-size:15px;color:var(--ink-2);margin:-6px 0 18px;}
+  .reset{appearance:none;border:0;background:none;cursor:pointer;font-size:13px;color:#7A5530;text-decoration:underline;text-underline-offset:3px;margin-left:6px;}
+
+  /* drill */
+  .drill{max-width:560px;margin:0 auto;text-align:center;}
+  .say{font-family:var(--display);font-weight:800;font-size:clamp(22px,4.4vw,28px);color:var(--carve-deep);}
+  .opts{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:14px 0 18px;}
+  .chip{appearance:none;cursor:pointer;border:1.5px solid rgba(110,63,23,.25);background:rgba(255,250,238,.7);border-radius:999px;
+    padding:6px 14px;font-size:15px;font-weight:500;color:var(--ink-2);transition:all .2s;}
+  .chip[aria-pressed="true"]{background:var(--carve);border-color:var(--carve);color:#FFF6E4;}
+  .tile{position:relative;margin:0 auto;width:min(260px,62vw);aspect-ratio:1;border-radius:28px;display:grid;place-items:center;
+    background:var(--grain), linear-gradient(110deg,var(--wood-hi),var(--wood) 55%,#E1C38F);
+    box-shadow:inset 0 2px 0 rgba(255,246,226,.75), inset 0 -5px 10px rgba(120,74,25,.18), 0 3px 0 #BD945A, 0 16px 36px rgba(78,42,11,.18);}
+  .big{font-family:var(--display);font-weight:800;font-size:min(150px,36vw);line-height:1;padding-top:.08em;
+    background:linear-gradient(90deg,var(--carve) 50%,rgba(110,63,23,.16) 50%);background-size:200% 100%;background-position:0 0;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 2px 0 rgba(255,238,205,.7)) drop-shadow(0 -1px 0 rgba(58,28,4,.35));}
+  .big.trace{animation:trace .9s var(--ease) both;}
+  @keyframes trace{from{background-position:100% 0;}to{background-position:0 0;}}
+  .line{font-family:var(--display);font-weight:700;font-size:clamp(24px,5vw,34px);line-height:1.35;color:var(--ink);margin-top:18px;min-height:1.35em;}
+  /* The keyword in deep saffron (a background highlight drops below Devanagari in this font). */
+  .line mark{background:none;color:#B4520F;}
+  .line.hidden{color:var(--ink-2);font-weight:600;font-size:clamp(20px,4vw,26px);}
+  .controls{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:20px;}
+  .btn{appearance:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:11px 20px;
+    font-family:var(--display);font-weight:700;font-size:17px;line-height:1;border:1.5px solid rgba(110,63,23,.3);
+    background:rgba(255,250,238,.85);color:var(--ink);transition:transform .15s var(--spring), background .2s;}
+  .btn:hover{transform:translateY(-1px);}
+  .btn.primary{background:var(--carve);border-color:var(--carve);color:#FFF6E4;box-shadow:0 6px 14px rgba(78,42,11,.22);}
+  .btn.gold{background:var(--marigold);border-color:#D7A82A;color:var(--carve-deep);}
+  .btn[disabled]{opacity:.4;cursor:default;transform:none;}
+  .speak{display:none !important;}
+  .can-speak .speak{display:inline-flex !important;}
+  .progress{display:flex;justify-content:center;flex-wrap:wrap;gap:4px;margin:16px auto 0;max-width:440px;}
+  .progress i{width:8px;height:8px;border-radius:50%;background:rgba(110,63,23,.18);}
+  .progress i.done{background:var(--marigold-deep);}
+  .progress i.now{background:var(--saffron);transform:scale(1.35);}
+  .step{font-size:14px;color:var(--ink-2);margin-top:8px;}
+  .finish{padding:28px 18px;}
+  .finish .big-word{font-family:var(--display);font-weight:800;font-size:clamp(40px,9vw,64px);color:var(--carve-deep);}
+
+  /* summary */
+  .sar{max-width:620px;margin:0 auto;text-align:center;}
+  .sar h2{font-family:var(--display);font-weight:800;font-size:clamp(26px,5vw,36px);color:var(--carve-deep);line-height:1.2;}
+  .sar p{font-size:18px;color:var(--ink-2);margin-top:10px;}
+  .values{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:14px 0 6px;}
+  .value{appearance:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;border-radius:12px;padding:7px 12px 6px;
+    border:1.5px solid rgba(110,63,23,.22);background:var(--grain), linear-gradient(110deg,var(--wood-hi),var(--wood));
+    font-family:var(--display);font-weight:700;font-size:18px;color:var(--carve-deep);box-shadow:0 2px 0 #C9A26A;transition:transform .15s var(--spring);}
+  .value:hover{transform:translateY(-2px);}
+  .value b{font-weight:800;color:var(--saffron);}
+  .closing{margin-top:30px;padding:26px 18px;border-radius:24px;background:rgba(255,250,238,.75);border:1px solid rgba(110,63,23,.14);}
+  .closing p{font-family:var(--display);font-weight:700;color:var(--ink);font-size:clamp(20px,4vw,26px);line-height:1.4;margin:0;}
+  .closing p + p{margin-top:12px;}
+  .closing .gold{color:var(--marigold-deep);}
+
+  /* letter sheet (dialog) */
+  .overlay{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:16px;
+    background:rgba(43,29,18,.45);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);animation:fade .2s ease-out;}
+  @keyframes fade{from{opacity:0;}}
+  .sheet{position:relative;width:min(460px,100%);max-height:calc(100vh - 32px);overflow:auto;text-align:center;
+    padding:26px 20px 20px;border-radius:28px;background:#FFF9EC;box-shadow:0 30px 70px rgba(43,29,18,.35);animation:pop .35s var(--spring);}
+  @keyframes pop{from{transform:translateY(16px) scale(.96);opacity:0;}}
+  .sheet .tile{width:min(200px,52vw);}
+  .x{position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;border:0;cursor:pointer;
+    background:rgba(110,63,23,.08);font-size:24px;line-height:1;color:var(--ink-2);}
+  .x:hover{background:rgba(110,63,23,.16);color:var(--ink);}
+  .stamp{display:inline-block;margin-top:16px;font-size:14px;font-weight:700;letter-spacing:.02em;padding:3px 12px;border-radius:999px;transform:rotate(-2deg);}
+  .stamp.do{color:var(--do);background:var(--do-soft);border:1.5px solid rgba(47,107,58,.35);}
+  .stamp.dont{color:var(--dont);background:var(--dont-soft);border:1.5px solid rgba(155,44,31,.3);}
+  .sheet .line{margin-top:10px;}
+  .pager{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:18px;}
+  .pager .step{margin:0;}
+
+  footer{margin-top:36px;text-align:center;font-size:13px;color:var(--ink-2);}
+  footer a{color:inherit;}
+
+  @media (max-width:600px){
+    .board{padding:12px 10px 16px;border-radius:24px;}
+    .tab{font-size:15px;padding:8px 13px;}
+    .board-name{font-size:15px;}
+    .count{font-size:12px;}
+    .btn{font-size:16px;padding:10px 16px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none !important;transition:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><a class="back" href="../" lang="en">← Field Guides</a></div>
+
+  <header class="hero">
+    <span class="kicker">संस्कार · बच्चों के लिए</span>
+    <h1>जैन जीवन की वर्णमाला</h1>
+    <p class="lede">जीवन में हर अक्षर हमें एक संस्कार और एक सीख देता है।</p>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="मोड">
+    <button class="tab" role="tab" id="tab-board" aria-controls="main" onclick="setView('board')">बोर्ड</button>
+    <button class="tab" role="tab" id="tab-drill" aria-controls="main" onclick="setView('drill')">फटाफट बोलो</button>
+    <button class="tab" role="tab" id="tab-sar" aria-controls="main" onclick="setView('sar')">सार</button>
+  </div>
+
+  <main id="main" role="tabpanel" tabindex="-1"></main>
+
+  <footer><a href="../" lang="en">Field Guides</a> · <span lang="en">Prateek Mehta</span></footer>
+</div>
+<div id="modalRoot"></div>
+
+<script>
+/* ---------- Content: verbatim from Prateek's list ---------- */
+// [letter, line, words to mark]. A line with "मत" is a don't.
+const LESSONS = [
+  ['अ','अ से अदब करो।',['अदब']],
+  ['आ','आ से आत्मविश्वास रखो।',['आत्मविश्वास']],
+  ['इ','इ से इबादत करो।',['इबादत']],
+  ['ई','ई से ईमानदार बनो।',['ईमानदार']],
+  ['उ','उ से उत्साह रखो।',['उत्साह']],
+  ['ऊ','ऊ से ऊर्जावान बनो।',['ऊर्जावान']],
+  ['ए','ए से एकता रखो।',['एकता']],
+  ['ऐ','ऐ से ऐश्वर्यवान बनो।',['ऐश्वर्यवान']],
+  ['ओ','ओ से ओजस्वी बनो।',['ओजस्वी']],
+  ['औ','औ से औरों की सेवा करो।',['औरों']],
+  ['क','क से कर्म करो।',['कर्म']],
+  ['ख','ख से खरे बनो।',['खरे']],
+  ['ग','ग से गरिमा रखो।',['गरिमा']],
+  ['घ','घ से घमंड मत करो।',['घमंड']],
+  ['च','च से चरित्रवान बनो।',['चरित्रवान']],
+  ['छ','छ से छलो मत।',['छलो']],
+  ['ज','ज से दूसरों से जलो मत।',['जलो']],
+  ['झ','झ से झगड़ो मत।',['झगड़ो']],
+  ['ट','ट से टकराओ मत।',['टकराओ']],
+  ['ठ','ठ से ठगो मत।',['ठगो']],
+  ['ढ','ढ से ज़िंदगी में ढलना सीखो।',['ढलना']],
+  ['त','त से तत्पर बनो और तरक्की करो।',['तत्पर','तरक्की']],
+  ['थ','थ से ज़िंदगी में थको मत।',['थको']],
+  ['द','द से दया करो।',['दया']],
+  ['ध','ध से धर्म करो।',['धर्म']],
+  ['न','न से नरम बनो।',['नरम']],
+  ['प','प से परिश्रम करो।',['परिश्रम']],
+  ['फ','फ से फ़र्ज़ निभाओ।',['फ़र्ज़']],
+  ['ब','ब से बलवान बनो।',['बलवान']],
+  ['भ','भ से दूसरों की भलाई करो।',['भलाई']],
+  ['म','म से महान बनो।',['महान']],
+  ['य','य से यक़ीन रखो।',['यक़ीन']],
+  ['र','र से जीवों पर रहम करो।',['रहम']],
+  ['ल','ल से अपने लक्ष्य को प्राप्त करो।',['लक्ष्य']],
+  ['व','व से वचन निभाओ।',['वचन']],
+  ['श','श से शर्म करो।',['शर्म']],
+  ['ष','ष से षड्यंत्र मत करो।',['षड्यंत्र']],
+  ['स','स से समय के पाबंद बनो।',['समय']],
+  ['ह','ह से हँसमुख बनो।',['हँसमुख']],
+  ['क्ष','क्ष से क्षमा करो।',['क्षमा']],
+  ['त्र','त्र से त्राहि-त्राहि मत करो।',['त्राहि-त्राहि']],
+  ['ज्ञ','ज्ञ से ज्ञानी बनो।',['ज्ञानी']],
+].map(([l, line, mark], i) => ({ l, line, mark, i, dont: / मत[ ।]/.test(line), swar: i < 10 }));
+const BY_LETTER = Object.fromEntries(LESSONS.map((x) => [x.l, x]));
+
+// The two boards, in वर्णमाला order. ङ ञ ड ण have no sanskar in the list: carved, but silent.
+const BOARDS = [
+  { name: 'स्वर', letters: ['अ','आ','इ','ई','उ','ऊ','ए','ऐ','ओ','औ'] },
+  { name: 'व्यंजन', letters: ['क','ख','ग','घ','ङ','च','छ','ज','झ','ञ','ट','ठ','ड','ढ','ण','त','थ','द','ध','न','प','फ','ब','भ','म','य','र','ल','व','श','ष','स','ह','क्ष','त्र','ज्ञ'] },
+];
+
+// The values from the closing lines, each tied to its letter.
+const VALUES = [
+  [['अदब','अ'],['आत्मविश्वास','आ'],['इबादत','इ'],['ईमानदारी','ई'],['उत्साह','उ'],['ऊर्जा','ऊ'],['एकता','ए'],['ऐश्वर्य','ऐ'],['ओज','ओ'],['सेवा','औ']],
+  [['कर्म','क'],['खरेपन','ख'],['गरिमा','ग'],['चरित्र','च'],['दया','द'],['धर्म','ध'],['परिश्रम','प'],['भलाई','भ'],['वचन','व'],['क्षमा','क्ष'],['ज्ञान','ज्ञ']],
+];
+
+/* ---------- State ---------- */
+const STORE = 'jain-varnamala-seen';
+const loadSeen = () => { try { return new Set(JSON.parse(localStorage.getItem(STORE) || '[]')); } catch { return new Set(); } };
+const saveSeen = () => { try { localStorage.setItem(STORE, JSON.stringify([...state.seen])); } catch {} };
+
+const state = {
+  view: 'board',
+  open: null,          // index into LESSONS for the letter sheet
+  returnFocus: null,
+  seen: loadSeen(),
+  drill: { set: 'swar', order: 'seq', list: [], i: 0, revealed: false, done: false, auto: false },
+};
+let autoTimer = null;
+
+/* ---------- Read aloud (device's Hindi voice; hidden when there is none) ---------- */
+let hiVoice = null;
+function pickVoice() {
+  const voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
+  hiVoice = voices.find((v) => /^hi([-_]|$)/i.test(v.lang)) || null;
+  document.documentElement.classList.toggle('can-speak', !!hiVoice);
+}
+if ('speechSynthesis' in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+function speak(text, onend) {
+  if (!hiVoice) { if (onend) onend(); return; }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.voice = hiVoice; u.lang = hiVoice.lang; u.rate = 0.85;
+  if (onend) { u.onend = onend; u.onerror = onend; }
+  speechSynthesis.speak(u);
+}
+function hush() { if (window.speechSynthesis) speechSynthesis.cancel(); }
+
+/* ---------- Helpers ---------- */
+const marked = (x) => x.mark.reduce((s, w) => s.replace(w, `<mark>${w}</mark>`), x.line);
+const stamp = (x) => x.dont
+  ? '<span class="stamp dont">✗ नहीं करना</span>'
+  : '<span class="stamp do">✓ करना है</span>';
+const speakIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>';
+
+/* ---------- Views ---------- */
+function renderBoard() {
+  const total = LESSONS.length;
+  const seen = LESSONS.filter((x) => state.seen.has(x.l)).length;
+  const boards = BOARDS.map((b) => {
+    const cells = b.letters.map((l, k) => {
+      const x = BY_LETTER[l];
+      const last = b.letters.length % 5 === 1 && k === b.letters.length - 1 ? ' last' : '';
+      if (!x) return `<span class="cell silent${last}" aria-hidden="true">${l}</span>`;
+      return `<button class="cell${state.seen.has(l) ? ' seen' : ''}${last}" aria-haspopup="dialog" aria-label="${l}" onclick="openLetter(${x.i}, this)">${l}</button>`;
+    }).join('');
+    return `
+    <section class="board" aria-label="${b.name}">
+      <div class="board-top">
+        <span class="slot" aria-hidden="true"><span class="stylus"></span></span>
+        <span class="board-name">${b.name}</span>
+      </div>
+      <div class="grid">${cells}</div>
+    </section>`;
+  }).join('');
+  return `
+    <p class="hint">किसी भी अक्षर को छुओ, उसका संस्कार खुलेगा।</p>
+    <p class="hint" aria-live="polite">${seen} / ${total} अक्षर देखे${seen ? ` <button class="reset" onclick="resetSeen()">फिर से शुरू</button>` : ''}</p>
+    ${boards}`;
+}
+
+function drillList() {
+  const d = state.drill;
+  let list = LESSONS.filter((x) => (d.set === 'all' ? true : d.set === 'swar' ? x.swar : !x.swar));
+  if (d.order === 'mix') list = list.map((x) => [Math.random(), x]).sort((a, b) => a[0] - b[0]).map((p) => p[1]);
+  return list;
+}
+
+function renderDrill() {
+  const d = state.drill;
+  const chip = (key, val, label) => `<button class="chip" aria-pressed="${d[key] === val}" onclick="drillSet('${key}','${val}')">${label}</button>`;
+  const opts = `
+    <div class="opts" role="group" aria-label="अक्षर चुनो">${chip('set', 'swar', 'स्वर (10)')}${chip('set', 'vyanjan', 'व्यंजन (32)')}${chip('set', 'all', 'सब (42)')}</div>
+    <div class="opts" role="group" aria-label="क्रम">${chip('order', 'seq', 'क्रम से')}${chip('order', 'mix', 'मिलाकर')}</div>`;
+  if (d.done) {
+    return `<div class="drill">
+      <div class="finish">
+        <div class="big-word">शाबाश!</div>
+        <p class="say" style="margin-top:6px">सारे ${d.list.length} अक्षर हो गए।</p>
+        <div class="controls"><button class="btn primary" onclick="drillStart()">फिर से बोलो</button></div>
+      </div>${opts}</div>`;
+  }
+  const x = d.list[d.i];
+  const dots = d.list.map((_, k) => `<i class="${k < d.i ? 'done' : k === d.i ? 'now' : ''}"></i>`).join('');
+  return `<div class="drill">
+    <p class="say">बच्चों से कहें: फटाफट बोलो!</p>
+    ${opts}
+    <div class="tile"><span class="big${d.revealed ? '' : ' trace'}" aria-hidden="true">${x.l}</span></div>
+    <p class="line${d.revealed ? '' : ' hidden'}" aria-live="polite">${d.revealed ? marked(x) : `${x.l} से … ?`}</p>
+    <div class="controls">
+      ${d.revealed
+        ? `<button class="btn primary" onclick="drillNext()">अगला →</button>`
+        : `<button class="btn primary" onclick="drillReveal()">देखो</button>`}
+      <button class="btn speak" onclick="drillReveal(true)">${speakIcon} सुनो</button>
+      <button class="btn gold" onclick="toggleAuto()" aria-pressed="${d.auto}">${d.auto ? '❚❚ रोको' : '▶ अपने आप चलाओ'}</button>
+    </div>
+    <div class="progress" aria-hidden="true">${dots}</div>
+    <p class="step">${d.i + 1} / ${d.list.length}</p>
+  </div>`;
+}
+
+function renderSar() {
+  const chips = (row) => row.map(([w, l]) => `<button class="value" onclick="openLetter(${BY_LETTER[l].i}, this)" aria-haspopup="dialog"><b>${l}</b>${w}</button>`).join('');
+  return `<div class="sar">
+    <h2>यही है हमारी जीवन की वर्णमाला</h2>
+    <p>हर अक्षर हमें जीवन का एक मूल्य सिखाता है:</p>
+    <div class="values">${chips(VALUES[0])}</div>
+    <p>फिर:</p>
+    <div class="values">${chips(VALUES[1])}</div>
+    <div class="closing">
+      <p>यह केवल वर्णमाला नहीं है।</p>
+      <p class="gold">यह अच्छे जीवन की वर्णमाला है।</p>
+      <p>इसे केवल बोलना नहीं है,<br>इसे अपने जीवन में उतारना है।</p>
+    </div>
+  </div>`;
+}
+
+function render() {
+  for (const v of ['board', 'drill', 'sar']) {
+    const t = document.getElementById('tab-' + v);
+    t.setAttribute('aria-selected', String(state.view === v));
+    t.tabIndex = state.view === v ? 0 : -1;
+  }
+  document.getElementById('main').setAttribute('aria-labelledby', 'tab-' + state.view);
+  document.getElementById('main').innerHTML =
+    state.view === 'board' ? renderBoard() : state.view === 'drill' ? renderDrill() : renderSar();
+  renderSheet();
+}
+
+/* ---------- Letter sheet ---------- */
+function renderSheet() {
+  const root = document.getElementById('modalRoot');
+  if (state.open === null) { root.innerHTML = ''; return; }
+  const x = LESSONS[state.open];
+  root.innerHTML = `
+  <div class="overlay" onclick="if(event.target===this)closeLetter()">
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-line">
+      <button class="x" onclick="closeLetter()" aria-label="बंद करो">×</button>
+      <div class="tile"><span class="big trace" aria-hidden="true">${x.l}</span></div>
+      ${stamp(x)}
+      <p class="line" id="sheet-line">${marked(x)}</p>
+      <div class="controls"><button class="btn speak" onclick="speak(LESSONS[${x.i}].line)">${speakIcon} सुनो</button></div>
+      <div class="pager">
+        <button class="btn" onclick="stepLetter(-1)" ${x.i === 0 ? 'disabled' : ''} aria-label="पिछला अक्षर">← पिछला</button>
+        <p class="step">${x.i + 1} / ${LESSONS.length}</p>
+        <button class="btn" onclick="stepLetter(1)" ${x.i === LESSONS.length - 1 ? 'disabled' : ''} aria-label="अगला अक्षर">अगला →</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function openLetter(i, from) {
+  state.returnFocus = from || document.activeElement;
+  state.open = i;
+  markSeen(LESSONS[i].l);
+  render();
+  document.querySelector('.sheet .x').focus();
+}
+function stepLetter(dir) {
+  const i = state.open + dir;
+  if (i < 0 || i >= LESSONS.length) return;
+  hush();
+  state.open = i;
+  markSeen(LESSONS[i].l);
+  render();
+  const btn = document.querySelector(`.sheet .pager .btn:${dir < 0 ? 'first-child' : 'last-child'}`);
+  (btn && !btn.disabled ? btn : document.querySelector('.sheet .x')).focus();
+}
+function closeLetter() {
+  hush();
+  const letter = LESSONS[state.open].l;
+  state.open = null;
+  render();
+  // Return focus to the letter just studied (the board re-rendered, so find it again).
+  const back = [...document.querySelectorAll('.cell, .value')].find((el) => el.getAttribute('aria-label') === letter || el.querySelector('b')?.textContent === letter);
+  (back || document.getElementById('tab-' + state.view)).focus();
+}
+function markSeen(l) { if (!state.seen.has(l)) { state.seen.add(l); saveSeen(); } }
+function resetSeen() { state.seen = new Set(); saveSeen(); render(); document.getElementById('tab-board').focus(); }
+
+/* ---------- Drill ---------- */
+function drillStart() {
+  stopAuto();
+  Object.assign(state.drill, { list: drillList(), i: 0, revealed: false, done: false });
+  render();
+}
+function drillSet(key, val) { state.drill[key] = val; drillStart(); }
+function drillReveal(withVoice) {
+  const d = state.drill;
+  d.revealed = true;
+  render();
+  if (withVoice) speak(d.list[d.i].line);
+}
+function drillNext() {
+  const d = state.drill;
+  hush();
+  if (d.i >= d.list.length - 1) { d.done = true; stopAuto(); }
+  else { d.i += 1; d.revealed = false; }
+  render();
+}
+// Auto play: show the letter, give the child a moment, reveal (and speak), move on.
+function autoStep() {
+  const d = state.drill;
+  if (!d.auto || d.done || state.view !== 'drill') return;
+  autoTimer = setTimeout(() => {
+    if (!d.auto) return;
+    d.revealed = true; render();
+    const next = () => { autoTimer = setTimeout(() => { if (!d.auto) return; drillNext(); autoStep(); }, hiVoice ? 700 : 2200); };
+    speak(d.list[d.i].line, next);
+  }, 1800);
+}
+function toggleAuto() {
+  const d = state.drill;
+  d.auto = !d.auto;
+  if (d.auto) { if (d.revealed) drillNext(); else render(); autoStep(); }
+  else { stopAuto(); render(); }
+}
+function stopAuto() { state.drill.auto = false; clearTimeout(autoTimer); autoTimer = null; hush(); }
+
+/* ---------- Navigation ---------- */
+function setView(v) {
+  if (v !== 'drill') stopAuto();
+  state.view = v;
+  if (v === 'drill' && !state.drill.list.length) Object.assign(state.drill, { list: drillList(), i: 0, revealed: false, done: false });
+  render();
+}
+
+document.addEventListener('keydown', (e) => {
+  if (state.open !== null) {
+    if (e.key === 'Escape') { e.preventDefault(); closeLetter(); }
+    else if (e.key === 'ArrowRight') stepLetter(1);
+    else if (e.key === 'ArrowLeft') stepLetter(-1);
+    else if (e.key === 'Tab') {
+      // Keep focus inside the open sheet.
+      const f = [...document.querySelectorAll('.sheet button:not([disabled])')].filter((b) => b.offsetParent);
+      if (!f.length) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+    return;
+  }
+  const tab = e.target.closest && e.target.closest('[role="tab"]');
+  if (tab && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+    const order = ['board', 'drill', 'sar'];
+    const k = (order.indexOf(state.view) + (e.key === 'ArrowRight' ? 1 : -1) + order.length) % order.length;
+    setView(order[k]);
+    document.getElementById('tab-' + order[k]).focus();
+  }
+});
+
+render();
+</script>
+</body>
+</html>
