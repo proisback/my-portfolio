@@ -27,7 +27,7 @@ export function nav() {
     <a href="#contact">Contact</a>
   </div>
   <div class="nav-actions">
-    <a class="nav-read" href="${href('read/')}">Read as a page</a>
+    <a class="nav-read" href="${href('read/')}">Quick read</a>
     ${link(PROFILE.resume, 'Resume', 'btn btn--ink btn--sm')}
   </div>
 </nav>`;

@@ -1,5 +1,5 @@
 // Full-document renderers for the generated pages: one case study per product
-// (work/<slug>/), the plain "Read as a page" view (read/) and the origin comic
+// (work/<slug>/), the plain "Quick read" view (read/) and the origin comic
 // (comic/). Pure functions returning HTML strings. They run in Node via
 // scripts/generate-pages.mjs and are never shipped to the browser.
 import {
@@ -104,7 +104,7 @@ function nav(current) {
       </a>
       <div class="pg-links">
         <a class="pg-link" href="${href('')}#board" aria-label="All departures"><span class="pg-long">All departures</span><span class="pg-short">Departures</span></a>
-        <a class="pg-link" href="${href('read/')}"${here('read')} aria-label="Read as a page"><span class="pg-long">Read as a page</span><span class="pg-short">Read</span></a>
+        <a class="pg-link" href="${href('read/')}"${here('read')} aria-label="Quick read"><span class="pg-long">Quick read</span><span class="pg-short">Quick read</span></a>
         ${link(PROFILE.resume, 'Resume', 'btn btn--ink btn--sm pg-resume')}
       </div>
     </nav>
@@ -118,7 +118,7 @@ function footer(current) {
     <div class="pg-foot-inner">
       <p class="pg-foot-quote"><span>${esc(a)}</span> <span class="pg-foot-accent">${esc(b)}</span></p>
       <nav class="pg-foot-links" aria-label="More from Prateek">
-        ${link(FOOTER.fieldGuides.href, esc(FOOTER.fieldGuides.label))}
+        ${link(PROFILE.calendly, esc(CONTACT.book))}
         ${link(FOOTER.comic.href, esc(FOOTER.comic.label), '', here('comic'))}
         <a href="${href('')}">Back to the flight</a>
       </nav>
@@ -250,7 +250,7 @@ export function workPage(p, index) {
   });
 }
 
-/* ---------- Read as a page ---------- */
+/* ---------- Quick read ---------- */
 
 function quote(key) {
   const t = TESTIMONIALS[key];
@@ -400,7 +400,7 @@ export function readPage() {
     </div>`;
 
   return doc({
-    title: `Read as a page | ${PROFILE.name}`,
+    title: `Quick read | ${PROFILE.name}`,
     description: `${PROFILE.name}, ${PROFILE.claim} The whole journey and all ${PRODUCTS.length} products as one plain, printable page.`,
     path: 'read/',
     page: 'read',

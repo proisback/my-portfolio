@@ -1,7 +1,7 @@
-/* "Read as a page" (read/) and the origin comic (comic/), plus print styles
+/* "Quick read" (read/) and the origin comic (comic/), plus print styles
    for every generated page. Prefixes: rp- (read), cp- (comic). */
 
-/* ---------- Read as a page ---------- */
+/* ---------- Quick read ---------- */
 
 .rp {
   max-width: calc(42rem + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter);

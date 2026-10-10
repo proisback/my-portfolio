@@ -679,7 +679,6 @@ export const NOTIFY = {
 
 export const FOOTER = {
   credit: 'Designed and built by Prateek with Claude Code.',
-  fieldGuides: { label: 'Explore the Field Guides', href: 'field-guides/' },
   comic: { label: 'Read the origin comic', href: 'comic/' },
 };
 

@@ -230,9 +230,8 @@ export function footer() {
   <div class="footer-inner">
     <p class="footer-quote reveal"><span>${esc(a)}</span> <span class="footer-quote-accent">${esc(b)}</span></p>
     <div class="footer-nav reveal">
-      ${link(FOOTER.fieldGuides.href, `${ICON.book}<span>${esc(FOOTER.fieldGuides.label)}</span>`, 'btn btn--marigold')}
+      ${link(PROFILE.calendly, `${ICON.calendar}<span>${esc(CONTACT.book)}</span>`, 'btn btn--marigold')}
       <a class="footer-link" href="${href(FOOTER.comic.href)}">${esc(FOOTER.comic.label)}</a>
-      <a class="footer-link" href="${href('read/')}">Read as a page</a>
       <span class="footer-social">
         <a class="btn-icon" href="${esc(MAILTO)}" aria-label="Email Prateek">${ICON.mail}</a>
         ${link(PROFILE.linkedin, ICON.linkedin, 'btn-icon', 'aria-label="Prateek on LinkedIn"')}

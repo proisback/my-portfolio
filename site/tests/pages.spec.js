@@ -53,6 +53,8 @@ test.describe('case study pages', () => {
       await expect(opener).toHaveText([p.opener.problem, p.opener.did, p.opener.result]);
       await expect(page.locator('.wp-sec-title', { hasText: 'What This Demonstrates' })).toHaveCount(0);
       await expect(page.locator('footer')).toContainText(FOOTER.credit);
+      await expect(page.locator(`footer a[href="${PROFILE.calendly}"]`)).toHaveCount(1);
+      await expect(page.locator('footer a[href*="field-guides"]')).toHaveCount(0);
       await page.waitForTimeout(300);
       expect(errors, errors.join('\n')).toEqual([]);
     });
