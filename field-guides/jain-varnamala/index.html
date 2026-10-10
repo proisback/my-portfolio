@@ -3,8 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>जैन जीवन की वर्णमाला · Field Guides</title>
-<meta name="description" content="जैन संस्कारों की वर्णमाला: लकड़ी के बोर्ड पर हर अक्षर को छुओ, उसका संस्कार देखो, सुनो और फटाफट बोलो।">
+<title>Sanskaar ABC · जैन जीवन की वर्णमाला</title>
+<meta name="description" content="Sanskaar ABC: जैन जीवन की वर्णमाला। हर अक्षर को छुओ, उसका संस्कार देखो, हिंदी और अंग्रेज़ी में सुनो, और फटाफट बोलो। A rainbow alphabet of Jain values for children aged 3 to 10.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sanskaar ABC · जैन जीवन की वर्णमाला">
+<meta property="og:description" content="A rainbow alphabet of Jain values for children: tap a letter, see its picture, hear it in Hindi and English.">
+<meta property="og:url" content="https://proisback.github.io/my-portfolio/field-guides/jain-varnamala/">
 <meta name="theme-color" content="#E8F4FF">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -60,8 +64,10 @@
   .hero-ele{position:relative;flex:none;width:clamp(104px,17vw,140px);}
   .rainbow{position:absolute;left:50%;bottom:22%;width:156%;transform:translateX(-50%);z-index:-1;}
   .hero-copy{text-align:left;}
-  h1{font-family:var(--display);font-weight:800;font-size:clamp(32px,6.4vw,54px);line-height:1.12;}
-  h1 .w0{color:#C2255C;} h1 .w1{color:#E8590C;} h1 .w2{color:#2B8A3E;} h1 .w3{color:#5F3DC4;}
+  /* the name, one rainbow colour per letter */
+  h1{font-family:var(--display);font-weight:800;font-size:clamp(38px,7.4vw,62px);line-height:1.05;letter-spacing:.01em;}
+  h1 .l0{color:#C2255C;} h1 .l1{color:#E8590C;} h1 .l2{color:#D9A400;} h1 .l3{color:#2B8A3E;} h1 .l4{color:#1C7ED6;} h1 .l5{color:#5F3DC4;} h1 .l6{color:#AE3EC9;}
+  .title-hi{font-family:var(--display);font-weight:700;font-size:clamp(20px,3.6vw,28px);line-height:1.2;color:var(--ink);margin-top:2px;}
   .lede{font-size:clamp(16px,2.3vw,19px);color:var(--ink-2);margin-top:4px;}
 
   /* ---------- the baby elephant ---------- */
@@ -320,7 +326,8 @@
       <div class="ele ele--hero"></div>
     </div>
     <div class="hero-copy">
-      <h1><span class="w0">जैन</span> <span class="w1">जीवन</span> <span class="w2">की</span> <span class="w3">वर्णमाला</span></h1>
+      <h1 lang="en" aria-label="Sanskaar ABC"><span class="l0">S</span><span class="l1">a</span><span class="l2">n</span><span class="l3">s</span><span class="l4">k</span><span class="l5">a</span><span class="l6">a</span><span class="l0">r</span> <span class="l2">A</span><span class="l3">B</span><span class="l4">C</span></h1>
+      <p class="title-hi">जैन जीवन की वर्णमाला</p>
       <p class="lede">जीवन में हर अक्षर हमें एक संस्कार और एक सीख देता है।</p>
       <p class="en en--lede" lang="en">Every letter in life gives us a value and a lesson.</p>
     </div>
