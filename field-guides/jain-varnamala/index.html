@@ -194,6 +194,10 @@
 
 <script>
 /* ---------- Content: verbatim from Prateek's list ---------- */
+// Spoken-only spellings for letters a device voice misreads on their own.
+// iPhone's Hindi voice reads a lone "अ" as "dollar"; joined to the next word it
+// sounds the same as "अ से". The screen always shows the original line.
+const SAY = { 'अ': 'असे अदब करो।' };
 // [letter, line, words to mark]. A line with "मत" is a don't.
 const LESSONS = [
   ['अ','अ से अदब करो।',['अदब']],
@@ -238,7 +242,7 @@ const LESSONS = [
   ['क्ष','क्ष से क्षमा करो।',['क्षमा']],
   ['त्र','त्र से त्राहि-त्राहि मत करो।',['त्राहि-त्राहि']],
   ['ज्ञ','ज्ञ से ज्ञानी बनो।',['ज्ञानी']],
-].map(([l, line, mark], i) => ({ l, line, mark, i, dont: / मत[ ।]/.test(line), swar: i < 10 }));
+].map(([l, line, mark], i) => ({ l, line, mark, i, dont: / मत[ ।]/.test(line), swar: i < 10, say: SAY[l] || line }));
 const BY_LETTER = Object.fromEntries(LESSONS.map((x) => [x.l, x]));
 
 // The two boards, in वर्णमाला order. ङ ञ ड ण have no sanskar in the list: carved, but silent.
@@ -398,7 +402,7 @@ function renderSheet() {
       <div class="tile"><span class="big trace" aria-hidden="true">${x.l}</span></div>
       ${stamp(x)}
       <p class="line" id="sheet-line">${marked(x)}</p>
-      <div class="controls"><button class="btn speak" onclick="speak(LESSONS[${x.i}].line)">${speakIcon} सुनो</button></div>
+      <div class="controls"><button class="btn speak" onclick="speak(LESSONS[${x.i}].say)">${speakIcon} सुनो</button></div>
       <div class="pager">
         <button class="btn" onclick="stepLetter(-1)" ${x.i === 0 ? 'disabled' : ''} aria-label="पिछला अक्षर">← पिछला</button>
         <p class="step">${x.i + 1} / ${LESSONS.length}</p>
@@ -448,7 +452,7 @@ function drillReveal(withVoice) {
   const d = state.drill;
   d.revealed = true;
   render();
-  if (withVoice) speak(d.list[d.i].line);
+  if (withVoice) speak(d.list[d.i].say);
 }
 function drillNext() {
   const d = state.drill;
@@ -465,7 +469,7 @@ function autoStep() {
     if (!d.auto) return;
     d.revealed = true; render();
     const next = () => { autoTimer = setTimeout(() => { if (!d.auto) return; drillNext(); autoStep(); }, hiVoice ? 700 : 2200); };
-    speak(d.list[d.i].line, next);
+    speak(d.list[d.i].say, next);
   }, 1800);
 }
 function toggleAuto() {
