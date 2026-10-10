@@ -981,6 +981,7 @@ addEventListener('scroll', () => requestAnimationFrame(placeTour), { passive: tr
 /* ---------- Navigation ---------- */
 function setView(v) {
   if (v !== 'drill') stopAuto();
+  document.querySelectorAll('.petals').forEach((p) => p.remove());
   state.view = v;
   if (v === 'drill' && !state.drill.list.length) Object.assign(state.drill, { list: drillList(), i: 0, revealed: false, done: false });
   render();
