@@ -58,8 +58,6 @@
   @keyframes drift{to{transform:translateX(28px);}}
 
   /* ---------- top + hero ---------- */
-  .back{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:var(--ink-2);text-decoration:none;padding:6px 2px;}
-  .back:hover{color:var(--ink);}
   .hero{display:flex;align-items:center;justify-content:center;gap:clamp(18px,4.2vw,44px);margin:18px 0 24px;}
   .hero-ele{position:relative;flex:none;width:clamp(104px,17vw,140px);}
   .rainbow{position:absolute;left:50%;bottom:22%;width:156%;transform:translateX(-50%);z-index:-1;}
@@ -68,7 +66,6 @@
   h1{font-family:var(--display);font-weight:800;font-size:clamp(38px,7.4vw,62px);line-height:1.05;letter-spacing:.01em;}
   h1 .l0{color:#C2255C;} h1 .l1{color:#E8590C;} h1 .l2{color:#D9A400;} h1 .l3{color:#2B8A3E;} h1 .l4{color:#1C7ED6;} h1 .l5{color:#5F3DC4;} h1 .l6{color:#AE3EC9;}
   .title-hi{font-family:var(--display);font-weight:700;font-size:clamp(20px,3.6vw,28px);line-height:1.2;color:var(--ink);margin-top:2px;}
-  .lede{font-size:clamp(16px,2.3vw,19px);color:var(--ink-2);margin-top:4px;}
 
   /* ---------- the baby elephant ---------- */
   .ele{flex:none;pointer-events:none;}
@@ -102,7 +99,6 @@
   .tab:not([aria-selected="true"]):hover{background:#F3F0FF;color:var(--ink);}
 
   /* ---------- the letter boards: a toy puzzle of rainbow tiles ---------- */
-  .hint{text-align:center;font-size:15px;color:var(--ink-2);margin:-8px 0 16px;}
   .board{position:relative;margin:0 auto 24px;max-width:640px;padding:16px 16px 20px;border-radius:30px;isolation:isolate;
     background:rgba(255,255,255,.86);border:2px solid #fff;box-shadow:0 16px 36px rgba(108,92,231,.12);}
   .board::before{content:'';position:absolute;top:-2px;left:30px;right:30px;height:7px;border-radius:0 0 10px 10px;background:var(--rainbow);z-index:2;}
@@ -163,7 +159,6 @@
   .line mark{background:none;color:var(--fg,#C2255C);}
   .line.hidden{color:var(--ink-3);font-weight:600;}
   .en{font-family:var(--body);font-weight:500;color:var(--ink-2);line-height:1.35;}
-  .en--lede{font-size:15px;}
   .en--line{font-size:clamp(16px,2.6vw,19px);margin-top:3px;min-height:1.35em;}
 
   /* ---------- buttons: big and friendly ---------- */
@@ -246,7 +241,7 @@
   .closing .en{font-size:clamp(14px,2.4vw,16px);margin-top:2px;}
 
   /* ---------- top bar + help ---------- */
-  .top{display:flex;justify-content:space-between;align-items:center;gap:12px;}
+  .top{display:flex;justify-content:flex-end;align-items:center;}
   .help{appearance:none;cursor:pointer;display:inline-flex;align-items:center;gap:7px;padding:5px 14px 5px 6px;border-radius:999px;
     border:2px solid var(--soft-line);background:#fff;color:var(--ink);font-family:var(--display);font-weight:700;font-size:15px;
     box-shadow:0 3px 0 var(--soft-line);transition:transform .25s var(--soft);}
@@ -284,7 +279,6 @@
 
   footer{margin-top:36px;text-align:center;font-size:13px;color:var(--ink-2);}
   footer a{color:inherit;}
-  footer small{display:block;margin-top:4px;font-size:11.5px;opacity:.8;}
 
   @media (max-width:640px){
     .hero{flex-direction:column;gap:6px;margin-top:8px;}
@@ -312,7 +306,6 @@
 </div>
 <div class="wrap">
   <div class="top">
-    <a class="back" href="../" lang="en">← Field Guides</a>
     <button class="help" onclick="replayTour()" aria-label="मदद: दौरा फिर से देखें (help: replay the tour)"><b aria-hidden="true">?</b>मदद</button>
   </div>
 
@@ -328,8 +321,6 @@
     <div class="hero-copy">
       <h1 lang="en" aria-label="Sanskaar ABC"><span class="l0">S</span><span class="l1">a</span><span class="l2">n</span><span class="l3">s</span><span class="l4">k</span><span class="l5">a</span><span class="l6">a</span><span class="l0">r</span> <span class="l2">A</span><span class="l3">B</span><span class="l4">C</span></h1>
       <p class="title-hi">जैन जीवन की वर्णमाला</p>
-      <p class="lede">जीवन में हर अक्षर हमें एक संस्कार और एक सीख देता है।</p>
-      <p class="en en--lede" lang="en">Every letter in life gives us a value and a lesson.</p>
     </div>
   </header>
 
@@ -342,8 +333,8 @@
   <main id="main" role="tabpanel" tabindex="-1"></main>
 
   <footer>
-    <a href="../" lang="en">Field Guides</a> · <span lang="en">Prateek Mehta</span>
-    <small lang="en">Pictures: Noto Emoji by Google, Apache License 2.0</small>
+    <a href="../../" lang="en">Prateek Mehta</a>
+    <!-- Pictures: Noto Emoji by Google, Apache License 2.0 (copy in icons/LICENSE). -->
   </footer>
 </div>
 <div id="modalRoot"></div>
@@ -649,7 +640,7 @@ function renderBoard() {
       <div class="grid">${cells}</div>
     </section>`;
   }).join('');
-  return `<p class="hint">किसी भी अक्षर को छुओ।</p>${boards}`;
+  return boards;
 }
 
 function drillList() {
@@ -680,8 +671,6 @@ function renderDrill() {
   const x = d.list[d.i];
   const dots = d.list.map((_, k) => `<i class="${k < d.i ? 'done' : k === d.i ? 'now' : ''}"></i>`).join('');
   return `<div class="drill h${HUE[x.l]}">
-    <p class="say">बच्चों से कहें: फटाफट बोलो!</p>
-    <p class="en" lang="en" style="font-size:15px">Tell the children: say it fast!</p>
     ${opts}
     <div class="eq">
       <div class="tile"><span class="big${d.revealed ? '' : ' trace'}" aria-hidden="true">${x.l}</span></div>
