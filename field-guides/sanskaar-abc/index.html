@@ -189,6 +189,7 @@
   .btn[disabled]{opacity:.35;cursor:default;transform:none;}
   .speak{display:none !important;}
   .can-speak .speak{display:inline-flex !important;}
+  .speak.rec{display:inline-flex !important;}
 
   /* ---------- letter card ---------- */
   .overlay{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;overflow-y:auto;padding:104px 16px 20px;
@@ -581,9 +582,13 @@ const hiPart = (text, speed = 1) => ({ text, voice: hiVoice, rate: 0.85 * speed,
 const enPart = (text, speed = 1) => ({ text, voice: enVoice, rate: 0.95 * speed, speed });
 // Speaks the parts in order, skipping any whose voice the device lacks. A newer
 // call (or hush) retires the old queue, so a cancelled line never resumes.
+// The Hindi story is a recorded reading (Speechify), made once and played on every सुनो.
+let storyRec = null;
+const stopRecording = () => { if (storyRec) { storyRec.pause(); storyRec.currentTime = 0; } };
 function speakSeq(parts, onend) {
   const run = ++speakRun;
   if (window.speechSynthesis) speechSynthesis.cancel();
+  stopRecording();
   const queue = parts.filter((p) => p.voice && p.text);
   const next = () => {
     if (run !== speakRun) return;
@@ -603,8 +608,18 @@ function speakSeq(parts, onend) {
 }
 const speakLesson = (x, onend, speed = 1) => speakSeq([hiPart(x.say, speed), enPart(x.en, speed)], onend);
 const STORY_PARTS = ['title', 'lead', 'monks', 'why', 'every', 'setup', 'punch', 'takeaway', 'signoff'];
-const speakStory = (lang) => speakSeq(STORY_PARTS.map((k) => (lang === 'hi' ? hiPart : enPart)(STORY[lang][k])));
-function hush() { speakRun++; if (window.speechSynthesis) speechSynthesis.cancel(); }
+function speakStory(lang) {
+  if (lang !== 'hi') { speakSeq(STORY_PARTS.map((k) => enPart(STORY.en[k]))); return; }
+  hush();
+  storyRec = storyRec || new Audio('audio/story-hi.mp3');
+  storyRec.currentTime = 0;
+  const run = speakRun;
+  // If the recording can't play (offline, blocked), the phone's Hindi voice reads the story instead.
+  const fallback = () => { if (run === speakRun) speakSeq(STORY_PARTS.map((k) => hiPart(STORY.hi[k]))); };
+  const playing = storyRec.play();
+  if (playing && playing.catch) playing.catch(fallback);
+}
+function hush() { speakRun++; if (window.speechSynthesis) speechSynthesis.cancel(); stopRecording(); }
 
 /* ---------- The elephant follows the pointer (mouse or finger) ---------- */
 const pointer = { x: innerWidth / 2, y: innerHeight * 0.35 };
@@ -786,7 +801,7 @@ function renderStory(lang) {
         <p class="takeaway">${t.takeaway}</p>
         <p class="signoff">${t.signoff}</p>
         <div class="controls">
-          <button class="btn speak" onclick="speakStory('${lang}')">${speakIcon} सुनो</button>
+          <button class="btn speak${lang === 'hi' ? ' rec' : ''}" onclick="speakStory('${lang}')">${speakIcon} सुनो</button>
           <a class="btn wa" href="${SHARE_HREF}" target="_blank" rel="noopener" aria-label="WhatsApp पर भेजो (share on WhatsApp)"><b aria-hidden="true">${WA_ICON}</b>भेजो</a>
         </div>
       </div>`;
@@ -853,6 +868,7 @@ function renderSheet() {
 }
 
 function openLetter(i, from) {
+  hush();
   state.open = i;
   state.fresh = true;
   markSeen(LESSONS[i].l);
@@ -1161,6 +1177,7 @@ const WA_ICON = document.querySelector('.share b').innerHTML;
 
 /* ---------- Navigation ---------- */
 function setView(v) {
+  hush();
   if (v !== 'drill') stopAuto();
   document.querySelectorAll('.petals').forEach((p) => p.remove());
   state.view = v;
