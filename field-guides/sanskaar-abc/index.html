@@ -140,7 +140,7 @@
 
   /* ---------- letter → picture ---------- */
   .eq{display:flex;align-items:center;justify-content:center;gap:clamp(8px,2.5vw,16px);}
-  .tile{position:relative;width:var(--tile,140px);aspect-ratio:1;border-radius:30px;display:grid;place-items:center;flex:none;
+  .tile{position:relative;width:var(--tile,140px);height:var(--tile,140px);aspect-ratio:1;border-radius:30px;display:grid;place-items:center;flex:none;
     background:var(--bg,#E2DDFF);box-shadow:0 6px 0 var(--edge,#B9AEF6), 0 16px 28px rgba(108,92,231,.14);}
   .big{font-family:var(--display);font-weight:800;font-size:calc(var(--tile,140px) * .58);line-height:1;padding-top:.08em;
     background:linear-gradient(90deg,var(--fg,#5F3DC4) 50%,rgba(59,47,99,.12) 50%);background-size:200% 100%;background-position:0 0;
@@ -148,9 +148,9 @@
   .big.trace{animation:trace .9s var(--ease) both;}
   @keyframes trace{from{background-position:100% 0;}to{background-position:0 0;}}
   .arrow{flex:none;width:clamp(26px,5vw,38px);height:auto;color:var(--edge,#B9AEF6);}
-  .arrow path{stroke-dasharray:40;stroke-dashoffset:40;animation:draw .5s ease-out .6s forwards;}
-  @keyframes draw{to{stroke-dashoffset:0;}}
-  .pic{position:relative;width:var(--tile,140px);aspect-ratio:1;border-radius:50%;flex:none;display:grid;place-items:center;
+  .arrow path{stroke-dasharray:40;stroke-dashoffset:0;animation:draw .5s ease-out .6s backwards;}
+  @keyframes draw{from{stroke-dashoffset:40;}}
+  .pic{position:relative;width:var(--tile,140px);height:var(--tile,140px);aspect-ratio:1;border-radius:50%;flex:none;display:grid;place-items:center;
     background:#fff;box-shadow:inset 0 0 0 6px var(--bg,#E2DDFF), 0 14px 28px rgba(108,92,231,.14);}
   .pic img{width:62%;height:62%;animation:popIn .7s var(--soft) .75s both, float 4.5s ease-in-out 1.6s infinite;}
   @keyframes popIn{from{opacity:0;transform:translateY(14px) scale(.7);}}
@@ -198,6 +198,8 @@
     background:#F3F0FF;font-size:24px;line-height:1;color:var(--ink-2);}
   .x:hover{background:#E6E1FF;color:var(--ink);}
   .pager{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;}
+  .pager .btn,.pager .step{white-space:nowrap;}
+  @media (max-width:360px){.pager .btn{padding:10px 13px;font-size:15px;}.pager{gap:6px;}}
   .step{font-size:14px;color:var(--ink-2);}
 
   /* ---------- drill ---------- */
