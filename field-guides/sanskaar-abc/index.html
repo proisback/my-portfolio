@@ -239,14 +239,24 @@
   .petals i.c3{background:#69DB7C;border-radius:50%;} .petals i.c4{background:#74C0FC;} .petals i.c5{background:#B197FC;border-radius:50%;}
   @keyframes fall{to{transform:translate(var(--drift,0px), 108vh) rotate(calc(var(--r,0deg) + 420deg));}}
 
-  /* ---------- the ending, under the board ---------- */
-  .closing h2{font-family:var(--display);font-weight:800;font-size:clamp(26px,5vw,36px);color:var(--ink);line-height:1.2;}
-  .closing .pairs{margin-top:18px;}
-  .closing{max-width:640px;margin:0 auto;text-align:center;padding:26px 18px 20px;border-radius:26px;border:3px solid transparent;
+  /* ---------- the ending, under the board: title, quiet setup, big punchline, framed takeaway ---------- */
+  .closing{max-width:640px;margin:0 auto;text-align:center;padding:28px 20px 22px;border-radius:28px;border:3px solid transparent;
     background:linear-gradient(#fff,#fff) padding-box, var(--rainbow) border-box;}
-  .closing .pair + .pair{margin-top:14px;}
-  .closing .hi{font-family:var(--display);font-weight:700;color:var(--ink);font-size:clamp(20px,4vw,26px);line-height:1.4;}
-  .closing .hi.gold{color:#5F3DC4;}
+  .closing .arc{display:block;width:64px;height:auto;margin:0 auto 8px;}
+  .closing h2{font-family:var(--display);font-weight:800;font-size:clamp(21px,4.4vw,26px);line-height:1.3;color:var(--ink);text-wrap:balance;}
+  .closing .en{font-size:clamp(13px,2.2vw,15px);line-height:1.4;color:var(--ink-2);margin-top:2px;}
+  .closing .rule{display:flex;align-items:center;justify-content:center;gap:7px;max-width:220px;margin:18px auto 16px;}
+  .closing .rule::before,.closing .rule::after{content:'';flex:1;height:2px;border-radius:2px;background:var(--soft-line);}
+  .closing .rule i{width:7px;height:7px;border-radius:50%;background:#FF8FA3;}
+  .closing .rule i:nth-child(2){background:#FFD43B;} .closing .rule i:nth-child(3){background:#74C0FC;}
+  .closing .setup .hi{font-family:var(--display);font-weight:600;font-size:clamp(18px,3.8vw,21px);line-height:1.35;color:var(--ink-2);}
+  .closing .punch{margin-top:16px;}
+  .closing .punch .hi{font-family:var(--display);font-weight:800;font-size:clamp(28px,6.4vw,38px);line-height:1.2;color:#5F3DC4;text-wrap:balance;}
+  .closing .punch .en{font-size:clamp(14px,2.6vw,16px);font-weight:500;color:var(--brand-deep);margin-top:4px;}
+  .closing .takeaway{max-width:460px;margin:22px auto 0;padding:16px 18px 14px;border-radius:20px;background:#F3F0FF;}
+  .closing .takeaway .hi{font-family:var(--display);font-weight:700;font-size:clamp(19px,4vw,23px);line-height:1.45;color:var(--ink);}
+  .closing .takeaway .en{margin-top:6px;}
+  .closing .controls{margin-top:18px;}
   .closing .en{font-size:clamp(14px,2.4vw,16px);margin-top:2px;}
 
   /* ---------- top bar + help ---------- */
@@ -454,11 +464,11 @@ const HUE = {};
 BOARDS[0].letters.forEach((l, k) => { HUE[l] = k % 7; });
 BOARDS[1].letters.forEach((l, k) => { HUE[l] = Math.floor(k / 5) % 7; });
 
-// The closing statements, Hindi then English. `gold` marks the line set in gold.
+// The closing statements, Hindi then English: a quiet setup, the punchline, then the takeaway.
 const CLOSING = [
-  { hi: 'यह केवल वर्णमाला नहीं है।', en: 'This is not just an alphabet.' },
-  { hi: 'यह अच्छे जीवन की वर्णमाला है।', en: 'It is the alphabet of a good life.', gold: true },
-  { hi: ['इसे केवल बोलना नहीं है,', 'इसे अपने जीवन में उतारना है।'], en: 'It is not only to be recited; it is to be lived.' },
+  { hi: 'यह केवल वर्णमाला नहीं है।', en: 'This is not just an alphabet.', role: 'setup' },
+  { hi: 'यह अच्छे जीवन की वर्णमाला है।', en: 'It is the alphabet of a good life.', role: 'punch' },
+  { hi: ['इसे केवल बोलना नहीं है,', 'इसे अपने जीवन में उतारना है।'], en: 'It is not only to be recited; it is to be lived.', role: 'takeaway' },
 ];
 
 /* ---------- The baby elephant (inline SVG; its eyes, head and trunk follow the pointer) ---------- */
@@ -729,13 +739,17 @@ function renderDrill() {
 
 // The ending of the list, under the boards: its heading and closing lines, read aloud by सुनो.
 function renderClosing() {
-  const pairs = CLOSING.map((c) => `
-      <div class="pair"><p class="hi${c.gold ? ' gold' : ''}">${[].concat(c.hi).join('<br>')}</p><p class="en" lang="en">${c.en}</p></div>`).join('');
+  const lines = CLOSING.map((c) => `
+      <div class="${c.role}"><p class="hi">${[].concat(c.hi).join('<br>')}</p><p class="en" lang="en">${c.en}</p></div>`).join('');
   return `
     <section class="closing" aria-labelledby="closing-title">
+      <svg class="arc" viewBox="0 0 200 113" aria-hidden="true" focusable="false"><g fill="none" stroke-width="12" stroke-linecap="round">
+        <path d="M15 105a85 85 0 0 1 170 0" stroke="#FFB3BA"/><path d="M29 105a71 71 0 0 1 142 0" stroke="#FFD3A5"/><path d="M43 105a57 57 0 0 1 114 0" stroke="#FFF0A1"/>
+        <path d="M57 105a43 43 0 0 1 86 0" stroke="#BDF0C6"/><path d="M71 105a29 29 0 0 1 58 0" stroke="#B5DEFF"/></g></svg>
       <h2 id="closing-title">यही है हमारी जीवन की वर्णमाला</h2>
       <p class="en" lang="en">This is our alphabet of life.</p>
-      <div class="pairs">${pairs}</div>
+      <div class="rule" aria-hidden="true"><i></i><i></i><i></i></div>
+      ${lines}
       <div class="controls"><button class="btn speak" onclick="speakClosing()">${speakIcon} सुनो</button></div>
     </section>`;
 }
