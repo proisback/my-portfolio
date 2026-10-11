@@ -17,6 +17,11 @@
 <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
 <link rel="icon" href="icon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sanskaar ABC">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#E8F4FF">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -274,7 +279,7 @@
   .tour-hi{white-space:pre-line;font-family:var(--display);font-weight:700;font-size:18px;line-height:1.35;color:var(--ink);}
   .tour-en{white-space:pre-line;font-size:14px;line-height:1.35;color:var(--ink-2);margin-top:3px;}
   .tour-nav{grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;}
-  .tour-skip{appearance:none;border:0;background:none;cursor:pointer;color:var(--ink-2);font-size:15px;padding:8px 4px;text-decoration:underline;text-underline-offset:3px;}
+  .tour-skip,.nudge-no{appearance:none;border:0;background:none;cursor:pointer;color:var(--ink-2);font-size:15px;padding:8px 4px;text-decoration:underline;text-underline-offset:3px;}
   .tour-dots{display:flex;gap:5px;}
   .tour-dots i{width:7px;height:7px;border-radius:50%;background:var(--soft-line);}
   .tour-dots i.on{background:var(--brand);}
@@ -283,6 +288,17 @@
   .tour--intro .tour-bubble{grid-template-columns:1fr;justify-items:center;text-align:center;padding-top:14px;}
   .tour--intro .tour-bubble .ele{width:108px;grid-row:auto;margin-top:-78px;}
 
+  /* ---------- a small prompt card (motion, home screen) ---------- */
+  .nudge{position:fixed;left:12px;right:12px;bottom:12px;z-index:15;max-width:440px;margin:0 auto;padding:18px 16px 14px;border-radius:24px;
+    background:#fff;box-shadow:0 20px 50px rgba(59,47,99,.28);display:grid;grid-template-columns:54px 1fr;column-gap:12px;align-items:start;animation:nudgeIn .45s var(--soft);}
+  .nudge::after{content:'';position:absolute;top:0;left:30px;right:30px;height:6px;border-radius:0 0 8px 8px;background:var(--rainbow);}
+  @keyframes nudgeIn{from{opacity:0;transform:translateY(24px);}}
+  .nudge .ele{width:54px;}
+  .nudge-hi{font-family:var(--display);font-weight:700;font-size:17px;line-height:1.35;color:var(--ink);}
+  .nudge-en{font-size:14px;line-height:1.35;color:var(--ink-2);margin-top:3px;}
+  .nudge-how{margin-top:8px;padding:8px 10px;border-radius:12px;background:#F3F0FF;font-size:14px;line-height:1.35;color:var(--ink);}
+  .nudge-how svg{display:inline-block;width:18px;height:18px;vertical-align:-3px;margin:0 2px;color:#1C7ED6;}
+  .nudge-nav{grid-column:1 / -1;display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-top:12px;}
   footer{margin-top:36px;text-align:center;font-size:13px;color:var(--ink-2);}
   footer a{color:inherit;}
 
@@ -301,7 +317,7 @@
     .cloud.c1{top:150px;}
   }
   @media (prefers-reduced-motion:reduce){
-    *{animation:none !important;transition:none !important;}
+    html:not(.motion-on) *{animation:none !important;transition:none !important;}
   }
 </style>
 </head>
@@ -345,6 +361,7 @@
 </div>
 <div id="modalRoot"></div>
 <div id="tourRoot"></div>
+<div id="nudgeRoot" aria-live="polite"></div>
 
 <script>
 /* ---------- Content: verbatim from Prateek's list ---------- */
@@ -475,7 +492,12 @@ const ELEPHANT = `<svg viewBox="0 0 120 120" aria-hidden="true" focusable="false
 </svg>`;
 const ARROW = '<svg class="arrow" viewBox="0 0 40 20" aria-hidden="true"><path d="M2 10h32M27 3l8 7-8 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3 5"/></svg>';
 const NOPE = '<svg class="nope" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="7"/><path d="M19 19 81 81" stroke="currentColor" stroke-width="7" stroke-linecap="round"/></svg>';
-const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MOTION_STORE = 'jain-varnamala-motion';
+let motionChoice = null;
+try { motionChoice = localStorage.getItem(MOTION_STORE); } catch {}
+const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+const calm = () => reduceMotion() && motionChoice !== 'on';
+if (motionChoice === 'on') document.documentElement.classList.add('motion-on');
 // ङ ञ ड ण have no sanskar: a tap gives a small wiggle instead of nothing.
 function wiggle(el) {
   if (calm()) return;
@@ -788,6 +810,7 @@ function closeLetter() {
   // Return focus to the letter just studied (the view re-rendered, so find it again).
   const back = [...document.querySelectorAll('.cell')].find((el) => el.getAttribute('aria-label') === letter || el.dataset.l === letter);
   (back || document.getElementById('tab-' + state.view)).focus();
+  maybeNudge();
 }
 function markSeen(l) { if (!state.seen.has(l)) { state.seen.add(l); saveSeen(); } }
 function resetSeen() { state.seen = new Set(); saveSeen(); render(); document.getElementById('tab-board').focus(); }
@@ -946,6 +969,7 @@ function endTour() {
   tour = null;
   document.getElementById('tourRoot').innerHTML = '';
   if (back && back.isConnected) back.focus({ preventScroll: true });
+  maybeNudge();
 }
 function replayTour() { startTour(state.open !== null ? 'card' : state.view, true); }
 // While a tour is open it owns the keyboard: Esc skips, arrows step, Tab stays inside.
@@ -966,6 +990,94 @@ document.addEventListener('keydown', (e) => {
 addEventListener('resize', placeTour);
 // capture: also catches the letter card's own scrolling layer on phones
 addEventListener('scroll', () => requestAnimationFrame(placeTour), { passive: true, capture: true });
+
+/* ---------- Prompts: turn motion on, add to the home screen ---------- */
+const HOME_STORE = 'jain-varnamala-home', VISITS_STORE = 'jain-varnamala-visits';
+const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
+const visits = (Number(store.get(VISITS_STORE)) || 0) + 1;
+store.set(VISITS_STORE, String(visits));
+const installed = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isPhone = () => matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 820;
+let installEvent = null, nudged = false;
+addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installEvent = e; });
+addEventListener('appinstalled', () => { store.set(HOME_STORE, 'done'); closeNudge(); });
+const SHARE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 11v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8"/></svg>';
+
+function wantsMotionNudge() { return reduceMotion() && !motionChoice; }
+function wantsHomeNudge() {
+  const h = store.get(HOME_STORE);
+  const snoozed = h && h.startsWith('later:') && Date.now() - Number(h.slice(6)) < 3 * 864e5;
+  return isPhone() && !installed() && h !== 'done' && !snoozed && (state.seen.size >= 3 || visits >= 2);
+}
+// One prompt per visit, never over a tour or an open letter card.
+function maybeNudge(delay = 1200) {
+  setTimeout(() => {
+    if (nudged || tour || state.open !== null || document.getElementById('nudgeRoot').firstChild) return;
+    if (wantsMotionNudge()) showNudge(MOTION_NUDGE);
+    else if (wantsHomeNudge()) showNudge(homeNudge());
+  }, delay);
+}
+function showNudge(n) {
+  nudged = true;
+  document.getElementById('nudgeRoot').innerHTML = `
+    <section class="nudge" aria-labelledby="nudge-hi">
+      <div class="ele" aria-hidden="true">${ELEPHANT}</div>
+      <div>
+        <p class="nudge-hi" id="nudge-hi">${n.hi}</p>
+        <p class="nudge-en" lang="en">${n.en}</p>
+        ${n.how ? `<p class="nudge-how">${n.how}</p>` : ''}
+      </div>
+      <div class="nudge-nav">
+        <button class="nudge-no" data-act="no">${n.no}</button>
+        <button class="btn primary" data-act="yes">${n.yes}</button>
+      </div>
+    </section>`;
+  const root = document.getElementById('nudgeRoot');
+  root.querySelector('[data-act="yes"]').onclick = n.onYes;
+  root.querySelector('[data-act="no"]').onclick = n.onNo;
+  setTimeout(() => react('yes', root), 300);
+}
+function closeNudge() { document.getElementById('nudgeRoot').innerHTML = ''; }
+
+const MOTION_NUDGE = {
+  hi: 'फ़ोन में Reduce Motion चालू है, इसलिए हाथी और तस्वीरें रुकी हैं। पूरे मज़े के लिए यहाँ हलचल चालू करें?',
+  en: 'Reduce Motion is on, so everything is holding still. Turn motion on just here? Your phone setting stays the same.',
+  yes: 'चालू करो', no: 'रहने दो',
+  onYes() {
+    motionChoice = 'on'; store.set(MOTION_STORE, 'on');
+    document.documentElement.classList.add('motion-on');
+    closeNudge();
+    // Show what changed: the letters rise in again and the elephant says hello.
+    document.body.classList.add('intro'); render();
+    setTimeout(() => document.body.classList.remove('intro'), 1600);
+    setTimeout(() => react('yes', document.querySelector('.hero')), 500);
+  },
+  onNo() { motionChoice = 'still'; store.set(MOTION_STORE, 'still'); closeNudge(); },
+};
+function homeNudge() {
+  const n = {
+    hi: 'Sanskaar ABC को होम स्क्रीन पर लगाओ, ऐप की तरह एक टैप में खुलेगा।',
+    en: 'Add Sanskaar ABC to your Home Screen. It opens in one tap, like an app.',
+    no: 'बाद में',
+    onNo() { store.set(HOME_STORE, `later:${Date.now()}`); closeNudge(); },
+    onYes() { store.set(HOME_STORE, 'done'); closeNudge(); },
+  };
+  if (installEvent) {
+    n.yes = 'होम स्क्रीन पर लगाओ';
+    n.onYes = async () => {
+      const e = installEvent; installEvent = null; closeNudge();
+      try { e.prompt(); const r = await e.userChoice; if (r && r.outcome === 'accepted') store.set(HOME_STORE, 'done'); } catch {}
+    };
+  } else if (isIOS) {
+    n.yes = 'ठीक है';
+    n.how = `Share ${SHARE_ICON} दबाओ, फिर "Add to Home Screen" चुनो।`;
+  } else {
+    n.yes = 'ठीक है';
+    n.how = 'ब्राउज़र के मेनू (⋮) में "Add to Home screen" या "Install app" चुनो।';
+  }
+  return n;
+}
 
 /* ---------- Share on WhatsApp ---------- */
 const SHARE_TEXT = [
@@ -1017,6 +1129,7 @@ setTimeout(() => document.body.classList.remove('intro'), 1600);
 setTimeout(() => react('yes', document.querySelector('.hero')), 900);
 // First visit: the welcome tour starts once the boards have settled.
 setTimeout(() => { if (state.view === 'board' && state.open === null) startTour('board'); }, 1500);
+maybeNudge(2600);
 </script>
 </body>
 </html>
