@@ -231,20 +231,10 @@
   .petals i.c3{background:#69DB7C;border-radius:50%;} .petals i.c4{background:#74C0FC;} .petals i.c5{background:#B197FC;border-radius:50%;}
   @keyframes fall{to{transform:translate(var(--drift,0px), 108vh) rotate(calc(var(--r,0deg) + 420deg));}}
 
-  /* ---------- सार ---------- */
-  .sar{max-width:620px;margin:0 auto;text-align:center;}
-  .sar h2{font-family:var(--display);font-weight:800;font-size:clamp(26px,5vw,36px);color:var(--ink);line-height:1.2;}
-  .sar .sub{font-size:18px;color:var(--ink-2);margin-top:18px;}
-  .sar .sub .en{display:block;font-size:15px;}
-  .values{display:flex;flex-wrap:wrap;justify-content:center;gap:9px;margin:12px 0 4px;}
-  .value{appearance:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;text-align:left;border-radius:16px;padding:6px 12px 6px 8px;
-    border:2px solid var(--edge,#E6E1FF);background:var(--bg,#fff);box-shadow:0 3px 0 var(--edge,#E6E1FF);transition:transform .3s var(--soft), box-shadow .3s var(--soft);}
-  .value:hover{transform:translateY(-2px);box-shadow:0 5px 0 var(--edge,#E6E1FF);}
-  .value img{width:28px;height:28px;}
-  .v-text{display:flex;flex-direction:column;}
-  .v-hi{font-family:var(--display);font-weight:700;font-size:17px;color:var(--ink);line-height:1.15;}
-  .v-en{font-size:14px;font-weight:500;color:var(--ink-2);line-height:1.2;}
-  .closing{margin-top:30px;padding:26px 18px 20px;border-radius:26px;border:3px solid transparent;
+  /* ---------- the ending, under the board ---------- */
+  .closing h2{font-family:var(--display);font-weight:800;font-size:clamp(26px,5vw,36px);color:var(--ink);line-height:1.2;}
+  .closing .pairs{margin-top:18px;}
+  .closing{max-width:640px;margin:0 auto;text-align:center;padding:26px 18px 20px;border-radius:26px;border:3px solid transparent;
     background:linear-gradient(#fff,#fff) padding-box, var(--rainbow) border-box;}
   .closing .pair + .pair{margin-top:14px;}
   .closing .hi{font-family:var(--display);font-weight:700;color:var(--ink);font-size:clamp(20px,4vw,26px);line-height:1.4;}
@@ -342,7 +332,6 @@
   <div class="tabs" role="tablist" aria-label="मोड">
     <button class="tab" role="tab" id="tab-board" aria-controls="main" onclick="setView('board')">बोर्ड</button>
     <button class="tab" role="tab" id="tab-drill" aria-controls="main" onclick="setView('drill')">फटाफट बोलो</button>
-    <button class="tab" role="tab" id="tab-sar" aria-controls="main" onclick="setView('sar')">सार</button>
   </div>
 
   <main id="main" role="tabpanel" tabindex="-1"></main>
@@ -445,13 +434,6 @@ const HUE = {};
 BOARDS[0].letters.forEach((l, k) => { HUE[l] = k % 7; });
 BOARDS[1].letters.forEach((l, k) => { HUE[l] = Math.floor(k / 5) % 7; });
 
-// The values from the closing lines, each tied to its letter: [value, letter, English].
-const VALUES = [
-  [['अदब','अ','Respect'],['आत्मविश्वास','आ','Self-confidence'],['इबादत','इ','Prayer'],['ईमानदारी','ई','Honesty'],['उत्साह','उ','Enthusiasm'],
-   ['ऊर्जा','ऊ','Energy'],['एकता','ए','Unity'],['ऐश्वर्य','ऐ','Prosperity'],['ओज','ओ','Radiance'],['सेवा','औ','Service']],
-  [['कर्म','क','Good deeds'],['खरेपन','ख','Integrity'],['गरिमा','ग','Dignity'],['चरित्र','च','Character'],['दया','द','Compassion'],
-   ['धर्म','ध','Dharma'],['परिश्रम','प','Hard work'],['भलाई','भ','Goodness'],['वचन','व','Keeping your word'],['क्षमा','क्ष','Forgiveness'],['ज्ञान','ज्ञ','Knowledge']],
-];
 // The closing statements, Hindi then English. `gold` marks the line set in gold.
 const CLOSING = [
   { hi: 'यह केवल वर्णमाला नहीं है।', en: 'This is not just an alphabet.' },
@@ -663,7 +645,7 @@ function renderBoard() {
       <div class="grid">${cells}</div>
     </section>`;
   }).join('');
-  return boards;
+  return boards + renderClosing();
 }
 
 function drillList() {
@@ -720,32 +702,28 @@ function renderDrill() {
   </div>`;
 }
 
-function renderSar() {
-  const chips = (row) => row.map(([w, l, en]) => `<button class="value h${HUE[l]}" data-l="${l}" onclick="openLetter(${BY_LETTER[l].i}, this)" aria-haspopup="dialog"><img src="icons/${ICON[l]}.svg" alt="" width="28" height="28" loading="lazy"><span class="v-text"><span class="v-hi">${w}</span><span class="v-en" lang="en">${en}</span></span></button>`).join('');
-  const closing = CLOSING.map((c) => `
+// The ending of the list, under the boards: its heading and closing lines, read aloud by सुनो.
+function renderClosing() {
+  const pairs = CLOSING.map((c) => `
       <div class="pair"><p class="hi${c.gold ? ' gold' : ''}">${[].concat(c.hi).join('<br>')}</p><p class="en" lang="en">${c.en}</p></div>`).join('');
-  return `<div class="sar">
-    <h2>यही है हमारी जीवन की वर्णमाला</h2>
-    <p class="en" lang="en" style="font-size:16px;margin-top:2px">This is our alphabet of life.</p>
-    <p class="sub">हर अक्षर हमें जीवन का एक मूल्य सिखाता है: <span class="en" lang="en">Every letter teaches us a value for life:</span></p>
-    <div class="values">${chips(VALUES[0])}</div>
-    <p class="sub">फिर:</p>
-    <div class="values">${chips(VALUES[1])}</div>
-    <div class="closing">${closing}
+  return `
+    <section class="closing" aria-labelledby="closing-title">
+      <h2 id="closing-title">यही है हमारी जीवन की वर्णमाला</h2>
+      <p class="en" lang="en">This is our alphabet of life.</p>
+      <div class="pairs">${pairs}</div>
       <div class="controls"><button class="btn speak" onclick="speakClosing()">${speakIcon} सुनो</button></div>
-    </div>
-  </div>`;
+    </section>`;
 }
 
 function render() {
-  for (const v of ['board', 'drill', 'sar']) {
+  for (const v of ['board', 'drill']) {
     const t = document.getElementById('tab-' + v);
     t.setAttribute('aria-selected', String(state.view === v));
     t.tabIndex = state.view === v ? 0 : -1;
   }
   const main = document.getElementById('main');
   main.setAttribute('aria-labelledby', 'tab-' + state.view);
-  main.innerHTML = state.view === 'board' ? renderBoard() : state.view === 'drill' ? renderDrill() : renderSar();
+  main.innerHTML = state.view === 'board' ? renderBoard() : renderDrill();
   renderSheet();
   requestAnimationFrame(track);
 }
@@ -806,7 +784,7 @@ function closeLetter() {
   state.open = null;
   render();
   // Return focus to the letter just studied (the view re-rendered, so find it again).
-  const back = [...document.querySelectorAll('.cell, .value')].find((el) => el.getAttribute('aria-label') === letter || el.dataset.l === letter);
+  const back = [...document.querySelectorAll('.cell')].find((el) => el.getAttribute('aria-label') === letter || el.dataset.l === letter);
   (back || document.getElementById('tab-' + state.view)).focus();
 }
 function markSeen(l) { if (!state.seen.has(l)) { state.seen.add(l); saveSeen(); } }
@@ -871,7 +849,7 @@ const TOURS = {
   board: [
     { hi: 'नमस्ते! चलो, साथ में संस्कार सीखें।', en: "Hello! Let's learn good values together. I'll show you around." },
     { at: '.board .cell:not(.silent)', hi: 'किसी भी अक्षर को छुओ। उसका संस्कार, तस्वीर और आवाज़ खुलेगी।', en: 'Tap any letter to see its value and a picture, and to hear it.' },
-    { at: '.tabs', hi: 'फटाफट बोलो: अक्षर देखकर संस्कार बोलो, फिर जाँचो।\nसार: सारे मूल्य एक साथ।', en: 'Say it fast: see a letter, say its lesson, then check.\nSummary: all the values in one place.' },
+    { at: '#tab-drill', hi: 'फटाफट बोलो: अक्षर देखकर संस्कार बोलो, फिर जाँचो।', en: 'Say it fast: see a letter, say its lesson, then check.' },
     { at: '.help', hi: 'यह दौरा फिर से देखना हो, तो यहाँ दबाओ।', en: 'Tap here any time to see this tour again.' },
   ],
   card: [
@@ -884,10 +862,6 @@ const TOURS = {
     { at: '.drill .controls .btn.gold', hi: 'अपने आप चलाओ: हर अक्षर खुद खुलेगा और बोला जाएगा।', en: 'Auto-play shows and reads every letter by itself.' },
     { at: '.drill .speed', hi: 'गति चुनो: धीरे या तेज़।', en: 'Pick a speed: slower or faster.' },
     { at: '.drill .opts', hi: 'कौन से अक्षर? स्वर, व्यंजन या सब। क्रम से या मिलाकर।', en: 'Choose the letters, in order or mixed up.' },
-  ],
-  sar: [
-    { at: '.sar .values', hi: 'किसी भी मूल्य को छुओ, उसका अक्षर खुलेगा।', en: 'Tap any value to open its letter.' },
-    { at: '.sar .closing', hi: 'आख़िर में, ये बातें याद रखें।', en: 'And finally, the lines to remember.' },
   ],
 };
 let tour = null; // { name, steps, i, back }
@@ -1027,7 +1001,7 @@ document.addEventListener('keydown', (e) => {
   }
   const tab = e.target.closest && e.target.closest('[role="tab"]');
   if (tab && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
-    const order = ['board', 'drill', 'sar'];
+    const order = ['board', 'drill'];
     const k = (order.indexOf(state.view) + (e.key === 'ArrowRight' ? 1 : -1) + order.length) % order.length;
     setView(order[k]);
     document.getElementById('tab-' + order[k]).focus();
