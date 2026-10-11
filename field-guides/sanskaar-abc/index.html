@@ -516,7 +516,7 @@ const state = {
   open: null,          // index into LESSONS for the letter card
   fresh: false,        // true right after a card opens (the elephant peeks in once)
   seen: loadSeen(),
-  drill: { set: 'swar', order: 'seq', list: [], i: 0, revealed: false, done: false, auto: false, speed: loadSpeed() },
+  drill: { set: 'all', order: 'seq', list: [], i: 0, revealed: false, done: false, auto: false, speed: loadSpeed() },
 };
 let autoTimer = null;
 
