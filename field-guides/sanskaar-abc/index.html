@@ -261,8 +261,9 @@
   .story p.takeaway{margin-top:20px;padding:16px 18px;border-radius:20px;background:#F3F0FF;text-align:center;font-family:var(--display);font-weight:700;font-size:clamp(18px,3.8vw,21px);line-height:1.5;}
   .story p.signoff{margin-top:16px;text-align:center;font-family:var(--display);font-weight:700;font-size:18px;color:var(--ink-2);}
   .story .controls{margin-top:14px;}
-  .lang-rule{display:flex;align-items:center;gap:12px;max-width:520px;margin:30px auto 22px;font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);}
-  .lang-rule::before,.lang-rule::after{content:'';flex:1;height:2px;border-radius:2px;background:var(--soft-line);}
+  .story-lang{display:flex;gap:4px;width:max-content;margin:0 auto 16px;padding:4px;border-radius:999px;background:#F3F0FF;}
+  .story-lang button{appearance:none;border:0;background:transparent;cursor:pointer;padding:6px 18px;border-radius:999px;font-family:var(--display);font-weight:700;font-size:15px;line-height:1.4;color:var(--ink-2);transition:background .25s,color .25s;}
+  .story-lang button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 2px 8px rgba(108,92,231,.18);}
   .btn.wa{text-decoration:none;}
   .btn.wa b{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#25D366;}
   .btn.wa svg{width:14px;height:14px;fill:#fff;}
@@ -560,6 +561,7 @@ const state = {
   open: null,          // index into LESSONS for the letter card
   fresh: false,        // true right after a card opens (the elephant peeks in once)
   seen: loadSeen(),
+  storyLang: 'hi',     // the story under the board: 'hi' or 'en'
   drill: { set: 'all', order: 'seq', list: [], i: 0, revealed: false, done: false, auto: false, speed: loadSpeed() },
 };
 let autoTimer = null;
@@ -767,14 +769,14 @@ function renderDrill() {
 
 // The story under the boards: all of it in Hindi (with सुनो and भेजो), then all of it in English (with its own सुनो).
 function renderStory(lang) {
-  const t = STORY[lang], en = lang === 'en';
+  const t = STORY[lang];
   return `
-      <div class="story"${en ? ' lang="en"' : ''}>
-        ${en ? '' : `<svg class="arc" viewBox="0 0 200 113" aria-hidden="true" focusable="false"><g fill="none" stroke-width="12" stroke-linecap="round">
+      <div class="story" data-lang="${lang}"${lang === 'en' ? ' lang="en"' : ''}${state.storyLang === lang ? '' : ' hidden'}>
+        <svg class="arc" viewBox="0 0 200 113" aria-hidden="true" focusable="false"><g fill="none" stroke-width="12" stroke-linecap="round">
           <path d="M15 105a85 85 0 0 1 170 0" stroke="#FFB3BA"/><path d="M29 105a71 71 0 0 1 142 0" stroke="#FFD3A5"/><path d="M43 105a57 57 0 0 1 114 0" stroke="#FFF0A1"/>
-          <path d="M57 105a43 43 0 0 1 86 0" stroke="#BDF0C6"/><path d="M71 105a29 29 0 0 1 58 0" stroke="#B5DEFF"/></g></svg>`}
-        <h2 id="story-${lang}">${t.title}</h2>
-        ${en ? '' : '<div class="rule" aria-hidden="true"><i></i><i></i><i></i></div>'}
+          <path d="M57 105a43 43 0 0 1 86 0" stroke="#BDF0C6"/><path d="M71 105a29 29 0 0 1 58 0" stroke="#B5DEFF"/></g></svg>
+        <h2>${t.title}</h2>
+        <div class="rule" aria-hidden="true"><i></i><i></i><i></i></div>
         <p class="lead">${t.lead}</p>
         <div class="gratitude"><img src="icons/1f64f.svg" alt="" width="40" height="40"><p>${t.monks}</p></div>
         <p>${t.why}</p>
@@ -785,15 +787,25 @@ function renderStory(lang) {
         <p class="signoff">${t.signoff}</p>
         <div class="controls">
           <button class="btn speak" onclick="speakStory('${lang}')">${speakIcon} सुनो</button>
-          ${en ? '' : `<a class="btn wa" href="${SHARE_HREF}" target="_blank" rel="noopener" aria-label="WhatsApp पर भेजो (share on WhatsApp)"><b aria-hidden="true">${WA_ICON}</b>भेजो</a>`}
+          <a class="btn wa" href="${SHARE_HREF}" target="_blank" rel="noopener" aria-label="WhatsApp पर भेजो (share on WhatsApp)"><b aria-hidden="true">${WA_ICON}</b>भेजो</a>
         </div>
       </div>`;
 }
 function renderClosing() {
+  const opt = (lang, label) => `<button aria-pressed="${state.storyLang === lang}" onclick="setStoryLang('${lang}')"${lang === 'en' ? ' lang="en"' : ''}>${label}</button>`;
   return `
-    <section class="closing" aria-labelledby="story-hi">${renderStory('hi')}
-      <p class="lang-rule" lang="en">In English</p>${renderStory('en')}
+    <section class="closing" aria-label="कहानी (our story)">
+      <div class="story-lang" role="group" aria-label="कहानी की भाषा (story language)">${opt('hi', 'हिंदी')}${opt('en', 'English')}</div>
+      ${renderStory('hi')}${renderStory('en')}
     </section>`;
+}
+// Switch the story between Hindi and English in place; stop any read-aloud first.
+function setStoryLang(lang) {
+  if (state.storyLang === lang) return;
+  hush();
+  state.storyLang = lang;
+  document.querySelectorAll('.closing .story').forEach((el) => { el.hidden = el.dataset.lang !== lang; });
+  document.querySelectorAll('.story-lang button').forEach((b, k) => b.setAttribute('aria-pressed', String((k === 0 ? 'hi' : 'en') === lang)));
 }
 
 function render() {
