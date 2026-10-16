@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React Native, Expo &amp; Claude Code: A Field Guide</title>
+<meta name="description" content="Build one app for the web, iPhone and Android by directing Claude Code: 36 concepts, a three-screen demo, a ship router, a prompt sharpener, a practice quiz and the only five resources you need.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F2F1EC; --grid:rgba(22,24,29,.045); --paper:#FFFFFF; --canvas:#FAF9F6;
+    --ink:#16181D; --ink-soft:#5B606B; --ink-faint:#8A8F99;
+    --line:#E4E2DC; --line-strong:#D2CFC7;
+    --signal:#F2B33D; --signal-soft:#FDF1D6;
+    --code-bg:#15171C; --code-ink:#D9DEE8;
+
+    --rn:#0B8A8F;    --rn-tint:#E2F4F4;    --rn-dark:#075E62;
+    --expo:#6A4CE6;  --expo-tint:#EEEAFD;  --expo-dark:#4A2FBF;
+    --web:#1F74D4;   --web-tint:#E3EEFB;   --web-dark:#15539A;
+    --data:#C42E63;  --data-tint:#FBE6EE;  --data-dark:#8E1D46;
+    --ship:#24914A;  --ship-tint:#E3F4E8;  --ship-dark:#186A35;
+    --agent:#C35A33; --agent-tint:#FAEBE4; --agent-dark:#8C3E21;
+
+    --shadow:0 1px 2px rgba(22,24,29,.05), 0 10px 26px -18px rgba(22,24,29,.28);
+    --shadow-lift:0 2px 6px rgba(22,24,29,.07), 0 22px 44px -22px rgba(22,24,29,.34);
+    --display:'Bricolage Grotesque','Instrument Sans',system-ui,sans-serif;
+    --body:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background-color:var(--bg);
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:32px 32px;
+    color:var(--ink); font-family:var(--body); font-size:15px; line-height:1.5;
+    -webkit-font-smoothing:antialiased; padding-bottom:56px;
+  }
+  h1,h2,h3,h4{font-family:var(--display); letter-spacing:-.02em; margin:0;}
+  button,input,select{font-family:inherit; font-size:inherit;}
+  a{color:inherit;}
+  code{font-family:var(--mono); font-size:.88em; background:rgba(22,24,29,.06); border-radius:5px; padding:1px 5px; white-space:break-spaces;}
+  :focus-visible{outline:3px solid var(--signal); outline-offset:2px;}
+  .wrap{max-width:1140px; margin:0 auto; padding:0 24px;}
+
+  /* header */
+  .topline{padding-top:22px;}
+  .back{display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:var(--ink-soft); text-decoration:none; padding:6px 12px; border-radius:999px; background:var(--paper); border:1px solid var(--line);}
+  .back:hover{color:var(--ink); border-color:var(--line-strong);}
+  header.hero{display:flex; gap:20px; align-items:flex-start; padding:22px 0 6px;}
+  .mark{flex-shrink:0; margin-top:4px;}
+  .hero h1{font-size:clamp(28px,4.4vw,44px); font-weight:800; line-height:1.04;}
+  .hero p.lede{margin:10px 0 0; color:var(--ink-soft); font-size:15.5px; max-width:70ch;}
+  .meta-row{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;}
+  .meta{font-family:var(--mono); font-size:11.5px; font-weight:500; padding:5px 10px; border-radius:7px; background:var(--paper); border:1px solid var(--line); color:var(--ink-soft);}
+  .meta.verified{background:var(--signal-soft); border-color:rgba(242,179,61,.45); color:#7A5410;}
+
+  /* tabs */
+  .tabbar{display:flex; gap:6px; flex-wrap:wrap; margin:22px 0 0;}
+  .tab{font-family:var(--display); font-weight:700; font-size:14.5px; padding:10px 16px; border-radius:11px; border:1px solid var(--line-strong); background:var(--paper); color:var(--ink-soft); cursor:pointer; display:flex; align-items:center; gap:7px; transition:color .15s ease, border-color .15s ease, background .15s ease;}
+  .tab:hover{color:var(--ink); border-color:var(--ink-faint);}
+  .tab[aria-selected="true"]{background:var(--ink); color:#fff; border-color:var(--ink);}
+
+  main{margin-top:12px; background:var(--paper); border:1px solid var(--line-strong); border-radius:18px; padding:24px; min-height:460px; box-shadow:var(--shadow);}
+
+  /* library */
+  .search-wrap{position:relative;}
+  .search-wrap input{width:100%; padding:12px 16px 12px 44px; border-radius:11px; border:1px solid var(--line-strong); background:var(--canvas); color:var(--ink); font-size:15px;}
+  .search-wrap input:focus{outline:none; border-color:var(--ink); box-shadow:0 0 0 3px var(--signal-soft);}
+  .search-wrap svg{position:absolute; left:15px; top:50%; transform:translateY(-50%);}
+  .pill-row{display:flex; gap:7px; flex-wrap:wrap; margin:12px 0 0;}
+  .pill{display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line-strong); border-radius:999px; padding:7px 13px; font-size:13px; font-weight:600; background:var(--paper); color:var(--ink); cursor:pointer;}
+  .pill:hover{border-color:var(--ink-faint);}
+  .pill .count{font-family:var(--mono); font-size:11px; opacity:.6;}
+  .pill[aria-pressed="true"]{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .pill[data-cat="rn"][aria-pressed="true"]{background:var(--rn); border-color:var(--rn);}
+  .pill[data-cat="expo"][aria-pressed="true"]{background:var(--expo); border-color:var(--expo);}
+  .pill[data-cat="web"][aria-pressed="true"]{background:var(--web); border-color:var(--web);}
+  .pill[data-cat="data"][aria-pressed="true"]{background:var(--data); border-color:var(--data);}
+  .pill[data-cat="ship"][aria-pressed="true"]{background:var(--ship); border-color:var(--ship);}
+  .pill[data-cat="agent"][aria-pressed="true"]{background:var(--agent); border-color:var(--agent);}
+  .result-count{font-size:12.5px; color:var(--ink-soft); font-weight:600; margin:14px 0 12px;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:14px;}
+  .card{--c:var(--ink); --ct:var(--canvas); position:relative; display:flex; flex-direction:column; gap:9px; border:1px solid var(--line); border-radius:14px; padding:14px 16px 15px; background:var(--paper); box-shadow:var(--shadow); cursor:pointer; min-height:178px; transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;}
+  .card:hover{transform:translateY(-2px); box-shadow:var(--shadow-lift); border-color:var(--line-strong);}
+  .card-top{display:flex; align-items:center; justify-content:space-between; gap:8px; padding-bottom:9px; border-bottom:1px dashed var(--line);}
+  .route{font-family:var(--mono); font-size:11px; color:var(--c); font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .dot{width:8px; height:8px; border-radius:50%; background:var(--c); flex-shrink:0;}
+  .card h3{font-size:17.5px; line-height:1.22; font-weight:700;}
+  .card .hook{margin:0; font-size:13.3px; color:var(--ink-soft); line-height:1.5; flex-grow:1;}
+  .open-row{display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:12px; font-weight:600; color:var(--c);}
+  .open-row .go{color:var(--ink-faint); transition:color .15s ease, transform .15s ease;}
+  .card:hover .open-row .go{color:var(--ink); transform:translateX(2px);}
+  [data-cat="rn"]{--c:var(--rn); --ct:var(--rn-tint); --cd:var(--rn-dark);}
+  [data-cat="expo"]{--c:var(--expo); --ct:var(--expo-tint); --cd:var(--expo-dark);}
+  [data-cat="web"]{--c:var(--web); --ct:var(--web-tint); --cd:var(--web-dark);}
+  [data-cat="data"]{--c:var(--data); --ct:var(--data-tint); --cd:var(--data-dark);}
+  [data-cat="ship"]{--c:var(--ship); --ct:var(--ship-tint); --cd:var(--ship-dark);}
+  [data-cat="agent"]{--c:var(--agent); --ct:var(--agent-tint); --cd:var(--agent-dark);}
+  .empty{grid-column:1/-1; text-align:center; padding:46px 16px; color:var(--ink-soft); border:1px dashed var(--line-strong); border-radius:14px;}
+  .empty strong{display:block; color:var(--ink); font-family:var(--display); font-size:18px; margin-bottom:6px;}
+  .btn{font-family:var(--display); font-weight:700; font-size:14px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1px solid var(--ink); background:var(--ink); color:#fff;}
+  .btn:hover{opacity:.9;}
+  .btn.ghost{background:var(--paper); color:var(--ink); border-color:var(--line-strong);}
+  .btn.ghost:hover{border-color:var(--ink);}
+
+  /* modal */
+  .overlay{position:fixed; inset:0; background:rgba(22,24,29,.48); display:flex; align-items:flex-start; justify-content:center; padding:5vh 16px; z-index:50; overflow-y:auto; animation:fade .15s ease;}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .modal{width:100%; max-width:660px; background:var(--paper); border-radius:18px; border:1px solid var(--line-strong); box-shadow:0 30px 70px -24px rgba(22,24,29,.5); overflow:hidden; animation:rise .2s ease;}
+  @keyframes rise{from{transform:translateY(10px); opacity:0}to{transform:none; opacity:1}}
+  .modal-bar{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 18px; background:var(--ct); border-bottom:1px solid var(--line);}
+  .modal-bar .route{font-size:12px; color:var(--cd);}
+  .icon-btn{width:36px; height:36px; border-radius:10px; border:1px solid var(--line-strong); background:var(--paper); cursor:pointer; color:var(--ink-soft); font-size:15px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .icon-btn:hover{color:var(--ink); border-color:var(--ink);}
+  .modal-in{padding:20px 26px 24px;}
+  .tag{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:var(--cd); background:var(--ct); border-radius:7px; padding:4px 9px;}
+  .modal h2{font-size:26px; line-height:1.15; margin:10px 0 6px;}
+  .modal .mhook{font-size:15px; color:var(--ink-soft); margin:0 0 6px;}
+  .sec{font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-faint); margin:20px 0 8px;}
+  .modal p.def{margin:0; font-size:15px; line-height:1.66;}
+  .ex{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px;}
+  .ex li{position:relative; padding:11px 14px 11px 32px; border-radius:10px; background:var(--canvas); border:1px solid var(--line); font-size:14px; line-height:1.55;}
+  .ex li::before{content:"›"; position:absolute; left:14px; top:9px; font-weight:700; color:var(--c); font-size:16px;}
+  .watch{border-left:3px solid var(--signal); background:var(--signal-soft); border-radius:0 10px 10px 0; padding:11px 14px; font-size:14px; line-height:1.55;}
+  .modal-foot{display:flex; justify-content:space-between; gap:10px; margin-top:22px; padding-top:16px; border-top:1px solid var(--line);}
+
+  /* practice */
+  .prog{display:flex; align-items:center; gap:14px; margin-bottom:18px;}
+  .track{flex:1; height:8px; border-radius:6px; background:var(--line); overflow:hidden;}
+  .fill{height:100%; background:var(--ink); border-radius:6px; transition:width .3s ease;}
+  .chip{font-family:var(--mono); font-size:12px; font-weight:600; border:1px solid var(--line-strong); border-radius:8px; padding:5px 10px; white-space:nowrap;}
+  .scn{border:1px solid var(--line-strong); border-radius:16px; padding:24px; background:var(--canvas);}
+  .eyebrow{font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--cd); margin-bottom:10px;}
+  .scn .q{font-size:18px; font-weight:500; line-height:1.5; margin:0 0 18px;}
+  .opts{display:grid; gap:9px;}
+  .opt{text-align:left; padding:13px 15px; border-radius:11px; border:1px solid var(--line-strong); background:var(--paper); color:var(--ink); cursor:pointer; font-size:14.5px; font-weight:500; line-height:1.45; display:flex; gap:10px; align-items:flex-start; transition:border-color .12s ease;}
+  .opt:hover:not([disabled]){border-color:var(--ink);}
+  .opt[disabled]{cursor:default;}
+  .opt .mk{font-family:var(--mono); font-weight:600; font-size:12px; width:22px; height:22px; border-radius:6px; border:1px solid var(--line-strong); display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;}
+  .opt.right{background:var(--ship-tint); border-color:var(--ship); color:var(--ship-dark);}
+  .opt.right .mk{background:var(--ship); border-color:var(--ship); color:#fff;}
+  .opt.wrong{background:var(--data-tint); border-color:var(--data); color:var(--data-dark);}
+  .opt.wrong .mk{background:var(--data); border-color:var(--data); color:#fff;}
+  .fb{margin-top:16px; padding:14px 16px; border-radius:11px; border:1px solid var(--line-strong); background:var(--paper); font-size:14.3px; line-height:1.58;}
+  .fb strong{font-family:var(--display);}
+  .results{text-align:center; padding:10px 6px;}
+  .big{font-family:var(--display); font-weight:800; font-size:56px; letter-spacing:-.03em; margin:6px 0;}
+  .bd{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin:18px 0; text-align:left;}
+  .bd-i{border:1px solid var(--line); border-left:4px solid var(--c); border-radius:10px; padding:10px 12px; background:var(--paper);}
+  .bd-i .l{font-size:12px; color:var(--ink-soft); font-weight:600;}
+  .bd-i .n{font-family:var(--mono); font-weight:600; font-size:16px; margin-top:2px;}
+  .missed{text-align:left; margin-top:22px;}
+  .missed h3{font-size:17px; margin-bottom:10px;}
+  .miss{border-left:3px solid var(--data); background:var(--data-tint); border-radius:0 10px 10px 0; padding:11px 14px; margin-bottom:8px; font-size:13.8px; line-height:1.55;}
+
+  /* studio */
+  .intro{font-size:14.5px; color:var(--ink-soft); margin:0 0 16px; max-width:78ch;}
+  .tools{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;}
+  .tool{font-family:var(--display); font-weight:700; font-size:14px; padding:9px 15px; border-radius:10px; border:1px solid var(--line-strong); background:var(--paper); color:var(--ink-soft); cursor:pointer;}
+  .tool:hover{color:var(--ink); border-color:var(--ink-faint);}
+  .tool[aria-pressed="true"]{background:var(--signal-soft); border-color:var(--signal); color:var(--ink);}
+  .tool-h{font-size:21px; margin:0 0 4px;}
+
+  .screens{display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,1fr); gap:18px; align-items:start;}
+  .codebox{background:var(--code-bg); color:var(--code-ink); border-radius:14px; padding:12px 0; font-family:var(--mono); font-size:12px; line-height:1.62; overflow-x:auto;}
+  .codebox .file{padding:0 16px 8px; color:#8C93A3; font-size:11.5px; border-bottom:1px solid rgba(255,255,255,.07); margin-bottom:6px;}
+  .ln{display:flex; padding:0 14px 0 0; white-space:pre; border-left:3px solid transparent;}
+  .ln .no{width:34px; text-align:right; padding-right:12px; color:#555C6B; flex-shrink:0; user-select:none;}
+  .ln.hot{cursor:pointer;}
+  .ln.hot:hover{background:rgba(255,255,255,.05);}
+  .ln.on{background:rgba(242,179,61,.16); border-left-color:var(--signal);}
+  .c-kw{color:#C7A6FF;} .c-str{color:#9FE2A8;} .c-tag{color:#7CC8FF;} .c-cm{color:#7F8798; font-style:italic;}
+  .hint{font-size:12.5px; color:var(--ink-soft); margin:10px 2px 0;}
+
+  .stage{display:flex; flex-direction:column; align-items:center; gap:12px;}
+  .seg{display:inline-flex; padding:4px; border-radius:11px; background:var(--canvas); border:1px solid var(--line-strong);}
+  .seg-btn{border:0; background:transparent; padding:7px 15px; border-radius:8px; font-weight:700; font-size:13.5px; color:var(--ink-soft); cursor:pointer;}
+  .seg-btn[aria-pressed="true"]{background:var(--ink); color:#fff;}
+  .device{width:100%; display:flex; justify-content:center;}
+  .phone{width:250px; height:470px; border-radius:40px; background:#101114; padding:9px; box-shadow:0 22px 40px -22px rgba(22,24,29,.6);}
+  .phone .scr{height:100%; border-radius:32px; background:#fff; overflow:hidden; display:flex; flex-direction:column; position:relative;}
+  .sb{display:flex; align-items:center; justify-content:space-between; padding:12px 20px 4px; font-size:12px; font-weight:700; color:#111; height:34px; flex-shrink:0;}
+  .island{width:74px; height:20px; border-radius:12px; background:#101114;}
+  .punch{width:9px; height:9px; border-radius:50%; background:#101114;}
+  .sb .ic{display:flex; gap:3px; align-items:center;}
+  .sb .ic i{display:block; width:13px; height:8px; border-radius:2px; background:#111;}
+  .sb .ic i:first-child{width:10px;}
+  .gbar{height:4px; width:90px; border-radius:3px; background:#111; opacity:.85; margin:8px auto 8px; flex-shrink:0;}
+  .browser{width:100%; max-width:380px; height:440px; border-radius:12px; border:1px solid var(--line-strong); background:#fff; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 22px 40px -24px rgba(22,24,29,.45);}
+  .chrome{display:flex; align-items:center; gap:8px; padding:9px 11px; background:#EEEDE8; border-bottom:1px solid var(--line-strong);}
+  .chrome .tl{display:flex; gap:5px;} .chrome .tl span{width:9px; height:9px; border-radius:50%; background:#C9C6BE;}
+  .chrome .nav{font-size:13px; color:#777; letter-spacing:2px;}
+  .urlbar{flex:1; font-family:var(--mono); font-size:11.5px; background:#fff; border:1px solid var(--line); border-radius:7px; padding:4px 9px; color:#333; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;}
+  .d-el{position:relative; border-radius:8px; outline:2px dashed transparent; outline-offset:2px; cursor:pointer; transition:outline-color .15s ease, background .15s ease;}
+  .d-el:hover{outline-color:rgba(242,179,61,.6);}
+  .d-el.on{outline-color:var(--signal); background:rgba(242,179,61,.10);}
+  .navbar{display:flex; align-items:center; height:44px; padding:0 12px; flex-shrink:0; border-bottom:1px solid #ECECEC; border-radius:0;}
+  .navbar.ios{justify-content:center; position:relative; font-weight:700; font-size:15px;}
+  .navbar.ios .bk{position:absolute; left:10px; color:#0A7AFF; font-weight:500; font-size:14px;}
+  .navbar.android{gap:18px; font-size:17px; font-weight:500; height:52px; padding:0 16px; border-bottom:0;}
+  .navbar.web{font-weight:700; font-size:15px; padding:0 16px; height:46px;}
+  .body{flex:1; padding:14px 16px; display:flex; flex-direction:column; gap:8px; margin:8px;}
+  .photo{height:118px; border-radius:12px; overflow:hidden; background:#F6E7CF;}
+  .photo svg{display:block; width:100%; height:100%;}
+  .t1{font-family:var(--display); font-weight:700; font-size:18px; color:#111; padding:1px 2px;}
+  .t2{font-size:13px; color:#666; padding:1px 2px;}
+  .act{margin-top:auto; padding:2px;}
+  .act span{display:block; text-align:center; font-weight:700; font-size:14px; padding:11px; border-radius:12px; background:#111; color:#fff;}
+  .android .act span{border-radius:999px; background:#2E5E4E;}
+  .webv .act span{border-radius:8px; background:#1F74D4; max-width:180px;}
+  .mapcard{width:100%; border:1px solid var(--line-strong); border-radius:14px; background:var(--paper); overflow:hidden;}
+  .mapcard .mh{padding:11px 14px; background:var(--canvas); border-bottom:1px solid var(--line);}
+  .mapcard .mh code{font-size:12.5px; background:transparent; padding:0;}
+  .mapcard .mh p{margin:4px 0 0; font-size:13px; color:var(--ink-soft);}
+  .map-row{display:grid; grid-template-columns:72px 1fr; gap:10px; padding:9px 14px; border-bottom:1px solid var(--line); font-size:13.5px; align-items:baseline;}
+  .map-row:last-of-type{border-bottom:0;}
+  .map-row .mp{font-family:var(--mono); font-size:11.5px; font-weight:600; color:var(--ink-faint);}
+  .map-row.cur{background:var(--signal-soft);}
+  .map-row.cur .mp{color:var(--ink);}
+  .mapnote{padding:10px 14px; font-size:12.5px; color:var(--ink-soft); border-top:1px dashed var(--line);}
+
+  .ship{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.25fr); gap:18px; align-items:start;}
+  .chg-list{display:flex; flex-direction:column; gap:7px;}
+  .chg{display:flex; align-items:flex-start; gap:10px; text-align:left; padding:11px 13px; border-radius:11px; border:1px solid var(--line-strong); background:var(--paper); cursor:pointer; color:var(--ink); font-size:14px; line-height:1.4;}
+  .chg:hover{border-color:var(--ink-faint);}
+  .chg[aria-pressed="true"]{border-color:var(--ink); background:var(--canvas); box-shadow:inset 3px 0 0 var(--signal);}
+  .chg .ci{width:22px; text-align:center; flex-shrink:0;}
+  .chg code{white-space:nowrap;}
+  .verdict{border:1px solid var(--line-strong); border-radius:14px; overflow:hidden; background:var(--paper); position:sticky; top:16px;}
+  .vh{padding:16px 18px; border-bottom:1px solid var(--line);}
+  .kind{display:inline-flex; align-items:center; gap:7px; font-family:var(--display); font-weight:700; font-size:15px; padding:6px 12px; border-radius:9px;}
+  .k-ota{background:var(--ship-tint); color:var(--ship-dark);}
+  .k-build{background:var(--agent-tint); color:var(--agent-dark);}
+  .k-web{background:var(--web-tint); color:var(--web-dark);}
+  .vh .sub{margin:8px 0 0; font-size:13px; color:var(--ink-soft);}
+  .vh .why{margin:10px 0 0; font-size:14.3px; line-height:1.6;}
+  .prow{display:grid; grid-template-columns:78px 1fr; gap:12px; padding:12px 18px; border-bottom:1px solid var(--line);}
+  .prow:last-child{border-bottom:0;}
+  .prow .pl{font-family:var(--mono); font-size:11.5px; font-weight:600; color:var(--ink-faint); padding-top:2px;}
+  .prow .pa{font-weight:600; font-size:14px;}
+  .prow .pc{font-family:var(--mono); font-size:11.8px; color:var(--ink-soft); margin-top:4px; word-break:break-word;}
+  .prow .pw{font-size:12.5px; color:var(--ink-soft); margin-top:4px;}
+  .prow.idle .pa{color:var(--ink-faint);}
+  .ship-empty{border:1px dashed var(--line-strong); border-radius:14px; padding:40px 22px; text-align:center; color:var(--ink-soft);}
+  .ship-empty strong{display:block; font-family:var(--display); color:var(--ink); font-size:17px; margin-bottom:6px;}
+
+  .sharp{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.2fr); gap:18px; align-items:start;}
+  .field-lbl{font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-faint); margin:0 0 8px; display:block;}
+  .task-row{display:flex; gap:7px; flex-wrap:wrap; margin-bottom:16px;}
+  .ing{display:flex; align-items:flex-start; gap:12px; width:100%; text-align:left; padding:11px 13px; border:1px solid var(--line); border-radius:11px; margin-bottom:8px; background:var(--paper); cursor:pointer; color:var(--ink);}
+  .ing:hover{border-color:var(--line-strong);}
+  .ing[aria-pressed="true"]{background:var(--ship-tint); border-color:rgba(36,145,74,.4);}
+  .sw{flex-shrink:0; width:38px; height:22px; border-radius:999px; background:var(--line-strong); position:relative; margin-top:1px; transition:background .15s ease;}
+  .sw::after{content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.25); transition:transform .15s ease;}
+  .ing[aria-pressed="true"] .sw{background:var(--ship);}
+  .ing[aria-pressed="true"] .sw::after{transform:translateX(16px);}
+  .ing .il{font-weight:700; font-size:14px;}
+  .ing .is{font-size:12.5px; color:var(--ink-soft); margin-top:1px;}
+  .out{border:1px solid var(--line-strong); border-radius:14px; overflow:hidden; background:var(--paper); position:sticky; top:16px;}
+  .out-h{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 16px; border-bottom:1px solid var(--line); background:var(--canvas); flex-wrap:wrap;}
+  .meter{display:flex; gap:4px;}
+  .meter i{display:block; width:22px; height:7px; border-radius:4px; background:var(--line);}
+  .meter i.f{background:var(--ship);}
+  .lvl{font-family:var(--display); font-weight:700; font-size:14px;}
+  .prompt{margin:0; padding:16px; font-family:var(--mono); font-size:12.8px; line-height:1.65; white-space:pre-wrap; word-break:break-word; background:var(--code-bg); color:var(--code-ink); min-height:150px;}
+  .tip{padding:12px 16px; font-size:13.3px; line-height:1.55; border-top:1px solid var(--line);}
+  .tip b{font-family:var(--display);}
+  .out-actions{display:flex; gap:8px; padding:0 16px 14px; flex-wrap:wrap;}
+  .src-note{font-size:12px; color:var(--ink-faint); margin-top:12px;}
+
+  /* learn */
+  .lh{font-size:21px; margin:28px 0 12px; display:flex; align-items:center; gap:10px;}
+  .lh:first-of-type{margin-top:6px;}
+  .ranks{display:flex; flex-direction:column; gap:12px;}
+  .rk{display:grid; grid-template-columns:56px 1fr; border:1px solid var(--line-strong); border-radius:14px; overflow:hidden; background:var(--paper);}
+  .rk .num{background:var(--ink); color:#fff; font-family:var(--display); font-weight:800; font-size:28px; display:flex; align-items:flex-start; justify-content:center; padding-top:14px;}
+  .rk .rb{padding:14px 18px 16px;}
+  .rk .rtop{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 12px;}
+  .rk h4{font-size:18px;}
+  .rtype{font-family:var(--mono); font-size:11px; font-weight:600; color:var(--ink-soft); background:var(--canvas); border:1px solid var(--line); border-radius:6px; padding:2px 8px;}
+  .rmeta{font-size:12.5px; color:var(--ink-faint); margin-top:3px;}
+  .rk p{margin:8px 0 0; font-size:14px; line-height:1.58;}
+  .rk p b{font-family:var(--display);}
+  .caveat{margin-top:10px; font-size:13px; line-height:1.5; background:var(--signal-soft); border-radius:8px; padding:8px 11px;}
+  .rlink{display:inline-flex; margin-top:10px; font-weight:700; font-size:13.5px; color:var(--web-dark); text-decoration:none;}
+  .rlink:hover{text-decoration:underline;}
+  .days{position:relative; margin-left:8px; padding-left:26px; border-left:2px solid var(--line-strong);}
+  .day{position:relative; margin-bottom:16px;}
+  .day::before{content:""; position:absolute; left:-33px; top:4px; width:12px; height:12px; border-radius:50%; background:var(--paper); border:2px solid var(--ink);}
+  .day:last-child::before{background:var(--signal); border-color:var(--signal);}
+  .dn{font-family:var(--mono); font-size:11.5px; font-weight:600; color:var(--ink-soft);}
+  .day h4{font-size:16px; margin:2px 0 4px;}
+  .day p{margin:0 0 6px; font-size:14px; line-height:1.55;}
+  .day .do{font-size:13.5px; line-height:1.5; background:var(--ship-tint); color:var(--ship-dark); border-radius:8px; padding:8px 12px;}
+  .day .do b{font-family:var(--display);}
+  .left{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:10px;}
+  .left div{border:1px dashed var(--line-strong); border-radius:12px; padding:12px 14px; font-size:13.5px; line-height:1.55; color:var(--ink-soft);}
+  .left b{display:block; color:var(--ink); font-family:var(--display); font-size:14.5px; margin-bottom:3px;}
+  .rule{margin-top:26px; border-radius:14px; background:var(--ink); color:#F4F2EC; padding:18px 20px; font-size:15px; line-height:1.6;}
+  .rule b{font-family:var(--display); color:var(--signal);}
+
+  footer{margin-top:28px; color:var(--ink-soft); font-size:12.5px; line-height:1.6;}
+  footer .fnote{max-width:80ch;}
+  footer .srcs{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:6px 18px; margin-top:12px; padding-top:12px; border-top:1px solid var(--line-strong);}
+  footer a{color:var(--web-dark);}
+
+  @media (max-width:900px){
+    .screens,.ship,.sharp{grid-template-columns:minmax(0,1fr);}
+    .verdict,.out{position:static;}
+  }
+  @media (max-width:600px){
+    .wrap{padding:0 14px;}
+    main{padding:16px 14px 20px; border-radius:14px;}
+    header.hero{gap:12px;}
+    .mark{width:40px; height:40px;}
+    .modal-in{padding:16px 18px 20px;}
+    .modal h2{font-size:22px;}
+    .scn{padding:16px;}
+    .scn .q{font-size:16.5px;}
+    .rk{grid-template-columns:42px 1fr;}
+    .rk .num{font-size:22px;}
+    .rk .rb{padding:12px 14px 14px;}
+    .prow{grid-template-columns:1fr; gap:2px;}
+    .map-row{grid-template-columns:62px 1fr;}
+    .tab{padding:9px 12px; font-size:13.5px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none !important; transition:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topline"><a class="back" href="../">← Field Guides</a></div>
+
+  <header class="hero">
+    <svg class="mark" width="56" height="56" viewBox="0 0 56 56" fill="none" aria-hidden="true">
+      <rect x="2.5" y="12.5" width="33" height="26" rx="4" fill="#fff" stroke="#16181D" stroke-width="2"/>
+      <path d="M2.5 18.5h33" stroke="#16181D" stroke-width="2"/>
+      <rect x="7" y="23" width="14" height="3" rx="1.5" fill="#1F74D4"/>
+      <rect x="7" y="29" width="20" height="3" rx="1.5" fill="#1F74D4" opacity=".45"/>
+      <rect x="26.5" y="6.5" width="16" height="30" rx="4" fill="#16181D"/>
+      <rect x="29" y="10" width="11" height="20" rx="2" fill="#F2B33D"/>
+      <rect x="38.5" y="20.5" width="15" height="29" rx="4" fill="#24914A" stroke="#16181D" stroke-width="2"/>
+      <rect x="41.5" y="25" width="9" height="18" rx="1.5" fill="#fff"/>
+    </svg>
+    <div>
+      <h1>React Native, Expo &amp; Claude Code</h1>
+      <p class="lede">A field guide to building one app for the web, iPhone and Android by directing an AI agent: the concepts you need to judge its work, the path from first screen to the app stores, and the only five resources worth your time.</p>
+      <div class="meta-row">
+        <span class="meta verified">Verified 16 Oct 2026</span>
+        <span class="meta">Expo SDK 58 · React Native 0.88</span>
+        <span class="meta">36 concepts · 18 scenarios</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabbar" role="tablist" aria-label="Guide sections">
+    <button class="tab" role="tab" data-view="library" aria-selected="true" onclick="setView('library')"><span aria-hidden="true">📚</span> Library</button>
+    <button class="tab" role="tab" data-view="studio" aria-selected="false" onclick="setView('studio')"><span aria-hidden="true">🧪</span> Studio</button>
+    <button class="tab" role="tab" data-view="practice" aria-selected="false" onclick="setView('practice')"><span aria-hidden="true">🎯</span> Practice</button>
+    <button class="tab" role="tab" data-view="learn" aria-selected="false" onclick="setView('learn')"><span aria-hidden="true">🧭</span> Learn: the 5 + 7 days</button>
+  </nav>
+
+  <main id="main" tabindex="-1"></main>
+
+  <footer>
+    <p class="fnote">An interactive field guide built with the field-guide-builder skill; resources chosen with the signal-in-noise method. Expo ships a new SDK every few months, so versions, prices and commands here are a snapshot from 16 October 2026. Check the linked docs before you rely on them.</p>
+    <div class="srcs">
+      <div><a href="https://expo.dev/changelog/sdk-58" target="_blank" rel="noopener">Expo SDK 58 changelog</a> (15 Oct 2026)</div>
+      <div><a href="https://docs.expo.dev/tutorial/build-with-ai/introduction/" target="_blank" rel="noopener">Expo: Build with AI tutorial</a></div>
+      <div><a href="https://docs.expo.dev/tutorial/eas/introduction/" target="_blank" rel="noopener">Expo: EAS tutorial</a></div>
+      <div><a href="https://docs.expo.dev/skills/" target="_blank" rel="noopener">Expo Skills</a> · <a href="https://docs.expo.dev/eas/ai/mcp/" target="_blank" rel="noopener">Expo MCP server</a></div>
+      <div><a href="https://code.claude.com/docs/en/best-practices" target="_blank" rel="noopener">Claude Code: Best practices</a></div>
+      <div><a href="https://reactnative.dev/docs/intro-react-native-components" target="_blank" rel="noopener">React Native: Core Components</a></div>
+      <div><a href="https://docs.expo.dev/eas-update/introduction/" target="_blank" rel="noopener">EAS Update</a> · <a href="https://docs.expo.dev/eas-update/runtime-versions/" target="_blank" rel="noopener">Runtime versions</a></div>
+      <div><a href="https://expo.dev/pricing" target="_blank" rel="noopener">Expo pricing</a> · <a href="https://expo.dev/changelog/expo-go-57-login" target="_blank" rel="noopener">Expo Go login change</a></div>
+    </div>
+  </footer>
+</div>
+
+<div id="modalRoot"></div>
+
+<script>
+/* ================= DATA ================= */
+const CATS = {
+  rn:    { label:"React Native Basics", icon:"⚛️" },
+  expo:  { label:"Expo & Routing", icon:"🧭" },
+  web:   { label:"Web & Platforms", icon:"🌐" },
+  data:  { label:"Data, Device & Secrets", icon:"🔐" },
+  ship:  { label:"Build & Ship (EAS)", icon:"🚀" },
+  agent: { label:"Directing Claude Code", icon:"🤖" },
+};
+
+const ENTRIES = [
+  /* ---------- REACT NATIVE BASICS ---------- */
+  {cat:"rn", r:"react-native", name:"React Native",
+   hook:"Write React once; each phone draws its own real native views.",
+   def:"React Native lets you describe an interface with React components in JavaScript or TypeScript, and at runtime it creates the matching platform views: a real UIView on iPhone, a real ViewGroup on Android. That is the difference from a website squeezed into an app shell. Scrolling, text input and gestures behave the way people expect on each phone. The React Native docs recommend starting new apps with a framework and name Expo, which is why this guide treats React Native and Expo as one stack.",
+   example:["Shopify announced in 2020 that it was moving its mobile apps to React Native.","The same `<TextInput>` becomes a UITextField on iPhone, an EditText on Android and an `<input>` on the web."],
+   watch:"It is not 'write once, run anywhere' for free. Navigation, permissions and gestures differ by platform, and the project's own motto is 'learn once, write anywhere'. Expect a small amount of per-platform code."},
+
+  {cat:"rn", r:"components-state", name:"Components, props and state",
+   hook:"A screen is a function. Props come in, state changes, the UI redraws.",
+   def:"Everything on screen is a component: a function that returns JSX describing the UI. Props are the inputs a parent passes down (a title, a price, an onPress handler). State is memory the component owns, created with the `useState` hook; calling its setter re-runs the function and React updates only what changed. When you read code Claude wrote, this is the grammar: find the state, find what changes it, and you understand the screen.",
+   example:["`<CartButton count={3} />` receives count as a prop and never edits it.","`const [qty, setQty] = useState(1)`; tapping + calls `setQty(qty + 1)` and the number on screen updates."],
+   watch:"Changing a variable directly (`qty = qty + 1`) changes nothing on screen. Only the state setter triggers a redraw, and a 'button that does nothing' bug is very often this."},
+
+  {cat:"rn", r:"core-components", name:"Core components",
+   hook:"Five building blocks cover most screens: View, Text, Image, ScrollView, TextInput.",
+   def:"React Native ships a small set of Core Components backed by native views. `<View>` is the layout box, `<Text>` displays text, `<Image>` shows pictures, `<ScrollView>` scrolls and `<TextInput>` takes typing. Add `<Pressable>` for anything tappable and `<FlatList>` for long lists. There is no div, p or button; the agent writes these components and each platform decides what they become.",
+   example:["`<View>` becomes a ViewGroup on Android, a UIView on iOS and a non-scrolling `<div>` on the web (React Native docs).","A product card is a `<Pressable>` wrapping a `<View>` with an `<Image>` and two `<Text>` lines."],
+   watch:"Every string must sit inside `<Text>`. A bare string inside a `<View>` crashes on native with 'Text strings must be rendered within a <Text> component', while the browser may render it fine. It is a classic 'works on the web, crashes on the phone' bug."},
+
+  {cat:"rn", r:"styling", name:"Styling with StyleSheet and Flexbox",
+   hook:"CSS ideas, JavaScript objects, and columns by default.",
+   def:"There are no CSS files. Styles are JavaScript objects, usually grouped with `StyleSheet.create`, and property names are camelCase (`backgroundColor`, not background-color). Layout is Flexbox, but `flexDirection` defaults to column, because phones are tall. Sizes are unitless, density-independent pixels, so 16 means roughly the same physical size on every screen. If you prefer Tailwind classes, NativeWind brings them to React Native.",
+   example:["`{ padding: 16, borderRadius: 12, backgroundColor: '#fff' }` is a complete card style.","To put an icon beside its label, set `flexDirection: 'row'` on the parent; without it they stack."],
+   watch:"There is no cascade. A font or colour set on a `<View>` does not flow into the `<Text>` inside it. Text styles go on the `<Text>` itself (text nested inside text does inherit)."},
+
+  {cat:"rn", r:"flatlist", name:"Lists that scale: FlatList",
+   hook:"Render the twenty rows on screen, not all two thousand.",
+   def:"A `<ScrollView>` renders every child at once, which is fine for a settings page and terrible for a feed. `FlatList` (and `SectionList` for grouped data) is virtualised: it renders only what is near the viewport and recycles as you scroll, so memory and frame rate stay steady. You give it `data`, a `renderItem` function and a `keyExtractor` so every row has a stable identity.",
+   example:["An order history with 800 rows belongs in a FlatList, not `orders.map(...)` inside a ScrollView.","Shopify's open-source FlashList is a drop-in alternative tuned for very long, complex lists."],
+   watch:"Index-based or missing keys make rows show the wrong data after inserts and deletes. Ask Claude to key rows by a stable id from your data."},
+
+  {cat:"rn", r:"new-architecture", name:"The New Architecture and Hermes",
+   hook:"The engine room: faster startup and direct calls into native code.",
+   def:"Hermes is the JavaScript engine React Native ships with, built for fast startup on phones. The New Architecture (Fabric for rendering, TurboModules and JSI for calling native code) replaced the old asynchronous 'bridge' and became the default in React Native 0.76 in late 2024; current Expo SDKs run on it. You rarely touch it directly, but it explains why some old libraries break: they were written for the bridge and never migrated.",
+   example:["Expo SDK 58 ships React Native 0.88.","reactnative.directory flags whether a library supports the New Architecture; check it before accepting a new dependency."],
+   watch:"An abandoned library is a native-code liability. If Claude proposes a package that has not been published in years, ask for an Expo SDK module or a maintained alternative first."},
+
+  /* ---------- EXPO & ROUTING ---------- */
+  {cat:"expo", r:"expo", name:"Expo, the framework",
+   hook:"React Native with the batteries: SDK, router, tooling and cloud services.",
+   def:"Expo is an open-source framework around React Native, described in the React Native docs as 'a production-grade React Native Framework'. It gives you the Expo SDK (maintained modules for camera, images, notifications, secure storage and more), Expo Router for navigation, a CLI and dev server, and Expo Application Services (EAS) for cloud builds, store submission and over-the-air updates. For someone directing an agent, the win is that nearly every task has a documented, well-trodden path.",
+   example:["`npx create-expo-app@latest` scaffolds a TypeScript app with Expo Router and tabs already wired.","`npx expo install expo-image-picker` adds the version that matches your SDK, not just the newest one on npm."],
+   watch:"Install packages with `npx expo install`, not plain `npm install`. It picks versions compatible with your SDK and prevents a whole family of 'it built yesterday' errors."},
+
+  {cat:"expo", r:"sdk-versions", name:"Expo SDK versions",
+   hook:"One number pins React Native, React and every Expo module together.",
+   def:"Each Expo SDK release bundles a specific React Native version with matching versions of every Expo module, and your project is on exactly one SDK. SDK 58 shipped on 15 October 2026 on React Native 0.88 and is built for iOS 27. SDK 57 (30 June 2026, React Native 0.86) is still what `npx create-expo-app` creates until the SDK 58 Expo Go app reaches the stores, which Expo says will be 'within a few weeks'.",
+   example:["SDK 58 adds `expo-app-intents` (alpha) for Siri, Shortcuts, Spotlight and Apple Intelligence, and makes Expo Router data loaders, server rendering and middleware stable.","SDK 58 tooling needs Node.js 22.13+, 24.3+ or 26+; odd-numbered Node releases are not supported."],
+   watch:"Tutorials and answers age by SDK. SDK 58 alone moved iOS apps to the scene-based life cycle and turned on Android R8 in release builds, so a fix written for an older SDK can be wrong today. Check the SDK before trusting any snippet."},
+
+  {cat:"expo", r:"expo-go", name:"Expo Go",
+   hook:"Scan a QR code and your app runs on your phone in seconds.",
+   def:"Expo Go is a free app on the App Store and Google Play that runs your project's JavaScript while you develop. Start the dev server with `npx expo start`, scan the QR code with the phone on the same Wi-Fi, and every save reloads on the device. It is the fastest way to see your app on a real iPhone, even from a Windows laptop. It is also a sandbox: it contains a fixed set of native code, and each Expo Go build supports exactly one SDK version.",
+   example:["The latest Expo Go for iOS requires login: run `npx expo login` on the computer and sign in to Expo Go with the same account.","Expo's Build with AI tutorial runs entirely in Expo Go on a real phone."],
+   watch:"Expo Go cannot load native libraries outside its set, show your real icon or splash screen, receive remote push notifications or use universal links. And when the SDK 58 Expo Go reaches the stores it will run only SDK 58 projects, so an SDK 57 project must be upgraded or moved to a development build."},
+
+  {cat:"expo", r:"dev-builds", name:"Development builds",
+   hook:"Your own private Expo Go, with your native code baked in.",
+   def:"A development build is a debug version of your actual app, compiled with the native libraries and configuration you chose plus the `expo-dev-client` package, which adds a launcher, network inspection and switching between dev servers and published updates. Expo recommends one once you are building your own app for the stores. You compile it once (in the cloud with EAS Build, or locally) and keep the same fast reload loop as Expo Go.",
+   example:["A payments SDK with its own native code crashes Expo Go; a development build includes it.","Once `expo-dev-client` is installed, `npx expo start` targets your development build instead of Expo Go."],
+   watch:"Rebuild only when native things change: a new native library, a permission, the icon. Everyday JavaScript edits still reload instantly, and rebuilding for every code change wastes build minutes."},
+
+  {cat:"expo", r:"app-config", name:"App config (app.json)",
+   hook:"The one file that names, brands and identifies your app.",
+   def:"`app.json` (or `app.config.ts` when you need logic) holds what the stores and operating systems need: the display name, icon, splash screen, version, the iOS `bundleIdentifier` and Android `package`, permission text and the list of config plugins. Because Expo generates the native projects from it, this file is where native changes are meant to live.",
+   example:["`\"ios\": { \"bundleIdentifier\": \"com.yourname.chaitime\" }` and `\"android\": { \"package\": \"com.yourname.chaitime\" }` set the app's identity.","Changing `\"icon\"` changes the home-screen icon, on the next build."],
+   watch:"The bundle identifier and package name are effectively permanent once you publish: changing them later creates a different app in the store. Choose them deliberately on day one."},
+
+  {cat:"expo", r:"cng", name:"Continuous Native Generation",
+   hook:"The ios and android folders are build output, not source code.",
+   def:"With Continuous Native Generation, Expo treats native projects as temporary. `npx expo prebuild` generates the ios and android folders from a template plus your app config and config plugins, and new projects gitignore those folders. You maintain the definition of your customisations, not hand-edited native code, which makes SDK upgrades far less painful. Config plugins are the functions that apply native changes (a permission, an entitlement) during prebuild.",
+   example:["EAS Build runs prebuild in the cloud, so a Windows laptop never needs an ios folder.","A config plugin adds an Android permission every time the native project is regenerated."],
+   watch:"Hand edits inside `ios/` or `android/` are lost on `npx expo prebuild --clean`. If Claude 'fixes' a build by editing native files, ask it to move the change into app config or a config plugin."},
+
+  {cat:"expo", r:"router", name:"Expo Router",
+   hook:"Make a file, get a screen and a URL.",
+   def:"Expo Router is a file-based router for React Native and the web. Every file inside the app directory (`src/app` in the current default template) becomes a route, every screen gets a URL path that matches its location, and so every screen is deep linkable. The file named `index` is the first screen; you never declare an initial route in code. This is what makes one codebase feel natural on the web: the same files are pages there.",
+   example:["`src/app/settings.tsx` becomes /settings on the web and a deep link on the phone.","`src/app/orders/[id].tsx` handles /orders/42, and `useLocalSearchParams()` gives you `id = '42'`."],
+   watch:"The app directory is only for routes. Put a helper component there and Expo Router will try to treat it as a screen; components and hooks belong in folders like `src/components`."},
+
+  {cat:"expo", r:"layouts", name:"Layouts, stacks and tabs",
+   hook:"_layout files decide how the screens in a folder are arranged.",
+   def:"A `_layout.tsx` file wraps every route in its folder. The root layout replaces the old App.tsx and holds startup code such as fonts and theme providers. Inside a layout you choose a navigator: a Stack pushes screens on top of each other with a back gesture; Tabs give a tab bar. Folders in parentheses, like `(tabs)`, are route groups: they organise files without adding to the URL.",
+   example:["`src/app/(tabs)/_layout.tsx` renders `<Tabs>`, and `src/app/(tabs)/index.tsx` is the first tab at /.","A product screen pushed onto a Stack gets the native swipe-back gesture on iOS for free."],
+   watch:"Nested navigators are where agents get tangled. Sketch the screen map first (which tabs, what pushes on top of what) and give it to Claude before it writes layouts."},
+
+  /* ---------- WEB & PLATFORMS ---------- */
+  {cat:"web", r:"universal", name:"Universal apps",
+   hook:"One codebase, three targets: Android, iOS and the web.",
+   def:"A universal Expo app runs on Android, iOS and the web from the same code. On the web, React Native components render to the DOM through React Native for Web, so a `<View>` ends up as a div. You still decide per screen whether the web version should look identical or adapt, for example a sidebar on a wide desktop window instead of bottom tabs.",
+   example:["Expo's StickerSmash tutorial app runs on Android, iOS and the web from one codebase.","With `npx expo start` running, press `w` to open the web version next to your phone."],
+   watch:"Not every native module has a web implementation. Secure storage, haptics and some camera features behave differently or not at all in a browser, so check each module's platform list before promising a feature on the web."},
+
+  {cat:"web", r:"platform-code", name:"Platform-specific code",
+   hook:"Branch only where the platforms truly differ.",
+   def:"When behaviour must differ, you have two tools. `Platform.OS` (or `Platform.select`) branches inside a component. Platform file extensions (`.ios.tsx`, `.android.tsx`, `.native.tsx`, `.web.tsx`) let the bundler pick a whole file per platform. Inside the app directory, a platform-specific route also needs a plain version, so every route stays universal for deep links.",
+   example:["`_layout.web.tsx` renders a top navigation bar on the web while `_layout.tsx` renders tabs on phones.","`Platform.OS === 'web'` shows a Copy link button; phones get the native share sheet instead."],
+   watch:"Platform checks sprinkled everywhere make code hard to follow. When a component has more than one or two branches, split it into `.web.tsx` and `.native.tsx` files."},
+
+  {cat:"web", r:"web-output", name:"Web output: single, static, server",
+   hook:"Decide how your web build is shaped before you pick a host.",
+   def:"The `web.output` setting decides what `npx expo export -p web` writes to the dist folder. `single` is one index.html single-page app. `static` writes a separate HTML file for each route, which search engines can index. `server` outputs client and server folders and renders HTML on each request, which is what API routes, data loaders and middleware need.",
+   example:["A marketing-heavy app picks static so /pricing and /about each ship real HTML.","An app with a `+api.ts` route needs server output (or static with the `apiRoutes` option) and a host that runs servers, such as EAS Hosting."],
+   watch:"SDK 58 changed the default: Expo Router projects now use server output when `web.output` is not set. Set it explicitly to match your host. Uploading only the client folder of a server build to a static host silently drops the server half."},
+
+  {cat:"web", r:"web-deploy", name:"Deploying the web build",
+   hook:"Export once, then host it like any other site.",
+   def:"`npx expo export -p web` builds the site into dist, and `npx expo serve` lets you check it locally at localhost:8081. From there Expo documents deploys to EAS Hosting (recommended for full feature support, including API routes), Vercel, Netlify, Firebase Hosting, AWS Amplify and GitHub Pages.",
+   example:["Vercel: run `vercel`; a single-page build needs a rewrite in vercel.json so deep URLs do not 404.","GitHub Pages: set `baseUrl` to /repo-name and deploy with the gh-pages package."],
+   watch:"`npx expo serve` runs over plain HTTP, so camera and location may not work locally. Test those on the deployed HTTPS site."},
+
+  {cat:"web", r:"dom-components", name:"Expo DOM components",
+   hook:"Bring a web-only component into the native app with one directive.",
+   def:"A file that starts with the `'use dom'` directive becomes an Expo DOM component: real web code (HTML elements, a web-only library) that runs inside a webview on Android and iOS and renders as-is on the web. It is a bridge for things that only exist on the web, like a rich-text editor or a charting library, and a way to move an existing web React app across piece by piece.",
+   example:["A web chart library inside a DOM component appears on all three platforms without a native rewrite.","Expo publishes an `expo-dom` agent skill, and an `expo-web-to-native` skill for migrating a web React app."],
+   watch:"A webview is not native UI. Use DOM components for islands, not whole apps, or you lose the native feel that is the reason to use React Native at all."},
+
+  /* ---------- DATA, DEVICE & SECRETS ---------- */
+  {cat:"data", r:"env-vars", name:"EXPO_PUBLIC_ environment variables",
+   hook:"EXPO_PUBLIC_ means public: the value is printed into your app.",
+   def:"Expo CLI loads variables that start with `EXPO_PUBLIC_` from .env files and replaces each `process.env.EXPO_PUBLIC_...` reference with its value when it bundles your JavaScript. That suits things like an API base URL. But the values sit in plain text inside the compiled app, and Expo's docs are blunt: never store sensitive secrets under this prefix.",
+   example:["`EXPO_PUBLIC_API_URL=https://api.example.com` is a fine use: it is not a secret.","A Supabase anon key is designed to be public and relies on row-level security; a service-role key must never be an EXPO_PUBLIC_ variable."],
+   watch:"Only dot-notation references are replaced. `process.env['EXPO_PUBLIC_X']` or destructuring `process.env` will not work, a subtle bug when an agent 'tidies up' config code."},
+
+  {cat:"data", r:"api-routes", name:"Secrets and API routes",
+   hook:"If a key can spend money or read everyone's data, it never ships in the app.",
+   def:"Anything bundled into the app can be read by a determined user, so private keys (payment secrets, AI provider keys, database admin keys) belong on a server. Expo Router API routes give you that server inside the same project: a file ending in `+api.ts` runs on the server, isolated from client code, and deploys with EAS Hosting. The app calls your route; the route calls the paid API with the secret.",
+   example:["`src/app/api/summarize+api.ts` holds the AI provider key, and the app calls /api/summarize.","A Supabase Edge Function plays the same role if your backend already lives in Supabase."],
+   watch:"Client code that imports a module containing a secret pulls that secret into the client bundle. Keep secret-holding code in files only the API route imports."},
+
+  {cat:"data", r:"device-storage", name:"Storing data on the device",
+   hook:"Tokens go in SecureStore; everything else can live in plain storage.",
+   def:"`expo-secure-store` saves small sensitive values encrypted: in the iOS Keychain, and on Android encrypted with the Android Keystore. Use it for session tokens. For preferences and cached data, AsyncStorage (a simple, unencrypted key-value store) or `expo-sqlite` (a real database) fit better.",
+   example:["A login token from your auth provider goes into `SecureStore.setItemAsync('session', token)`.","A 'has seen onboarding' flag or a list of recent searches goes into AsyncStorage."],
+   watch:"SecureStore has no web implementation: `isAvailableAsync()` is true on Android and iOS only. A universal app needs a separate web plan for sessions, usually secure cookies set by your backend."},
+
+  {cat:"data", r:"permissions", name:"Permissions",
+   hook:"Ask at the moment of need, and plan for 'no'.",
+   def:"Camera, photos, location, notifications and contacts need the user's permission. Expo modules expose request functions (for example `ImagePicker.requestMediaLibraryPermissionsAsync()`), and iOS also needs a usage description that explains why, set in app config or through the module's config plugin. Ask when the user taps the feature, not at launch, so the reason is obvious.",
+   example:["Ask for photo access when the user taps 'Choose photo', not on the splash screen.","If access was refused, show one sentence of why and a button that calls `Linking.openSettings()`."],
+   watch:"iOS shows the system prompt only once. After 'Don't Allow', asking again shows nothing, so the app has to send people to Settings. And a new permission means a new build: EAS Update cannot change permissions."},
+
+  {cat:"data", r:"push", name:"Push notifications",
+   hook:"Needs a development build, credentials and the user's yes.",
+   def:"`expo-notifications` handles both local notifications (scheduled on the device) and remote push, and Expo's push service lets your server reach iPhone and Android through one API using each device's Expo push token. Remote push needs a development or production build (Expo Go does not support it), push credentials and the user's permission. On iOS that means an Apple Developer Program membership.",
+   example:["An order app stores each user's Expo push token after sign-in; later the backend sends 'Out for delivery'.","From SDK 58, `expo-notifications` shows notifications while the app is open (in the foreground) by default."],
+   watch:"Test remote push on a real device with a development build. Ask for permission when the value is obvious (after the first order), not at first launch; a refusal is hard to win back."},
+
+  /* ---------- BUILD & SHIP (EAS) ---------- */
+  {cat:"ship", r:"eas-build", name:"EAS Build",
+   hook:"Cloud machines compile your app, so a Windows laptop can ship to iPhone.",
+   def:"EAS Build compiles your app on Expo's servers and hands you an installable file: an APK or AAB for Android, an IPA for iOS. Because the Mac work happens in the cloud, you can produce iOS builds from Windows. Build profiles in eas.json (development, preview and production in a typical setup) decide what kind of build you get. The Free plan includes up to 15 Android and 15 iOS builds at low priority.",
+   example:["`eas build --platform android --profile preview` gives you a link to an APK any Android phone can install.","`eas build --platform ios --profile production` produces the build you submit to App Store Connect."],
+   watch:"iOS builds that install on real devices need an Apple Developer Program membership for signing. EAS manages certificates and profiles for you, but it cannot skip Apple's fee."},
+
+  {cat:"ship", r:"internal-distribution", name:"Internal distribution",
+   hook:"Put the real app in testers' hands before any store review.",
+   def:"Internal distribution builds are shared by link instead of through a store. On Android, `\"distribution\": \"internal\"` produces an APK anyone can install. On iOS it uses ad hoc provisioning: each tester's device is registered with `eas device:create`, and only listed devices can install. Ad hoc needs a paid Apple Developer account and is capped at 100 iPhones a year; for wider iPhone testing, use TestFlight.",
+   example:["Send a preview APK link to five Android friends the same afternoon.","Register your own iPhone with `eas device:create`, rebuild, and install from the link."],
+   watch:"On a new or renewed Apple membership, a newly registered device can take 24 to 72 hours to process, so the first build that includes it may fail. Register devices days before a demo."},
+
+  {cat:"ship", r:"eas-submit", name:"EAS Submit and the stores",
+   hook:"One command uploads your build; the accounts and reviews are on you.",
+   def:"`eas submit` sends a production build to App Store Connect or Google Play. For Android you need a Google Play Developer account, an app created in the Play Console, a Google Service Account key uploaded to EAS and `android.package` set in app.json; the default command creates your first release on the internal testing track. For iOS, `eas submit -p ios` walks you through the upload step by step.",
+   example:["Apple Developer Program: US$99 a year. Google Play Console: a one-time US$25 registration fee.","New personal Google Play accounts must run a closed test with at least 12 testers opted in for 14 continuous days before getting production access."],
+   watch:"Review checks behaviour, privacy declarations and content, not just crashes. Plan your first launch date around review and the Play closed test, and read any rejection closely; it is usually specific."},
+
+  {cat:"ship", r:"eas-update", name:"EAS Update (over the air)",
+   hook:"Ship a JavaScript fix to installed apps without a store review.",
+   def:"EAS Update lets an installed app download new JavaScript, styling and images. Copy changes, layout tweaks and JS bug fixes reach users without a new binary: `eas update --channel production --message \"Fix login button\"`. Native code, native libraries, permissions and the Expo SDK version are baked into the binary and need a new build through the stores.",
+   example:["A typo on the checkout screen goes out as an update the same hour.","Adding `expo-camera` to an app whose build does not include it requires a new build, not an update."],
+   watch:"Updates must still follow App Store and Play Store guidelines; changes to your app's behaviour still need review. The Free plan covers 1,000 monthly active users for updates."},
+
+  {cat:"ship", r:"runtime-version", name:"Runtime versions",
+   hook:"The lock that keeps an update off a build it would crash.",
+   def:"A runtime version guarantees compatibility between a build's native code and an update. Each build carries one, and an update only reaches builds with the matching value. The `appVersion` policy changes it when you bump the app version; the `fingerprint` policy changes it whenever anything that could affect native code changes, which is safer but means building more often.",
+   example:["You add a native library and rebuild; old installs keep the old runtime and never receive JavaScript that expects the new library.","With `appVersion`, forgetting to bump the version after a native change can push an update to builds that cannot run it."],
+   watch:"Most 'the update crashed the app on launch' stories are a runtime mismatch. If you are not sure which policy you need, choose fingerprint."},
+
+  /* ---------- DIRECTING CLAUDE CODE ---------- */
+  {cat:"agent", r:"agent-loop", name:"The agent loop",
+   hook:"You are the product owner and the tester. Claude is the programmer.",
+   def:"Expo's Build with AI tutorial teaches a four-step loop for every feature. Prompt: describe the outcome you want. Build: the agent writes the code and the app reloads on your phone. Verify: check the result on the real device. Re-prompt: when something is off, describe what you see. Your leverage is in steps one and three: a precise outcome, and honest checking on every platform you care about.",
+   example:["'Add a button under the photo that opens the photo library and shows the chosen image' beats 'add image picker'.","'On Android the button text is cut off at the right edge' is a better re-prompt than 'it looks broken'."],
+   watch:"Agents do not produce identical output twice, so your app will not match a tutorial's screenshots pixel for pixel. Judge it against the outcome you asked for."},
+
+  {cat:"agent", r:"verify", name:"Give Claude a way to verify",
+   hook:"A check it can run is the difference between watching and walking away.",
+   def:"Claude stops when the work looks done. Anthropic's best-practices guide says to give it something that returns pass or fail: tests, a build exit code, a type check, or a screenshot compared against a design. With a check in the prompt, Claude runs it, reads the result and iterates until it passes. Ask for evidence (the command and its output, or a screenshot) rather than a claim of success.",
+   example:["'Run `npx tsc --noEmit` and fix every error before you stop.'","SDK 58's experimental `@expo/agent-cli` adds a smoke test that starts the app, takes a screenshot and stops (setup: `npx @expo/agent-cli@latest agents:setup`)."],
+   watch:"'It compiles' is not 'it works'. For UI the check that matters is the screen on a real phone; for data it is the edge case: an empty list, no network, a refused permission."},
+
+  {cat:"agent", r:"plan-mode", name:"Plan mode: explore, plan, implement, commit",
+   hook:"Separate thinking from typing so you do not build the wrong thing.",
+   def:"Claude Code's recommended workflow has four phases. Explore in plan mode (press Shift+Tab until the status bar shows plan mode, or start with `claude --permission-mode plan`), where Claude reads and answers without editing. Ask for a plan, and press Ctrl+G to edit it yourself. Leave plan mode to implement against the plan, then ask Claude to commit with a descriptive message.",
+   example:["Sign-in touches layouts, secure storage and an API route: plan first.","For a bigger feature, ask Claude to interview you with the AskUserQuestion tool and write SPEC.md, then implement in a fresh session."],
+   watch:"Plan mode adds overhead. The guide's test: if you could describe the diff in one sentence, skip the plan and just ask."},
+
+  {cat:"agent", r:"claude-md", name:"CLAUDE.md for an Expo project",
+   hook:"The house rules Claude reads at the start of every session.",
+   def:"CLAUDE.md is a file Claude Code loads at the start of every conversation. Run `/init` to generate a starter, then keep only what Claude cannot work out from the code: commands, conventions and gotchas. The best-practices test for each line: would removing it cause Claude to make mistakes? If not, cut it, because long files get ignored.",
+   example:["'Install packages with `npx expo install`, never `npm install`.'","'Native changes go in app.json or a config plugin, never in ios/ or android/.'"],
+   watch:"Do not paste documentation into CLAUDE.md. Link to it, or let the Expo Skills plugin load the right knowledge only when a task needs it."},
+
+  {cat:"agent", r:"expo-skills", name:"Expo Skills for Claude Code",
+   hook:"Expo's own playbooks, loaded into the agent when a task needs them.",
+   def:"Expo publishes an official set of agent skills: instruction files that teach an agent to do specific Expo and EAS tasks correctly. In Claude Code, `/plugin install expo@claude-plugins-official` installs the whole bundle and also registers the Expo MCP server. docs.expo.dev/skills lists 24, from `expo-router` and `expo-native-ui` to `expo-upgrade`, `eas-app-stores` and `eas-update`.",
+   example:["'Use the expo-upgrade skill to move this project to SDK 58' gives Claude Expo's own upgrade checklist.","`eas-app-stores` covers building and submitting to TestFlight, the App Store or Google Play."],
+   watch:"Skills help the agent apply Expo's docs; they do not replace them. When the agent and the docs disagree, the docs win."},
+
+  {cat:"agent", r:"expo-mcp", name:"The Expo MCP server",
+   hook:"Lets Claude read Expo's docs, run your builds and look at your running app.",
+   def:"Expo's MCP server (mcp.expo.dev) connects Claude to Expo. In Claude Code, add it with `claude mcp add --transport http expo https://mcp.expo.dev/mcp` and sign in with `/mcp`; the Expo plugin registers it for you. Server tools read docs, add version-compatible libraries, and run and inspect EAS builds, workflows, TestFlight crashes and store reviews. With SDK 54 or later, the `expo-mcp` package plus `EXPO_UNSTABLE_MCP_SERVER=1 npx expo start` adds local tools: screenshots, taps, app logs and DevTools.",
+   example:["On Windows PowerShell, start it with `$env:EXPO_UNSTABLE_MCP_SERVER=\"1\"; npx expo start`.","`automation_take_screenshot` lets Claude check its own UI change instead of asking you to."],
+   watch:"Reconnect the MCP connection whenever you start or stop the dev server, and log in to Expo CLI with the same account. The docs list `search_documentation` as needing a paid EAS plan; the server itself has been on the Free plan, with fair-use limits, since May 2026."},
+
+  {cat:"agent", r:"context", name:"Context hygiene",
+   hook:"One task per session. Clear the board between tasks.",
+   def:"Claude's context window holds the whole conversation, every file it read and every command output, and quality drops as it fills. The best-practices habits: `/clear` between unrelated tasks; Esc to stop Claude mid-action; Esc twice or `/rewind` to restore an earlier checkpoint; and 'use subagents to investigate X' so file-reading happens in a separate context.",
+   example:["Finished the sticker feature? `/clear` before starting on app icons.","Corrected Claude twice on the same bug and it is still wrong? `/clear` and write a sharper first prompt with what you learned."],
+   watch:"Checkpoints only track edits made through Claude's file tools, not changes made by shell commands. They are not a replacement for git; commit each working state."},
+];
+
+const SCENARIOS = [
+  {cat:"ship", q:"A customer spots a typo on the checkout screen of your live app. What is the fastest correct way to fix it for people who already installed it?",
+   options:["Publish an EAS Update with the corrected text","Build a new binary and wait for store review","Edit the file inside the `ios/` folder and rebuild","Ask users to reinstall the app"], correct:0,
+   why:"Copy lives in the JavaScript bundle, and EAS Update replaces JavaScript, styling and images in installed apps without a store release."},
+  {cat:"ship", q:"You added `expo-camera` to an app whose installed build did not include it, then published only an EAS Update. The camera screen crashes for existing users. Why?",
+   options:["Native libraries are compiled into the binary, so this needed a new build","The camera key was missing from `.env`","The list on that screen had no `keyExtractor`","Expo Go was out of date"], correct:0,
+   why:"EAS Update cannot add native code. That change needs EAS Build and a store release, and a fingerprint runtime version would have kept the update off the old builds."},
+  {cat:"ship", q:"You work on Windows and want your own development build on your iPhone. What does that take?",
+   options:["EAS Build in the cloud, a paid Apple Developer account and your device registered with `eas device:create`","Installing Xcode on Windows","Nothing extra: Expo Go loads any native library","It is impossible without a Mac"], correct:0,
+   why:"EAS Build compiles iOS apps on Expo's Macs. Ad hoc internal builds need a paid Apple Developer account and a registered device."},
+  {cat:"ship", q:"Your brand-new personal Google Play developer account wants production access for its first app. What does Google require first?",
+   options:["A closed test with at least 12 testers opted in for 14 continuous days","A paid EAS plan","An Apple Developer membership","Nothing beyond the US$25 fee"], correct:0,
+   why:"New personal Play accounts must run a closed test (12 testers, 14 days) before production. Put it in the launch plan."},
+  {cat:"expo", q:"Your app works in Expo Go. After Claude adds a payments SDK with its own native code, Expo Go errors on launch. What is the right next step?",
+   options:["Create a development build that includes the SDK","Downgrade to an older Expo SDK","Publish an EAS Update","Run the app only on the web"], correct:0,
+   why:"Expo Go contains a fixed set of native code, so a library outside it fails immediately. A development build is your own Expo Go with your native libraries compiled in."},
+  {cat:"expo", q:"You want a new screen at `/profile/settings`. With Expo Router, what do you (or Claude) do?",
+   options:["Create `src/app/profile/settings.tsx`","Register the screen in a central routes array","Add the path to `app.json`","Edit `AndroidManifest.xml`"], correct:0,
+   why:"Expo Router is file-based: a file in the app directory becomes a route whose URL matches its location."},
+  {cat:"expo", q:"Claude fixed an Android build error by editing `android/app/build.gradle`. After `npx expo prebuild --clean`, the error is back. What should it have done?",
+   options:["Put the change in app config or a config plugin","Committed the android folder and never run prebuild again","Published an EAS Update","Switched to Expo Go"], correct:0,
+   why:"With Continuous Native Generation the native folders are generated output. Changes belong in app config or config plugins so they are reapplied every time."},
+  {cat:"rn", q:"A screen renders fine in the browser, but on Android it crashes with 'Text strings must be rendered within a `<Text>` component'. What is the fix?",
+   options:["Wrap the bare string in a `<Text>` component","Set `flexDirection: 'row'`","Move the screen out of the app directory","Put the string in an `EXPO_PUBLIC_` variable"], correct:0,
+   why:"On native, every string must sit inside `<Text>`. The browser can be more forgiving, which is why this bug often shows up only on a phone."},
+  {cat:"rn", q:"The order history screen maps 2,000 orders into a `ScrollView` and stutters on older phones. What should Claude change?",
+   options:["Render the list with `FlatList` keyed by a stable id","Wrap each row in another `View`","Move the orders into `app.json`","Turn the screen into a DOM component"], correct:0,
+   why:"A ScrollView renders every child at once. FlatList renders what is near the screen and recycles rows; stable keys stop rows showing the wrong item."},
+  {cat:"rn", q:"An icon and its label stack on top of each other instead of sitting side by side. What is missing?",
+   options:["`flexDirection: 'row'` on the parent View","A CSS stylesheet import","A `Platform.OS === 'web'` check","A development build"], correct:0,
+   why:"Layout is Flexbox with flexDirection defaulting to column, because phones are tall. Side by side needs row on the parent."},
+  {cat:"data", q:"Claude stored your AI provider's secret key in `EXPO_PUBLIC_AI_KEY` so the app can call the model directly. What is the safest fix?",
+   options:["Move the call into an API route (`+api.ts`) so the key stays on the server","Drop the `EXPO_PUBLIC_` prefix and keep calling from the app","Put the key in `app.json` instead","Save the key in AsyncStorage on first launch"], correct:0,
+   why:"EXPO_PUBLIC_ values are inlined into the bundle in plain text, and app.json ships with the build too. A server-side route keeps the secret off every device."},
+  {cat:"data", q:"Where should your app keep the user's session token on iPhone and Android?",
+   options:["`expo-secure-store` (Keychain on iOS, Keystore-encrypted on Android)","AsyncStorage","An `EXPO_PUBLIC_` variable","A field in `app.json`"], correct:0,
+   why:"SecureStore encrypts small sensitive values with each platform's secure storage. AsyncStorage is unencrypted. Remember SecureStore has no web implementation."},
+  {cat:"data", q:"A user tapped Don't Allow on photo access. Now tapping 'Choose photo' does nothing on their iPhone. What should the app do?",
+   options:["Explain why access helps and offer a button that opens Settings","Call the permission request again in a loop","Publish an EAS Update that adds the permission","Ask the user to reinstall the app"], correct:0,
+   why:"iOS shows the system prompt only once. After a refusal the only way back is Settings, via `Linking.openSettings()`."},
+  {cat:"web", q:"You want `/pricing` and `/about` on your Expo web app indexed by search engines, hosted on a plain static host. Which `web.output` fits?",
+   options:["`static`, which writes an HTML file per route","`single`, one `index.html` for everything","`server`, uploaded to the static host as-is","Leave it unset on SDK 58"], correct:0,
+   why:"Static output prerenders an HTML file for each route. Server output needs a host that runs servers, and on SDK 58 leaving web.output unset now means server."},
+  {cat:"web", q:"On desktop web you want a top navigation bar, while phones keep bottom tabs. What is the cleanest approach?",
+   options:["Add `_layout.web.tsx` next to the existing `_layout.tsx`","Add `Platform.select` checks to every screen","Start a separate web project","Wrap the whole app in a DOM component"], correct:0,
+   why:"Platform extensions let the bundler pick a whole file per platform. Inside the app directory a platform route also needs a plain version, which `_layout.tsx` already is."},
+  {cat:"agent", q:"Claude reports: 'Done, the dark mode toggle works.' What should you ask for before believing it?",
+   options:["Evidence: the type-check output and screenshots of both modes","Nothing, it said it is done","A longer CLAUDE.md","A brand-new session"], correct:0,
+   why:"Have Claude show evidence rather than assert success: the command and its output, or a screenshot. Reviewing evidence is faster than re-testing everything yourself."},
+  {cat:"agent", q:"You have corrected Claude three times on the same navigation bug and it keeps circling. What now?",
+   options:["`/clear`, then a sharper prompt that includes what you learned","Keep correcting in the same session","Add IMPORTANT to every line of CLAUDE.md","Use plan mode for a one-line fix"], correct:0,
+   why:"After two failed corrections the context is full of failed approaches. A clean session with a better prompt almost always beats a long session of corrections."},
+  {cat:"agent", q:"You want sign-in: it touches layouts, secure storage and an API route, and you are unsure how to structure it. How do you start?",
+   options:["Plan mode: let Claude explore and propose a plan you can edit before any code","Prompt 'add sign-in' and review whatever comes back","Publish an EAS Update first","Write all the code yourself"], correct:0,
+   why:"Planning pays off when the approach is unclear and the change spans several files. Shift+Tab into plan mode, edit the plan with Ctrl+G, then implement."},
+];
+
+/* ---------- Studio: one codebase, three screens ---------- */
+const PLATS = [ {id:"web", label:"Web"}, {id:"ios", label:"iOS"}, {id:"android", label:"Android"} ];
+const CODE_LINES = [
+  {t:"import { Stack, useLocalSearchParams } from 'expo-router';"},
+  {t:"import { View, Text, Image, Pressable, Share, Platform } from 'react-native';"},
+  {t:"import * as Clipboard from 'expo-clipboard';"},
+  {t:""},
+  {t:"export default function OrderScreen() {"},
+  {t:"  const { id } = useLocalSearchParams();", k:"url"},
+  {t:"  const link = `https://chai.example/orders/${id}`;", k:"url"},
+  {t:"  return ("},
+  {t:"    <View style={styles.screen}>", k:"view"},
+  {t:"      <Stack.Screen options={{ title: `Order ${id}` }} />", k:"header"},
+  {t:"      <Image source={chai} style={styles.photo} />", k:"image"},
+  {t:"      <Text style={styles.title}>Masala chai, 2 cups</Text>", k:"text"},
+  {t:"      <Text style={styles.eta}>Arriving in 12 min</Text>", k:"text"},
+  {t:"      {Platform.OS === 'web'", k:"share"},
+  {t:"        ? <Pressable onPress={() => Clipboard.setStringAsync(link)}>", k:"share"},
+  {t:"            <Text>Copy link</Text></Pressable>", k:"share"},
+  {t:"        : <Pressable onPress={() => Share.share({ message: link })}>", k:"share"},
+  {t:"            <Text>Share</Text></Pressable>}", k:"share"},
+  {t:"    </View>", k:"view"},
+  {t:"  );"},
+  {t:"}"},
+];
+const MAP = {
+  url:   {code:"useLocalSearchParams()", what:"Reads the 42 out of the route. Every Expo Router screen has a URL, which is what gives you the web version and deep links for free.",
+          web:"Reads 42 from the address bar: /orders/42", ios:"Reads 42 from the route you navigated to, or from a deep link", android:"Reads 42 from the route you navigated to, or from a deep link",
+          note:"The file name `[id].tsx` is the route; there is no routes table to update."},
+  view:  {code:"<View>", what:"The layout box that holds the screen.",
+          web:"A non-scrolling `<div>`", ios:"UIView", android:"ViewGroup",
+          note:"Mappings from the React Native docs' Core Components table."},
+  header:{code:"<Stack.Screen options={{ title }} />", what:"One line sets the title; each platform applies its own header convention.",
+          web:"A header inside the page, and the screen keeps its own URL", ios:"Native navigation bar: centred title, swipe-back gesture", android:"Material-style top bar: left-aligned title, system back",
+          note:"You did not write three headers. Platform conventions come from the navigator."},
+  image: {code:"<Image>", what:"Displays the photo.",
+          web:"`<img>`", ios:"UIImageView", android:"ImageView",
+          note:"Mappings from the React Native docs' Core Components table."},
+  text:  {code:"<Text>", what:"All visible words live inside Text.",
+          web:"`<p>` (the docs' web analog)", ios:"UITextView", android:"TextView",
+          note:"A bare string outside Text crashes on native, even when the web renders it."},
+  share: {code:"Platform.OS === 'web' ? … : …", what:"A deliberate branch: one line keeps the platform difference visible and small.",
+          web:"Copy link, using expo-clipboard", ios:"Opens the iOS share sheet via `Share.share`", android:"Opens the Android share sheet via `Share.share`",
+          note:"Prefer one clear branch like this over many scattered ones; past two branches, split into .web.tsx and .native.tsx files."},
+};
+
+/* ---------- Studio: ship router ---------- */
+const CHANGES = [
+  {id:"copy",  icon:"✏️", label:"Fixed a typo in the checkout copy", kind:"ota", msg:"Fix checkout typo",
+   why:"Copy lives in the JavaScript bundle. EAS Update replaces JavaScript, styling and images in installed apps, so there is no new binary and no store review."},
+  {id:"style", icon:"🎨", label:"Changed colours and spacing", kind:"ota", msg:"Refresh colours",
+   why:"Styles are JavaScript objects in the bundle, so they travel with an update like any other JS change."},
+  {id:"screen",icon:"🧩", label:"Added a new screen using libraries already in the build", kind:"ota", msg:"Add order history screen",
+   why:"A new route file is still JavaScript. As long as it only uses native code the installed build already has, an update can deliver it."},
+  {id:"env",   icon:"🔧", label:"Changed an `EXPO_PUBLIC_` API URL", kind:"ota", msg:"Point to new API",
+   why:"EXPO_PUBLIC_ values are written into the JavaScript bundle when it is built. A new bundle carries the new value, and an update or web redeploy is exactly that."},
+  {id:"lib",   icon:"📷", label:"Added a native library the build does not have (such as `expo-camera`)", kind:"build",
+   why:"Native code is compiled into the binary; an update cannot add it. A runtime version policy exists to keep JavaScript that expects the new library off older builds."},
+  {id:"perm",  icon:"📍", label:"Asked for a new permission (location)", kind:"build",
+   why:"Permissions and their iOS usage descriptions are part of the native app. EAS Update cannot change app permissions."},
+  {id:"icon",  icon:"🖼️", label:"Changed the app icon or splash screen", kind:"build",
+   why:"Icons and splash screens are compiled into the native app, which is also why Expo Go cannot show your real ones."},
+  {id:"name",  icon:"🏷️", label:"Renamed the app on the home screen", kind:"build",
+   why:"The display name is native configuration from app.json, applied when the app is built."},
+  {id:"sdk",   icon:"⬆️", label:"Upgraded the Expo SDK", kind:"build",
+   why:"The SDK pins React Native and every native module. EAS Update cannot change the Expo SDK version."},
+  {id:"webonly",icon:"🌐", label:"Fixed a layout bug inside a `.web.tsx` file", kind:"web",
+   why:"A `.web.tsx` file is only bundled for the web, so phones never load it. Redeploy the site; there is nothing to ship to the stores."},
+];
+const KINDS = {
+  ota:  {label:"Over-the-air update", cls:"k-ota", sub:"No new binary, no store review."},
+  build:{label:"New build + store review", cls:"k-build", sub:"A native change: build, submit, wait for review."},
+  web:  {label:"Web redeploy only", cls:"k-web", sub:"Phones never load this code."},
+};
+
+/* ---------- Studio: prompt sharpener ---------- */
+const INGREDIENTS = [
+  {id:"outcome",     label:"Outcome",      sub:"What done looks like, in user terms"},
+  {id:"platforms",   label:"Platforms",    sub:"Where it has to work"},
+  {id:"context",     label:"Context",      sub:"Files, patterns or libraries to use"},
+  {id:"constraints", label:"House rules",  sub:"Expo conventions that prevent costly mistakes"},
+  {id:"verify",      label:"Verification", sub:"A check Claude can run and show you"},
+  {id:"plan",        label:"Plan first",   sub:"Explore and propose before editing"},
+];
+const TASKS = {
+  darkmode:{label:"Dark mode", base:"Add dark mode.",
+    outcome:"Follow the phone's light or dark setting by default, with a toggle on the Settings screen that overrides it and is remembered after a restart.",
+    platforms:"It must work on iOS, Android and the web.",
+    context:"Colours live in src/constants/theme.ts. Read it and the Settings screen first and reuse that pattern; do not add a theming library.",
+    verify:"When done, run npx tsc --noEmit and fix every error. Then take screenshots of Home and Settings in both modes and confirm all text is readable."},
+  photo:{label:"Profile photo", base:"Let users add a profile photo.",
+    outcome:"On the Profile screen, tapping the avatar opens the photo library; the chosen photo is cropped square, shown in the avatar, and still there after a restart.",
+    platforms:"iOS, Android and the web (a normal file picker is fine on the web).",
+    context:"Use expo-image-picker. Ask for photo access only when the avatar is tapped, and handle a refusal with one sentence and a button that opens Settings.",
+    verify:"Run npx tsc --noEmit, then test three paths: allow, deny and cancel. Show me a screenshot of each."},
+  list:{label:"Slow list", base:"The orders screen is slow.",
+    outcome:"Scrolling 2,000 orders stays smooth, with no blank rows and no wrong data after pull-to-refresh.",
+    platforms:"Check it on a real Android phone as well as the web.",
+    context:"The list is in src/app/(tabs)/orders.tsx. Find the root cause and explain it before changing anything.",
+    verify:"Seed 2,000 fake orders, scroll top to bottom, and tell me what you changed and why it fixes the cause rather than the symptom."},
+};
+const CONSTRAINTS = "Install any package with npx expo install. Prefer Expo SDK modules over new third-party libraries. Native changes go in app.json or a config plugin, never in ios/ or android/.";
+const PLAN = "Start in plan mode: list the files you will change and wait for my go-ahead.";
+const TIPS = {
+  verify:"Without a check, Claude stops when the work looks done, and you become the test.",
+  outcome:"Without an outcome, Claude decides what 'done' means for you.",
+  platforms:"Unstated platforms usually means whatever the agent tested, often only one.",
+  context:"Pointing at existing files and patterns stops Claude inventing a second way to do the same thing.",
+  constraints:"House rules prevent the slow, expensive mistakes: mismatched package versions and hand-edited native folders.",
+  plan:"For a change that spans files, a plan you can edit costs a minute and saves an hour.",
+};
+
+/* ---------- Learn ---------- */
+const RESOURCES = [
+  {name:"Expo: Build with AI tutorial", type:"Hands-on course", meta:"Free · official · 6 chapters, about an hour", link:"https://docs.expo.dev/tutorial/build-with-ai/introduction/",
+   what:"You direct an AI agent (Claude Code, Codex or Cursor) to build StickerSmash, a photo-and-sticker app for Android, iOS and the web, checking each step on your own phone.",
+   why:"The only official course built around directing an agent instead of typing code. Chapter 1 sets up Claude Code, Node, Expo Go, the Expo plugin and the MCP server; every chapter after drills the prompt, build, verify, re-prompt loop.",
+   how:"Do every chapter on a real phone and keep a note of each re-prompt you needed. That list becomes your first CLAUDE.md.",
+   caveat:"Agents vary, so your app will not match the screenshots exactly. It moves quickly past concepts; use this guide's Library to fill the gaps."},
+  {name:"Claude Code: Best practices", type:"Docs", meta:"Free · official · Anthropic", link:"https://code.claude.com/docs/en/best-practices",
+   what:"Anthropic's guide to working with Claude Code: verification, explore-plan-implement-commit, CLAUDE.md, managing context and five common failure patterns.",
+   why:"Every other resource teaches what to build; this one teaches how to drive the builder. It is the single page that most changes the quality of what the agent produces.",
+   how:"Read it end to end once. Reread 'Avoid common failure patterns' at the end of each day this week.", caveat:""},
+  {name:"Expo Skills + the Expo MCP server", type:"Reference, loaded into Claude", meta:"Free · official · docs.expo.dev/skills", link:"https://docs.expo.dev/skills/",
+   what:"Expo's own agent skills (24 listed) plus the MCP server: Claude loads the right Expo playbook per task, reads current docs, runs EAS builds and can screenshot your running app.",
+   why:"Your reference library lives inside the agent and is kept current by Expo, instead of sitting in tabs you will never read. It is the difference between Claude guessing at SDK 58 and knowing it.",
+   how:"Install once with `/plugin install expo@claude-plugins-official`. Skim the skills table so you can ask for one by name ('use the expo-upgrade skill').",
+   caveat:"Local MCP tools (screenshots, taps) need SDK 54+ and a dev server started with EXPO_UNSTABLE_MCP_SERVER=1. The docs list search_documentation as needing a paid EAS plan."},
+  {name:"Expo: EAS tutorial", type:"Course", meta:"Free · official · 13 chapters, about two hours", link:"https://docs.expo.dev/tutorial/eas/introduction/",
+   what:"From development builds to Android and iOS production builds, app variants, internal distribution, version management and building from GitHub.",
+   why:"The shipping half the AI tutorial leaves out, and the part where most first apps stall: credentials, build profiles, testers and stores.",
+   how:"Use your own app from Day 5. Do the Android chapters first; save the iOS device and production chapters for when you are ready for Apple's US$99 a year.",
+   caveat:"The iOS Simulator chapter needs a Mac. On Windows, use 'iOS development build for devices' instead, which needs a paid Apple Developer account."},
+  {name:"Expo Developers Discord", type:"Community", meta:"Free · official · chat.expo.dev", link:"https://chat.expo.dev",
+   what:"Expo's official Discord, with a weekly Office Hours Q&A from the Expo team.",
+   why:"When you are stuck on your specific error, people running the same SDK answer faster than any tutorial search.",
+   how:"Search first. When you ask, include your SDK version, platform, the exact error and what you and Claude already tried.", caveat:""},
+];
+const DAYS = [
+  {d:1, res:"Resources 2 + 1", h:"Learn the driver, set up the tools",
+   p:"Read Claude Code Best practices end to end. Then Build with AI, chapter 1: Set up your tools.",
+   t:"Run the tutorial's MCP test prompt. Then, from memory, write down three habits from Best practices you will use this week."},
+  {d:2, res:"Resource 1", h:"Your first app on your phone",
+   p:"Build with AI, chapters 2 and 3: Create your first app, and Build the home screen.",
+   t:"Open the app on your phone and in the browser (press w). Log every re-prompt you needed, and why."},
+  {d:3, res:"Resource 1", h:"Native features and platform differences",
+   p:"Build with AI, chapters 4 and 5: Add stickers, and Save your creation.",
+   t:"Try saving on the phone and on the web. Note what differs, then ask Claude to explain why in two sentences. /clear between chapters."},
+  {d:4, res:"Resources 1 + 3", h:"Finish it and put it on the web",
+   p:"Build with AI, chapter 6: Finishing touches. Then ask Claude to deploy the web build with the eas-hosting skill.",
+   t:"Open the live URL on your phone. Turn your re-prompt log into a five-line CLAUDE.md."},
+  {d:5, res:"Resource 4", h:"Your own development build",
+   p:"EAS tutorial: Introduction, Configure development build, and Android development build.",
+   t:"Install your development build on an Android phone or emulator, and confirm code edits still reload instantly."},
+  {d:6, res:"Resources 4 + 3", h:"Testers and over-the-air updates",
+   p:"EAS tutorial: Multiple app variants, Internal distribution build, and Manage app versions. Then ask Claude to set up EAS Update with the eas-update skill.",
+   t:"Send a preview build to one tester, then ship them a copy change as an update. Note how long each path took."},
+  {d:7, res:"All five", h:"Build one of your own, then review",
+   p:"Ask Claude to interview you about a small app idea and write SPEC.md (Best practices: 'Let Claude interview you'). Implement it in a fresh session with plan mode and a verification step.",
+   t:"Ship it to the web and as an Android preview. Post the link, or your hardest bug, in the Expo Discord. Then take this guide's Practice quiz."},
+];
+const LEFT_OUT = [
+  {n:"Expo's standard tutorial", w:"Excellent, and it builds the same StickerSmash app, but by typing every line. Open a chapter only when you want to understand code Claude wrote."},
+  {n:"The React Native docs, cover to cover", w:"The source of truth for components, written for people who hand-code. Look things up there; do not read it as a course."},
+  {n:"Long video courses", w:"Galaxies.dev, notJust.dev and multi-hour YouTube builds have good teachers, but they are hand-coding focused and pinned to the SDK they were recorded on."},
+  {n:"Anthropic Academy's Claude Code course", w:"A gentle start if you have never opened Claude Code. If you have, the Best practices page is denser and kept current."},
+];
+
+/* ================= STATE ================= */
+const VIEWS = ["library","studio","practice","learn"];
+let state = {
+  view:"library", search:"", activeCat:"all", openIdx:null,
+  quizOrder:[], optOrders:[], quizIndex:0, quizScore:0, quizAnswered:null, quizHistory:[], quizDone:false,
+  tool:"screens", plat:"ios", focus:"header",
+  change:null,
+  task:"darkmode", ing:{outcome:false, platforms:false, context:false, constraints:false, verify:false, plan:false}, copied:false,
+};
+let lastFocus = null;
+
+/* ================= HELPERS ================= */
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmt(s){ return esc(s).replace(/`([^`]+)`/g,'<code>$1</code>'); }
+function shuffled(n){ const a=Array.from({length:n},(_,i)=>i); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function catCounts(){ const c={}; ENTRIES.forEach(e=>{ c[e.cat]=(c[e.cat]||0)+1; }); return c; }
+function onKey(e,fn){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); fn(); } }
+
+/* ================= LIBRARY ================= */
+function filtered(){
+  const q=state.search.trim().toLowerCase();
+  return ENTRIES.map((e,i)=>({e,i})).filter(({e})=>
+    (state.activeCat==='all'||e.cat===state.activeCat) &&
+    (!q || (e.name+' '+e.hook+' '+e.def).toLowerCase().includes(q)));
+}
+function renderLibrary(){
+  const counts=catCounts();
+  const pills=`<button class="pill" data-cat="all" aria-pressed="${state.activeCat==='all'}" onclick="setCat('all')">All <span class="count">${ENTRIES.length}</span></button>`+
+    Object.keys(CATS).map(c=>`<button class="pill" data-cat="${c}" aria-pressed="${state.activeCat===c}" onclick="setCat('${c}')"><span aria-hidden="true">${CATS[c].icon}</span> ${CATS[c].label} <span class="count">${counts[c]||0}</span></button>`).join('');
+  const list=filtered();
+  const cards=list.map(({e,i})=>`
+    <article class="card" data-cat="${e.cat}" data-idx="${i}" tabindex="0" role="button" aria-label="Open ${esc(e.name)}" onclick="openEntry(${i})" onkeydown="onKey(event,()=>openEntry(${i}))">
+      <div class="card-top"><span class="route">/${e.cat}/${e.r}</span><span class="dot"></span></div>
+      <h3>${fmt(e.name)}</h3>
+      <p class="hook">${fmt(e.hook)}</p>
+      <span class="open-row"><span>${CATS[e.cat].icon} ${CATS[e.cat].label}</span><span class="go">Open →</span></span>
+    </article>`).join('');
+  const empty=`<div class="empty"><strong>No concepts match “${esc(state.search.trim())}”${state.activeCat!=='all'?' in '+CATS[state.activeCat].label:''}.</strong>Try a shorter word, like “build”, “router” or “secret”.<div style="margin-top:14px;"><button class="btn ghost" onclick="clearFilters()">Clear search and filter</button></div></div>`;
+  return `
+    <div class="search-wrap">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8A8F99" stroke-width="2.4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="searchInput" type="search" aria-label="Search concepts" placeholder="Search ${ENTRIES.length} concepts: try “Expo Go”, “update”, “secret”…" value="${esc(state.search)}" oninput="setSearch(this.value)">
+    </div>
+    <div class="pill-row" role="group" aria-label="Filter by category">${pills}</div>
+    <p class="result-count" aria-live="polite">${list.length} concept${list.length===1?'':'s'} shown</p>
+    <div class="grid">${list.length?cards:empty}</div>`;
+}
+function setCat(c){ state.activeCat=(c==='all'||state.activeCat===c)?'all':c; render(); }
+function setSearch(v){ state.search=v; render(true); }
+function clearFilters(){ state.search=''; state.activeCat='all'; render(); const i=document.getElementById('searchInput'); if(i) i.focus(); }
+
+function openEntry(i){ lastFocus=document.activeElement; state.openIdx=i; renderModal(); }
+function closeEntry(){
+  const idx=state.openIdx; state.openIdx=null; renderModal();
+  const card=document.querySelector(`.card[data-idx="${idx}"]`);
+  if(card) card.focus(); else if(lastFocus&&document.body.contains(lastFocus)) lastFocus.focus();
+}
+function stepEntry(dir){
+  const list=filtered().map(x=>x.i); const pool=list.length?list:ENTRIES.map((_,i)=>i);
+  const pos=pool.indexOf(state.openIdx); const next=pool[(pos+dir+pool.length)%pool.length];
+  state.openIdx=next; renderModal();
+}
+function renderModal(){
+  const root=document.getElementById('modalRoot');
+  if(state.openIdx===null){ root.innerHTML=''; document.body.style.overflow=''; return; }
+  const e=ENTRIES[state.openIdx];
+  root.innerHTML=`
+    <div class="overlay" onclick="if(event.target===this) closeEntry()">
+      <div class="modal" data-cat="${e.cat}" role="dialog" aria-modal="true" aria-label="${esc(e.name)}">
+        <div class="modal-bar"><span class="route">/${e.cat}/${e.r}</span><button class="icon-btn" id="modalClose" onclick="closeEntry()" aria-label="Close">✕</button></div>
+        <div class="modal-in">
+          <span class="tag">${CATS[e.cat].icon} ${CATS[e.cat].label}</span>
+          <h2>${fmt(e.name)}</h2>
+          <p class="mhook">${fmt(e.hook)}</p>
+          <div class="sec">What it means</div>
+          <p class="def">${fmt(e.def)}</p>
+          <div class="sec">In practice</div>
+          <ul class="ex">${e.example.map(x=>`<li>${fmt(x)}</li>`).join('')}</ul>
+          <div class="sec">Watch out</div>
+          <div class="watch">${fmt(e.watch)}</div>
+          <div class="modal-foot">
+            <button class="btn ghost" onclick="stepEntry(-1)" aria-label="Previous concept">← Previous</button>
+            <button class="btn ghost" onclick="stepEntry(1)" aria-label="Next concept">Next →</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  document.body.style.overflow='hidden';
+  const b=document.getElementById('modalClose'); if(b) b.focus();
+}
+document.addEventListener('keydown',e=>{
+  if(state.openIdx===null) return;
+  if(e.key==='Escape') closeEntry();
+  else if(e.key==='Tab'){
+    const f=[...document.querySelectorAll('.modal button')]; if(!f.length) return;
+    const first=f[0], last=f[f.length-1];
+    if(e.shiftKey&&document.activeElement===first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey&&document.activeElement===last){ e.preventDefault(); first.focus(); }
+  }
+});
+
+/* ================= PRACTICE ================= */
+function resetQuiz(){
+  state.quizOrder=shuffled(SCENARIOS.length);
+  state.optOrders=SCENARIOS.map(s=>shuffled(s.options.length));
+  state.quizIndex=0; state.quizScore=0; state.quizAnswered=null; state.quizHistory=[]; state.quizDone=false;
+}
+function renderPractice(){
+  if(state.quizDone){
+    const by={};
+    state.quizHistory.forEach(h=>{ by[h.cat]=by[h.cat]||{c:0,t:0}; by[h.cat].t++; if(h.ok) by[h.cat].c++; });
+    const bd=Object.keys(CATS).filter(c=>by[c]).map(c=>`<div class="bd-i" data-cat="${c}"><div class="l">${CATS[c].icon} ${CATS[c].label}</div><div class="n">${by[c].c} / ${by[c].t}</div></div>`).join('');
+    const missed=state.quizHistory.filter(h=>!h.ok).map(h=>`<div class="miss"><strong>${fmt(h.q)}</strong><br>Answer: ${fmt(h.answer)}. ${fmt(h.why)}</div>`).join('');
+    const pct=Math.round(state.quizScore/SCENARIOS.length*100);
+    const verdict=pct===100?"Perfect. You can direct this stack.":pct>=75?"Strong. Review the misses below, then build.":pct>=50?"Halfway there. Reopen the Library for the categories below 50%.":"Start with the Library, then come back. The 7-day path covers every miss.";
+    return `<div class="results">
+      <h2>Practice complete</h2>
+      <div class="big">${state.quizScore} / ${SCENARIOS.length}</div>
+      <p style="color:var(--ink-soft);margin:0;">${verdict}</p>
+      <div class="bd">${bd}</div>
+      <button class="btn" onclick="restartQuiz()">Practise again (new order)</button>
+      ${missed?`<div class="missed"><h3>Review what you missed</h3>${missed}</div>`:''}
+    </div>`;
+  }
+  const qi=state.quizOrder[state.quizIndex], s=SCENARIOS[qi], order=state.optOrders[qi];
+  const pct=Math.round(state.quizIndex/SCENARIOS.length*100);
+  const letters="ABCD";
+  const opts=order.map((oi,pos)=>{
+    let cls="opt", dis="", mark=letters[pos];
+    if(state.quizAnswered!==null){
+      dis="disabled";
+      if(oi===s.correct){ cls+=" right"; mark="✓"; }
+      else if(pos===state.quizAnswered){ cls+=" wrong"; mark="✗"; }
+    }
+    return `<button class="${cls}" ${dis} onclick="answerQuiz(${pos})"><span class="mk" aria-hidden="true">${mark}</span><span>${fmt(s.options[oi])}</span></button>`;
+  }).join('');
+  let fb='';
+  if(state.quizAnswered!==null){
+    const ok=order[state.quizAnswered]===s.correct;
+    fb=`<div class="fb" role="status"><strong>${ok?'✓ Correct.':'✗ Not quite.'}</strong> ${fmt(s.why)}</div>
+      <div style="margin-top:14px;"><button class="btn" id="nextBtn" onclick="nextQuiz()">${state.quizIndex===SCENARIOS.length-1?'See results':'Next scenario →'}</button></div>`;
+  }
+  return `<div class="prog"><div class="track" aria-hidden="true"><div class="fill" style="width:${pct}%"></div></div><span class="chip">${state.quizIndex+1} / ${SCENARIOS.length} · score ${state.quizScore}</span></div>
+    <div class="scn" data-cat="${s.cat}">
+      <div class="eyebrow">Scenario · ${CATS[s.cat].label}</div>
+      <p class="q">${fmt(s.q)}</p>
+      <div class="opts">${opts}</div>
+      ${fb}
+    </div>`;
+}
+function answerQuiz(pos){
+  if(state.quizAnswered!==null) return;
+  const qi=state.quizOrder[state.quizIndex], s=SCENARIOS[qi];
+  const ok=state.optOrders[qi][pos]===s.correct;
+  state.quizAnswered=pos; if(ok) state.quizScore++;
+  state.quizHistory.push({q:s.q, why:s.why, ok, answer:s.options[s.correct], cat:s.cat});
+  render(); const n=document.getElementById('nextBtn'); if(n) n.focus();
+}
+function nextQuiz(){
+  if(state.quizIndex===SCENARIOS.length-1) state.quizDone=true; else { state.quizIndex++; state.quizAnswered=null; }
+  render(); const f=document.querySelector('.opt'); if(f) f.focus();
+}
+function restartQuiz(){ resetQuiz(); render(); }
+
+/* ================= STUDIO ================= */
+function renderStudio(){
+  const tool=(id,label)=>`<button class="tool" aria-pressed="${state.tool===id}" onclick="setTool('${id}')">${label}</button>`;
+  const body=state.tool==='screens'?renderScreens():state.tool==='ship'?renderShip():renderSharp();
+  return `<p class="intro">Three hands-on tools for the ideas that matter most when an agent writes the code: what your code becomes on each platform, how a change reaches users, and what makes a prompt good enough to walk away from.</p>
+    <div class="tools" role="group" aria-label="Studio tools">${tool('screens','📱 One codebase, three screens')}${tool('ship','🚦 Ship router')}${tool('sharp','✍️ Prompt sharpener')}</div>
+    ${body}`;
+}
+function setTool(t){ state.tool=t; render(); }
+
+function hl(t){
+  if(!t) return '&nbsp;';
+  let s=esc(t);
+  s=s.replace(/('[^']*')/g,'<span class="c-str">$1</span>');
+  s=s.replace(/(&lt;\/?)([A-Z][A-Za-z.]*)/g,'$1<span class="c-tag">$2</span>');
+  s=s.replace(/\b(import|from|export|default|function|const|return)\b/g,'<span class="c-kw">$1</span>');
+  return s;
+}
+function devEl(k,inner,cls){
+  return `<div class="d-el ${cls||''}${state.focus===k?' on':''}" role="button" tabindex="0" aria-label="Show what this becomes: ${esc(MAP[k].code)}" onclick="event.stopPropagation();setFocus('${k}')" onkeydown="event.stopPropagation();onKey(event,()=>setFocus('${k}'))">${inner}</div>`;
+}
+const CHAI_SVG = `<svg viewBox="0 0 200 118" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect width="200" height="118" fill="#F6E7CF"/><circle cx="160" cy="22" r="40" fill="#F2B33D" opacity=".35"/><path d="M62 46h62l-6 46a10 10 0 0 1-10 9H78a10 10 0 0 1-10-9z" fill="#fff" stroke="#16181D" stroke-width="3"/><path d="M124 56h8a12 12 0 0 1 0 24h-10" fill="none" stroke="#16181D" stroke-width="3"/><path d="M66 56h54" stroke="#C9864A" stroke-width="8"/><path d="M80 36c-4-6 4-10 0-16M94 36c-4-6 4-10 0-16M108 36c-4-6 4-10 0-16" fill="none" stroke="#16181D" stroke-width="2.4" stroke-linecap="round" opacity=".55"/></svg>`;
+function renderDevice(){
+  const p=state.plat;
+  const title="Order 42";
+  const content=(btn)=>devEl('view',`<div class="body">${devEl('image',`<div class="photo">${CHAI_SVG}</div>`)}${devEl('text','<div class="t1">Masala chai, 2 cups</div><div class="t2">Arriving in 12 min</div>')}${devEl('share',`<div class="act"><span>${btn}</span></div>`)}</div>`,'');
+  if(p==='web'){
+    return `<div class="browser webv">
+      <div class="chrome"><span class="tl"><span></span><span></span><span></span></span><span class="nav" aria-hidden="true">‹ ›</span>${devEl('url','<div class="urlbar">chai.example/orders/42</div>','url-wrap')}</div>
+      ${devEl('header',`<div class="navbar web">${title}</div>`)}
+      ${content('Copy link')}
+    </div>`;
+  }
+  if(p==='ios'){
+    return `<div class="phone"><div class="scr">
+      <div class="sb"><span>9:41</span><span class="island"></span><span class="ic"><i></i><i></i></span></div>
+      ${devEl('header',`<div class="navbar ios"><span class="bk">‹ Orders</span>${title}</div>`)}
+      ${content('Share')}
+      <div class="gbar"></div>
+    </div></div>`;
+  }
+  return `<div class="phone android"><div class="scr">
+    <div class="sb"><span>9:41</span><span class="punch"></span><span class="ic"><i></i><i></i></span></div>
+    ${devEl('header',`<div class="navbar android"><span aria-hidden="true">←</span>${title}</div>`)}
+    ${content('Share')}
+    <div class="gbar"></div>
+  </div></div>`;
+}
+function renderScreens(){
+  const code=CODE_LINES.map((l,n)=>{
+    const k=l.k, on=k&&k===state.focus;
+    const attrs=k?` role="button" tabindex="0" aria-label="Line ${n+1}: show what this becomes" onclick="setFocus('${k}')" onkeydown="onKey(event,()=>setFocus('${k}'))"`:'';
+    return `<div class="ln${k?' hot':''}${on?' on':''}"${attrs}><span class="no">${n+1}</span><span class="tx">${hl(l.t)}</span></div>`;
+  }).join('');
+  const m=MAP[state.focus];
+  const rows=PLATS.map(pl=>`<div class="map-row${pl.id===state.plat?' cur':''}"><span class="mp">${pl.label}</span><span>${fmt(m[pl.id])}</span></div>`).join('');
+  const seg=PLATS.map(pl=>`<button class="seg-btn" aria-pressed="${state.plat===pl.id}" onclick="setPlat('${pl.id}')">${pl.label}</button>`).join('');
+  return `<h3 class="tool-h">One codebase, three screens</h3>
+    <p class="intro">This is a real Expo Router screen. Switch platforms to see the same file render on each, then tap a highlighted line of code or a part of the screen to see what it becomes underneath.</p>
+    <div class="screens">
+      <div>
+        <div class="codebox" aria-label="Code for src/app/orders/[id].tsx"><div class="file">src/app/orders/[id].tsx</div>${code}</div>
+        <p class="hint">Highlighted lines are tappable. The route comes from the file name: <code>[id].tsx</code> handles /orders/42.</p>
+      </div>
+      <div class="stage">
+        <div class="seg" role="group" aria-label="Platform">${seg}</div>
+        <div class="device">${renderDevice()}</div>
+        <div class="mapcard" aria-live="polite">
+          <div class="mh"><code>${esc(m.code)}</code><p>${fmt(m.what)}</p></div>
+          ${rows}
+          <div class="mapnote">${fmt(m.note)}</div>
+        </div>
+      </div>
+    </div>`;
+}
+function setPlat(p){ state.plat=p; render(); }
+function setFocus(k){ state.focus=k; render(); }
+
+function shipRows(c){
+  const msg=c.msg||'…';
+  const web={pl:'Web', a:c.kind==='build'?'Redeploy the web build too, if the change shows on the web':'Redeploy the web build', cmd:'npx expo export -p web, then deploy', w:'Live minutes after the deploy finishes'};
+  const ota=(pl)=>({pl, a:'Publish an EAS Update', cmd:`eas update --channel production --message "${msg}"`, w:'Downloads in the background; by default users see it the next time the app starts'});
+  const build=(pl,flag)=>({pl, a:'New build, submit, store review', cmd:`eas build -p ${flag} --profile production, then eas submit -p ${flag}`, w:'Reaches users once the build passes review'});
+  const idle=(pl)=>({pl, a:'Nothing to ship', cmd:'', w:'This file is never bundled for phones', idle:true});
+  if(c.kind==='ota') return [web, ota('iOS'), ota('Android')];
+  if(c.kind==='build') return [web, build('iOS','ios'), build('Android','android')];
+  return [web, idle('iOS'), idle('Android')];
+}
+function renderShip(){
+  const list=CHANGES.map(c=>`<button class="chg" aria-pressed="${state.change===c.id}" onclick="setChange('${c.id}')"><span class="ci" aria-hidden="true">${c.icon}</span><span>${fmt(c.label)}</span></button>`).join('');
+  const c=CHANGES.find(x=>x.id===state.change);
+  let right;
+  if(!c){
+    right=`<div class="ship-empty"><strong>Pick a change on the left.</strong>You will see whether it can reach installed apps over the air, needs a new build and store review, or only touches the web.</div>`;
+  } else {
+    const k=KINDS[c.kind];
+    const rows=shipRows(c).map(r=>`<div class="prow${r.idle?' idle':''}"><span class="pl">${r.pl}</span><div><div class="pa">${r.a}</div>${r.cmd?`<div class="pc">${esc(r.cmd)}</div>`:''}<div class="pw">${r.w}</div></div></div>`).join('');
+    right=`<div class="verdict" aria-live="polite"><div class="vh"><span class="kind ${k.cls}">${k.label}</span><p class="sub">${k.sub}</p><p class="why">${fmt(c.why)}</p></div>${rows}</div>`;
+  }
+  return `<h3 class="tool-h">Ship router</h3>
+    <p class="intro">The question every app team answers daily: you changed something, so how does it reach people? JavaScript can travel over the air with EAS Update; anything native needs a new build and a store review; the web just redeploys.</p>
+    <div class="ship"><div class="chg-list" role="group" aria-label="What did you change?">${list}</div><div>${right}</div></div>`;
+}
+function setChange(id){ state.change=id; render(); }
+
+function assemblePrompt(){
+  const t=TASKS[state.task], g=state.ing, out=[];
+  if(g.plan) out.push(PLAN);
+  out.push(t.base);
+  if(g.outcome) out.push(t.outcome);
+  if(g.platforms) out.push(t.platforms);
+  if(g.context) out.push(t.context);
+  if(g.constraints) out.push(CONSTRAINTS);
+  if(g.verify) out.push(t.verify);
+  return out.join('\n\n');
+}
+function renderSharp(){
+  const taskBtns=Object.keys(TASKS).map(k=>`<button class="pill" aria-pressed="${state.task===k}" onclick="setTask('${k}')">${TASKS[k].label}</button>`).join('');
+  const ings=INGREDIENTS.map(i=>`<button class="ing" aria-pressed="${state.ing[i.id]}" onclick="toggleIng('${i.id}')"><span class="sw" aria-hidden="true"></span><span><span class="il">${i.label}</span><span class="is" style="display:block">${i.sub}</span></span></button>`).join('');
+  const n=Object.values(state.ing).filter(Boolean).length;
+  const lvl=n<=1?'Vague: Claude will guess':n<=3?'Better: still gaps':n<=5?'Sharp':'Sharp, with a plan';
+  const meter=INGREDIENTS.map((_,i)=>`<i class="${i<n?'f':''}"></i>`).join('');
+  const missing=['verify','outcome','platforms','context','constraints','plan'].find(id=>!state.ing[id]);
+  const tip=missing?`<div class="tip"><b>Next to add: ${INGREDIENTS.find(i=>i.id===missing).label}.</b> ${TIPS[missing]}</div>`:`<div class="tip"><b>Ready to paste.</b> Claude has an outcome, a scope, house rules, a plan step and a check it can run and show you.</div>`;
+  return `<h3 class="tool-h">Prompt sharpener</h3>
+    <p class="intro">Pick a task, then switch on the ingredients Anthropic's best-practices guide and Expo's tutorial recommend. Watch a one-line request become a prompt you can hand over and walk away from.</p>
+    <div class="sharp">
+      <div>
+        <span class="field-lbl">Task</span>
+        <div class="task-row" role="group" aria-label="Task">${taskBtns}</div>
+        <span class="field-lbl">Ingredients</span>
+        <div role="group" aria-label="Prompt ingredients">${ings}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;"><button class="btn ghost" onclick="allIng(true)">All on</button><button class="btn ghost" onclick="allIng(false)">Reset</button></div>
+      </div>
+      <div class="out">
+        <div class="out-h"><span class="lvl">${lvl}</span><span class="meter" aria-label="${n} of ${INGREDIENTS.length} ingredients">${meter}</span></div>
+        <pre class="prompt" aria-live="polite">${esc(assemblePrompt())}</pre>
+        ${tip}
+        <div class="out-actions"><button class="btn" onclick="copyPrompt()">${state.copied?'Copied ✓':'Copy prompt'}</button></div>
+      </div>
+    </div>
+    <p class="src-note">Ingredients drawn from <a href="https://code.claude.com/docs/en/best-practices" target="_blank" rel="noopener">Claude Code: Best practices</a> and Expo's Build with AI tutorial. File paths in the examples are illustrative.</p>`;
+}
+function setTask(k){ state.task=k; state.copied=false; render(); }
+function toggleIng(id){ state.ing[id]=!state.ing[id]; state.copied=false; render(); }
+function allIng(v){ Object.keys(state.ing).forEach(k=>state.ing[k]=v); state.copied=false; render(); }
+function copyPrompt(){
+  const text=assemblePrompt();
+  const done=()=>{ state.copied=true; render(); setTimeout(()=>{ state.copied=false; if(state.view==='studio'&&state.tool==='sharp') render(); },1600); };
+  try{
+    if(navigator.clipboard&&window.isSecureContext){ navigator.clipboard.writeText(text).then(done).catch(fallbackCopy); }
+    else fallbackCopy();
+  }catch(e){ fallbackCopy(); }
+  function fallbackCopy(){
+    const ta=document.createElement('textarea'); ta.value=text; ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    let ok=false; try{ ok=document.execCommand('copy'); }catch(e){ ok=false; }
+    document.body.removeChild(ta);
+    if(ok) done();
+  }
+}
+
+/* ================= LEARN ================= */
+function renderLearn(){
+  const ranks=RESOURCES.map((r,i)=>`
+    <div class="rk">
+      <div class="num">${i+1}</div>
+      <div class="rb">
+        <div class="rtop"><h4>${esc(r.name)}</h4><span class="rtype">${esc(r.type)}</span></div>
+        <div class="rmeta">${esc(r.meta)}</div>
+        <p><b>What it is:</b> ${fmt(r.what)}</p>
+        <p><b>Why it made the cut:</b> ${fmt(r.why)}</p>
+        <p><b>How to use it:</b> ${fmt(r.how)}</p>
+        ${r.caveat?`<div class="caveat">${fmt(r.caveat)}</div>`:''}
+        <a class="rlink" href="${r.link}" target="_blank" rel="noopener">Open ↗</a>
+      </div>
+    </div>`).join('');
+  const days=DAYS.map(d=>`<div class="day"><span class="dn">Day ${d.d} · ${d.res}</span><h4>${esc(d.h)}</h4><p>${fmt(d.p)}</p><div class="do"><b>Do:</b> ${fmt(d.t)}</div></div>`).join('');
+  const left=LEFT_OUT.map(l=>`<div><b>${esc(l.n)}</b>${fmt(l.w)}</div>`).join('');
+  return `<p class="intro">Chosen with the signal-in-noise method: every resource web-verified on 16 October 2026 and ranked by leverage for someone who builds by directing Claude Code. All five are free. Timing note: <code>npx create-expo-app</code> still makes SDK 57 projects until the SDK 58 Expo Go app reaches the stores; when it does, ask Claude to upgrade with the expo-upgrade skill.</p>
+    <h3 class="lh">The only 5 resources you need, ranked</h3>
+    <div class="ranks">${ranks}</div>
+    <h3 class="lh">Your 7-day path, using only these 5</h3>
+    <div class="days">${days}</div>
+    <h3 class="lh">Deliberately left out</h3>
+    <div class="left">${left}</div>
+    <div class="rule"><b>The rule.</b> For the next 7 days: no new resources. If something confuses you, ask in the Expo Discord or ask Claude with the Expo skills loaded. Do not go hunting for another tutorial.</div>`;
+}
+
+/* ================= ROOT ================= */
+function setView(v){
+  if(!VIEWS.includes(v)) return;
+  state.view=v; state.openIdx=null; renderModal(); render();
+  try{ history.replaceState(null,'','#'+v); }catch(e){}
+}
+function render(keepFocus){
+  document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected', String(t.dataset.view===state.view)));
+  const main=document.getElementById('main');
+  main.innerHTML = state.view==='library'?renderLibrary() : state.view==='studio'?renderStudio() : state.view==='practice'?renderPractice() : renderLearn();
+  if(keepFocus){ const i=document.getElementById('searchInput'); if(i){ i.focus(); const n=i.value.length; i.setSelectionRange(n,n); } }
+}
+resetQuiz();
+(function init(){
+  const h=(location.hash||'').slice(1);
+  if(VIEWS.includes(h)) state.view=h;
+  render();
+})();
+window.addEventListener('hashchange',()=>{ const h=location.hash.slice(1); if(VIEWS.includes(h)&&h!==state.view){ state.view=h; render(); } });
+</script>
+</body>
+</html>
