@@ -202,6 +202,8 @@ function section(s, k, total) {
   const id = `sec-${pad(k + 1)}`;
   const paras = (s.html || []).map((h) => `<p>${h}</p>`).join('');
   const list = s.list ? `<ul class="wp-list">${s.list.map((li) => `<li>${li}</li>`).join('')}</ul>` : '';
+  // Paragraphs that continue after the list.
+  const after = (s.after || []).map((h) => `<p>${h}</p>`).join('');
   const stats = s.stats
     ? `<dl class="wp-stats">${s.stats
         .map((st) => `<div class="wp-stat"><dt>${esc(st.label)}</dt><dd>${esc(st.value)}</dd></div>`)
@@ -213,7 +215,7 @@ function section(s, k, total) {
           <p class="wp-sec-idx mono" aria-hidden="true"><span>${pad(k + 1)}</span><span class="wp-sec-of">/ ${pad(total)}</span></p>
           <h2 class="wp-sec-title" id="${id}">${esc(s.h)}</h2>
         </div>
-        <div class="wp-sec-body">${paras}${list}${stats}</div>
+        <div class="wp-sec-body">${paras}${list}${after}${stats}</div>
       </section>`;
 }
 

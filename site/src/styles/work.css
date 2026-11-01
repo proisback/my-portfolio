@@ -354,7 +354,7 @@
 .wp-sec-of { font-size: var(--fs-xs); color: var(--ink-3); letter-spacing: 0.1em; }
 .wp-sec-title { margin-top: 14px; font-size: var(--fs-xl); line-height: 1.15; max-width: 16ch; text-wrap: balance; }
 .wp-sec-body { font-size: 1.0625rem; line-height: 1.75; text-wrap: pretty; }
-.wp-sec-body > p + p, .wp-sec-body > p + ul, .wp-sec-body > p + dl { margin-top: 1.1em; }
+.wp-sec-body > p + p, .wp-sec-body > p + ul, .wp-sec-body > p + dl, .wp-sec-body > ul + p { margin-top: 1.1em; }
 .wp-sec-body strong { font-weight: 600; }
 .wp-sec-body a { color: var(--blue); text-underline-offset: 3px; }
 
