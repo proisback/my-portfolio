@@ -295,15 +295,14 @@
 .pod-hub svg { width: 30px; height: 30px; }
 .pod-wheel--word .pod-hub svg { width: 22px; height: 22px; }
 
-/* The old model: a straight line that dead-ends, faded and crossed out. */
+/* The old model: two grey steps (no marigold, so they read as before) and an
+   arrow cut by a small cross: the path doesn't connect. */
 .pod-line {
-  position: relative; display: flex; align-items: center; justify-content: center; gap: 12px;
-  width: fit-content; margin: 0 auto; padding: 6px 10px;
-  font-size: 1.0625rem; font-weight: 700; letter-spacing: -0.015em; color: var(--ink-3); opacity: 0.75;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 14px;
+  font-size: 1.0625rem; font-weight: 700; letter-spacing: -0.015em; color: var(--ink-2);
 }
-.pod-line-arrow, .pod-line-stop { flex: none; }
-.pod-strike { position: absolute; left: 0; top: 50%; width: 100%; height: 16px; transform: translateY(-50%) rotate(-2.5deg); overflow: visible; }
-.pod-strike path { fill: none; stroke: var(--ink); stroke-width: 2.5px; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.pod-break { flex: none; stroke: var(--ink-3); }
+.pod-break .pod-break-x { stroke: var(--ink); stroke-width: 2.25; }
 
 @media (max-width: 600px) {
   /* Phones: the wheel unrolls into a column, and a bracket on the right
@@ -329,9 +328,8 @@
   .pod-wheel--word .pod-hub svg { display: none; }
   .pod-wheel--word .pod-hub span { writing-mode: vertical-rl; transform: rotate(180deg); }
   .pod-hub svg { width: 22px; height: 22px; }
-  .pod-line { gap: 8px; padding: 6px 4px; font-size: 0.9375rem; }
-  .pod-line-arrow { width: 28px; }
-  .pod-line-stop { width: 16px; }
+  .pod-line { gap: 6px 10px; font-size: 0.9375rem; }
+  .pod-break { width: 52px; }
 }
 
 /* ---------- Print (all generated pages, tuned for read/) ---------- */

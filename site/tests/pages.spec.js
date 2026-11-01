@@ -144,7 +144,7 @@ test.describe('podcast page', () => {
 
     // Every block in order. A flow keeps its sentence for screen readers and
     // draws each step: around a wheel (a closing 'repeat' moves to the hub),
-    // or as the struck-out straight line.
+    // or as the straight line with a broken arrow.
     const blocks = page.locator('.pod-story-body > *');
     await expect(blocks).toHaveCount(PODCAST.story.body.length);
     for (const [i, b] of PODCAST.story.body.entries()) {
@@ -154,8 +154,9 @@ test.describe('podcast page', () => {
       }
       await expect(blocks.nth(i).locator('.visually-hidden')).toHaveText(b.route);
       const steps = stepsOf(b.route);
-      if (b.struck) {
-        await expect(blocks.nth(i)).toHaveClass(/pod-flow--struck/);
+      if (b.broken) {
+        await expect(blocks.nth(i)).toHaveClass(/pod-flow--broken/);
+        await expect(blocks.nth(i).locator('.pod-break')).toHaveCount(steps.length - 1);
         await expect(blocks.nth(i).locator('.pod-step')).toHaveText(steps);
       } else {
         const hub = steps.at(-1) === 'repeat' ? steps.pop() : '';

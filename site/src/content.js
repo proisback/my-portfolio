@@ -792,7 +792,7 @@ export const PODCAST = {
       "I've seen my followers and impressions grow by roughly 50–60%, and more importantly, I've started building a network of PMs, founders, builders and people interested in Product.",
       'So today I think about my transition very differently.',
       "It wasn't:",
-      { route: 'Learn Product → get a Product job.', struck: true },
+      { route: 'Learn Product → get a Product job.', broken: true },
       'It became:',
       { route: "Learn → build → put it in front of users → get feedback → iterate → share what I'm learning → build distribution → repeat." },
       "And I'm still in the middle of it.",

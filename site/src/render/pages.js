@@ -476,23 +476,20 @@ function player(a) {
       </section>`;
 }
 
-const LONG_ARROW =
-  '<svg class="pod-line-arrow" viewBox="0 0 40 12" width="40" height="12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h35M31 1.5 37 6l-6 4.5"/></svg>';
-const DEAD_END =
-  '<svg class="pod-line-stop" viewBox="0 0 22 16" width="22" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 8h16M19 2v12"/></svg>';
-const STRIKE =
-  '<svg class="pod-strike" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><path d="M1 6.5C18 3.5 34 7.5 52 5s32-2 47 1.5"/></svg>';
+// An arrow cut in the middle by a small cross: the path doesn't connect.
+const BROKEN_ARROW =
+  '<svg class="pod-break" viewBox="0 0 64 16" width="64" height="16" aria-hidden="true" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h20M42 8h19M55 3l6 5-6 5"/><path class="pod-break-x" d="M28 4l8 8M36 4l-8 8"/></svg>';
 
 // The story's flows. A loop becomes a flywheel: steps around a rim with an
 // arrowhead between each pair, and a closing "repeat" in the hub. The old
-// model ({ struck }) is a straight line that dead-ends, crossed out. Screen
-// readers get the sentence as written; the drawing is hidden from them.
+// model ({ broken }) is a straight line whose arrow is cut. Screen readers
+// get the sentence as written; the drawing is hidden from them.
 function flow(b) {
   const steps = b.route.replace(/\.$/, '').split(' → ');
   const said = `<p class="visually-hidden">${esc(b.route)}</p>`;
   const step = (s) => `<span class="pod-step">${esc(s)}</span>`;
-  if (b.struck) {
-    return `<figure class="pod-flow pod-flow--struck">${said}<div class="pod-line" aria-hidden="true">${steps.map(step).join(LONG_ARROW)}${DEAD_END}${STRIKE}</div></figure>`;
+  if (b.broken) {
+    return `<figure class="pod-flow pod-flow--broken">${said}<div class="pod-line" aria-hidden="true">${steps.map(step).join(BROKEN_ARROW)}</div></figure>`;
   }
 
   const hub = steps.at(-1) === 'repeat' ? steps.pop() : '';
