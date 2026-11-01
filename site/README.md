@@ -1,6 +1,6 @@
 # Prateek Mehta: the flight portfolio
 
-A scroll-driven 3D flight over the cities that shaped a career (Mumbai → Jamshedpur → Chennai → Mumbai), drawn in blueprint ink that fills with color as it reaches 2026, then a split-flap departures board of seven AI products.
+A scroll-driven 3D flight over the cities that shaped a career (Mumbai → Jamshedpur → Chennai → Mumbai), drawn in blueprint ink that fills with color as it reaches 2026, then a split-flap departures board of nine products.
 
 Built with Vite, Three.js and GSAP. No model files: every building, the plane and the marigold AI sidekick are generated in code, so the whole 3D experience is about 200 KB gzipped.
 

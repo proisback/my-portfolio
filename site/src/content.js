@@ -8,7 +8,7 @@ export const SITE = {
   base: '/my-portfolio/',
   title: 'Prateek Mehta | Product Manager who builds with AI',
   description:
-    'Prateek Mehta, Product Manager in Mumbai who builds with AI. Fly through eight years of operations work and the seven AI products built in 2026.',
+    'Prateek Mehta, Product Manager in Mumbai who builds with AI. Fly through eight years of operations work and the nine products built in 2026.',
   url: 'https://proisback.github.io/my-portfolio/',
 };
 
@@ -33,7 +33,7 @@ export const STATS = [
   { value: '8+', label: 'Years in business analysis & ops', hero: true },
   { value: '180+', label: 'Research data points' },
   { value: '30%', label: 'Avg efficiency gain' },
-  { value: '7', label: 'AI products built in 2026', hero: true },
+  { value: '9', label: 'Products built in 2026', hero: true },
 ];
 
 // The hero boarding pass. Design copy, no facts beyond the profile.
@@ -197,7 +197,7 @@ export const SEGMENTS = [
     label: 'Mumbai, tonight',
     thesis: true,
     title: 'Stop fixing systems. Start building them.',
-    body: ['Seven built in 2026. All boarding now.'],
+    body: ['Nine built in 2026. All boarding now.'],
   },
 ];
 

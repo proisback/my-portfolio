@@ -2,7 +2,7 @@
 
 ## What this is
 
-A personal portfolio website for Prateek Mehta: a scroll-driven 3D "flight" over his real career cities (Mumbai → Jamshedpur → Chennai → Mumbai) that turns from blueprint ink into full color as it reaches 2026, followed by a split-flap departures board of his 7 AI products. Two audiences: PM hiring managers first, prospective site-build clients second (a small "I build sites like this" section, no price anywhere).
+A personal portfolio website for Prateek Mehta: a scroll-driven 3D "flight" over his real career cities (Mumbai → Jamshedpur → Chennai → Mumbai) that turns from blueprint ink into full color as it reaches 2026, followed by a split-flap departures board of his 9 products. Two audiences: PM hiring managers first, prospective site-build clients second (a small "I build sites like this" section, no price anywhere).
 
 The live site lives in **`site/`** (Vite + Three.js + GSAP, vanilla ES modules, no React). The old hand-written site at the repo root (`index.html`, `styles-v3.css`, `script.js`) is kept as **legacy** and is no longer deployed. Design spec and plan: `docs/superpowers/specs/2026-10-09-flight-portfolio-design.md`, `docs/superpowers/plans/2026-10-09-flight-portfolio.md`.
 

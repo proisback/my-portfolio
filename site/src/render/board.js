@@ -1,4 +1,4 @@
-// Departures board: a split-flap airport board listing the seven products.
+// Departures board: a split-flap airport board listing the products.
 // Every word is in the HTML; src/board.js turns the [data-flap] spans into
 // flap cells and src/pass.js plays the boarding pass on click.
 import { PRODUCTS, CITIES } from '../content.js';
@@ -90,7 +90,7 @@ export function board() {
   <div class="section-inner">
     <header class="board-intro">
       <p class="section-label">Now boarding</p>
-      <h2 class="section-title board-title" id="board-title">${PRODUCTS.length} AI products built in 2026</h2>
+      <h2 class="section-title board-title" id="board-title">${PRODUCTS.length} products built in 2026</h2>
       <p class="board-hint mono">Pick a flight to read the case study</p>
     </header>
     <div class="board">
