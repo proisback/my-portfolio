@@ -476,10 +476,54 @@ function player(a) {
       </section>`;
 }
 
+const LONG_ARROW =
+  '<svg class="pod-line-arrow" viewBox="0 0 40 12" width="40" height="12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h35M31 1.5 37 6l-6 4.5"/></svg>';
+const DEAD_END =
+  '<svg class="pod-line-stop" viewBox="0 0 22 16" width="22" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 8h16M19 2v12"/></svg>';
+const STRIKE =
+  '<svg class="pod-strike" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><path d="M1 6.5C18 3.5 34 7.5 52 5s32-2 47 1.5"/></svg>';
+
+// The story's flows. A loop becomes a flywheel: steps around a rim with an
+// arrowhead between each pair, and a closing "repeat" in the hub. The old
+// model ({ struck }) is a straight line that dead-ends, crossed out. Screen
+// readers get the sentence as written; the drawing is hidden from them.
+function flow(b) {
+  const steps = b.route.replace(/\.$/, '').split(' → ');
+  const said = `<p class="visually-hidden">${esc(b.route)}</p>`;
+  const step = (s) => `<span class="pod-step">${esc(s)}</span>`;
+  if (b.struck) {
+    return `<figure class="pod-flow pod-flow--struck">${said}<div class="pod-line" aria-hidden="true">${steps.map(step).join(LONG_ARROW)}${DEAD_END}${STRIKE}</div></figure>`;
+  }
+
+  const hub = steps.at(-1) === 'repeat' ? steps.pop() : '';
+  const n = steps.length;
+  const R = 36; // rim radius, % of the wheel's width
+  const at = (turn) => [Math.sin(turn * 2 * Math.PI), -Math.cos(turn * 2 * Math.PI)];
+  const items = steps
+    .map((s, i) => {
+      const [x, y] = at(i / n);
+      return `<li style="--x:${(50 + R * x).toFixed(2)}%;--y:${(50 + R * y).toFixed(2)}%">${step(s)}</li>`;
+    })
+    .join('');
+  // Arrowheads sit midway between steps, pointing clockwise along the rim.
+  const heads = steps
+    .map((_, i) => {
+      const t = (i + 0.5) / n;
+      const [x, y] = at(t);
+      return `<path d="M-3 -3.6 2.2 0-3 3.6" transform="translate(${(R * 2 * x).toFixed(2)} ${(R * 2 * y).toFixed(2)}) rotate(${(t * 360).toFixed(1)})"/>`;
+    })
+    .join('');
+  return `<figure class="pod-flow pod-flow--wheel">${said}<div class="pod-wheel${hub ? ' pod-wheel--word' : ''}" style="--n:${n}" aria-hidden="true">
+            <svg class="pod-rim" viewBox="-100 -100 200 200"><circle r="${R * 2}"/>${heads}</svg>
+            <ol class="pod-steps">${items}</ol>
+            <span class="pod-hub">${ICON.loop}${hub ? `<span>${esc(hub)}</span>` : ''}</span>
+          </div></figure>`;
+}
+
 function storyBlock(b) {
   if (typeof b === 'string') return `<p>${esc(b)}</p>`;
   if (b.key) return `<p class="pod-key"><span>${esc(b.key)}</span></p>`;
-  return `<p class="pod-route mono">${b.route.split(' → ').map(esc).join(' <span class="pod-arrow">→</span> ')}</p>`;
+  return flow(b);
 }
 
 export function podcastPage() {

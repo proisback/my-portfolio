@@ -115,6 +115,7 @@ test.describe('comic page', () => {
 
 test.describe('podcast page', () => {
   const blockText = (b) => (typeof b === 'string' ? b : b.key || b.route);
+  const stepsOf = (route) => route.replace(/\.$/, '').split(' → ');
 
   test('episode, full transcript and the written story are in the HTML', async ({ page, request, errors }) => {
     const res = await page.goto('podcast/', { waitUntil: 'load' });
@@ -141,9 +142,30 @@ test.describe('podcast page', () => {
     await expect(page.locator('.pod-note')).toHaveCount(1);
     await expect(page.locator('.pod-note')).toHaveText(/2026 CPO Insights Report from Products That Count/);
 
-    await expect(page.locator('.pod-story-body > p')).toHaveText(PODCAST.story.body.map(blockText));
+    // Every block in order. A flow keeps its sentence for screen readers and
+    // draws each step: around a wheel (a closing 'repeat' moves to the hub),
+    // or as the struck-out straight line.
+    const blocks = page.locator('.pod-story-body > *');
+    await expect(blocks).toHaveCount(PODCAST.story.body.length);
+    for (const [i, b] of PODCAST.story.body.entries()) {
+      if (!b.route) {
+        await expect(blocks.nth(i)).toHaveText(blockText(b));
+        continue;
+      }
+      await expect(blocks.nth(i).locator('.visually-hidden')).toHaveText(b.route);
+      const steps = stepsOf(b.route);
+      if (b.struck) {
+        await expect(blocks.nth(i)).toHaveClass(/pod-flow--struck/);
+        await expect(blocks.nth(i).locator('.pod-step')).toHaveText(steps);
+      } else {
+        const hub = steps.at(-1) === 'repeat' ? steps.pop() : '';
+        await expect(blocks.nth(i).locator('.pod-steps li')).toHaveText(steps);
+        await expect(blocks.nth(i).locator('.pod-rim path')).toHaveCount(steps.length);
+        await expect(blocks.nth(i).locator('.pod-hub')).toHaveText(hub);
+      }
+    }
     await expect(page.locator('.pod-key')).toHaveCount(PODCAST.story.body.filter((b) => b.key).length);
-    await expect(page.locator('.pod-route')).toHaveCount(PODCAST.story.body.filter((b) => b.route).length);
+    await expect(page.locator('.pod-flow')).toHaveCount(PODCAST.story.body.filter((b) => b.route).length);
 
     await expect(page.locator('footer a', { hasText: FOOTER.podcast.label })).toHaveAttribute('aria-current', 'page');
     await page.waitForTimeout(300);
