@@ -121,7 +121,8 @@ test.describe('podcast page', () => {
     expect(res.status()).toBe(200);
     await expect(page).toHaveTitle(`${PODCAST.title} | ${PROFILE.name}`);
     await expect(page.locator('h1')).toHaveText(PODCAST.title);
-    await expect(page.locator('.pod-meta')).toHaveText(PODCAST.audio.meta);
+    // The page doesn't name the tool or describe the voices.
+    await expect(page.locator('body')).not.toContainText(/Speechify|AI hosts|AI voices/i);
 
     // The episode only downloads on play, and the file it points at is served as MP3.
     const audio = page.locator('.pod-audio');

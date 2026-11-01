@@ -465,7 +465,6 @@ function player(a) {
   return `
       <section class="pod-player" aria-label="Podcast player">
         <p class="pod-head mono"><span>${esc(a.label)}</span><span>${esc(a.duration)}</span></p>
-        <p class="pod-meta">${esc(a.meta)}</p>
         <audio class="pod-audio" src="${esc(href(a.src))}" preload="none" controls></audio>
         <div class="pod-controls" hidden>
           <button class="pod-play" type="button" aria-label="Play">${ICON.play}${ICON.pause}</button>
@@ -517,7 +516,7 @@ export function podcastPage() {
 
   return doc({
     title: `${title} | ${PROFILE.name}`,
-    description: `${title}: a 10-minute AI podcast made from ${PROFILE.name}'s story of moving from Business Analysis into Product, with the story in his own words.`,
+    description: `${title}: a 10-minute podcast on ${PROFILE.name}'s move from Business Analysis into Product, with the story in his own words.`,
     path: 'podcast/',
     page: 'podcast',
     body,

@@ -700,21 +700,21 @@ export const COMIC = {
   ],
 };
 
-// "Stop Trying to Get Hired" (podcast/): an AI podcast Speechify made from
-// Prateek's written story, which sits below the player in his own words.
+// "Stop Trying to Get Hired" (podcast/): a podcast episode made (with
+// Speechify) from Prateek's written story, which sits below the player in his
+// own words. The page itself doesn't name the tool or the voices.
 // Both texts are verbatim from docs/ except em-dashes, one spelling fix
 // (Lovable) and a bracketed note naming the report Daniel cites.
 export const PODCAST = {
   title: 'Stop Trying to Get Hired',
   accent: 'Get Hired',
   kicker: 'Podcast · 10 min listen',
-  lead: 'Two AI hosts talk through how I moved from Business Analysis into Product. I made it with Speechify from the story below.',
+  lead: 'How I moved from Business Analysis into Product. Listen to the episode, or read the story it came from below.',
   audio: {
     src: 'audio/stop-trying-to-get-hired.mp3',
     duration: '10:04',
     seconds: 604,
     label: 'In-flight audio',
-    meta: 'Hosts: Isabella and Daniel (AI voices) · Made with Speechify',
     error: "The audio didn't load. The full story is right below.",
   },
   transcriptLabel: 'Read the podcast transcript',

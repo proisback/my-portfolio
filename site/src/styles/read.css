@@ -212,7 +212,6 @@
   border-bottom: 1px dashed var(--blue-3);
   font-size: var(--fs-xs); letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue);
 }
-.pod-meta { margin-top: 12px; font-size: var(--fs-sm); line-height: 1.6; color: var(--ink-2); }
 .pod-audio { display: block; width: 100%; margin-top: 16px; }
 .pod-controls { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 14px; margin-top: 18px; }
 .pod-controls[hidden], .pod-error[hidden] { display: none; }
