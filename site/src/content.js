@@ -631,14 +631,14 @@ export const PRODUCTS = [
     month: 'OCT 26',
     status: 'LIVE',
     headline: 'Collect every rupee your members owe',
-    kind: 'Dues, Renewals and Check-ins for Small Indian Gyms',
+    kind: 'A phone-first operating system for small gyms to manage dues, renewals, check-ins and follow-ups',
     meta: 'Oct 2026 · Solo build',
     tagline:
       'Collect every rupee your members owe. Dues, renewals and check-ins for small Indian gyms, built solo in one week.',
     opener: {
       problem: "A gym's notebook doesn't say who owes money, whose plan is about to expire, or who has quietly stopped coming.",
       did: 'Built a phone-first gym app in one week: dues, part-payments, renewals, QR check-ins and one-tap WhatsApp reminders.',
-      result: 'A live demo, ready to set up for a real gym, with screens that load in under a second.',
+      result: 'Designed so an owner sees who owes, who is lapsing and who stopped coming, and acts in one tap.',
     },
     tags: ['Every Screen Points to Money', 'Speed Is a Feature', 'Fail Safely on Shared Phones'],
     image: 'products/repledger.jpg',
@@ -738,14 +738,14 @@ export const PRODUCTS = [
     month: 'NOV 26',
     status: 'PROTOTYPE',
     headline: 'Turn a BOQ into a reason to visit your showroom',
-    kind: 'BOQ → Options → Quote → Showroom Visit → Sale',
+    kind: 'Give customers product options and price clarity before they walk through the door',
     meta: 'Oct to Nov 2026 · Solo build',
     tagline:
       'Turn a BOQ into a reason to visit your showroom. A working concept for tile and sanitaryware showrooms, built solo in four days.',
     opener: {
       problem: 'Customers send the same BOQ to several showrooms. The one that gives useful answers early has a better chance of the next conversation.',
-      did: 'Built a phone-first flow: Claude reads the BOQ, the team sends Good, Better and Best options on WhatsApp, the customer books a visit.',
-      result: 'A working concept for customer, salesperson and owner, on 54 sample products from 13 brands, with 38 automated tests.',
+      did: 'Built a phone-first flow: AI-assisted BOQ parsing with catalogue-only matching, Good, Better and Best options on WhatsApp, and a booked visit.',
+      result: 'Designed to turn a BOQ into a showroom visit, measured by one number: BOQs that become visits.',
     },
     tags: ['Outcome Over Mechanism', 'AI With Guardrails', 'Explainable Numbers'],
     image: 'products/boq-se-quote.jpg',
@@ -793,10 +793,10 @@ export const PRODUCTS = [
       {
         h: 'AI with guardrails',
         html: [
-          'Claude reads the BOQ and maps its line items against the product catalogue.',
-          "But the model doesn't get to invent products.",
+          'BOQ parsing is AI-assisted, with catalogue-only matching and a deterministic fallback.',
+          "The model maps each line item against the product catalogue. But it doesn't get to invent products.",
           "It can only select from the available catalogue. If a requested item can't be matched, the system falls back rather than presenting a product the showroom doesn't sell.",
-          "There is also a fixed fallback reader so the demo can continue if the AI layer isn't available.",
+          "If the AI layer isn't available, the deterministic reader takes over, so the demo keeps working.",
           'The principle is simple:',
           '<strong>Use AI where it creates leverage. Put deterministic rules around anything that can create a bad customer experience.</strong>',
         ],
@@ -826,7 +826,7 @@ export const PRODUCTS = [
       },
       {
         h: 'Built in four days',
-        html: ['Built solo from <strong>29 October to 1 November 2026</strong> using Next.js and Claude.'],
+        html: ['Built solo from <strong>29 October to 1 November 2026</strong> with Next.js and AI-assisted parsing.'],
         list: [
           '54 sample products',
           '13 brands',
