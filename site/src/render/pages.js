@@ -1,6 +1,6 @@
 // Full-document renderers for the generated pages: one case study per product
-// (work/<slug>/), the plain "Quick read" view (read/) and the origin comic
-// (comic/). Pure functions returning HTML strings. They run in Node via
+// (work/<slug>/), the plain "Quick read" view (read/), the origin comic
+// (comic/) and the podcast (podcast/). Pure functions returning HTML strings. They run in Node via
 // scripts/generate-pages.mjs and are never shipped to the browser.
 import {
   SITE,
@@ -15,6 +15,7 @@ import {
   CONTACT,
   FOOTER,
   COMIC,
+  PODCAST,
 } from '../content.js';
 import { esc, href, link, ICON, barcode } from './shared.js';
 
@@ -120,6 +121,7 @@ function footer(current) {
       <nav class="pg-foot-links" aria-label="More from Prateek">
         ${link(PROFILE.calendly, esc(CONTACT.book))}
         ${link(FOOTER.comic.href, esc(FOOTER.comic.label), '', here('comic'))}
+        ${link(FOOTER.podcast.href, esc(FOOTER.podcast.label), '', here('podcast'))}
         <a href="${href('')}">Back to the flight</a>
       </nav>
       <div class="pg-foot-base mono"><span>${esc(FOOTER.credit)}</span><span>© 2026 ${esc(PROFILE.name)}</span></div>
@@ -275,13 +277,16 @@ function stopArticle(s) {
   const accolade = s.accolade
     ? `<p class="rp-accolade">${link(s.accolade.href, `${esc(s.accolade.text)} ${ICON.arrowUpRight}`)}</p>`
     : '';
+  const listen = s.listen
+    ? `<p class="rp-accolade"><a href="${esc(href(s.listen.href))}">${ICON.headphones}<span>${esc(s.listen.text)}</span></a></p>`
+    : '';
   return `
         <article class="rp-stop" id="${esc(s.id)}" aria-labelledby="${esc(s.id)}-title">
           <p class="rp-meta mono"><span class="rp-code">${esc(city.code)}</span><span>${esc(s.label)}</span><span class="rp-years">${esc(s.years)}</span></p>
           <h3 id="${esc(s.id)}-title">${esc(s.title)}</h3>
           ${role}
           ${s.body.map((b) => `<p>${esc(b)}</p>`).join('')}
-          ${metrics}${accolade}${s.quote ? quote(s.quote) : ''}
+          ${metrics}${accolade}${listen}${s.quote ? quote(s.quote) : ''}
           ${s.pull ? `<p class="rp-pull">${esc(s.pull)}</p>` : ''}
         </article>`;
 }
@@ -449,5 +454,73 @@ export function comicPage() {
     page: 'comic',
     body,
     current: 'comic',
+  });
+}
+
+/* ---------- Podcast ---------- */
+
+// A plain <audio controls> works with no JS; player.js swaps in the styled
+// controls (hidden until then) and owns the error message.
+function player(a) {
+  return `
+      <section class="pod-player" aria-label="Podcast player">
+        <p class="pod-head mono"><span>${esc(a.label)}</span><span>${esc(a.duration)}</span></p>
+        <p class="pod-meta">${esc(a.meta)}</p>
+        <audio class="pod-audio" src="${esc(href(a.src))}" preload="none" controls></audio>
+        <div class="pod-controls" hidden>
+          <button class="pod-play" type="button" aria-label="Play">${ICON.play}${ICON.pause}</button>
+          <input class="pod-seek" type="range" min="0" max="${a.seconds}" step="1" value="0" aria-label="Seek" aria-valuetext="0:00 of ${esc(a.duration)}">
+          <span class="pod-time mono" aria-hidden="true"><span class="pod-now">0:00</span> / <span class="pod-total">${esc(a.duration)}</span></span>
+          <button class="pod-speed mono" type="button"><span class="visually-hidden">Playback speed </span><span class="pod-rate">1×</span></button>
+        </div>
+        <p class="pod-error" role="alert" hidden>${esc(a.error)}</p>
+      </section>`;
+}
+
+function storyBlock(b) {
+  if (typeof b === 'string') return `<p>${esc(b)}</p>`;
+  if (b.key) return `<p class="pod-key"><span>${esc(b.key)}</span></p>`;
+  return `<p class="pod-route mono">${b.route.split(' → ').map(esc).join(' <span class="pod-arrow">→</span> ')}</p>`;
+}
+
+export function podcastPage() {
+  const { title, accent, story } = PODCAST;
+  const lines = PODCAST.transcript
+    .map((t) => `<p><span class="pod-who mono">${esc(t.who)}</span> ${esc(t.text)}${t.note ? ` <span class="pod-note">[${esc(t.note)}]</span>` : ''}</p>`)
+    .join('\n            ');
+
+  const body = `
+    <header class="cp-hero">
+      <p class="section-label">${esc(PODCAST.kicker)}</p>
+      <h1 class="cp-title">${esc(title.slice(0, -accent.length))}<span class="cp-title-accent">${esc(accent)}</span></h1>
+      <p class="cp-lead">${esc(PODCAST.lead)}</p>
+    </header>
+    <div class="pod">${player(PODCAST.audio)}
+      <details class="pod-transcript">
+        <summary>${ICON.book}<span>${esc(PODCAST.transcriptLabel)}</span></summary>
+        <div class="pod-lines">
+            ${lines}
+        </div>
+      </details>
+      <section class="pod-story" aria-labelledby="story-title">
+        <p class="section-label">${esc(story.kicker)}</p>
+        <h2 class="pod-story-title" id="story-title">${esc(story.title)}</h2>
+        <div class="pod-story-body">
+          ${story.body.map(storyBlock).join('\n          ')}
+        </div>
+      </section>
+    </div>
+    <div class="cp-end">
+      <a class="btn btn--ink" href="${href('')}">${ARROW.left}<span>Back to home</span></a>
+      <a class="btn btn--ghost" href="${href('')}#board">${ICON.plane}<span>See the products</span></a>
+    </div>`;
+
+  return doc({
+    title: `${title} | ${PROFILE.name}`,
+    description: `${title}: a 10-minute AI podcast made from ${PROFILE.name}'s story of moving from Business Analysis into Product, with the story in his own words.`,
+    path: 'podcast/',
+    page: 'podcast',
+    body,
+    current: 'podcast',
   });
 }

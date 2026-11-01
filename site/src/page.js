@@ -1,6 +1,7 @@
-// Entry for the generated pages (work/<slug>/, read/, comic/).
+// Entry for the generated pages (work/<slug>/, read/, comic/, podcast/).
 // The boarding pass entrance is pure CSS (work.css) so it plays before this
-// module loads; this file only adds reveal-on-scroll.
+// module loads; this file adds reveal-on-scroll, and the podcast player's
+// controls where there is one.
 import '@fontsource/sora/400.css';
 import '@fontsource/sora/600.css';
 import '@fontsource/sora/700.css';
@@ -19,6 +20,9 @@ const still = matchMedia('(prefers-reduced-motion: reduce)').matches || !('Inter
 // so nothing visible blinks out when the `js` class lands.
 for (const el of items) if (still || el.getBoundingClientRect().top < innerHeight) el.classList.add('is-in');
 root.classList.add('js');
+
+// If the chunk fails to load, the native audio controls stay in place.
+if (document.querySelector('.pod-player')) import('./player.js').catch(() => {});
 
 if (!still) {
   const io = new IntersectionObserver(

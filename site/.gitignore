@@ -4,6 +4,7 @@ dist/
 work/
 read/
 comic/
+podcast/
 test-results/
 playwright-report/
 .lighthouse/

@@ -39,7 +39,7 @@ const MIME = {
 
 function pageInputs() {
   const input = { main: resolve(root, 'index.html') };
-  for (const page of ['read', 'comic']) {
+  for (const page of ['read', 'comic', 'podcast']) {
     const file = resolve(root, page, 'index.html');
     if (existsSync(file)) input[page] = file;
   }

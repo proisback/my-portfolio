@@ -1,5 +1,5 @@
 import { SEGMENTS, TESTIMONIALS, CITIES, STATS } from '../content.js';
-import { esc, link, ICON } from './shared.js';
+import { esc, href, link, ICON } from './shared.js';
 import { sprite, stamp } from './stamps.js';
 
 // Which HUD stop each segment belongs to, and the year shown on the odometer.
@@ -73,6 +73,9 @@ function stop(s) {
   const accolade = s.accolade
     ? `<p class="card-accolade">${link(s.accolade.href, `${esc(s.accolade.text)} ${ICON.arrowUpRight}`)}</p>`
     : '';
+  const listen = s.listen
+    ? `<p class="card-accolade"><a href="${esc(href(s.listen.href))}">${ICON.headphones}<span>${esc(s.listen.text)}</span></a></p>`
+    : '';
   const body = s.body.map((p) => `<p>${esc(p)}</p>`).join('');
 
   if (s.thesis) {
@@ -100,6 +103,7 @@ function stop(s) {
       ${metrics(s.metrics)}
       ${s.gauges ? gauges() : ''}
       ${accolade}
+      ${listen}
       ${s.quote ? quote(s.quote) : ''}
       ${pull(s.pull)}
       <span class="card-reg card-reg--tl" aria-hidden="true"></span><span class="card-reg card-reg--br" aria-hidden="true"></span>

@@ -231,6 +231,7 @@ export function footer() {
     <p class="footer-quote reveal"><span>${esc(a)}</span> <span class="footer-quote-accent">${esc(b)}</span></p>
     <div class="footer-nav reveal">
       <a class="footer-link" href="${href(FOOTER.comic.href)}">${esc(FOOTER.comic.label)}</a>
+      <a class="footer-link" href="${href(FOOTER.podcast.href)}">${esc(FOOTER.podcast.label)}</a>
       <span class="footer-social">
         <a class="btn-icon" href="${esc(MAILTO)}" aria-label="Email Prateek">${ICON.mail}</a>
         ${link(PROFILE.linkedin, ICON.linkedin, 'btn-icon', 'aria-label="Prateek on LinkedIn"')}

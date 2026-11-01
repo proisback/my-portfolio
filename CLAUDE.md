@@ -19,7 +19,7 @@ The live site lives in **`site/`** (Vite + Three.js + GSAP, vanilla ES modules, 
 
 * Stack: Vite, Three.js, GSAP (ScrollTrigger), vanilla JS modules, Fontsource fonts. No frameworks. Free tools only.
 * **No 3D model files.** Every object (cities, plane, sidekick) is procedural geometry, so the 3D chunk stays around 200 KB gzipped.
-* All copy lives in **`site/src/content.js`**. Renderers in `site/src/render/` turn it into HTML at build time (every word is in the HTML before JS runs); `site/scripts/generate-pages.mjs` writes `work/<slug>/`, `read/` and `comic/` pages from it.
+* All copy lives in **`site/src/content.js`**. Renderers in `site/src/render/` turn it into HTML at build time (every word is in the HTML before JS runs); `site/scripts/generate-pages.mjs` writes `work/<slug>/`, `read/`, `comic/` and `podcast/` pages from it.
 * Budgets: entry JS under 30 KB gz, 3D chunk under 250 KB gz loaded after first paint, total under 3 MB desktop / 1.5 MB phone.
 * Supabase is reached with a plain `fetch` to its REST API (no SDK).
 
@@ -32,8 +32,8 @@ The live site lives in **`site/`** (Vite + Three.js + GSAP, vanilla ES modules, 
 * **`src/flight/`** — the 3D world: `uniforms.js`, `glsl.js` (reveal mask, hatching), `materials.js` (blueprint-to-color shader, geometry baker), `ground.js`, `sky.js`, `cities.js`, `plane.js` (incl. cockpit), `sidekick.js`, `clouds.js`, `path.js` (waypoints, banking, camera rig), `choreography.js` (GSAP scroll timeline), `index.js` (renderer, loop, guards).
 * **`src/journey.js`** — card hand-offs, HUD odometer, nav state. **`src/tier.js`**, **`src/fallback2d.js`** — device tiers and the 2D route map.
 * **`src/board.js`, `src/pass.js`** — split-flap board and boarding-pass transition. **`src/form.js`, `src/config.js`** — notify form.
-* **`src/page.js`**, **`src/styles/`** — generated-page entry and all CSS.
-* **`public/`** — favicon, `og.jpg`. **`tests/`** — Playwright end-to-end suite.
+* **`src/page.js`**, **`src/styles/`** — generated-page entry and all CSS. **`src/player.js`** — the podcast player's styled controls (lazy-loaded; the page ships a native `<audio controls>` fallback).
+* **`public/`** — favicon, `og.jpg`, `audio/` (podcast MP3, `preload="none"`). **`tests/`** — Playwright end-to-end suite.
 
 Legacy files at the repo root (`PRDs/`, `field-guides/`, `products/`, `images/comic-story/`, `rethink-buildathon-2nd-place.pdf`) are copied into the build by the `legacy-assets` plugin in `site/vite.config.js`, so their URLs keep working.
 

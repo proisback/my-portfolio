@@ -1,5 +1,6 @@
-/* "Quick read" (read/) and the origin comic (comic/), plus print styles
-   for every generated page. Prefixes: rp- (read), cp- (comic). */
+/* "Quick read" (read/), the origin comic (comic/) and the podcast (podcast/),
+   plus print styles for every generated page. Prefixes: rp- (read),
+   cp- (comic; its hero and end buttons also frame the podcast), pod- (podcast). */
 
 /* ---------- Quick read ---------- */
 
@@ -196,13 +197,96 @@
 
 .cp-end { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; padding: clamp(48px, 7vw, 88px) var(--gutter) 0; }
 
+/* ---------- Podcast ---------- */
+
+.pod { max-width: calc(42rem + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+
+/* The player reads like a ticket stub: mono header, perforation, controls. */
+.pod-player {
+  padding: 18px clamp(18px, 3vw, 26px) 22px;
+  background: var(--ivory); border: 1px solid var(--rule); border-radius: var(--r);
+  box-shadow: var(--shadow);
+}
+.pod-head {
+  display: flex; justify-content: space-between; gap: 16px; padding-bottom: 12px;
+  border-bottom: 1px dashed var(--blue-3);
+  font-size: var(--fs-xs); letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue);
+}
+.pod-meta { margin-top: 12px; font-size: var(--fs-sm); line-height: 1.6; color: var(--ink-2); }
+.pod-audio { display: block; width: 100%; margin-top: 16px; }
+.pod-controls { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 14px; margin-top: 18px; }
+.pod-controls[hidden], .pod-error[hidden] { display: none; }
+.pod-play {
+  display: grid; place-items: center; width: 52px; height: 52px; border: 0; border-radius: 50%;
+  background: var(--marigold); color: var(--ink); cursor: pointer;
+  box-shadow: 0 4px 0 -1px var(--marigold-shade);
+  transition: transform var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out);
+}
+.pod-play:hover { transform: translateY(-1px); box-shadow: 0 5px 0 -1px var(--marigold-shade), 0 10px 20px rgba(201, 138, 18, 0.2); }
+.pod-play:active { transform: translateY(2px); box-shadow: 0 2px 0 -1px var(--marigold-shade); }
+.pod-play svg:last-child, .pod-player.is-playing .pod-play svg:first-child { display: none; }
+.pod-player.is-playing .pod-play svg:last-child { display: block; }
+.pod-player.is-loading .pod-play { animation: pod-wait 1.4s var(--ease-io) infinite; }
+@keyframes pod-wait { 50% { opacity: 0.55; } }
+.pod-seek { width: 100%; margin: 0; accent-color: var(--blue); cursor: pointer; }
+.pod-time { font-size: var(--fs-xs); color: var(--ink-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pod-speed {
+  min-width: 54px; min-height: 36px; padding: 4px 12px;
+  border: 1px solid var(--rule); border-radius: var(--r-pill); background: transparent;
+  font-size: var(--fs-xs); cursor: pointer; transition: border-color var(--t-fast);
+}
+.pod-speed:hover { border-color: var(--ink); }
+.pod-error {
+  margin-top: 16px; padding: 12px 14px; border-left: 3px solid var(--marigold-deep); border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  background: var(--marigold-soft); font-size: var(--fs-sm);
+}
+@media (max-width: 480px) {
+  /* Phones: clock moves under the scrubber so the bar gets the width. */
+  .pod-controls { grid-template-columns: auto minmax(0, 1fr) auto; row-gap: 4px; }
+  .pod-time { grid-column: 2; grid-row: 2; }
+  .pod-play { grid-row: 1 / span 2; }
+  .pod-speed { grid-row: 1 / span 2; }
+}
+
+.pod-transcript { margin-top: 16px; border: 1px solid var(--rule); border-radius: var(--r); background: rgba(253, 251, 244, 0.6); }
+.pod-transcript summary {
+  display: flex; align-items: center; gap: 10px; padding: 14px 18px;
+  font-weight: 600; font-size: var(--fs-sm); cursor: pointer; list-style: none;
+}
+.pod-transcript summary::-webkit-details-marker { display: none; }
+.pod-transcript summary::after { content: '+'; margin-left: auto; font-family: var(--mono); font-size: var(--fs-lg); color: var(--blue); }
+.pod-transcript[open] summary::after { content: '\2212'; }
+.pod-transcript summary svg { color: var(--blue); }
+.pod-lines { padding: 4px 18px 20px; font-size: var(--fs-sm); line-height: 1.75; color: var(--ink-2); }
+.pod-lines p { text-wrap: pretty; }
+.pod-lines p + p { margin-top: 16px; }
+.pod-who { display: block; margin-bottom: 2px; font-size: var(--fs-xs); letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue); }
+.pod-note { color: var(--marigold-deep); font-style: italic; }
+
+.pod-story { padding-top: clamp(56px, 8vw, 96px); }
+.pod-story-title { margin-top: 14px; font-size: var(--fs-2xl); letter-spacing: -0.03em; line-height: 1.1; text-wrap: balance; }
+.pod-story-body { margin-top: 28px; font-size: 1.0625rem; line-height: 1.75; }
+.pod-story-body p { text-wrap: pretty; }
+.pod-story-body > p + p { margin-top: 0.85em; }
+.pod-story-body > .pod-key, .pod-story-body > .pod-route { margin-block: 1.5em; }
+.pod-key { font-size: var(--fs-xl); font-weight: 600; letter-spacing: -0.02em; line-height: 1.35; }
+.pod-key span {
+  background: linear-gradient(transparent 62%, var(--marigold) 62%); padding: 0 0.06em;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+.pod-route {
+  padding: 14px 16px; border: 1px dashed var(--blue-3); border-radius: var(--r-sm);
+  background: var(--ivory); font-size: 0.9375rem; line-height: 1.8; color: var(--blue);
+}
+.pod-arrow { color: var(--marigold-deep); }
+
 /* ---------- Print (all generated pages, tuned for read/) ---------- */
 
 @media print {
   @page { margin: 16mm 16mm 18mm; }
   html { font-size: 10.5pt; }
   body.pg { display: block; background: #fff; color: #000; }
-  .pg-nav, .skip-link, .grain, .rp-toc, .rp-ctas, .rp-mode, .pg-foot-links, .wp-onward, .cp-end, .wp-links { display: none !important; }
+  .pg-nav, .skip-link, .grain, .rp-toc, .rp-ctas, .rp-mode, .pg-foot-links, .wp-onward, .cp-end, .wp-links, .pod-player { display: none !important; }
   .reveal { opacity: 1 !important; transform: none !important; }
   * { animation: none !important; transition: none !important; box-shadow: none !important; }
   a { color: #000 !important; }
