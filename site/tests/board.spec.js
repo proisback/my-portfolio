@@ -9,11 +9,11 @@ async function boardReady(page) {
 }
 
 test.describe('departures board', () => {
-  test('7 rows in product order with links and spoken labels', async ({ page }) => {
+  test('9 rows in product order with links and spoken labels', async ({ page }) => {
     await page.goto('./', { waitUntil: 'domcontentloaded' });
     const rows = page.locator('#board a.flight');
-    await expect(rows).toHaveCount(7);
-    expect(PRODUCTS).toHaveLength(7);
+    await expect(rows).toHaveCount(9);
+    expect(PRODUCTS).toHaveLength(9);
     for (const [i, p] of PRODUCTS.entries()) {
       const a = rows.nth(i);
       await expect(a).toHaveAttribute('data-slug', p.slug);

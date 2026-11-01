@@ -47,7 +47,7 @@ test.describe('case study pages', () => {
       await expect(pass).toBeVisible();
       await expect(pass).toContainText(p.code);
       await expect(pass).toContainText(p.status);
-      await expect(page.locator('.wp-kicker')).toContainText(`Case study ${String(i + 1).padStart(2, '0')} of 07`);
+      await expect(page.locator('.wp-kicker')).toContainText(`Case study ${String(i + 1).padStart(2, '0')} of ${String(PRODUCTS.length).padStart(2, '0')}`);
       for (const s of p.sections) await expect(page.locator('.wp-sec-title', { hasText: s.h })).toHaveCount(1);
       // The 3-line opener carries the case; the old self-assessment section is gone.
       const opener = page.locator('.wp-opener dd');

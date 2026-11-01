@@ -35,7 +35,7 @@ test.describe('home', () => {
     const values = page.locator('.stats .stat-value');
     await expect(values).toHaveCount(HERO_STATS.length);
     await expect(values).toHaveText(HERO_STATS.map((s) => s.value));
-    for (const v of ['8+', '7']) await expect(values.filter({ hasText: v }).first()).toBeVisible();
+    for (const v of ['8+', '9']) await expect(values.filter({ hasText: v }).first()).toBeVisible();
     await expect(page.locator('#cockpit .gauge-value')).toHaveText(STATS.map((s) => s.value));
 
     await expect(page.locator('footer.footer')).toContainText(FOOTER.credit);
@@ -88,7 +88,7 @@ test.describe('home without JavaScript', () => {
     await expect(page.locator('.hero-claim')).toBeVisible();
     await expect(page.locator('.hero-claim')).toContainText('builds with AI');
     await expect(page.locator('.stats .stat-value')).toHaveText(HERO_STATS.map((s) => s.value));
-    await expect(page.locator('#board a.flight')).toHaveCount(7);
+    await expect(page.locator('#board a.flight')).toHaveCount(9);
     await expect(page.locator('footer.footer')).toContainText(FOOTER.credit);
   });
 });
