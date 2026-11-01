@@ -173,6 +173,36 @@ test.describe('podcast page', () => {
     expect(errors, errors.join('\n')).toEqual([]);
   });
 
+  test('flywheels stay wheels on every screen: labels inside, none overlapping', async ({ page }) => {
+    const widths = [page.viewportSize().width, 360];
+    for (const width of widths) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto('podcast/', { waitUntil: 'load' });
+      const wheels = page.locator('.pod-wheel');
+      await expect(wheels).toHaveCount(2);
+      for (let w = 0; w < 2; w++) {
+        const bad = await wheels.nth(w).evaluate((wheel) => {
+          const box = wheel.getBoundingClientRect();
+          const out = [];
+          if (Math.abs(box.width - box.height) > 1) out.push(`not square: ${box.width}x${box.height}`);
+          const labels = [...wheel.querySelectorAll('.pod-steps li')].map((li) => ({ t: li.textContent, r: li.getBoundingClientRect() }));
+          for (const { t, r } of labels) {
+            if (r.left < box.left - 1 || r.right > box.right + 1 || r.top < box.top - 1 || r.bottom > box.bottom + 1) out.push(`"${t}" spills out of the wheel`);
+          }
+          for (let i = 0; i < labels.length; i++) {
+            for (let j = i + 1; j < labels.length; j++) {
+              const a = labels[i].r;
+              const b = labels[j].r;
+              if (a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom) out.push(`"${labels[i].t}" overlaps "${labels[j].t}"`);
+            }
+          }
+          return out;
+        });
+        expect(bad, `wheel ${w + 1} at ${width}px`).toEqual([]);
+      }
+    }
+  });
+
   test('player: play, seek, speed and pause', async ({ page, errors }) => {
     await page.goto('podcast/', { waitUntil: 'load' });
     const player = page.locator('.pod-player');
