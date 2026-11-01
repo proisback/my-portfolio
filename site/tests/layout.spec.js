@@ -4,6 +4,7 @@ const PAGES = [
   ['home', './'],
   ['work page', 'work/plan-karo-chalo/'],
   ['read', 'read/'],
+  ['podcast', 'podcast/'],
 ];
 
 async function expectNoOverflow(page, label) {

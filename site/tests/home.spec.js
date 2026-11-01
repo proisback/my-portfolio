@@ -1,5 +1,5 @@
 import { test, expect, only, waitForScene, scrollThrough } from './fixtures.js';
-import { SITE, PROFILE, STATS, FOOTER } from '../src/content.js';
+import { SITE, PROFILE, STATS, FOOTER, SEGMENTS } from '../src/content.js';
 
 const HERO_STATS = STATS.filter((s) => s.hero);
 
@@ -47,6 +47,7 @@ test.describe('home', () => {
     await expect(footer.locator(`a[href="${PROFILE.calendly}"]`)).toHaveCount(0);
     await expect(page.locator(`#contact a[href="${PROFILE.calendly}"]`)).toHaveCount(1);
     await expect(footer.locator('a', { hasText: FOOTER.comic.label })).toHaveCount(1);
+    await expect(footer.locator('a', { hasText: FOOTER.podcast.label })).toHaveAttribute('href', SITE.base + FOOTER.podcast.href);
     await expect(footer.locator('a[href*="field-guides"], a[href$="read/"]')).toHaveCount(0);
     await expect(page.locator('#nav .nav-read')).toHaveText('Quick read');
   });
@@ -67,6 +68,15 @@ test.describe('home', () => {
       expect(errors, errors.join('\n')).toEqual([]);
     });
   }
+});
+
+test('The turn card and the footer link to the podcast', async ({ page }) => {
+  const turn = SEGMENTS.find((s) => s.id === 'turn');
+  await page.goto('./', { waitUntil: 'domcontentloaded' });
+  const link = page.locator(`a[href="${SITE.base}podcast/"]`);
+  await expect(link).toHaveCount(2); // the turn card and the footer
+  await expect(page.locator('#turn a')).toHaveText(turn.listen.text);
+  await expect(page.locator('#turn a')).toHaveAttribute('href', SITE.base + turn.listen.href);
 });
 
 test.describe('home without JavaScript', () => {

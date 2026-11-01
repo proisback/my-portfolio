@@ -1,14 +1,15 @@
 import { test, expect, only } from './fixtures.js';
-import { PRODUCTS, PROFILE, FOOTER, COMIC } from '../src/content.js';
+import { PRODUCTS, PROFILE, FOOTER, COMIC, PODCAST } from '../src/content.js';
 
 const BASE = '/my-portfolio/';
 
-// Every same-site URL the page references: links, images, styles, scripts.
+// Every same-site URL the page references: links, images, audio, styles, scripts.
 async function internalUrls(page) {
   return page.evaluate((base) => {
     const urls = [
       ...[...document.querySelectorAll('a[href]')].map((a) => a.getAttribute('href')),
       ...[...document.querySelectorAll('img[src]')].map((i) => i.getAttribute('src')),
+      ...[...document.querySelectorAll('audio[src]')].map((a) => a.getAttribute('src')),
       ...[...document.querySelectorAll('link[href]')].map((l) => l.getAttribute('href')),
       ...[...document.querySelectorAll('script[src]')].map((s) => s.getAttribute('src')),
     ].filter((u) => u && u.startsWith(base));
@@ -112,8 +113,102 @@ test.describe('comic page', () => {
   });
 });
 
-test.describe('internal links on home, read and comic', () => {
-  for (const path of ['', 'read/', 'comic/']) {
+test.describe('podcast page', () => {
+  const blockText = (b) => (typeof b === 'string' ? b : b.key || b.route);
+
+  test('episode, full transcript and the written story are in the HTML', async ({ page, request, errors }) => {
+    const res = await page.goto('podcast/', { waitUntil: 'load' });
+    expect(res.status()).toBe(200);
+    await expect(page).toHaveTitle(`${PODCAST.title} | ${PROFILE.name}`);
+    await expect(page.locator('h1')).toHaveText(PODCAST.title);
+    await expect(page.locator('.pod-meta')).toHaveText(PODCAST.audio.meta);
+
+    // The episode only downloads on play, and the file it points at is served as MP3.
+    const audio = page.locator('.pod-audio');
+    await expect(audio).toHaveAttribute('preload', 'none');
+    const mp3 = await request.get(await audio.getAttribute('src'));
+    expect(mp3.status()).toBe(200);
+    expect(mp3.headers()['content-type'] || '').toMatch(/audio\/mpeg/);
+
+    // Every turn of the transcript, in order, with the note on the one cited report.
+    const turns = page.locator('.pod-lines > p');
+    await expect(turns).toHaveCount(PODCAST.transcript.length);
+    for (const [i, t] of PODCAST.transcript.entries()) {
+      await expect(turns.nth(i).locator('.pod-who')).toHaveText(t.who);
+      await expect(turns.nth(i)).toContainText(t.text);
+    }
+    await expect(page.locator('.pod-note')).toHaveCount(1);
+    await expect(page.locator('.pod-note')).toHaveText(/2026 CPO Insights Report from Products That Count/);
+
+    await expect(page.locator('.pod-story-body > p')).toHaveText(PODCAST.story.body.map(blockText));
+    await expect(page.locator('.pod-key')).toHaveCount(PODCAST.story.body.filter((b) => b.key).length);
+    await expect(page.locator('.pod-route')).toHaveCount(PODCAST.story.body.filter((b) => b.route).length);
+
+    await expect(page.locator('footer a', { hasText: FOOTER.podcast.label })).toHaveAttribute('aria-current', 'page');
+    await page.waitForTimeout(300);
+    expect(errors, errors.join('\n')).toEqual([]);
+  });
+
+  test('player: play, seek, speed and pause', async ({ page, errors }) => {
+    await page.goto('podcast/', { waitUntil: 'load' });
+    const player = page.locator('.pod-player');
+    const audio = player.locator('.pod-audio');
+    const play = player.locator('.pod-play');
+
+    // The styled controls replace the native bar once the module runs.
+    await expect(player.locator('.pod-controls')).toBeVisible();
+    expect(await audio.evaluate((a) => a.controls)).toBe(false);
+    await expect(play).toHaveAccessibleName('Play');
+
+    await play.click();
+    await expect(play).toHaveAccessibleName('Pause');
+    await expect.poll(() => audio.evaluate((a) => !a.paused && a.currentTime > 0), { timeout: 20_000 }).toBe(true);
+
+    await player.locator('.pod-seek').fill('300');
+    await expect.poll(() => audio.evaluate((a) => a.currentTime), { timeout: 10_000 }).toBeGreaterThanOrEqual(300);
+    await expect(player.locator('.pod-now')).toHaveText(/^5:0\d$/);
+    await expect(player.locator('.pod-seek')).toHaveAttribute('aria-valuetext', /^5:0\d of 10:04$/);
+
+    const speed = player.locator('.pod-speed');
+    await speed.click();
+    expect(await audio.evaluate((a) => a.playbackRate)).toBe(1.25);
+    await expect(speed).toHaveAccessibleName('Playback speed 1.25×');
+    await speed.click();
+    await speed.click();
+    expect(await audio.evaluate((a) => a.playbackRate)).toBe(1);
+
+    await play.click();
+    await expect(play).toHaveAccessibleName('Play');
+    expect(await audio.evaluate((a) => a.paused)).toBe(true);
+    expect(errors, errors.join('\n')).toEqual([]);
+  });
+
+  test('a file that fails to load shows the message, not dead controls', async ({ page }) => {
+    await page.route('**/audio/*.mp3', (route) => route.fulfill({ status: 404, body: '' }));
+    await page.goto('podcast/', { waitUntil: 'load' });
+    const player = page.locator('.pod-player');
+    await player.locator('.pod-play').click();
+    await expect(player.locator('.pod-error')).toBeVisible();
+    await expect(player.locator('.pod-error')).toHaveText(PODCAST.audio.error);
+    await expect(player.locator('.pod-controls')).toBeHidden();
+  });
+
+});
+
+test.describe('podcast page without JavaScript', () => {
+  test.use({ javaScriptEnabled: false });
+
+  test('the native audio controls stay, the styled ones stay hidden', async ({ page }) => {
+    await page.goto('podcast/', { waitUntil: 'load' });
+    await expect(page.locator('.pod-audio')).toHaveAttribute('controls', '');
+    await expect(page.locator('.pod-audio')).toBeVisible();
+    await expect(page.locator('.pod-controls')).toBeHidden();
+    await expect(page.locator('.pod-lines > p')).toHaveCount(PODCAST.transcript.length);
+  });
+});
+
+test.describe('internal links on home, read, comic and podcast', () => {
+  for (const path of ['', 'read/', 'comic/', 'podcast/']) {
     test(`${path || 'home'}: internal URLs resolve, external links are safe`, async ({ page, request }, testInfo) => {
       only(testInfo, 'desktop');
       test.setTimeout(120_000);

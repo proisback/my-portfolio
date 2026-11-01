@@ -6,6 +6,7 @@ const PAGES = [
   ['work page', `work/${PRODUCTS[0].slug}/`, '#main'],
   ['read', 'read/', '#main'],
   ['comic', 'comic/', '#main'],
+  ['podcast', 'podcast/', '#main'],
 ];
 
 test.describe('accessibility smoke', () => {
