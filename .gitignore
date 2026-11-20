@@ -35,6 +35,8 @@ node_modules/
 
 # Video files (dev recordings of mobile responsiveness tests, etc.)
 *.mp4
+# Except the published launch films on case study pages.
+!site/public/video/*.mp4
 
 # Superseded portfolio versions (kept locally for reference, not pushed)
 index-v2.html

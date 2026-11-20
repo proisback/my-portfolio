@@ -245,12 +245,19 @@ export const PRODUCTS = [
     opener: {
       problem: '35% of planned group trips never happen. They die in the WhatsApp chaos before anyone books.',
       did: '132+ research data points (27 interviews, 105 surveys), then built it solo in 8 days.',
-      result: '91.7% member activation in production.',
+      result: '91.7% member activation in production. Rebuilt as v2 in November 2026.',
     },
     tags: ['Primary Research', 'Problem Framing', 'Zero-to-One Shipping'],
     image: 'products/plan-karo-chalo.jpg',
+    film: {
+      src: 'video/plan-karo-chalo.mp4',
+      poster: 'video/plan-karo-chalo.jpg',
+      label: 'Plan Karo Chalo launch film, 23 seconds',
+      caption: "Fig. 2 · Launch film, 23 seconds, made from the product's own screens. Sound on.",
+    },
     links: [
       { label: 'Visit live site', href: 'https://plankarochalo.vercel.app' },
+      { label: 'Try the demo', href: 'https://plankarochalo.vercel.app/demo' },
       { label: 'Read the PRD', href: 'PRDs/04_plankarochalo_prd.html' },
     ],
     sections: [
@@ -272,26 +279,43 @@ export const PRODUCTS = [
         ],
       },
       {
-        h: 'One link. No app. Ten seconds to start.',
+        h: 'One link. No app. Four stops.',
         html: [
-          'The group moves through dates, budget, destination and commitment on one shared dashboard. Members never download anything.',
+          'The group moves through four stages on one shared link: Dates, Place, Commit, Go. Each one locks before the next opens. Friends join with just a name. Nothing to download, no account.',
           'Four feature categories were cut on research grounds: expense splitting, booking, in-app chat and AI recommendations.',
         ],
         list: [
-          '<strong>Tap-to-select calendar</strong> with auto-overlap.',
-          '<strong>Anonymous budget slider</strong> that finds the group sweet spot.',
-          '<strong>Destination voting</strong> with a shake-to-decide tiebreak.',
-          '<strong>Hold-to-confirm</strong> commitment checkpoint.',
-          '<strong>Nudge library</strong> with 6 tone variants.',
+          '<strong>Tap-to-select calendar</strong> that finds the days the most people can do in full, and says so: "4 of 6 can do all 3 days."',
+          '<strong>Destination voting</strong> that shows a tie as a tie, and who breaks it.',
+          '<strong>Hold-to-confirm</strong> commitment: press for two seconds to say you are in.',
+          '<strong>Nudges</strong> that draft a WhatsApp message to whoever is still waiting.',
+          '<strong>One group ticket</strong> at the end, with the place, the dates and who is in, sent back to the group.',
         ],
       },
       {
-        h: 'The numbers from production',
+        h: 'The numbers from production (v1, April 2026)',
         stats: [
           { value: '91.7%', label: 'member activation rate' },
           { value: '85.2%', label: '48-hour response rate' },
           { value: '1.5 days', label: 'average time to lock dates (target: 5)' },
           { value: '54.1%', label: 'return visit rate (target: 30%)' },
+        ],
+      },
+      {
+        h: 'v2: rebuilt for real groups.',
+        html: [
+          'In November 2026 I went back to it. A new brand, "Chart Prepared", built on the Indian railway reservation: a route line of four stations, a printed group ticket, and the moment a waitlisted name turns CNF.',
+        ],
+        list: [
+          '<strong>Stage locking moved into the database.</strong> A stage advances by itself only when the expected group has joined and everyone has answered. "Everyone who joined so far" is never treated as "everyone".',
+          '<strong>Tighter data access.</strong> A trip is readable only by its organiser and members. A shared link still opens for a friend with no account.',
+          '<strong>A live demo</strong> with five scripted friends: the real screens, no sign-up, nothing saved.',
+          '<strong>A landing page, a case study and a launch film</strong> on the product site.',
+        ],
+        shots: [
+          { src: 'products/plan-karo-chalo-place.jpg', alt: 'Place stage: Goa and Gokarna tied on two votes each', caption: 'Place' },
+          { src: 'products/plan-karo-chalo-commit.jpg', alt: 'Commit stage: a hold-to-confirm button above the list of who is in', caption: 'Commit' },
+          { src: 'products/plan-karo-chalo-go.jpg', alt: 'Go stage: the confirmed group ticket for Goa, 11 to 13 December', caption: 'Go' },
         ],
       },
     ],

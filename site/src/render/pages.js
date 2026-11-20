@@ -198,6 +198,33 @@ function intro(p) {
     </section>`;
 }
 
+// The product's launch film, full width under the opener. Native controls, so
+// it works without JS and the viewer chooses when sound starts.
+function film(p) {
+  if (!p.film) return '';
+  const f = p.film;
+  return `
+    <figure class="wp-film reveal">
+      <div class="wp-film-frame">
+        <video controls playsinline preload="none" poster="${esc(href(f.poster))}" width="1280" height="720" aria-label="${esc(f.label)}">
+          <source src="${esc(href(f.src))}" type="video/mp4">
+          <a href="${esc(href(f.src))}">Open the film</a>
+        </video>
+      </div>
+      <figcaption class="mono">${esc(f.caption)}</figcaption>
+    </figure>`;
+}
+
+// A strip of phone screenshots inside a section.
+function shots(list) {
+  if (!list) return '';
+  return `<ul class="wp-shots">${list
+    .map(
+      (s) => `<li><figure><div class="wp-device wp-device--sm"><img src="${esc(href(s.src))}" alt="${esc(s.alt)}" width="860" height="1864" loading="lazy" decoding="async"></div><figcaption class="mono">${esc(s.caption)}</figcaption></figure></li>`,
+    )
+    .join('')}</ul>`;
+}
+
 function section(s, k, total) {
   const id = `sec-${pad(k + 1)}`;
   const paras = (s.html || []).map((h) => `<p>${h}</p>`).join('');
@@ -215,7 +242,7 @@ function section(s, k, total) {
           <p class="wp-sec-idx mono" aria-hidden="true"><span>${pad(k + 1)}</span><span class="wp-sec-of">/ ${pad(total)}</span></p>
           <h2 class="wp-sec-title" id="${id}">${esc(s.h)}</h2>
         </div>
-        <div class="wp-sec-body">${paras}${list}${after}${stats}</div>
+        <div class="wp-sec-body">${paras}${list}${after}${stats}${shots(s.shots)}</div>
       </section>`;
 }
 
@@ -236,7 +263,7 @@ export function workPage(p, index) {
   const prev = PRODUCTS[(index - 1 + n) % n];
   const next = PRODUCTS[(index + 1) % n];
   const body = `${pass(p, index)}
-    ${intro(p)}
+    ${intro(p)}${film(p)}
     <div class="wp-body">${p.sections.map((s, k) => section(s, k, p.sections.length)).join('')}
     </div>
     <nav class="wp-onward" aria-label="More flights">
