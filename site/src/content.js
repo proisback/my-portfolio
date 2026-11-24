@@ -380,8 +380,8 @@ export const PRODUCTS = [
   {
     slug: 'galpals',
     code: 'PM 103',
-    name: 'galpals',
-    board: 'GALPALS',
+    name: 'galpal',
+    board: 'GALPAL',
     month: 'APR 26',
     status: 'LIVE',
     headline: 'Founding PM · blank page to Product Hunt in 4 days',
@@ -428,7 +428,7 @@ export const PRODUCTS = [
       {
         h: 'Slower on purpose.',
         list: [
-          '<strong>Manual verification.</strong> Automating it would be faster, and would kill the safety promise that sets galpals apart.',
+          '<strong>Manual verification.</strong> Automating it would be faster, and would kill the safety promise that sets galpal apart.',
           '<strong>PWA over native.</strong> Easier to try, faster to iterate, no app-store gatekeeping.',
           '<strong>Matching on what predicts friendship,</strong> not popularity: interests, neighbourhood, city tenure, personality.',
         ],
